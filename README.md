@@ -1,6 +1,6 @@
 # ISBX LoopBack CMS #
 
-The Node JS CMS is design to work with LoopBack projects utilizing the built-in LoopBack Model Structure and generated REST APIs to perform create, read, update, and delete (CRUD) functions. The CMS user interface is built using Angular JS with Bootstrap and is highly customizable. The navigation of the CMS can be configured through JSON. You have the ability to create your own custom Angular Controllers and Views. Please see the wiki for installation and setup instructions. 
+The ISBX LoopBack CMS is in its early stage of development. The Node JS CMS is design to work with LoopBack projects utilizing the built-in LoopBack Model Structure and generated REST APIs to perform create, read, update, and delete (CRUD) functions. The CMS user interface is built using Angular JS with Bootstrap and is highly customizable. The navigation of the CMS can be configured through JSON. You have the ability to create your own custom Angular Controllers and Views. Please see the wiki for installation and setup instructions. 
 
 ### Installing ###
 
