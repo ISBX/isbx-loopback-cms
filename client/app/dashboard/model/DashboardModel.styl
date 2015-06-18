@@ -1,0 +1,33 @@
+.dashboard
+  .filter-nav
+    position absolute
+    width 135px
+    top 0
+    left 0
+    bottom 0
+    background-color #fdfdfd
+    border-right: solid 1px #f4f4f4
+    border-right: solid 1px #ddd
+
+    a.subnav-button
+      display block
+      padding 10px
+      width 135px
+      color #000
+      border-bottom: solid 1px #ddd
+
+      &.selected
+        color #000
+        background-color #f0f0f0
+        border-right: solid 1px #f0f0f0
+
+  //Following .content element styles when filter-nav exists
+  .content
+      position absolute
+      top 0
+      left 135px
+      bottom 0
+      right 0
+      background-color #f0f0f0
+      overflow auto
+      padding 10px

@@ -1,0 +1,30 @@
+{
+  "name": "isbx-loopback-cms",
+  "version": "0.0.0",
+  "dependencies": {
+    "angular": "1.2.27",
+    "angular-mocks": "1.2.27",
+    "angular-ui-router": "0.2.11",
+    "angular-ui-utils": "0.1.1",
+    "angular-ui-select": "~0.8.3",
+    "angular-ui-sortable": "~0.13.0",
+    "angular-grid": "~2.0.13",
+    "angular-sanitize": "1.2.27",
+    "jquery": "2.1.1",
+    "lodash": "~2.4.1",
+    "bootstrap": "~3.2.0",
+    "angular-bootstrap": "~0.11.2",
+    "angular-cookies": "~1.2.27",
+    "danialfarid-angular-file-upload": "*",
+    "json-editor": "coolwr/json-editor",
+    "ace-builds": "~1.1.8",
+    "oclazyload": "~0.5.1",
+    "angular-google-chart": "~0.0.11",
+    "eonasdan-bootstrap-datetimepicker": "~4.0.0",
+    "moment": "~2.9.0",
+    "ng-slider": "~2.1.9"
+  },
+  "resolutions": {
+    "angular": ">=1.2.18"
+  }
+}

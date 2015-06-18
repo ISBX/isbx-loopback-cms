@@ -1,0 +1,15 @@
+.model-sort(ng-controller="ModelSortCtrl")
+
+  h1 {{ section.label }} <i class="fa fa-chevron-right spacer"></i> {{ action.label }}
+
+  ul(ui-sortable, ng-model="list")
+    li(ng-repeat="item in list") 
+      i.fa.fa-reorder
+      .title {{ item[title] }}
+      .action
+        a.up(ng-click="moveUp(item)"): i.fa.fa-caret-up
+        a.down(ng-click="moveDown(item)"): i.fa.fa-caret-down
+        a.edit(ng-click="edit(item)") Edit
+        
+  button.btn.btn-default.save-sort-button(ng-click="saveSort()") Save Sort Order
+    

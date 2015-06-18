@@ -1,0 +1,231 @@
+.model-list
+  h1
+    margin: 0 0
+    padding: 0 0
+    vertical-align: middle
+    line-height: 40px
+    font-size: 20px
+    font-weight: 600
+    .spacer
+      font-size: 10px
+      vertical-align: middle
+      padding: 0 10px 
+  
+  .grid-container
+    border-radius 4px
+    border: solid 1px #ddd
+    background-color: #fff
+    overflow: hidden
+    position absolute
+    top 70px
+    left 30px
+    right 30px
+    &.list
+      bottom 0
+      border-radius 4px 4px 0px 0px
+    @media screen and (max-width: 960px)
+      left 20px
+      right 20px
+    @media screen and (max-width: 640px)
+      left 10px
+      right 10px
+    @media screen and (max-width: 480px)
+      left 5px
+      right 5px
+    
+    h2
+      margin: 0 0
+      padding: 0 12px
+      line-height: 36px
+      height: 36px
+      font-weight: 300
+      font-size: 14px
+      border-bottom: solid 1px #ddd
+      background-gradient(top, #fafafa, 0%, #ededed, 100%, #ededed, 100%, #ededed, 100%)
+      .btn-group
+        position absolute
+        right 0
+        button, a.btn
+          height: 36px
+          padding: 0 12px
+          background: none
+          border: none
+          border-radius: 0
+          border-color: transparent
+          border-left: solid 1px #ddd
+          color: #428bca
+          box-shadow: none
+          -webkit-box-shadow: none
+          &.add
+            color: #000
+          &:hover
+            background: #efefef
+        a.btn
+          line-height: 36px
+          color: #000
+  .grid
+    position absolute
+    top 50px
+    left: 9px
+    right: 9px
+    bottom 0
+    padding 0 0
+    background: none
+    border: none
+    border-radius 4px 4px 0px 0px
+    -webkit-overflow-scrolling: auto
+    &.search
+      top: 90px
+      .ngHeaderButton
+        display: none
+      .ngColMenu
+        display: block !important
+        position: absolute
+        top: -43px
+        padding: 0 0
+        border: none
+        background-color: transparent
+        input
+          height: 32px
+          border-radius: 4px
+          overflow: hidden
+          border: solid 1px #ddd
+          padding: 0 5px
+    .ngHeaderContainer
+      border: solid 1px #dfdfdf
+      overflow: hidden
+    .ngTopPanel
+      background-color: #fbfbfb
+      .ngHeaderText
+        line-height: 34px
+    .ngViewport
+      border-left: solid 1px #dfdfdf
+      border-right: solid 1px #dfdfdf
+    .ngRow
+      
+      border-bottom: solid 1px #dfdfdf
+    .ngRow.selected
+      background-color #dedede
+    .center
+      text-align: center
+      -webkit-justify-content: center
+      justify-content: center
+    .ngCell
+      &.center
+        div[ng-cell]
+          -webkit-justify-content: center
+          justify-content: center
+      &.form-field
+        overflow: inherit
+        .ngCellElement
+          display: -webkit-flex
+          display: flex
+          -webkit-align-items: center
+          align-items: center
+          width: 100%
+          div[ng-edit-cell-if]
+            width: 100%
+          ul li
+            text-align: left
+      div[ng-cell]
+        display: -webkit-flex
+        display: flex
+        height: 100%
+        a
+          display: -webkit-flex
+          display: flex
+          -webkit-align-items: center
+          align-items: center
+          padding: 5px
+      input, select
+        outline none
+        height: 44px
+        border: none
+        padding: 5px
+      select
+        border: none
+        border-radius: 0
+        margin-top 0
+      button.link
+        background: none
+        border: none
+        border-radius: 0
+        text-shadow: none
+        box-shadow: none
+        -webkit-box-shadow: none
+        outline: none
+        color: #428bca
+        &.delete
+          color: #c12e2a
+    .ngCellText
+      //display -webkit-flex
+      //display flex
+      vertical-align middle
+      line-height 34px
+      -webkit-align-items center
+      align-items center
+    .ngFooterPanel
+      position: fixed
+      bottom: 1px
+      line-height 44px
+      vertical-align middle
+      background-color #fff
+      .ngFooterTotalItems
+        span.ngLabel
+          margin-right: 10px
+    .ngPagerContainer
+      margin-top 0 !important
+    .ngTotalSelectContainer
+      margin-top 0
+      margin 0
+      @media screen and (max-width: 480px)
+        display none
+    .ngPagerContainer
+      .ngPagerCurrent
+        border-radius 4px
+        border solid 1px #ddd
+      @media screen and (max-width: 480px)
+        width 100%
+    .ngRowCountPicker
+      vertical-align middle
+      span
+        vertical-align middle
+        margin-top: 2px !important
+        margin-right: 3px !important
+      select
+        display inline
+        vertical-align middle
+        margin-left 10px
+        width auto !important
+        float none !important
+    .ngPagerCurrent
+      margin-top 0 !important
+    .ngPagerControl
+      vertical-align middle
+      height 44px !important
+      line-height 44px !important
+      margin-right: 4px !important
+      @media screen and (max-width: 480px)
+        float right !important
+      *
+        vertical-align middle
+      .ngPagerCurrent
+        line-height 24px
+
+  .edit-controls
+    position: absolute
+    left: 9px
+    right: 9px
+    bottom 0
+    height: 40px
+    padding: 3px 3px 0 3px
+    background-color: #fff 
+    .cancel
+      float: right
+    
+  .hover-border:hover
+    background-color: #000
+    display: block
+    img
+      opacity: 0.8
+  

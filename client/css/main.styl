@@ -1,0 +1,28 @@
+// import any thirdparty CSS here
+
+background-gradient(direction, startColor, startDistance, midEndColor, midEndDistance, midStartColor, midStartDistance, endColor, endDistance)
+  background: startColor; /* Old browsers */
+  background: -moz-linear-gradient(direction, startColor startDistance, midEndColor midEndDistance, midStartColor midStartDistance, endColor endDistance);
+  background: -webkit-gradient(linear, left top, left bottom, color-stop(startDistance,startColor), color-stop(midEndDistance,midEndColor), color-stop(midStartDistance,midStartColor), color-stop(endDistance,endColor));
+  background: -webkit-linear-gradient(direction, startColor startDistance, midEndColor midEndDistance, midStartColor midStartDistance, endColor endDistance);
+  background: -o-linear-gradient(direction, startColor startDistance, midEndColor midEndDistance, midStartColor midStartDistance, endColor endDistance);
+  background: -ms-linear-gradient(direction, startColor startDistance, midEndColor midEndDistance, midStartColor midStartDistance, endColor endDistance);
+  background: linear-gradient(direction, startColor startDistance, midEndColor midEndDistance, midStartColor midStartDistance, endColor endDistance);
+  //filter: progid:DXImageTransform.Microsoft.gradient( startColorstr='startColor', endColorstr='endColor',GradientType=0 );
+
+
+@import "variables.styl"
+
+// import individual .styl files here
+@import "../app/dashboard/Dashboard.styl"
+@import "../app/login/Login.styl"
+@import "../app/register/Register.styl"
+
+body, html
+  margin 0
+  font-family 'Open Sans', sans-serif
+h1, h2, h3, h4, h5, button
+  font-family 'Open Sans', sans-serif
+
+a:hover
+  text-decoration: none

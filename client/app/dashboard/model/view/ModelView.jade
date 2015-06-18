@@ -1,0 +1,6 @@
+.model-edit(ng-controller="ModelViewCtrl")
+
+  .item(ng-repeat="field in model.fields")
+    model-field-view(options="field", ng-model="data")
+
+  a.btn.btn-default(ui-sref="dashboard.model.action.edit({ model: model.model, action: action.label, id: data[model.key]})") Edit

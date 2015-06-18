@@ -1,0 +1,115 @@
+@import "alert/Alert.styl"
+@import "profile/Profile.styl"
+@import "model/DashboardModel.styl"
+@import "model/edit/ModelEdit.styl"
+@import "model/list/ModelList.styl"
+@import "model/view/ModelView.styl"
+@import "model/sort/ModelSort.styl"
+@import "model/nav/ModelNav.styl"
+@import "model/definition/ModelDefinition.styl"
+
+.dashboard
+  position absolute
+  top 0
+  left 0
+  right 0
+  bottom 0
+  .top-nav
+    position fixed
+    height 64px
+    top: 0x
+    left 0
+    right 0
+    background-color #3a7dc2
+    @media screen and (max-width: 768px)
+      text-align center
+    h1
+      display: inline-block
+      margin: 0 0
+      padding: 0 0 0 25px
+      line-height: 64px
+      color: #fff
+      font-weight: 300
+      font-size: 28px
+    .user-info
+      float: right
+      line-height: 64px
+      margin-right: 20px
+      a
+        cursor: pointer
+        color: #fff
+        font-weight: 300
+      .divider
+        color: #999
+    .menu
+      display:none
+      padding 0 24px 0 14px
+      background none
+      border none
+      font-size 30px
+      line-height 64px
+      cursor pinter 
+      color #fff
+      vertical-align middle
+      @media screen and (max-width: 768px)
+        display: inline-block
+        float: left
+  .page
+    position fixed
+    top 64px
+    left 0
+    bottom 0
+    right 0
+    @media screen and (max-width: 768px)
+      position: absolute
+    //.content below styles the content layer directly after .dashboard
+    & > .content
+      position absolute
+      top 0
+      left 125px
+      bottom 0
+      right 0
+      background-color #FFFFFF
+      overflow auto
+      padding 10px
+      -webkit-overflow-scrolling: touch
+    
+  .left-nav
+    position absolute
+    width 128px
+    top 0
+    left 0
+    bottom 0
+    background-color #2b2e33
+    color #ffffff
+
+    a.nav-button
+      display block
+      width 128px
+      text-align center 
+      padding 14px 0 8px 0
+      color #9499a1
+      border-bottom: solid 1px #4e4f52
+      .icon
+        display: block
+        font-size: 30px
+      .label
+        display: block
+        margin-top 4px
+        font-size 14px
+        font-weight 300
+        color #9499a1
+      &.selected
+        background-color #000
+        color: #fff
+        .label
+          color #fff
+
+
+.dashboard
+  @media screen and (max-width: 768px)
+    left -260px
+  &.show-side-menu
+    @media screen and (max-width: 768px)
+      left 0
+

@@ -1,0 +1,10 @@
+.DS_Store
+*.sw*
+*~
+/build/
+node_modules/
+webroot/
+/workspace/
+.settings/
+.idea/
+*.iml

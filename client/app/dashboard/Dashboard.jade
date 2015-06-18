@@ -1,0 +1,14 @@
+.dashboard
+  .top-nav
+    button.menu.fa.fa-bars(ng-click="toggleSideMenu()")
+    h1 {{ title }}
+    .user-info
+      a.username(ng-click="editProfile($event)") {{ username }}
+      span.divider &nbsp;|&nbsp; 
+      a.logout(ng-click="logout($event)") log out
+  .page
+    .left-nav
+      a.nav-button(ng-repeat="section in nav track by section.path" href="{{ section.url || $state.href('dashboard.model.action.' + section.subnav[section.defaultSubNavIndex].route, { model: section.path, action: section.subnav[section.defaultSubNavIndex].label }) }}", ng-class="{  selected: $state.includes('dashboard.model.action', { model: section.path }) || (section.url !== undefined && section.url.indexOf(locationPath) > -1) }", ng-if="!section.hidden")
+        i.icon(class="fa {{ section.icon }}")
+        .label {{ section.label }}
+    .content(ui-view="")

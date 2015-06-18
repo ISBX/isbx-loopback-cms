@@ -1,0 +1,103 @@
+.model-nav
+  h1
+    margin: 10px 0
+    padding: 0 0
+    vertical-align: middle
+    line-height: 40px
+    font-size: 20px
+    font-weight: 600
+    .spacer
+      font-size: 10px
+      vertical-align: middle
+      padding: 0 10px 
+  h3
+    font-size: 14px
+    //font-weight: bold
+    margin: 0 0
+    padding: 5px 5px
+    //border-top: 1px solid #ddd
+    border-bottom: 1px solid #d0d0d0
+    background-color: #e0e0e0
+    .title-controls
+      visibility: hidden
+    &:hover
+      .title-controls
+        visibility: visible
+       
+  div[data-schemaid='root'] > h3:first-child
+    margin-bottom: 15px
+    background-color: transparent
+    border-bottom: none
+    .array-controls
+      margin: 0 0
+      float: none
+  div[data-schemapath='root.0']
+    border-right: 1px solid #ddd
+  .tabs
+    padding-right: 0
+  .form-group
+    margin: 0 0
+    padding 5px 10px 5px 0
+    background-color: #ebebeb
+    border-bottom: 1px solid #ddd
+    label.control-label
+      margin: 0 0
+      padding: 5px 20px 5px 10px
+      font-weight: 400
+      width: 20%
+      text-align: left
+      vertical-align: top
+    .form-control
+      display: inline-block
+      width: 80%
+    .help-block
+      margin-left: 20%
+      padding-left: 5px
+      color: #aaa
+      font-size: 10px
+  .well:first-child
+    margin-left: 0
+  .well
+    position: relative
+    padding: 0
+    margin: 0 0 0 22px
+    background: none
+    box-sahdow: none
+    -webkit-box-shadow: none
+    //border: 1px solid #ddd
+    border: none
+    & > div:first-child
+      border-left: 1px solid #ddd
+    .row:first-child
+      //padding-top: 10px
+    .row:last-child
+      //padding-bottom: 10px
+    .row  
+      //padding: 5px 5px
+  .json-editor-btn-collapse
+    margin-right: 10px
+    width: 34px
+    height: 34px
+    border-radius: 17px
+    padding: 0 0
+    text-align: center
+    overflow: hidden 
+    outline: none
+    &:focus
+      outline: none
+  .json-editor-btn-edit
+    //border-radius: 4px
+  .array-controls
+    //margin: 10px 0 0 5px
+    float: right
+  .title-controls
+    float: right
+  .ace_editor
+    display: inline-block
+    width: 80% !important
+    height: 100px !important
+      
+  .save-button
+    float: left
+    width: 100%
+    margin: 20px 0 0 0
