@@ -73,6 +73,7 @@ module.exports = {
       'vendor/angular-ui-utils/ui-utils.js',
       'vendor/angular-ui-select/dist/select.min.js',
       'vendor/angular-ui-sortable/sortable.min.js',
+      'vendor/angular-ui-calendar/calendar.min.js',
       'vendor/angular-grid/ng-grid-2.0.14.debug.js',
       'vendor/angular-grid/plugins/ng-grid-flexible-height.js',
       'vendor/angular-grid/plugins/ng-grid-csv-export.js',
@@ -86,6 +87,8 @@ module.exports = {
       'vendor/oclazyload/dist/ocLazyLoad.min.js',
       'vendor/angular-google-chart/ng-google-chart.js',
       'vendor/moment/min/moment.min.js',
+      'vendor/fullcalendar/dist/fullcalendar.min.js',
+      'vendor/fullcalendar/dist/gcal.js',
       'vendor/eonasdan-bootstrap-datetimepicker/build/js/bootstrap-datetimepicker.min.js',
       'vendor/ng-slider/dist/ng-slider.min.js'
     ],
@@ -95,6 +98,7 @@ module.exports = {
       'vendor/bootstrap/dist/css/bootstrap-theme.css',
       'vendor/angular-grid/ng-grid.min.css',
       'vendor/angular-ui-select/dist/select.min.css',
+      'vendor/fullcalendar/dist/fullcalendar.css',
       'vendor/bootstrap3-datetimepicker/build/css/bootstrap-datetimepicker.min.css',
       'vendor/eonasdan-bootstrap-datetimepicker/build/css/bootstrap-datetimepicker.min.css',
       'vendor/ng-slider/dist/css/ng-slider.min.css'
