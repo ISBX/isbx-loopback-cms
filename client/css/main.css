@@ -870,6 +870,11 @@ model-field-edit .jslider .jslider-pointer {
   outline: none;
   color: #fff;
 }
+.login a {
+  margin: 0 0;
+  padding: 34px 34px;
+  font-size: 12px;
+}
 body,
 html {
   margin: 0;

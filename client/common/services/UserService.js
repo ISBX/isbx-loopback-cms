@@ -16,4 +16,6 @@ angular.module('dashboard.services.User', [
     if (config.authModel) authModel = config.authModel; 
     return Utils.apiHelper('POST', authModel + "/reset", { email: email });
   };
-});
+})
+
+;

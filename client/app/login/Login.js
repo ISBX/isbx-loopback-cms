@@ -29,7 +29,7 @@ angular.module('dashboard.Login', [
     if($scope.login.emailToReset && $scope.login.emailToReset !== ''){
       UserService.resetPassword($scope.login.emailToReset)
       .then(function(response){
-        alert('Password is sent to your email');
+        alert('Please check your e-mail for further instructions. Thank You.');
         $scope.isPasswordVisible = false;
       })
       .catch(function(response) {
