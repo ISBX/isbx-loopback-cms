@@ -1,6 +1,13 @@
-.login
+.login(ng-show="!isPasswordVisible")
   form
     h1 LOGIN
     input(type="email", placeholder="E-mail", ng-model="login.email")
     input(type="password", placeholder="Password", ng-model="login.password")
+    a(href='#' ng-click="togglePassword()") Forgot Password?
     button.btn(type="submit", ng-click="logIn()") Log In
+
+.login.resetpassword(ng-show="isPasswordVisible")
+  form
+    h1 Resetpassword
+    input(type="email", required, placeholder="E-mail", ng-model="login.emailToReset")
+    button.btn(type="submit", ng-click="resetPassword()") Reset Password

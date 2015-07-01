@@ -16,11 +16,27 @@ angular.module('dashboard.Login', [
     });
 })
 
-.controller('LoginCtrl', function LoginCtrl($scope, $state, $window, Config, SessionService) {
+.controller('LoginCtrl', function LoginCtrl($scope, $state, $window, Config, SessionService, UserService) {
   $scope.login = {};
+  $scope.isPasswordVisible = false;
 
   function init() {
   }
+  $scope.togglePassword = function(){
+     $scope.isPasswordVisible = !$scope.isPasswordVisible;
+  };
+  $scope.resetPassword = function(){
+    if($scope.login.emailToReset && $scope.login.emailToReset !== ''){
+      UserService.resetPassword($scope.login.emailToReset)
+      .then(function(response){
+        alert('Password is sent to your email');
+        $scope.isPasswordVisible = false;
+      })
+      .catch(function(response) {
+        alert('');
+      });
+    }
+  };
 
   $scope.logIn = function() {
     SessionService.logIn($scope.login.email, $scope.login.password)
@@ -34,6 +50,4 @@ angular.module('dashboard.Login', [
   }
   
   init();
-})
-
-;
+});
