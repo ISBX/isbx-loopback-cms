@@ -24,7 +24,7 @@ angular.module('dashboard.directive.DateTimePicker', [
           //Format the passed in date
           if (!scope.format) scope.format = scope.ngFormat;
           if (!value) return;
-          return moment(value).format(scope.format);
+          return moment.utc(value).format(scope.format);
         });
           
         //Bind the Element
@@ -44,7 +44,7 @@ angular.module('dashboard.directive.DateTimePicker', [
         //On Blur update the ng-model
         elem.on('blur', function () {
           if (!scope.format) scope.format = scope.ngFormat;
-          var dateValue = moment(elem.val(), scope.format);
+          var dateValue = moment.utc(elem.val(), scope.format);
           if (dateValue.isValid()) {
             ngModel.$setViewValue(dateValue);
           } else {
