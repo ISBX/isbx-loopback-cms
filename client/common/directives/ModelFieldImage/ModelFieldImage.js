@@ -20,7 +20,11 @@ angular.module('dashboard.directives.ModelFieldImage', [
   return {
     restrict: 'E',
     template: '<div class="image-container" style="background: no-repeat center center url(\'{{ imageUrl }}\'); background-size: contain;" ng-click="imageClick()"></div> \
-      <div ng-file-drop="onFileSelect($files)" ng-file-drag-over-class="optional-css-class-name-or-function" ng-show="dropSupported && !disabled" class="file-drop">{{ uploadStatus }}</div> \
+      <div class="button-menu show-menu">\
+      <button class="btn btn-default upload-button">Select File</button> \
+      <button class="btn btn-default clear-button" ng-show="imageUrl" ng-click="clear()">Clear</button> \
+      </div> \
+      <div ng-file-drop="onFileSelect($files)" ng-file-drag-over-class="optional-css-class-name-or-function" ng-show="dropSupported && !disabled" class="image-drop">{{ uploadStatus }}</div> \
       <div ng-file-drop-available="dropSupported=true" ng-show="!dropSupported">HTML5 Drop File is not supported!</div> \
       <input type="file" ng-file-select="onFileSelect($files)" ng-hide="disabled"> \
       <button ng-click="upload.abort()" class="cancel-button">Cancel Upload</button>',
@@ -50,7 +54,6 @@ angular.module('dashboard.directives.ModelFieldImage', [
                 if (data.fileUrl) scope.imageUrl = data.fileUrl;
                 if (data.imageUrl) scope.imageUrl = data.imageUrl;
               }
-              console.log("scope.imageUrl = " + scope.imageUrl);
             } else {
               //Media table reference (data is the ID reference)
               GeneralModelService.get(scope.options.model, data)
@@ -58,7 +61,7 @@ angular.module('dashboard.directives.ModelFieldImage', [
                 if (!response) return;  //in case http request was cancelled
                 //scope.options.urlKey defines the column field name for where the URL of the image is stored
                 scope.imageUrl = response[scope.options.urlKey];
-                if (!scope.imageUrl) scope.imageUrl = response["mediumUrl"]; //HACK FOR SMS (PROB SHOULD REMOVE) 
+                if (!scope.imageUrl) scope.imageUrl = response["mediumUrl"]; //HACK FOR SMS PROJECT (PROB SHOULD REMOVE)
               });
               
             }
@@ -86,7 +89,16 @@ angular.module('dashboard.directives.ModelFieldImage', [
         fileReader.onerror = function(error) {
           console.log(error);
         };
-        
+
+        scope.clear = function() {
+          //Clear out an existing selected image
+          scope.data = null; //null out the data field
+          if (scope.modelData.__ModelFieldImageData && scope.modelData.__ModelFieldImageData[scope.key]) {
+            //make sure to remove any pending image uploads for this image field
+            delete scope.modelData.__ModelFieldImageData[scope.key];
+          }
+          delete scope.imageUrl; //remove the preview image
+        };
         
         scope.onFileSelect = function($files) {
           //$files: an array of files selected, each file has name, size, and type.
@@ -109,7 +121,7 @@ angular.module('dashboard.directives.ModelFieldImage', [
           fileReader.readAsDataURL(selectedFile);
 
         };
-        
+
         scope.exportImages = function(callback) {
           var index = arguments[1];
           if (!index) index = 0;
@@ -278,10 +290,30 @@ angular.module('dashboard.directives.ModelFieldImage', [
             event.preventDefault();
           } 
         });
+
+        $document.on("dragover", function( event ) {
+          event.preventDefault();
+          //Show Drop Target
+          element.find(".image-drop").addClass("show-upload");
+          element.find(".input[type=file]").addClass("show-upload");
+          element.find(".button-menu").addClass("hide-menu");
+        });
+
+        $(window).on("mouseleave", function() {
+          //Hide Drop Target
+          element.find(".image-drop").removeClass("show-upload");
+          element.find(".input[type=file]").removeClass("show-upload");
+          element.find(".button-menu").removeClass("hide-menu");
+        });
+
         scope.$on('$destroy', function() {
           //event clean up
           $document.off("drop");
+          $document.off("dragover");
+          $(window).off("mouseleave");
         });
+
+
     }
   };
 })
