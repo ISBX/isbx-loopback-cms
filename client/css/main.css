@@ -4,6 +4,13 @@
   overflow: hidden;
   border-radius: 6px 6px 0 0;
 }
+.modal-header h4 {
+  float: left;
+}
+.modal-header .btn-group {
+  float: right;
+  margin-top: -5px;
+}
 .modal-body {
   background-color: #fff;
 }
