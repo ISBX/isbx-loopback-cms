@@ -21,8 +21,8 @@ angular.module('dashboard.directives.ModelFieldImage', [
     restrict: 'E',
     template: '<div class="image-container" style="background: no-repeat center center url(\'{{ imageUrl }}\'); background-size: contain;" ng-click="imageClick()"></div> \
       <div class="button-menu show-menu">\
-      <button class="btn btn-default upload-button">Select File</button> \
-      <button class="btn btn-default clear-button" ng-show="imageUrl" ng-click="clear()">Clear</button> \
+      <button class="btn btn-default upload-button" ng-hide="disabled">Select File</button> \
+      <button class="btn btn-default clear-button" ng-show="imageUrl && !disabled" ng-click="clear()">Clear</button> \
       </div> \
       <div ng-file-drop="onFileSelect($files)" ng-file-drag-over-class="optional-css-class-name-or-function" ng-show="dropSupported && !disabled" class="image-drop">{{ uploadStatus }}</div> \
       <div ng-file-drop-available="dropSupported=true" ng-show="!dropSupported">HTML5 Drop File is not supported!</div> \
