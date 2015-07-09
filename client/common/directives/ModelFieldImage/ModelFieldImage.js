@@ -20,11 +20,7 @@ angular.module('dashboard.directives.ModelFieldImage', [
   return {
     restrict: 'E',
     template: '<div class="image-container" style="background: no-repeat center center url(\'{{ imageUrl }}\'); background-size: contain;" ng-click="imageClick()"></div> \
-      <div class="button-menu show-menu">\
-      <button class="btn btn-default upload-button" ng-hide="disabled">Select File</button> \
-      <button class="btn btn-default clear-button" ng-show="imageUrl && !disabled" ng-click="clear()">Clear</button> \
-      </div> \
-      <div ng-file-drop="onFileSelect($files)" ng-file-drag-over-class="optional-css-class-name-or-function" ng-show="dropSupported && !disabled" class="image-drop">{{ uploadStatus }}</div> \
+      <div ng-file-drop="onFileSelect($files)" ng-file-drag-over-class="optional-css-class-name-or-function" ng-show="dropSupported && !disabled" class="file-drop">{{ uploadStatus }}</div> \
       <div ng-file-drop-available="dropSupported=true" ng-show="!dropSupported">HTML5 Drop File is not supported!</div> \
       <input type="file" ng-file-select="onFileSelect($files)" ng-hide="disabled"> \
       <button ng-click="upload.abort()" class="cancel-button">Cancel Upload</button>',
@@ -61,7 +57,7 @@ angular.module('dashboard.directives.ModelFieldImage', [
                 if (!response) return;  //in case http request was cancelled
                 //scope.options.urlKey defines the column field name for where the URL of the image is stored
                 scope.imageUrl = response[scope.options.urlKey];
-                if (!scope.imageUrl) scope.imageUrl = response["mediumUrl"]; //HACK FOR SMS PROJECT (PROB SHOULD REMOVE)
+                if (!scope.imageUrl) scope.imageUrl = response["mediumUrl"]; //HACK FOR SMS (PROB SHOULD REMOVE) 
               });
               
             }
