@@ -42,9 +42,38 @@
       font-size: 14px
       border-bottom: solid 1px #ddd
       background-gradient(top, #fafafa, 0%, #ededed, 100%, #ededed, 100%, #ededed, 100%)
+      .search-field-container
+        display: inline-block
+        position: absolute
+        top: 45px
+        padding: 0
+        border: none
+        background-color: transparent
+        right: 11px
+        .loading-spinner
+          display: inline-block
+          width: 16px
+          height: 16px
+          background: $loading-spinner
+          background-size: 16px 16px
+          vertical-align: middle
+          margin-right: 10px
+        input.search-field:disabled
+          color: #9499a1
+        input.search-field
+          height: 32px
+          border-radius: 4px
+          overflow: hidden
+          border: solid 1px #ddd
+          padding: 0 5px
+          color: rgb(51, 51, 51)
+          line-height: 20px
+          font-weight: normal
+          width: 188px
       .btn-group
-        position absolute
-        right 0
+        position: absolute
+        right: 0
+        top: 0
         button, a.btn
           height: 36px
           padding: 0 12px
@@ -74,7 +103,7 @@
     border: none
     border-radius 4px 4px 0px 0px
     -webkit-overflow-scrolling: auto
-    &.search
+    &.filter
       top: 90px
       .ngHeaderButton
         display: none
@@ -91,6 +120,12 @@
           overflow: hidden
           border: solid 1px #ddd
           padding: 0 5px
+    &.search
+      top: 90px
+      .ngHeaderButton
+        display: none
+      .ngColMenu
+        display: none !important
     .ngHeaderContainer
       border: solid 1px #dfdfdf
       overflow: hidden

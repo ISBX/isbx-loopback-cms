@@ -170,7 +170,7 @@ angular.module('dashboard.Dashboard.Model.Edit', [
               //Instead likely called from Modal Popup
               if (modalInstance) modalInstance.close();
             } else {
-              $state.go("dashboard.model.action.edit", { model: $scope.section.path, action: $scope.action.label, id:response[$scope.action.options.key] });
+              $state.go($state.current.name, { model: $scope.section.path, action: $scope.action.label, id:response[$scope.action.options.key] });
             }
           }
           if (modalInstance) modalInstance.close();

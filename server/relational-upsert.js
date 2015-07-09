@@ -41,19 +41,23 @@ var relationshipManyToManyKeys = [];
  *  The callback with [error, result] params
  */
 function upsert(data, callback) {
+  //console.log('upsert() data = ', data);
   var model = app.models[data.__model];
+
+  //console.log('model.definition.properties = ', model.definition.properties);
   if (!model) {
     var message = "model not found in post body __model = '"+data.__model+"'";
     console.error("ERROR: " + message);
     callback({ error: message });
     return;
   }
-  
+
   //Get all relationship keys by checking for nested objects
   var keys = Object.keys(data);
   relationshipKeys = [];
   relationshipManyToManyKeys = [];
   for (var i in keys) {
+    //console.log('upsert() key = ', keys[i]);
     var relationshipKey = keys[i];
     var relationshipData = data[relationshipKey];
     if (!relationshipData || typeof relationshipData !== 'object') continue;
@@ -65,11 +69,11 @@ function upsert(data, callback) {
       relationshipKeys.push(relationshipKey);
     }
   }
-  
+
   start(model, data, function(error, result) {
     callback(error, result);
   });
-  
+
 }
 
 /**
@@ -90,15 +94,15 @@ function start(model, data, callback) {
         //make sure data contains the primary key ID value
         var modelId = result[model.getIdName()];
         data[model.getIdName()] = modelId;
-        
-        //After upserting main model data, process all many-to-many relationship data last 
+
+        //After upserting main model data, process all many-to-many relationship data last
         index = 0;
         next(RELATIONSHIP_MANY, model, data, index, function(error, count) {
-          callback(null, result); //finished upserting all relationship data and model data 
+          callback(null, result); //finished upserting all relationship data and model data
         });
       }
     });
-    
+
   });
 }
 
@@ -112,7 +116,7 @@ function start(model, data, callback) {
  * @param callback
  */
 function next(processRelationshipType, model, data, index, callback) {
-  
+
   var length = processRelationshipType == RELATIONSHIP_SINGLE ? relationshipKeys.length : relationshipManyToManyKeys.length;
   if (index >= length) {
     //Finished processing all relationship data for the given type
@@ -128,8 +132,11 @@ function next(processRelationshipType, model, data, index, callback) {
   }
   var relationshipData = data[relationshipKey];
   var relationSettings = model.settings.relations[relationshipKey];
+
   if (!relationSettings) {
-    console.warn("WARNING: no relationship found for relationshipKey = " + relationshipKey);
+    if (model.definition.properties[relationshipKey].type.name !== 'GeoPoint') {
+      console.warn("WARNING: no relationship found for relationshipKey = " + relationshipKey);
+    }
     index++;
     next(processRelationshipType, model, data, index, callback);
     return;
@@ -143,7 +150,7 @@ function next(processRelationshipType, model, data, index, callback) {
   }
 
   if (processRelationshipType == RELATIONSHIP_SINGLE) {
-    //upsert the one-to-many relationship model data before upserting main model data 
+    //upsert the one-to-many relationship model data before upserting main model data
     relationshipModel.upsert(relationshipData, function(error, result) {
       if (error) {
         console.error(error);
@@ -169,15 +176,15 @@ function next(processRelationshipType, model, data, index, callback) {
         next(RELATIONSHIP_MANY, model, data, index, callback);
       }
     });
-    
+
   }
- 
+
 }
 
 /**
  * In the situation where a model contains an array of relationship data this method
  * will first remove all related records and insert new records. This is used in a
- * many-to-many relationship situation. 
+ * many-to-many relationship situation.
  * @param model
  *  The looback.io PersistedModel object
  * @param data
@@ -191,59 +198,111 @@ function next(processRelationshipType, model, data, index, callback) {
  * @param callback
  */
 function upsertManyToMany(model, data, relationshipKey, relationshipData, relationSettings, callback) {
-  if (!relationSettings.through) {
-    var message = "upsertManyToMany cannot proceed as no relations." + relationshipKey + ".through exists in " + model.name + " JSON definition";
-    console.error("ERROR: " + message);
-    callback({ error: message });
-    return;
-  }
-  
-  var junctionSettings = model.settings.relations[relationSettings.through];
-  if (!junctionSettings) junctionSettings = model.settings.relations[inflection.pluralize(relationSettings.through)];
-  if (!junctionSettings) {
-    var message = "upsertManyToMany cannot proceed as no model.settings.relations." + relationSettings.through + " or "+ inflection.pluralize(relationSettings.through) +" exists in " + model.name + " JSON definition";
-    console.error("ERROR: " + message);
-    callback({ error: message });
-    return;
-  }
-  
-  //Get the field key for the many-to-many relationship so we know what to insert into the Junction Table
-  var junctionModel = app.models[junctionSettings.model];
-  var junctionRelations = junctionModel.settings.relations;
+  var junctionSettings = null;
+  var junctionModel = null;
+  var junctionRelations = null;
   var junctionRelationIdKey = null;
-  var keys = Object.keys(junctionRelations);
-  for (var i in keys) {
-    var key = keys[i];
-    var junctionRelationshipSettings = junctionRelations[key];
-    if (junctionRelationshipSettings.model == relationSettings.model) {
-      junctionRelationIdKey = junctionRelationshipSettings.foreignKey;
-      break;
+  var keys = null;
+
+  if (!relationSettings && !relationSettings.through && (!model.settings.relations[relationSettings.through] || !model.settings.relations[inflection.pluralize(relationSettings.through)])) {
+    var message = "upsertManyToMany cannot proceed as no relations." + relationshipKey + " exists in " + model.name + " JSON definition";
+    console.error("ERROR: " + message);
+    callback({ error: message });
+    return;
+  }
+
+  if (relationSettings.through && (model.settings.relations[relationSettings.through] || model.settings.relations[inflection.pluralize(relationSettings.through)])) {
+    // Handles use case where 'through' model and its relationsSettings are defined in the model being evaulated (match model types through junctionSettings.model)
+    junctionSettings = model.settings.relations[relationSettings.through];
+    if (!junctionSettings) junctionSettings = model.settings.relations[inflection.pluralize(relationSettings.through)];
+    if (!junctionSettings) {
+      var message = "upsertManyToMany cannot proceed as no model.settings.relations." + relationSettings.through + " or "+ inflection.pluralize(relationSettings.through) +" exists in " + model.name + " JSON definition";
+      console.error("ERROR: " + message);
+      callback({ error: message });
+      return;
+    }
+
+    junctionModel = app.models[junctionSettings.model];
+    junctionRelations = junctionModel.settings.relations;
+    junctionRelationIdKey = null;
+    keys = Object.keys(junctionRelations);
+    for (var i in keys) {
+      var key = keys[i];
+      var junctionRelationshipSettings = junctionRelations[key];
+      if (junctionRelationshipSettings.model == relationSettings.model) {
+        junctionRelationIdKey = junctionRelationshipSettings.foreignKey;
+        break;
+      }
+    }
+  } else if (relationSettings.through && !model.settings.relations[relationSettings.through]) {
+    // Handles use case where 'through' model and its relationsSettings are NOT defined in the model being evaulated. (match model types using junctionSettings.through model)
+    if (!junctionSettings) junctionSettings = relationSettings;
+    if (!junctionSettings) {
+      var message = "upsertManyToMany cannot proceed as no model.settings.relations." + relationSettings.through + " or "+ inflection.pluralize(relationSettings.through) +" exists in " + model.name + " JSON definition";
+      console.error("ERROR: " + message);
+      callback({ error: message });
+      return;
+    }
+
+    junctionModel = app.models[junctionSettings.through];
+    junctionRelations = junctionModel.settings.relations;
+    junctionRelationIdKey = null;
+    keys = Object.keys(junctionRelations);
+    for (var i in keys) {
+      var key = keys[i];
+      var junctionRelationshipSettings = junctionRelations[key];
+      if (junctionRelationshipSettings.model == relationSettings.model) {
+        junctionRelationIdKey = junctionRelationshipSettings.foreignKey;
+        break;
+      }
+    }
+  } else if (!relationSettings.through) {
+    // Handles use case where NO 'through' model is defined but it's direct relationshsip is. (match foreighKeys using junctionSettings.model)
+    if (!junctionSettings) junctionSettings = relationSettings;
+    if (!junctionSettings) {
+      var message = "upsertManyToMany cannot proceed as no model.settings.relations." + relationSettings.model + " or "+ inflection.pluralize(relationSettings.model) +" exists in " + model.name + " JSON definition";
+      console.error("ERROR: " + message);
+      callback({ error: message });
+      return;
+    }
+
+    junctionModel = app.models[junctionSettings.model];
+    junctionRelations = junctionModel.settings.relations;
+    junctionRelationIdKey = null;
+    keys = Object.keys(junctionRelations);
+    for (var i in keys) {
+      var key = keys[i];
+      var junctionRelationshipSettings = junctionRelations[key];
+      if (junctionRelationshipSettings.foreignKey === relationSettings.foreignKey) {
+        junctionRelationIdKey = junctionRelationshipSettings.foreignKey;
+        break;
+      }
     }
   }
-  
+
   if (!junctionRelationIdKey) {
     var message = "upsertManyToMany cannot proceed as no relation named '" + relationSettings.model + "' exists in " + junctionSettings.model + " JSON definition";
     console.error("ERROR: " + message);
     callback({ error: message });
     return;
   }
-  
+
   //Get Junction Table's Primary Model ID Field Key
   var modelIdKey = model.getIdName();
   var junctionModelIdKey = junctionSettings.foreignKey;
   var modelId = data[modelIdKey];
-  
+
   if (!modelId) {
     var message = "upsertManyToMany cannot proceed as no data[modelIdKey] found for modelIdKey = '" + modelIdKey + "'";
     console.error("ERROR: " + message);
     callback({ error: message });
     return;
   }
-  
+
   //Get Relation Mode's Primary Model ID Field Key
   var relatedModel = app.models[relationSettings.model];
   var relationIdKey = relatedModel.getIdName();
-  
+
   //FIRST Delete Any existing Primary Model's records from junction table
   var where = {};
   where[junctionModelIdKey] = modelId;
@@ -254,8 +313,8 @@ function upsertManyToMany(model, data, relationshipKey, relationshipData, relati
     nextManyToMany(junctionModel, junctionModelIdKey, junctionRelationIdKey, relationIdKey, modelId, relationshipData, index, callback);
 
   });
-  
-  
+
+
 }
 
 /**
@@ -274,7 +333,7 @@ function nextManyToMany(junctionModel, junctionModelIdKey, junctionRelationIdKey
     callback(null, relationshipData.length);
     return;
   }
-  
+
   var data = relationshipData[index];
   if (data && data[relationIdKey]) {
     var junctionData = {};
@@ -300,7 +359,7 @@ function nextManyToMany(junctionModel, junctionModelIdKey, junctionRelationIdKey
   }
 }
 
-  
+
 module.exports.setLoopBack = function(loopback) {
   app = loopback;
 };

@@ -32,22 +32,25 @@ angular.module('dashboard.Dashboard.Model.List', [
   $scope.listTemplateUrl = '';
   $scope.totalServerItems = 0;
   $scope.isEditing = false;
+  $scope.isSearching = false;
+  $scope.query = '';
+  $scope.isLoading = false;
   if ($scope.action.options.sort) {
-	  //Custom Sort Override
-	  $scope.sortInfo = $scope.action.options.sort;
+    //Custom Sort Override
+    $scope.sortInfo = $scope.action.options.sort;
   } else {
-	  //Use default sort by key
-	  $scope.sortInfo = { fields: [$scope.action.options.key], directions: ["ASC"] };
+    //Use default sort by key
+    $scope.sortInfo = { fields: [$scope.action.options.key], directions: ["ASC"] };
   }
   $scope.filterOptions = {
-      filterText: "",
-      useExternalFilter: false
+    filterText: "",
+    useExternalFilter: false
   };
   $scope.pagingOptions = {
-      //Follow ng-grid pagination model
-      pageSizes: [25, 50, 100, 250, 500],
-      pageSize: $scope.action.options.pageSize ? $scope.action.options.pageSize : 25,
-      currentPage: 1 //1-based index
+    //Follow ng-grid pagination model
+    pageSizes: [25, 50, 100, 250, 500],
+    pageSize: $scope.action.options.pageSize ? $scope.action.options.pageSize : 25,
+    currentPage: 1 //1-based index
   };
   
   $scope.gridOptions = { 
@@ -93,10 +96,10 @@ angular.module('dashboard.Dashboard.Model.List', [
     //Check if Editable
     //NOTE: $scope.action.options.disableAdd determines if you can add a record or not
     if ($scope.action.options.editable) {
-    	$scope.gridOptions.enableCellEdit = true;
-    	$scope.gridOptions.enableCellEditOnFocus = false;
-    	$scope.gridOptions.enableCellSelection = true;
-    	$scope.gridOptions.enableRowSelection = false;
+      $scope.gridOptions.enableCellEdit = true;
+      $scope.gridOptions.enableCellEditOnFocus = false;
+      $scope.gridOptions.enableCellSelection = true;
+      $scope.gridOptions.enableRowSelection = false;
     }
 
     //Setup Data Query
@@ -121,7 +124,7 @@ angular.module('dashboard.Dashboard.Model.List', [
     //On Browser resize determine if optional columns should be hidden
     $scope.$grid = $(".grid");
     angular.element($window).bind("resize", function() {
-    	processWindowSize();
+      processWindowSize();
     });
     
     //Check if editing then show Save/Cancel buttons
@@ -141,25 +144,25 @@ angular.module('dashboard.Dashboard.Model.List', [
   }
 
   function getColumnDefinition() {
-	//Setup Columns in Grid
-	var columnRef = $scope.action.options.columnRef;
-	var columns = $scope.action.options.columns;
-	if (columnRef && typeof columnRef === 'object' && columnRef.label) {
-	  if (columnRef.path) {
-		//reference to another main-nav's sub-nav's columns :)
-		var section = _.find(Config.serverParams.nav, { path: columnRef.path });
-		var subnav = _.find(section.subnav, { label: columnRef.label });
-		columns = subnav.options.columns;
-	  } else {
-		//reference to another subnav's columns in the same section
-		var subnav = _.find($scope.section.subnav, { label: columnRef.label });
-		columns = subnav.options.columns;
-	        
-	  }
-	}
-	//Check column role access
-	columns = angular.copy(columns); //make copy
-	if (columns && $cookies.roles) {
+    //Setup Columns in Grid
+    var columnRef = $scope.action.options.columnRef;
+    var columns = $scope.action.options.columns;
+    if (columnRef && typeof columnRef === 'object' && columnRef.label) {
+      if (columnRef.path) {
+        //reference to another main-nav's sub-nav's columns :)
+        var section = _.find(Config.serverParams.nav, { path: columnRef.path });
+        var subnav = _.find(section.subnav, { label: columnRef.label });
+        columns = subnav.options.columns;
+      } else {
+        //reference to another subnav's columns in the same section
+        var subnav = _.find($scope.section.subnav, { label: columnRef.label });
+        columns = subnav.options.columns;
+      }
+    }
+
+    //Check column role access
+    columns = angular.copy(columns); //make copy
+    if (columns && $cookies.roles) {
       var roles = JSON.parse($cookies.roles);
       if (roles) {
         for (var i = 0; i < columns.length; i++) {
@@ -182,29 +185,29 @@ angular.module('dashboard.Dashboard.Model.List', [
           }
         }
       }
-	}
-	return columns; //assign the column definitions
+    }
+    return columns; //assign the column definitions
   }
   
   /**
    * Handles hiding optional columns identified in the config.json colunn definition
    */
   function processWindowSize() {
-	var $grid = $scope.$grid;
-  	var windowWidth = $window.innerWidth;
-	var averageColumnWidth = windowWidth / $scope.columnCount;
-	//console.log("windowWidth = " + windowWidth + "; columnCount = "+$scope.columnCount+"; averageColumnWidth = " + averageColumnWidth);
-	if (averageColumnWidth < 90 && !$grid.hasClass("hide-optional")) {
-		$grid.addClass("hide-optional");
-		//Remove optional columns
-		$scope.columns = $scope.columns.filter(function(column) { return !column.optional; });
-		//$scope.$digest();
-	} else if (averageColumnWidth >= 90 && $grid.hasClass("hide-optional")) {
-		$grid.removeClass("hide-optional");
-		//Display All Columns
-		$scope.columns = $scope.columns = getColumnDefinition();
-	}
-	  
+    var $grid = $scope.$grid;
+    var windowWidth = $window.innerWidth;
+    var averageColumnWidth = windowWidth / $scope.columnCount;
+    //console.log("windowWidth = " + windowWidth + "; columnCount = "+$scope.columnCount+"; averageColumnWidth = " + averageColumnWidth);
+
+    if (averageColumnWidth < 90 && !$grid.hasClass("hide-optional")) {
+      $grid.addClass("hide-optional");
+      //Remove optional columns
+      $scope.columns = $scope.columns.filter(function(column) { return !column.optional; });
+      //$scope.$digest();
+    } else if (averageColumnWidth >= 90 && $grid.hasClass("hide-optional")) {
+      $grid.removeClass("hide-optional");
+      //Display All Columns
+      $scope.columns = $scope.columns = getColumnDefinition();
+    }
   }
 
   /**
@@ -312,17 +315,38 @@ angular.module('dashboard.Dashboard.Model.List', [
       }
     }
     
-    //TODO: Figure out a better way to preserve state; the following
+    //TODO: Figure out a better way to preserve state; the following 
     $location.search("pageSize", $scope.pagingOptions.pageSize);
-    $location.search("currentPage", $scope.pagingOptions.currentPage);
-    delete $scope.sortInfo.columns; //cleanup sortInfo to declutter querystring
+    $location.search("currentPage", $scope.pagingOptions.currentPage); 
     $location.search("sortInfo", JSON.stringify($scope.sortInfo));
     $location.replace(); //replaces current history state rather then create new one when chaging querystring
+    return params;
+  }
+
+  function injectSearchParams(params) {
+    var searchFields = $scope.action.options.searchFields;
+    if (searchFields && searchFields.length == 1) {
+      var key = 'filter[where][' + searchFields[0] + '][like]';
+      params[key] = '%' + $scope.query + '%';
+    } else {
+      for (var x = 0; x < searchFields.length; x++) {
+        var key = 'filter[where][or][' + x + '][' + searchFields[x] + '][like]';
+        params[key] = '%' + $scope.query + '%';
+      }
+    }
+    //Debug testing only
+    //console.log('params = ', params);
+
     return params;
   }
   
   $scope.getTotalServerItems = function() {
     var params = setupPagination();
+
+    if ($scope.isSearching) {
+      params = injectSearchParams(params);
+    }
+
     GeneralModelService.count($scope.apiPath, params)
     .then(function(response) {
       if (!response) return; //in case http request was cancelled
@@ -333,6 +357,11 @@ angular.module('dashboard.Dashboard.Model.List', [
 
   $scope.loadItems = function() {
     var params = setupPagination();
+
+    if ($scope.isSearching) {
+      params = injectSearchParams(params);
+    }
+
     //Rudimentary Caching (could use something more robust here)
     var cacheKey = $scope.apiPath + JSON.stringify(params);
     if(localStorage[cacheKey]) {
@@ -344,9 +373,16 @@ angular.module('dashboard.Dashboard.Model.List', [
         console.warn("ModelList Cache is corupt for key = " + cacheKey);
       }
     }
+
+    if ($scope.isSearching) {
+      $scope.isLoading = true;
+    }
+
     GeneralModelService.list($scope.apiPath, params)
       .then(function(response) {
+        if ($scope.isSearching) $scope.isLoading = false;
         if (!response) return; //in case http request was cancelled
+        //console.log('response = ', response);
         //console.log(JSON.stringify(response, null,'  '));
         $scope.list = response;
         $scope.columnCount = $scope.list.length > 0 ? Object.keys($scope.list[0]).length : 0;
@@ -412,14 +448,14 @@ angular.module('dashboard.Dashboard.Model.List', [
    * When config.json specifies editable = true
    */
   $scope.clickAdd = function() {
-	//Add a blank row to the bottom of the Form List
-	  if ($scope.list && $scope.list.length > 0) {
-		  //Prevent creating a new row if last row is not populated
-		  //var keys = Object.keys($scope.list[$scope.list.length-1]);
-		  //if (keys.length == 0) return;
-	  }
-	  $scope.list.push({});
-	  startEdit();
+  //Add a blank row to the bottom of the Form List
+    if ($scope.list && $scope.list.length > 0) {
+      //Prevent creating a new row if last row is not populated
+      //var keys = Object.keys($scope.list[$scope.list.length-1]);
+      //if (keys.length == 0) return;
+    }
+    $scope.list.push({});
+    startEdit();
   };
   
   $scope.clickSaveEdit = function() {
@@ -775,6 +811,14 @@ angular.module('dashboard.Dashboard.Model.List', [
     }
     
   }
+
+  /**
+   * When the user searches a query in the list view
+   */
+  $scope.initSearch = function() {
+    $scope.isSearching = true;
+    init();
+  };
   
   init();
 })

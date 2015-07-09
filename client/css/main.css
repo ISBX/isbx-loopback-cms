@@ -4,13 +4,6 @@
   overflow: hidden;
   border-radius: 6px 6px 0 0;
 }
-.modal-header h4 {
-  float: left;
-}
-.modal-header .btn-group {
-  float: right;
-  margin-top: -5px;
-}
 .modal-body {
   background-color: #fff;
 }
@@ -126,26 +119,21 @@ model-field-image-edit .image-container {
   width: 160px;
   height: 160px;
   vertical-align: top;
-  margin-right: 8px;
+  margin-right: 20px;
   border: solid 1px #dedede;
   cursor: pointer;
 }
 model-field-image-edit input[type=file] {
-  margin-left: -124px;
+  margin-left: -160px;
   display: inline-block;
-  width: 120px;
-  height: 34px;
+  width: 160px;
+  height: 160px;
   vertical-align: top;
   opacity: 0;
   cursor: pointer;
 }
-model-field-image-edit input[type=file].show-upload {
-  margin-left: -160px;
-  width: 160px;
-  height: 160px;
-}
-model-field-image-edit .image-drop {
-  display: none;
+model-field-image-edit .file-drop {
+  display: inline-block;
   width: 160px;
   height: 160px;
   line-height: 160px;
@@ -154,24 +142,8 @@ model-field-image-edit .image-drop {
   border: dashed 6px #dedede;
   vertical-align: top;
 }
-model-field-image-edit .image-drop.show-upload {
-  display: inline-block;
-}
 model-field-image-edit .cancel-button {
   display: none;
-}
-model-field-image-edit .button-menu {
-  display: inline-block;
-}
-model-field-image-edit .button-menu.hide-menu {
-  display: none;
-}
-model-field-image-edit .upload-button {
-  width: 120px;
-}
-model-field-image-edit .clear-button {
-  display: block;
-  margin-top: 8px;
 }
 model-field-edit .checkbox-container input[type=checkbox] {
   margin: -2px 0 0 10px;
