@@ -137,7 +137,7 @@ angular.module('dashboard.Dashboard.Model.Edit', [
     for (var i in keys) {
       var key = keys[i];
       var property = $scope.model.properties[key];
-      if ((property && property.display) && (!$scope.data[key] || property.display.forceDefaultOnSave)) {
+      if ((property && property.display) && (typeof $scope.data[key] === 'undefined' || $scope.data[key] === null || property.display.forceDefaultOnSave)) {
         if (typeof property["default"] !== 'undefined') $scope.data[key] = property["default"];
         if (typeof property.display.evalDefault !=='undefined') $scope.data[key] = eval(property.display.evalDefault);
       }
