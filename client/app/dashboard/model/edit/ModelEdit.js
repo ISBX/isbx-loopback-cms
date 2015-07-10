@@ -264,7 +264,9 @@ angular.module('dashboard.Dashboard.Model.Edit', [
           delete $scope.data.__ModelFieldImageData; 
           
           $scope.status = "Saving...";
-          save();
+          save(function() {
+            $window.history.back();
+          });
         }, function(error) {
           console.log(error);
           if (error && error.message) {
@@ -279,7 +281,9 @@ angular.module('dashboard.Dashboard.Model.Edit', [
       
       
     } else {
-      save();
+      save(function() {
+        $window.history.back();
+      });
     }
     
 
