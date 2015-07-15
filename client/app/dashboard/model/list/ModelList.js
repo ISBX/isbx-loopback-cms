@@ -343,6 +343,11 @@ angular.module('dashboard.Dashboard.Model.List', [
   $scope.getTotalServerItems = function() {
     var params = setupPagination();
 
+    if($location.search().search && $location.search().search != '') {
+      $scope.isSearching = true;
+      $scope.query = $location.search().search;
+    }
+
     if ($scope.isSearching) {
       params = injectSearchParams(params);
     }
@@ -748,7 +753,12 @@ angular.module('dashboard.Dashboard.Model.List', [
     
     //Bind search filter input box if exists to maintain state when back button pressed
     $(".search .ngColMenu input").on("keyup", function() {
-      //console.log("filter text change: " + $(this).val());
+      $location.search("search", $(this).val());
+      $location.replace(); //replaces current history state rather then create new one when changing querystring
+    });
+
+    //Bind search filter input box if exists to maintain state when back button pressed
+    $(".grid-container.list input.search-field").on("keyup", function() {
       $location.search("search", $(this).val());
       $location.replace(); //replaces current history state rather then create new one when changing querystring
     });
