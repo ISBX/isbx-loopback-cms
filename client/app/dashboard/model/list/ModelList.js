@@ -132,7 +132,7 @@ angular.module('dashboard.Dashboard.Model.List', [
       startEdit();
     });
     
-    $scope.$on('ModelListLoadItems', function() {
+    $scope.$on('ModelListLoadItems', function(event, args) {
       $scope.loadItems();
     });
 
