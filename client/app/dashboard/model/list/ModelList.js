@@ -133,11 +133,7 @@ angular.module('dashboard.Dashboard.Model.List', [
     });
     
     $scope.$on('ModelListLoadItems', function(event, args) {
-      if(args.hardReload) {
-        $scope.loadItems(args.hardReload);
-      } else {
-        $scope.loadItems();
-      }
+      $scope.loadItems();
     });
 
     if (/(iPad|iPhone|iPod|Android)/g.test( navigator.userAgent ))  {
@@ -359,7 +355,7 @@ angular.module('dashboard.Dashboard.Model.List', [
     });  
   };
 
-  $scope.loadItems = function(hardReload) {
+  $scope.loadItems = function() {
     var params = setupPagination();
 
     if ($scope.isSearching) {
@@ -368,7 +364,8 @@ angular.module('dashboard.Dashboard.Model.List', [
 
     //Rudimentary Caching (could use something more robust here)
     var cacheKey = $scope.apiPath + JSON.stringify(params);
-    if(localStorage[cacheKey] && !hardReload) {
+    if(localStorage[cacheKey]) {
+      console.log('loading with from cache!!!');
       try {
         $scope.list = JSON.parse(localStorage[cacheKey]); //load from cache
         $scope.columnCount = $scope.list.length > 0 ? Object.keys($scope.list[0]).length : 0;
