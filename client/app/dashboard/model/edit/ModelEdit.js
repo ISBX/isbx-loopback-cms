@@ -174,7 +174,7 @@ angular.module('dashboard.Dashboard.Model.Edit', [
             }
           }
           if (modalInstance) modalInstance.close();
-        }, function(error) {
+          }, function(error) {
           if (typeof error === 'object' && error.message) {
             alert(error.message);
           } else if (typeof error === 'object' && error.error && error.error.message) {

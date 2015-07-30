@@ -65,6 +65,12 @@ angular.module('dashboard.Dashboard', [
       }
     }
 
+    $scope.$watch(function() {
+      return $location.path();
+    }, function(){
+      $scope.locationPath = $location.path();
+    })
+
   }
 
   /*

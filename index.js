@@ -192,17 +192,23 @@ function setupAuthModelRoleRelationship(loopbackApplication, config) {
   var User = loopbackApplication.models[authModelName]; //ISBX projects uses "Account" model that overrides the User base model
   var ACL = loopbackApplication.models.ACL;
   if (!User) User = loopbackApplication.models.User; //default base to base User class
-  RoleMapping.belongsTo(Role, {foreignKey: 'roleId', as: "Role"});
-  RoleMapping.belongsTo(Role, {foreignKey: 'roleId', as: "role"}); //issue with hasManyThrough looks for lowercase account
-  RoleMapping.belongsTo(User, {foreignKey: 'principalId', as: User.modelName});
-  RoleMapping.belongsTo(User, {foreignKey: 'principalId', as: User.modelName.toLowerCase()}); //issue with hasManyThrough looks for lowercase account
-  Role.hasMany(RoleMapping, {foreignKey: 'roleId', as: 'RoleMappings'});
-  User.hasMany(RoleMapping, {foreignKey: 'principalId', as: "RoleMappings"});
-  User.hasMany(Role, {through: RoleMapping, foreignKey: 'principalId', as : "Roles"});
-  Role.hasMany(User, {through: RoleMapping, as: inflection.pluralize(User.modelName)});
+  if (RoleMapping) {
+    RoleMapping.belongsTo(Role, {foreignKey: 'roleId', as: "Role"});
+    RoleMapping.belongsTo(Role, {foreignKey: 'roleId', as: "role"}); //issue with hasManyThrough looks for lowercase account
+    RoleMapping.belongsTo(User, {foreignKey: 'principalId', as: User.modelName});
+    RoleMapping.belongsTo(User, {foreignKey: 'principalId', as: User.modelName.toLowerCase()}); //issue with hasManyThrough looks for lowercase account
+  }
+  if (Role) {
+    Role.hasMany(RoleMapping, {foreignKey: 'roleId', as: 'RoleMappings'});
+  }
+  if (User) {
+    User.hasMany(RoleMapping, {foreignKey: 'principalId', as: "RoleMappings"});
+    User.hasMany(Role, {through: RoleMapping, foreignKey: 'principalId', as : "Roles"});
+  }
+  if (Role) Role.hasMany(User, {through: RoleMapping, as: inflection.pluralize(User.modelName)});
 
   //Force ACL for default SuperAdmin Role
-  ACL.create({ model: "User", property: "*", accessType: "*", permission: "ALLOW", "principalType": "ROLE", "principalId": "SuperAdmin" });
+  if (ACL) ACL.create({ model: "User", property: "*", accessType: "*", permission: "ALLOW", "principalType": "ROLE", "principalId": "SuperAdmin" });
 
   //Need the below for relational-upsert.js
   User.settings.relations.RoleMappings = {
