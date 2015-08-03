@@ -46,9 +46,23 @@ angular.module('dashboard.services.FileUpload', [
         deferred.notify(progress);
       }).success(function(data) {
         //success
+        var locationUrl;
         var xmldoc = new DOMParser().parseFromString(data, 'text/xml');
-        var locationPath = xmldoc.evaluate('/PostResponse/Location', xmldoc, null, XPathResult.STRING_TYPE, null);
-        var locationUrl = locationPath.stringValue;
+
+        try {
+          var locationPath = xmldoc.evaluate('/PostResponse/Location', xmldoc, null, XPathResult.STRING_TYPE, null);
+          locationUrl = locationPath.stringValue;
+        } catch(e) { // IE
+          var list = xmldoc.documentElement.childNodes;
+          for (var i=0; i<list.length; i++) {
+            var node = list[i];
+            if (node.nodeName == 'Location') {
+              locationUrl = node.firstChild.nodeValue;
+              break;
+            }
+          }
+        }
+
         deferred.resolve({
           filename: file.name,
           size: file.size,
@@ -197,9 +211,23 @@ angular.module('dashboard.services.FileUpload', [
         deferred.notify(progress);
       }).success(function(data) {
         //success
+        var locationUrl;
         var xmldoc = new DOMParser().parseFromString(data, 'text/xml');
-        var locationPath = xmldoc.evaluate('/PostResponse/Location', xmldoc, null, XPathResult.STRING_TYPE, null);
-        var locationUrl = locationPath.stringValue;
+
+        try {
+          var locationPath = xmldoc.evaluate('/PostResponse/Location', xmldoc, null, XPathResult.STRING_TYPE, null);
+          locationUrl = locationPath.stringValue;
+        } catch(e) { // IE
+          var list = xmldoc.documentElement.childNodes;
+          for (var i=0; i<list.length; i++) {
+            var node = list[i];
+            if (node.nodeName == 'Location') {
+              locationUrl = node.firstChild.nodeValue;
+              break;
+            }
+          }
+        }
+
         if (fileKey) {
           if (exportKey) {
             if (!imageUploadResults[fileKey]) imageUploadResults[fileKey] = {};
