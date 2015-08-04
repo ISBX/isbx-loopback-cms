@@ -25,6 +25,7 @@ angular.module('dashboard.Dashboard.Model.List', [
 .controller('ModelListCtrl', function ModelListCtrl($scope, $cookies, $timeout, $state, $location, $window, $modal, Config, GeneralModelService, $location) {
   
   var modalInstance = null;
+  $scope.moment = moment;
   $scope.columnCount = 0;
   $scope.list = [];
   $scope.selected = [];
