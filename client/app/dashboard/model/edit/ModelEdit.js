@@ -32,6 +32,9 @@ angular.module('dashboard.Dashboard.Model.Edit', [
     $scope.hideSideMenu();
     if ($window.ga) $window.ga('send', 'pageview', { page: $location.path() });
 
+    if (!$scope.action) $scope.action = {};
+    if (!$scope.action.options) $scope.action.options = { model: $stateParams.model, key: $stateParams.key };
+
     $scope.model = Config.serverParams.models[$scope.action.options.model];
 
     //Make Key field readonly
