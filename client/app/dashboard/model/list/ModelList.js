@@ -384,7 +384,8 @@ angular.module('dashboard.Dashboard.Model.List', [
       if (button.options) {
         if (button.options.model) $scope.action.options.model = button.options.model;
         if (button.options.key) $scope.action.options.key = button.options.key;
-        if (button.returnAfterEdit) $scope.action.options.returnAfterEdit = button.returnAfterEdit; 
+        if (button.options.display) $scope.action.options.display = button.options.display;
+        if (button.returnAfterEdit) $scope.action.options.returnAfterEdit = button.returnAfterEdit;
         if (button.options.data) {
           var keys = Object.keys(button.options.data);
           for (var i in keys) {

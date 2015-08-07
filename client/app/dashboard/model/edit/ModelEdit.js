@@ -170,7 +170,7 @@ angular.module('dashboard.Dashboard.Model.Edit', [
               //Instead likely called from Modal Popup
               if (modalInstance) modalInstance.close();
             } else {
-              $state.go("dashboard.model.action.edit", { model: $scope.section.path, action: $scope.action.label, id:response[$scope.action.options.key] });
+              $state.go($scope.section.state ? $scope.section.state : "dashboard.model.action.edit", { model: $scope.section.path, action: $scope.action.label, id:response[$scope.action.options.key] });
             }
           }
           if (modalInstance) modalInstance.close();
@@ -198,8 +198,6 @@ angular.module('dashboard.Dashboard.Model.Edit', [
    * Check to see if any file upload functionality exist and upload files first then call to save the model data
    */
   $scope.clickSaveModel = function(data) {
-    //console.log("data = " + JSON.stringify(data, null, '  '));
-    
     $scope.status = "Saving...";
     $scope.progress = 0.0;
     modalInstance = $modal.open({
