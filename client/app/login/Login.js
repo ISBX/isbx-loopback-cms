@@ -29,7 +29,11 @@ angular.module('dashboard.Login', [
         $state.go('dashboard');
       })
       .catch(function(response) {
-        alert("Invalid login.");
+        if (response && response[0] && response[0].error && response[0].error.message) {
+          alert(response[0].error.message);
+        } else {
+          alert("Invalid login.");
+        }
       });
   }
   
