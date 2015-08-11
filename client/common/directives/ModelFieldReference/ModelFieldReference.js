@@ -32,7 +32,7 @@ angular.module('dashboard.directives.ModelFieldReference', [
     } else {
       //single-select
       template = '\
-      <ui-select ng-model="item.selected" on-select="onSelect($item, $model)" ng-required="ngRequired" ng-disabled="disabled" > \
+      <ui-select ng-model="selected.item" on-select="onSelect($item, $model)" ng-required="ngRequired" ng-disabled="disabled" > \
       <ui-select-match placeholder="{{ options.placeholder }}">'+ matchTemplate +'</ui-select-match> \
       <ui-select-choices repeat="item in list" refresh="refreshChoices($select.search)" refresh-delay="200">' + choiceTemplate + '</ui-select-choices> \
       </ui-select>';
@@ -55,7 +55,7 @@ angular.module('dashboard.directives.ModelFieldReference', [
         
         scope.selected= {};
         scope.selected.items = []; //for multi-select
-        scope.selected.item = {}; //for single select
+        scope.selected.item = null; //for single select; initialize to null so placeholder is displayed
         scope.list = [];
 
         function replaceSessionVariables(string) {
