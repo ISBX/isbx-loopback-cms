@@ -134,7 +134,7 @@ angular.module('dashboard.Dashboard.Model.List', [
       $scope.getTotalServerItems(); //make sure to get the total server items and then reload data
     });
 
-    if (/(iPad|iPhone|iPod|Android)/g.test( navigator.userAgent ))  {
+    if (/(iPad|iPhone|iPod|Android)/g.test( navigator.userAgent ) || $scope.action.options.flexibleHeight)  {
       //For mobile let the page scroll rather just the ng-grid (Also see mouse binding details below for mobile mobile tweaks)
       $scope.gridOptions.plugins = [new ngGridFlexibleHeightPlugin()];
     }
@@ -327,6 +327,12 @@ angular.module('dashboard.Dashboard.Model.List', [
     GeneralModelService.count($scope.apiPath, params)
     .then(function(response) {
       if (!response) return; //in case http request was cancelled
+      //Check if response is an array or object
+      if (response instanceof Array && response.length > 0) response = response[0];
+      var keys = Object.keys(response);
+      if (!response.count && keys.length > 0) {
+        response.count = response[keys[0]]; //grab first key as the count if count property doesn't exist
+      }
       $scope.totalServerItems = response.count;
       $scope.loadItems();
     });  
@@ -699,7 +705,7 @@ angular.module('dashboard.Dashboard.Model.List', [
     }
 
     //For Mobile let entire page scroll
-    if (/(iPad|iPhone|iPod|Android)/g.test( navigator.userAgent ))  {
+    if (/(iPad|iPhone|iPod|Android)/g.test( navigator.userAgent ) || $scope.action.options.flexibleHeight)  {
       $(".model-list .grid-container").css({overflow: "visible"});
       $(".model-list .grid").css({ bottom: "auto" });
       $(".model-list .ngFooterPanel").css({position: "static", bottom: "auto"});
