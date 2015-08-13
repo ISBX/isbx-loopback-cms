@@ -257,6 +257,13 @@ model-field-edit .jslider .jslider-pointer {
 .model-list .grid-container.flexible {
   overflow: visible;
 }
+.model-list .grid-container.flexible h2 {
+  padding-right: 0;
+}
+.model-list .grid-container.flexible h2 .btn-group {
+  position: static;
+  float: right;
+}
 .model-list .grid-container.list {
   bottom: 0;
   border-radius: 4px 4px 0px 0px;

@@ -139,6 +139,11 @@ angular.module('dashboard.Dashboard.Model.List', [
       $scope.gridOptions.plugins = [new ngGridFlexibleHeightPlugin()];
     }
 
+    if ($scope.action.options.allowCSVExport) {
+      if (!$scope.gridOptions.plugins) $scope.gridOptions.plugins = [];
+      $scope.gridOptions.plugins.push(new ngGridCsvExportPlugin());
+    }
+
   }
 
   function getColumnDefinition() {
