@@ -254,6 +254,9 @@ model-field-edit .jslider .jslider-pointer {
   left: 30px;
   right: 30px;
 }
+.model-list .grid-container.flexible {
+  overflow: visible;
+}
 .model-list .grid-container.list {
   bottom: 0;
   border-radius: 4px 4px 0px 0px;

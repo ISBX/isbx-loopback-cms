@@ -706,7 +706,7 @@ angular.module('dashboard.Dashboard.Model.List', [
 
     //For Mobile let entire page scroll
     if (/(iPad|iPhone|iPod|Android)/g.test( navigator.userAgent ) || $scope.action.options.flexibleHeight)  {
-      $(".model-list .grid-container").css({overflow: "visible"});
+      $(".model-list .grid-container").addClass("flexible");
       $(".model-list .grid").css({ bottom: "auto" });
       $(".model-list .ngFooterPanel").css({position: "static", bottom: "auto"});
       //$scope.gridOptions.plugins = [new ngGridFlexibleHeightPlugin()];
