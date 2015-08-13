@@ -190,7 +190,6 @@ function setupAuthModelRoleRelationship(loopbackApplication, config) {
   var RoleMapping = loopbackApplication.models.RoleMapping; //built-in loopback Model
   var Role = loopbackApplication.models.Role; //built-in loopback Model
   var User = loopbackApplication.models[authModelName]; //ISBX projects uses "Account" model that overrides the User base model
-  var ACL = loopbackApplication.models.ACL;
   if (!User) User = loopbackApplication.models.User; //default base to base User class
   if (RoleMapping) {
     RoleMapping.belongsTo(Role, {foreignKey: 'roleId', as: "Role"});
@@ -206,9 +205,6 @@ function setupAuthModelRoleRelationship(loopbackApplication, config) {
     User.hasMany(Role, {through: RoleMapping, foreignKey: 'principalId', as : "Roles"});
   }
   if (Role) Role.hasMany(User, {through: RoleMapping, as: inflection.pluralize(User.modelName)});
-
-  //Force ACL for default SuperAdmin Role
-  if (ACL) ACL.create({ model: "User", property: "*", accessType: "*", permission: "ALLOW", "principalType": "ROLE", "principalId": "SuperAdmin" });
 
   //Need the below for relational-upsert.js
   User.settings.relations.RoleMappings = {
