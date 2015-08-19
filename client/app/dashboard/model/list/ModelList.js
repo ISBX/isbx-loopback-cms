@@ -626,7 +626,6 @@ angular.module('dashboard.Dashboard.Model.List', [
   $scope.$watch("selected", function(newVal, oldVal) {
     if (newVal !== oldVal && newVal.length > 0 && !$scope.action.options.editable) {
       if ($scope.action.options.selectedState) {
-        console.log("newVal", newVal);
         $state.go($scope.action.options.selectedState.stateName || "dashboard.model.action.edit", { model: $scope.action.options.selectedState.stateModel || $scope.section.path, key: $scope.action.options.key, action: $scope.action.options.selectedState.stateAction || $scope.action.label, id: newVal[0][$scope.action.options.selectedState.stateId || $scope.action.options.key] });
       } else {
         $state.go("dashboard.model.action.edit", { model: $scope.section.path, key: $scope.action.options.key, action: $scope.action.label, id: newVal[0][$scope.action.options.key] });
