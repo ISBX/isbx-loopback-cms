@@ -364,6 +364,7 @@ angular.module('dashboard.Dashboard.Model.List', [
         $scope.columnCount = $scope.list.length > 0 ? Object.keys($scope.list[0]).length : 0;
         localStorage[cacheKey] = JSON.stringify(response); //assign to cache
         processWindowSize(); //on first load check window size to determine if optional columns should be displayed
+        $scope.$emit("ModelListLoadItemsLoaded");
       });  
   };
   
