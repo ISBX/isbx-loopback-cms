@@ -100,7 +100,7 @@ angular.module('dashboard.directives.ModelFieldReference', [
 //          console.log("scope.field = " + JSON.stringify(scope.field, null, '  '));
           var model = Config.serverParams.models[scope.options.model];
           var params = { 'filter[limit]': 100 }; //limit only 100 items in drop down list
-          params['filter[where]['+scope.options.searchField+'][like]'] = search + "%";
+          params['filter[where]['+scope.options.searchField+'][like]'] = "%" + search + "%";
           if (scope.options.where) {
             //Add additional filtering on reference results
             var keys = Object.keys(scope.options.where);
