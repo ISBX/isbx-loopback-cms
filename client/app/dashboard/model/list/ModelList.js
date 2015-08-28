@@ -344,6 +344,7 @@ angular.module('dashboard.Dashboard.Model.List', [
   };
 
   $scope.loadItems = function() {
+    $scope.$emit("ModelListLoadItemsLoading");
     var params = setupPagination();
     //Rudimentary Caching (could use something more robust here)
     var cacheKey = $scope.apiPath + JSON.stringify(params);
