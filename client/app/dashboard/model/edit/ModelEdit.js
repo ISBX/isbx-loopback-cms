@@ -27,8 +27,14 @@ angular.module('dashboard.Dashboard.Model.Edit', [
 .controller('ModelEditCtrl', function ModelEditCtrl($scope, $cookies, $stateParams, $state, $window, $modal, Config, GeneralModelService, FileUploadService, $location) {
 
   var modalInstance = null;
+  var deleteConfirmationMessage = '';
       
   function init() {
+    deleteConfirmationMessage = 'Are you sure you want to delete?';
+    if ($scope.config && $scope.config['deleteMessage'] != '') {
+      deleteConfirmationMessage = $scope.config['deleteMessage'];
+    }
+
     $scope.hideSideMenu();
     if ($window.ga) $window.ga('send', 'pageview', { page: $location.path() });
 
@@ -287,7 +293,7 @@ angular.module('dashboard.Dashboard.Model.Edit', [
   };
   
   $scope.clickDeleteModel = function(data) {
-    if (!confirm("Are you sure you want to delete?")) return;
+    if (!confirm(deleteConfirmationMessage)) return;
     var id = data[$scope.action.options.key];
     if ($scope.model.options && $scope.model.options.softDeleteProperty) {
       //Soft Delete
