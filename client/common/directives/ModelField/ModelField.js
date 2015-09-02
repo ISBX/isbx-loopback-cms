@@ -71,15 +71,16 @@ angular.module('dashboard.directives.ModelField', [
           <div class="col-sm-10"> \
             <p class="date-picker input-group"> \
               <input type="text" class="form-control" \
-              control="test"\
+              control="dateControl"\
               ng-model="data[key]" \
+              default-date="{{data[key]}}" \
               ng-format="display.options.format" \
               ng-view-mode="display.options.viewMode" \
               ng-required="{{ model.properties[key].required }}" ng-disabled="{{ display.readonly }}" \
               data-date-time-picker \
                /> \
               <span class="input-group-btn"> \
-                <button type="button" class="btn btn-default" ng-click="test.show()" ng-disabled="{{ display.readonly }}"><i class="fa fa-calendar"></i></button> \
+                <button type="button" class="btn btn-default" ng-click="dateControl.show()" ng-disabled="{{ display.readonly }}"><i class="fa fa-calendar"></i></button> \
               </span>\
             </p> \
             <div class="model-field-description" ng-if="display.description">{{ display.description }}</div>\
