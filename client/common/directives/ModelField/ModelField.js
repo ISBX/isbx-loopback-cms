@@ -31,7 +31,7 @@ angular.module('dashboard.directives.ModelField', [
 })
 
 .directive('modelFieldEdit', function($compile, $cookies) {
-  function getTemplate(type) {
+  function getTemplate(type, scope) {
     var template = '';
     switch(type) {
       case 'reference':
@@ -98,10 +98,15 @@ angular.module('dashboard.directives.ModelField', [
           </div>';
         break;
       case 'select':
+        var ngOptions = 'key as value for (key, value) in display.options';
+        if (scope.display.options instanceof Array) {
+          //Handle when options is a an array vs key/value pair
+          ngOptions = 'value as value for value in display.options';
+        }
         //NOTE: need to add empty <option> element to prevent weird AngularJS select issue when handling first selection
         template = '<label class="col-sm-2 control-label">{{ display.label || key }}:</label>\
           <div class="col-sm-10">\
-            <select ng-model="data[key]" ng-options="key as value for (key, value) in display.options" ng-required="{{ model.properties[key].required }}" class="field form-control" ng-disabled="{{ display.readonly }}"><option value=""></option></select>\
+            <select ng-model="data[key]" ng-options="'+ngOptions+'" ng-required="{{ model.properties[key].required }}" class="field form-control" ng-disabled="{{ display.readonly }}"><option value=""></option></select>\
             <div class="model-field-description" ng-if="display.description">{{ display.description }}</div>\
           </div>';
         break;
@@ -287,7 +292,7 @@ angular.module('dashboard.directives.ModelField', [
         if (property.display.type == "custom") {
           element.html(property.display.editTemplate).show();
         } else {
-          element.html(getTemplate(property.display.type)).show();
+          element.html(getTemplate(property.display.type, scope)).show();
         }
         $compile(element.contents())(scope);
 
