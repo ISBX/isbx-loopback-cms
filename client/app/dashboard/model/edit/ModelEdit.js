@@ -94,8 +94,6 @@ angular.module('dashboard.Dashboard.Model.Edit', [
    * Performs call to loopback to save the model data
    */
   function save(callback) {
-    console.log("$scope.data", $scope.data);
-    return;
     var id = $scope.data[$scope.action.options.key];
     GeneralModelService.saveWithFiles($scope.model.name, id, $scope.data)
       .then(function(response) {
