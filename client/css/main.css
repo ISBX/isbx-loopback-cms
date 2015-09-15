@@ -88,6 +88,10 @@
 .multi-select .select-item .checkbox-label {
   font-weight: 400;
 }
+model-field-reference-edit {
+  display: block;
+  border-radius: 4px;
+}
 model-field-reference-edit .close {
   padding-top: 2px;
 }
