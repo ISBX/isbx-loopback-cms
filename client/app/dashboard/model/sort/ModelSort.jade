@@ -1,6 +1,6 @@
 .model-sort(ng-controller="ModelSortCtrl")
 
-  h1 {{ section.label }} <i class="fa fa-chevron-right spacer"></i> {{ action.label }}
+  h1(ng-hide="action.options.hideHeader")  {{ section.label }} <i class="fa fa-chevron-right spacer"></i> {{ action.label }}
 
   ul(ui-sortable, ng-model="list")
     li(ng-repeat="item in list") 

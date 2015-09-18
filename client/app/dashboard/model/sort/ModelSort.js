@@ -82,7 +82,11 @@ angular.module('dashboard.Dashboard.Model.Sort', [
   };
 
   $scope.edit = function(item) {
-    $state.go("dashboard.model.action.edit", { model: $scope.section.path, action: $scope.action.label, id: item[$scope.action.options.key] });
+    if ($scope.action.options.onEdit) {
+      $scope.action.options.onEdit(item[$scope.action.options.key]);
+    } else {
+      $state.go("dashboard.model.action.edit", { model: $scope.section.path, action: $scope.action.label, id: item[$scope.action.options.key] });
+    }
   };
   
   $scope.saveSort = function() {
