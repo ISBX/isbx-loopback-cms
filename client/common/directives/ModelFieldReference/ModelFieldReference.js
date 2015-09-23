@@ -161,12 +161,28 @@ angular.module('dashboard.directives.ModelFieldReference', [
             if (!sourceId) {
               return;
             }
-            unwatch(); //due to late binding need to unwatch here 
+            unwatch(); //due to late binding need to unwatch here
             GeneralModelService.getMany(sourceModelName, sourceId, scope.options.relationship)
             .then(function(response) {
               if (!response) return;  //in case http request was cancelled
-              scope.selected.items = response;
-              scope.list = response;
+              if (scope.options.api && response.length > 0) {
+                //If custom API is provided then use it
+                var params = {filter: { where: {}}};
+                params.filter.where[scope.options.key] = {inq: []};
+                for (var i in response) {
+                  var item = response[i];
+                  params.filter.where[scope.options.key].inq.push(item[scope.options.key]);
+                }
+                apiPath = replaceSessionVariables(scope.options.api);
+                GeneralModelService.list(apiPath, params).then(function(response) {
+                  if (!response) return;  //in case http request was cancelled
+                  scope.selected.items = response;
+                  scope.list = response;
+                });
+              } else {
+                scope.selected.items = response;
+                scope.list = response;
+              }
             });
             
           } else if (scope.data && scope.options && scope.options.model) {
