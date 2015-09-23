@@ -2,6 +2,7 @@ angular.module('dashboard.directives.ModelField', [
   'dashboard.directives.ModelFieldImage', 
   'dashboard.directives.ModelFieldFile', 
   'dashboard.directives.ModelFieldReference',
+  'dashboard.directives.ModelFieldReferenceSort',
   'dashboard.directive.DateTimePicker',
   'ngCookies',
   'ngSlider'
@@ -39,6 +40,18 @@ angular.module('dashboard.directives.ModelField', [
         template = '<label class="col-sm-2 control-label">{{ display.label || key }}:</label> \
           <div class="col-sm-10"> \
             <model-field-reference-edit key="key" property="property" options="display.options" model-data="data" ng-model="data[key]" class="field" ng-required="{{ model.properties[key].required }}" ng-disabled="display.readonly"  /> \
+            <div class="model-field-description" ng-if="display.description">{{ display.description }}</div>\
+          </div> \
+          <div class="col-sm2"></div> \
+          <div class="col-sm-10"> \
+            <div class="model-field-description" ng-if="display.description">{{ display.description }}</div>\
+          </div>';
+        break;
+      case 'reference-sort':
+        // depends on directive modelFieldReferenceSortEdit
+        template = '<label class="col-sm-2 control-label">{{ display.label || key }}:</label> \
+          <div class="col-sm-10"> \
+            <model-field-reference-sort-edit key="key" property="property" options="display.options" model-data="data" ng-model="data[key]" class="field" ng-required="{{ model.properties[key].required }}" ng-disabled="display.readonly"  /> \
             <div class="model-field-description" ng-if="display.description">{{ display.description }}</div>\
           </div> \
           <div class="col-sm2"></div> \

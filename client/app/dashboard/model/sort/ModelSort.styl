@@ -1,4 +1,4 @@
-.model-sort
+.model-sort, model-field-reference-sort-edit
   min-width: 320px
   h1
     margin: 10px 0
@@ -38,18 +38,28 @@
       .action
         float: right
         a
+          display: inline-block
           cursor: pointer
           text-align: center
         a.up
-          display: inline-block
           width: 32px
         a.down
-          display: inline-block
           width: 32px
         a.edit
-          display: inline-block
           width: 55px
+        a.remove
+          width 32px
+          color darkred
+          &:hover
+            color red
     li:last-child
       border-width: 1px 1px
   .save-sort-button
     margin: 20px 10px
+
+model-field-reference-sort-edit
+  ul
+    margin 10px 0
+    .sortable-placeholder
+      height 44px
+      background-color #f3f3f3

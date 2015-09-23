@@ -1,7 +1,7 @@
 {
   "author": "ISBX",
   "name": "isbx-loopback-cms",
-  "version": "0.0.11",
+  "version": "0.0.12",
   "main": "index.js",
   "licenses": {
     "type": "MIT"
