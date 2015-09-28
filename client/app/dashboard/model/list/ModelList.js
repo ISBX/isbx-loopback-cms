@@ -23,7 +23,8 @@ angular.module('dashboard.Dashboard.Model.List', [
 })
 
 .controller('ModelListCtrl', function ModelListCtrl($scope, $cookies, $timeout, $state, $location, $window, $modal, Config, GeneralModelService, $location) {
-  
+
+  var isFirstLoad = true;
   var modalInstance = null;
   $scope.moment = moment;
   $scope.columnCount = 0;
@@ -321,8 +322,9 @@ angular.module('dashboard.Dashboard.Model.List', [
     //TODO: Figure out a better way to preserve state; the following
     $location.search("pageSize", $scope.pagingOptions.pageSize);
     $location.search("currentPage", $scope.pagingOptions.currentPage);
-    delete $scope.sortInfo.columns; //cleanup sortInfo to declutter querystring
-    $location.search("sortInfo", JSON.stringify($scope.sortInfo));
+    var sortInfo = angular.copy($scope.sortInfo); //make a copy of sortInfo so that the watch statement doesn't get called
+    delete sortInfo.columns; //cleanup sortInfo to declutter querystring
+    $location.search("sortInfo", JSON.stringify(sortInfo));
     $location.replace(); //replaces current history state rather then create new one when chaging querystring
     return params;
   }
@@ -366,6 +368,7 @@ angular.module('dashboard.Dashboard.Model.List', [
         localStorage[cacheKey] = JSON.stringify(response); //assign to cache
         processWindowSize(); //on first load check window size to determine if optional columns should be displayed
         $scope.$emit("ModelListLoadItemsLoaded");
+        isFirstLoad = false;
       });  
   };
   
@@ -652,7 +655,8 @@ angular.module('dashboard.Dashboard.Model.List', [
 //  }, true);
 
   $scope.$watch('sortInfo', function (newVal, oldVal) {
-    if (newVal !== oldVal) {
+    //Check isFirstLoad so that this watch statement does not get called when the page loads for the first time
+    if (!isFirstLoad && newVal !== oldVal) {
       $scope.loadItems();
     }
   }, true);
