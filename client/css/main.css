@@ -542,11 +542,13 @@ model-field-edit .jslider .jslider-pointer {
   opacity: 0.8;
 }
 .model-sort,
-model-field-reference-sort-edit {
+model-field-reference-sort-edit,
+model-field-list-edit {
   min-width: 320px;
 }
 .model-sort h1,
-model-field-reference-sort-edit h1 {
+model-field-reference-sort-edit h1,
+model-field-list-edit h1 {
   margin: 10px 0;
   padding: 0 0;
   vertical-align: middle;
@@ -555,19 +557,22 @@ model-field-reference-sort-edit h1 {
   font-weight: 600;
 }
 .model-sort h1 .spacer,
-model-field-reference-sort-edit h1 .spacer {
+model-field-reference-sort-edit h1 .spacer,
+model-field-list-edit h1 .spacer {
   font-size: 10px;
   vertical-align: middle;
   padding: 0 10px;
 }
 .model-sort ul,
-model-field-reference-sort-edit ul {
+model-field-reference-sort-edit ul,
+model-field-list-edit ul {
   list-style: none;
   margin: 0 10px;
   padding: 0 0;
 }
 .model-sort ul li,
-model-field-reference-sort-edit ul li {
+model-field-reference-sort-edit ul li,
+model-field-list-edit ul li {
   position: relative;
   border: solid 1px #dedede;
   border-width: 1px 1px 0 1px;
@@ -576,13 +581,16 @@ model-field-reference-sort-edit ul li {
   background-color: #fefefe;
   cursor: move;
   clear: both;
+  white-space: nowrap;
 }
 .model-sort ul li .fa-reorder,
-model-field-reference-sort-edit ul li .fa-reorder {
+model-field-reference-sort-edit ul li .fa-reorder,
+model-field-list-edit ul li .fa-reorder {
   color: #eee;
 }
 .model-sort ul li .title,
-model-field-reference-sort-edit ul li .title {
+model-field-reference-sort-edit ul li .title,
+model-field-list-edit ul li .title {
   position: absolute;
   display: block;
   top: 0;
@@ -592,51 +600,92 @@ model-field-reference-sort-edit ul li .title {
   text-overflow: ellipsis;
   overflow: hidden;
 }
+.model-sort ul li .list-field-container,
+model-field-reference-sort-edit ul li .list-field-container,
+model-field-list-edit ul li .list-field-container {
+  display: block;
+  position: absolute;
+  top: 0;
+  bottom: 0;
+  left: 30px;
+  right: 40px;
+  padding: 5px 0;
+}
+.model-sort ul li .list-field,
+model-field-reference-sort-edit ul li .list-field,
+model-field-list-edit ul li .list-field {
+  display: table-cell;
+  padding-left: 10px;
+}
+.model-sort ul li .list-field input,
+model-field-reference-sort-edit ul li .list-field input,
+model-field-list-edit ul li .list-field input {
+  border-color: #eee;
+}
 .model-sort ul li .action,
-model-field-reference-sort-edit ul li .action {
+model-field-reference-sort-edit ul li .action,
+model-field-list-edit ul li .action {
   float: right;
 }
 .model-sort ul li .action a,
-model-field-reference-sort-edit ul li .action a {
+model-field-reference-sort-edit ul li .action a,
+model-field-list-edit ul li .action a {
   display: inline-block;
   cursor: pointer;
   text-align: center;
 }
 .model-sort ul li .action a.up,
-model-field-reference-sort-edit ul li .action a.up {
+model-field-reference-sort-edit ul li .action a.up,
+model-field-list-edit ul li .action a.up {
   width: 32px;
 }
 .model-sort ul li .action a.down,
-model-field-reference-sort-edit ul li .action a.down {
+model-field-reference-sort-edit ul li .action a.down,
+model-field-list-edit ul li .action a.down {
   width: 32px;
 }
 .model-sort ul li .action a.edit,
-model-field-reference-sort-edit ul li .action a.edit {
+model-field-reference-sort-edit ul li .action a.edit,
+model-field-list-edit ul li .action a.edit {
   width: 55px;
 }
 .model-sort ul li .action a.remove,
-model-field-reference-sort-edit ul li .action a.remove {
+model-field-reference-sort-edit ul li .action a.remove,
+model-field-list-edit ul li .action a.remove {
   width: 32px;
   color: #8b0000;
 }
 .model-sort ul li .action a.remove:hover,
-model-field-reference-sort-edit ul li .action a.remove:hover {
+model-field-reference-sort-edit ul li .action a.remove:hover,
+model-field-list-edit ul li .action a.remove:hover {
   color: #f00;
 }
 .model-sort ul li:last-child,
-model-field-reference-sort-edit ul li:last-child {
+model-field-reference-sort-edit ul li:last-child,
+model-field-list-edit ul li:last-child {
   border-width: 1px 1px;
 }
 .model-sort .save-sort-button,
-model-field-reference-sort-edit .save-sort-button {
+model-field-reference-sort-edit .save-sort-button,
+model-field-list-edit .save-sort-button {
   margin: 20px 10px;
 }
-model-field-reference-sort-edit ul {
+.model-sort .list-add-item,
+model-field-reference-sort-edit .list-add-item,
+model-field-list-edit .list-add-item {
+  width: 100%;
+}
+model-field-reference-sort-edit ul,
+model-field-list-edit ul {
   margin: 10px 0;
 }
-model-field-reference-sort-edit ul .sortable-placeholder {
+model-field-reference-sort-edit ul .sortable-placeholder,
+model-field-list-edit ul .sortable-placeholder {
   height: 44px;
   background-color: #f3f3f3;
+}
+model-field-list-edit ul {
+  margin: 0 0 10px 0;
 }
 .model-nav h1 {
   margin: 10px 0;
