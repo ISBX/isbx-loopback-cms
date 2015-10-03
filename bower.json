@@ -23,7 +23,10 @@
     "angular-google-chart": "~0.0.11",
     "eonasdan-bootstrap-datetimepicker": "~4.0.0",
     "moment": "~2.9.0",
-    "ng-slider": "~2.1.9"
+    "ng-slider": "~2.1.9",
+    "spectrum": "~1.7.1",
+    "jquery.hotkeys": "*",
+    "bootstrap-wysiwyg": "*"
   },
   "resolutions": {
     "angular": ">=1.2.18"

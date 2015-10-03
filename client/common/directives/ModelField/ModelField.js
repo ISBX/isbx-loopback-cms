@@ -4,6 +4,7 @@ angular.module('dashboard.directives.ModelField', [
   'dashboard.directives.ModelFieldReference',
   'dashboard.directives.ModelFieldReferenceSort',
   'dashboard.directives.ModelFieldList',
+  'dashboard.directives.ModelFieldWYSIWYG',
   'dashboard.directive.DateTimePicker',
   'ngCookies',
   'ngSlider'
@@ -162,6 +163,14 @@ angular.module('dashboard.directives.ModelField', [
         template = '<label class="col-sm-2 control-label">{{ display.label || key }}:</label>\
           <div class="col-sm-10">\
             <textarea ng-model="data[key]" ng-disabled="{{ display.readonly }}" ng-required="{{ model.properties[key].required }}" class="field form-control"></textarea>\
+            <div class="model-field-description" ng-if="display.description">{{ display.description }}</div>\
+          </div>';
+        break;
+      case 'wysiwyg':
+      case 'WYSIWYG':
+        template = '<label class="col-sm-2 control-label">{{ display.label || key }}:</label>\
+          <div class="col-sm-10">\
+            <model-field-wysiwyg-edit key="key" property="property" options="display.options" model-data="data" ng-model="data[key]" class="field" ng-required="{{ model.properties[key].required }}" ng-disabled="display.readonly"  /> \
             <div class="model-field-description" ng-if="display.description">{{ display.description }}</div>\
           </div>';
         break;
