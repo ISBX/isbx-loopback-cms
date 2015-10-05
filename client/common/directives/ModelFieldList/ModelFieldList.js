@@ -22,7 +22,7 @@ angular.module('dashboard.directives.ModelFieldList', [
   .directive('modelFieldListEdit', function($compile, $cookies, $timeout, Config, GeneralModelService) {
     function getTemplate(key) {
       var template = '\
-      <ul ui-sortable="sortableOptions" ng-model="list" ng-show="data.length > 0"> \
+      <ul ui-sortable="sortableOptions" ng-model="list" ng-show="list.length > 0"> \
         <li ng-repeat="(index, item) in list"> \
           <i class="fa fa-reorder"></i>\
           <div class="list-field-container"> \
