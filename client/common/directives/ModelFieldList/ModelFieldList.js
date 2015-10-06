@@ -58,30 +58,42 @@ angular.module('dashboard.directives.ModelFieldList', [
           update: self.updateData
         };
 
+        scope.setData = function() {
+          if (scope.options.output == 'object') {
+            scope.data = scope.list;
+          } else {
+            scope.data = JSON.stringify(scope.list);
+          }
+        };
+
         scope.addItem = function() {
           scope.list.push({});
-          scope.data = JSON.stringify(scope.list);
+          scope.setData();
         };
 
         scope.removeItem = function(index) {
           var item = scope.list[index];
           scope.list.splice(index, 1);
-          scope.data = JSON.stringify(scope.list);
+          scope.setData();
         };
 
         scope.updateData = function() {
-          scope.data = JSON.stringify(scope.list);
+          scope.setData();
         };
 
 
         var unwatch = scope.$watchCollection('[data, options, modelData]', function(results) {
           if (scope.data && scope.options) {
             unwatch();
-            try {
-              scope.list = JSON.parse(scope.data);
-            } catch(e) {
-              scope.list = [];
-              console.error('ModelFieldList failed to parse scope.data', e);
+            if (scope.data instanceof Array) {
+              scope.list = scope.data;
+            } else {
+              try {
+                scope.list = JSON.parse(scope.data);
+              } catch(e) {
+                scope.list = [];
+                console.error('ModelFieldList failed to parse scope.data', e);
+              }
             }
           }
         });
