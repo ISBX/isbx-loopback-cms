@@ -241,20 +241,25 @@ model-field-wysiwyg-edit .wysiwyg-toolbar {
   border-width: 1px 1px 0 1px;
   border-radius: 4px 4px 0 0;
   padding-left: 10px;
+  white-space: nowrap;
+  overflow: hidden;
 }
-@media screen and (max-width: 898px) {
+@media screen and (max-width: 867px) {
   model-field-wysiwyg-edit .wysiwyg-toolbar {
     height: 96px;
+    white-space: normal;
   }
 }
 @media screen and (max-width: 767px) {
   model-field-wysiwyg-edit .wysiwyg-toolbar {
     height: 48px;
+    white-space: nowrap;
   }
 }
 @media screen and (max-width: 668px) {
   model-field-wysiwyg-edit .wysiwyg-toolbar {
     height: 96px;
+    white-space: normal;
   }
 }
 model-field-wysiwyg-edit .wysiwyg-toolbar .close-toolbar {
@@ -966,6 +971,16 @@ model-field-list-edit ul {
   padding: 10px;
   -webkit-overflow-scrolling: touch;
 }
+@media screen and (max-width: 960px) {
+  .dashboard .page > .content {
+    left: 58px;
+  }
+}
+@media screen and (max-width: 768px) {
+  .dashboard .page > .content {
+    left: 125px;
+  }
+}
 .dashboard .left-nav {
   position: absolute;
   width: 128px;
@@ -973,7 +988,6 @@ model-field-list-edit ul {
   left: 0;
   bottom: 0;
   background-color: #2b2e33;
-  color: #fff;
 }
 .dashboard .left-nav a.nav-button {
   display: block;
@@ -983,6 +997,12 @@ model-field-list-edit ul {
   color: #9499a1;
   border-bottom: solid 1px #4e4f52;
   text-decoration: none;
+}
+.dashboard .left-nav a.nav-button:hover {
+  color: #ddd;
+}
+.dashboard .left-nav a.nav-button:hover .label {
+  color: #ddd;
 }
 .dashboard .left-nav a.nav-button .icon {
   display: block;
@@ -1001,6 +1021,35 @@ model-field-list-edit ul {
 }
 .dashboard .left-nav a.nav-button.selected .label {
   color: #fff;
+}
+@media screen and (max-width: 960px) {
+  .dashboard .left-nav {
+    width: 58px;
+  }
+  .dashboard .left-nav a.nav-button {
+    width: 58px;
+    padding: 10px 0;
+  }
+  .dashboard .left-nav a.nav-button .icon {
+    font-size: 24px;
+  }
+  .dashboard .left-nav a.nav-button .label {
+    display: none;
+  }
+}
+@media screen and (max-width: 768px) {
+  .dashboard .left-nav {
+    width: 128px;
+  }
+  .dashboard .left-nav a.nav-button {
+    width: 128px;
+  }
+  .dashboard .left-nav a.nav-button .icon {
+    font-size: 30px;
+  }
+  .dashboard .left-nav a.nav-button .label {
+    display: block;
+  }
 }
 @media screen and (max-width: 768px) {
   .dashboard {

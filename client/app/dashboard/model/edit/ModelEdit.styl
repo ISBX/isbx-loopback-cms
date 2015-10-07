@@ -159,12 +159,17 @@ model-field-wysiwyg-edit
     border-width 1px 1px 0 1px
     border-radius 4px 4px 0 0
     padding-left: 10px
-    @media screen and (max-width: 898px)
+    white-space nowrap
+    overflow hidden
+    @media screen and (max-width: 867px)
       height 96px
+      white-space normal
     @media screen and (max-width: 767px)
       height 48px
+      white-space nowrap
     @media screen and (max-width: 668px)
       height 96px
+      white-space normal
     .close-toolbar
       display: inline-block
       background: url(../images/ico_clear_2.png) center center no-repeat

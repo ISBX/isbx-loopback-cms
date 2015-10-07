@@ -13,7 +13,7 @@ angular.module('dashboard.directives.ModelFieldWYSIWYG', [
         options: '=options',
         data: '=ngModel',
         required: 'ngRequired',
-        disabled: 'ngDisabled'
+        disabled: 'disabled'
       },
       link: function(scope, element, attrs) {
       }
@@ -23,7 +23,7 @@ angular.module('dashboard.directives.ModelFieldWYSIWYG', [
   .directive('modelFieldWysiwygEdit', function($compile, $cookies, $timeout, Config, GeneralModelService) {
     function getTemplate() {
       var template = '\
-        <div class="wysiwyg-toolbar" data-role="editor-toolbar" data-target=".wysiwyg-editor">\
+        <div class="wysiwyg-toolbar" data-role="editor-toolbar" data-target=".wysiwyg-editor" ng-hide="disabled">\
           <!--\
           <div class="btn-group">\
             <a class="btn btn-default dropdown-toggle" data-toggle="dropdown" title="Font Size"><i class="fa fa-text-height"></i>&nbsp;<b class="caret"></b></a>\
@@ -90,10 +90,9 @@ angular.module('dashboard.directives.ModelFieldWYSIWYG', [
         options: '=options',
         data: '=ngModel',
         modelData: '=modelData',
-        disabled: '=ngDisabled'
+        disabled: '=disabled'
       },
       link: function(scope, element, attrs, ngModel) {
-
         scope.toggleDropdown = function(event) {
           var $element = $(event.currentTarget).parent().find('.menu');
           if ($element.hasClass('open')) {
@@ -107,7 +106,7 @@ angular.module('dashboard.directives.ModelFieldWYSIWYG', [
         $compile(element.contents())(scope);
 
         var $wysiwyg = $(element).find('.wysiwyg-editor');
-        $wysiwyg.wysiwyg({hotKeys: {}});
+        if (!scope.disabled) $wysiwyg.wysiwyg({hotKeys: {}});
 
         $(element).find('.wysiwyg-toolbar [data-role=magic-overlay]').each(function () {
           var overlay = $(this), target = $(overlay.data('target'));
