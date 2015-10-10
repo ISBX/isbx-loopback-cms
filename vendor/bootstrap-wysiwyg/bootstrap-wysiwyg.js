@@ -46,7 +46,6 @@
 				$.each(hotKeys, function (hotkey, command) {
 					editor.keydown(hotkey, function (e) {
 						if (editor.attr('contenteditable') && editor.is(':visible')) {
-							console.log('keydown')
 							e.preventDefault();
 							e.stopPropagation();
 							execCommand(command);

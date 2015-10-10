@@ -93,7 +93,8 @@ module.exports = {
       'vendor/ng-slider/dist/ng-slider.min.js',
       'vendor/bootstrap-wysiwyg/bootstrap-wysiwyg.js',
       'vendor/jquery.hotkeys/jquery.hotkeys.js',
-      'vendor/spectrum/spectrum.js'
+      'vendor/spectrum/spectrum.js',
+      'vendor/js-beautify/js/lib/beautify-html.js'
     ],
     css: [
       'vendor/jquery-resizable-columns/dist/jquery.resizableColumns.css',

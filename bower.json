@@ -26,7 +26,8 @@
     "ng-slider": "~2.1.9",
     "spectrum": "~1.7.1",
     "jquery.hotkeys": "*",
-    "bootstrap-wysiwyg": "*"
+    "bootstrap-wysiwyg": "*",
+    "js-beautify": "~1.5.10"
   },
   "resolutions": {
     "angular": ">=1.2.18"
