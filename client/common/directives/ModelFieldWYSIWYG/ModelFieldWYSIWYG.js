@@ -72,7 +72,7 @@ angular.module('dashboard.directives.ModelFieldWYSIWYG', [
         </div>\
         <div class="btn-group picture-button">\
           <a class="btn btn-default picture-tool" title="Insert picture (or just drag & drop)" ng-disabled="!options.allowImageUpload || isEditingCode"><i class="fa fa-picture-o"></i></a>\
-          <input type="file" class="wysiwyg-picture-input" data-role="magic-overlay" data-target=".wysiwyg-toolbar .picture-tool" ng-file-select="onFileSelect($files)" />\
+          <input type="file" class="wysiwyg-picture-input" data-role="magic-overlay" data-target=".wysiwyg-toolbar .picture-tool" ng-file-select="onFileSelect($files)"  ng-disabled="!options.allowImageUpload || isEditingCode" />\
         </div>\
         <div class="btn-group">\
           <a class="btn btn-default" data-edit="undo" title="Undo" ng-disabled="isEditingCode"><i class="fa fa-undo"></i></a>\
