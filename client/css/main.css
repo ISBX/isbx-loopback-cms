@@ -242,7 +242,6 @@ model-field-wysiwyg-edit .wysiwyg-toolbar {
   border-radius: 4px 4px 0 0;
   padding-left: 10px;
   white-space: nowrap;
-  overflow: hidden;
 }
 @media screen and (max-width: 867px) {
   model-field-wysiwyg-edit .wysiwyg-toolbar {

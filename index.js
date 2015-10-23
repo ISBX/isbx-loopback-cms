@@ -148,6 +148,14 @@ function renderIndex(req, res) {
   if (config.public.css) files.css.push(config.public.css);
   files.javascript = [app.mountpath + '/dev-templates.js'];
   glob(__dirname + srcDir + '/**/*.js', function(err, scripts) {
+    //implement custom modules on the server-side rather than client-side
+    files.javascript = _.map(config.public.modules, function(file) {
+      if (file.charAt(0) == '/') {
+        return app.mountpath + file;
+      } else {
+        return app.mountpath + '/' + file;
+      }
+    }).concat(files.javascript);
     files.javascript = _.map(_.filter(scripts, function(file) {
       return !file.match(/\.spec\.js$/);
     }), function(file) {
