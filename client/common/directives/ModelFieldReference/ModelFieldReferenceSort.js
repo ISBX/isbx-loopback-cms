@@ -129,6 +129,12 @@ angular.module('dashboard.directives.ModelFieldReferenceSort', [
                 scope.list.splice(scope.list.indexOf(item), 1);
               }
             }
+            if (scope.options.allowInsert) {
+              var addNewItem = {};
+              addNewItem[scope.options.searchField] = scope.options.insertText ? scope.options.insertText : "[Add New Item]";
+              scope.list.push(addNewItem);
+            }
+
             if (typeof scope.options.defaultIndex === 'number') {
               if (response[scope.options.defaultIndex]) {
                 //scope.selected.items = [response[scope.options.defaultIndex]];
@@ -147,6 +153,11 @@ angular.module('dashboard.directives.ModelFieldReferenceSort', [
 
         scope.onSelect = function(item, model) {
           var params = {};
+          if (!item[scope.options.key] && item[scope.options.searchField]) {
+            var value = element.find("input.ui-select-search").val();
+            item[scope.options.key] = value;
+            item[scope.options.searchField] = value;
+          }
           params[scope.options.key] = item[scope.options.key];
           var selectedItem = _.find(scope.selectedList, params);
           if (!selectedItem) {
