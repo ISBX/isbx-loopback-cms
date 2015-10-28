@@ -20,19 +20,20 @@ angular.module('dashboard.directives.ModelFieldReferenceSort', [
   })
 
   .directive('modelFieldReferenceSortEdit', function($compile, $cookies, $timeout, Config, GeneralModelService) {
-    function getTemplate(key, matchTemplate, choiceTemplate) {
-      var template = '';
-      template = '\
+    function getTemplate(key, matchTemplate, choiceTemplate, allowInsert) {
+      var repeatExpression = '(index, item) in selectedList';
+      if (!allowInsert) repeatExpression += ' track by item.' + key;
+      var template = '\
       <ui-select ng-model="selected.item" on-select="onSelect($item, $model)" ng-required="ngRequired" ng-disabled="disabled" > \
       <ui-select-match placeholder="{{ options.placeholder }}">'+ matchTemplate +'</ui-select-match> \
       <ui-select-choices repeat="item in list track by item.'+key+'" refresh="refreshChoices($select.search)" refresh-delay="200">' + choiceTemplate + '</ui-select-choices> \
       </ui-select> \
       <ul ui-sortable="sortableOptions" ng-model="selectedList"> \
-        <li ng-repeat="(index, item) in selectedList track by item.'+key+'"> \
+        <li ng-repeat="'+repeatExpression+'"> \
           <i class="fa fa-reorder"></i>\
           <div class="title">'+choiceTemplate+'</div> \
           <div class="action"> \
-            <a href="" ng-click="removeItem(index)" class="remove"><i class="fa fa-times"></i></a> \
+            <a href="" ng-click="removeItem(index)" class="remove" ng-hide="disabled"><i class="fa fa-times"></i></a> \
           </div> \
         </li> \
       </ul>';
@@ -56,7 +57,8 @@ angular.module('dashboard.directives.ModelFieldReferenceSort', [
         scope.selectedList = []; //used for tracking whats been selected and also allows for sorting
 
         scope.sortableOptions = {
-          placeholder: 'sortable-placeholder'
+          placeholder: 'sortable-placeholder',
+          disabled: scope.disabled
         }
 
         function replaceSessionVariables(string) {
@@ -176,7 +178,7 @@ angular.module('dashboard.directives.ModelFieldReferenceSort', [
         };
 
 
-        element.html(getTemplate(scope.options.key, scope.options.matchTemplate, scope.options.choiceTemplate)).show();
+        element.html(getTemplate(scope.options.key, scope.options.matchTemplate, scope.options.choiceTemplate, scope.options.allowInsert)).show();
         $compile(element.contents())(scope);
 
       }
