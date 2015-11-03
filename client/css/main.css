@@ -900,7 +900,7 @@ model-field-list-edit ul {
 .dashboard .top-nav {
   position: fixed;
   height: 64px;
-  top: 0x;
+  top: 0;
   left: 0;
   right: 0;
   background-color: #3a7dc2;
