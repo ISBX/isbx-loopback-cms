@@ -118,8 +118,8 @@ angular.module('dashboard.directives.ModelField', [
         template = '<label class="col-sm-2 control-label">{{ display.label || key }}:</label>\
           <div class="col-sm-10 multi-select">\
             <div class="select-item checkbox-container" ng-repeat="(itemKey, itemValue) in display.options">\
-              <input type="checkbox" class="field" ng-model="multiSelectOptions[itemKey]" ng-checked="multiSelectOptions[itemKey]" ng-disabled="{{ display.readonly }}" ng-change="clickMultiSelectCheckbox(itemKey, itemValue, multiSelectOptions[itemKey])">\
-              <span class="checkbox-label">{{ itemValue }}</span>\
+              <input type="checkbox" class="field" ng-attr-id="{{key+\'-\'+itemKey}}" ng-model="multiSelectOptions[itemKey]" ng-checked="multiSelectOptions[itemKey]" ng-disabled="{{ display.readonly }}" ng-change="clickMultiSelectCheckbox(itemKey, itemValue, multiSelectOptions[itemKey])">\
+              <label class="checkbox-label" ng-attr-for="{{key+\'-\'+itemKey}}">{{ itemValue }}</label>\
             </div>\
             <div class="model-field-description" ng-if="display.description">{{ display.description }}</div>\
           </div>';
@@ -147,8 +147,8 @@ angular.module('dashboard.directives.ModelField', [
       case 'boolean':
         template = '<div class="col-sm-2"></div> \
           <div class="col-sm-10 checkbox-container">\
-            <input type="checkbox" ng-model="data[key]" ng-checked="check(data, key)" class="field" ng-disabled="{{ display.readonly }}">\
-            <span class="checkbox-label">{{ display.label || key }}</span>\
+            <input type="checkbox" ng-attr-id="{{key}}" ng-model="data[key]" ng-checked="check(data, key)" class="field" ng-disabled="{{ display.readonly }}">\
+            <label class="checkbox-label" ng-attr-for="{{key}}">{{ display.label || key }}</label>\
             <div class="model-field-description" ng-if="display.description">{{ display.description }}</div>\
           </div>';
         break;
