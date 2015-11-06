@@ -58,14 +58,6 @@ angular.module('dashboard', [
   $rootScope.$state = $state;
   if (Config.serverParams.gaTrackingId) ga('create', Config.serverParams.gaTrackingId, 'auto');
 
-  if (!SessionService.getAuthToken() && !$state.includes('public.**')) {
-    if (Config.serverParams.loginState) {
-      $state.go(Config.serverParams.loginState); //custom login controller
-    } else {
-      $state.go('public.login');
-    }
-  }
-
   $rootScope.$on('$stateChangeStart', function(event, toState, toParams, fromState, fromParams) {
     var toStateName = toState.name;
     toStateName = toStateName.substr(toStateName, toStateName.indexOf('.'));
@@ -73,7 +65,7 @@ angular.module('dashboard', [
     if (!SessionService.getAuthToken() && toStateName != 'public') {
       if (Config.serverParams.loginState) {
         $state.go(Config.serverParams.loginState); //custom login controller
-      } else {
+      } else if (toStateName != 'public') {
         $state.go('public.login');
       }
       event.preventDefault();
