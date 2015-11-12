@@ -2,7 +2,7 @@
 
   h1(ng-hide="action.options.hideHeader") {{ section.label }} <i class="fa fa-chevron-right spacer"></i> {{ filterDescription }}
   
-  .grid-container
+  .grid-container.chart(ng-show="action.options.chart")
     h2(ng-show="action.options.chart") {{ action.options.chart.title }}
     .chart(ng-show="action.options.chart", google-chart, chart="chart", ng-style="{ height: action.options.chart.height + 'px'}")
   

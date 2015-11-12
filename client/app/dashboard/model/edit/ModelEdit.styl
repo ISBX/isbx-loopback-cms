@@ -27,6 +27,8 @@
       font-weight: 400
 
 model-field-reference-edit
+  display block
+  border-radius 4px
   .close
     padding-top 2px
             
@@ -128,8 +130,84 @@ model-field-edit
       border: solid 1px #ccc
       box-shadow: inset 0 1px 0 rgba(255, 255, 255, .15), 0 1px 1px rgba(0, 0, 0, .075)
 
+model-field-wysiwyg-edit
+  .wysiwyg-toolbar
+    display: block
+    position: relative
+    z-index: 99
+    width: 100%
+    height: 48px
+    line-height: 44px
+    background-color: #f9f9f9
+    border solid 1px #ccc
+    border-width 1px 1px 0 1px
+    border-radius 4px 4px 0 0
+    padding-left: 10px
+    white-space nowrap
+    @media screen and (max-width: 867px)
+      height 96px
+      white-space normal
+    @media screen and (max-width: 767px)
+      height 48px
+      white-space nowrap
+    @media screen and (max-width: 650px)
+      height 96px
+      white-space normal
+    .picture-button
+      *
+        cursor pointer
+      .picture-tool
+        pointer-events none
+        border-top-right-radius 4px !important
+        border-bottom-right-radius 4px !important
+    .btn
+      padding 6px 11px
+      .color-sample
+        display:inline-block
+        margin-top: 3px
+        width: 15px
+        height: 12px
+        background-color: #000
+        border: solid 1px #000
+    .btn-info
+      text-shadow 0 -1px 0 rgba(0, 0, 0, .2)
+    .sp-container
+      background-color: #fff !important
+      border: 0 !important
+    .dropdown
+      display block
+    .menu
+      display none
+      position absolute
+      top 100%
+      left 0
+      z-index 1000
+      float left
+      margin 2px 0 0
+      min-width 160px
+      padding 10px
+      border 1px solid rgba(0, 0, 0, .15)
+      border-radius 4px
+      box-shadow 0 6px 12px rgba(0, 0, 0, .175)
+      background-color #fff
+      &.open
+        display block
+      .add-button
+        width 100%
+  .wysiwyg-editor, .code-editor
+    height 300px
+    overflow auto
+    border solid 1px #ccc
+    outline none
+    border-radius 0 0 4px 4px
+    box-shadow inset 0 1px 1px rgba(0, 0, 0, .075)
+    -webkit-box-shadow inset 0 1px 1px rgba(0, 0, 0, .075)
+    padding 10px
+    background-color #fff
+
 .model-field-description
   padding: 10px 5px
+
 
 @import ModelEditSaveDialog
 

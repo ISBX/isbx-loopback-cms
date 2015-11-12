@@ -148,6 +148,14 @@ function renderIndex(req, res) {
   if (config.public.css) files.css.push(config.public.css);
   files.javascript = [app.mountpath + '/dev-templates.js'];
   glob(__dirname + srcDir + '/**/*.js', function(err, scripts) {
+    //implement custom modules on the server-side rather than client-side
+    files.javascript = _.map(config.public.modules, function(file) {
+      if (file.charAt(0) == '/') {
+        return app.mountpath + file;
+      } else {
+        return app.mountpath + '/' + file;
+      }
+    }).concat(files.javascript);
     files.javascript = _.map(_.filter(scripts, function(file) {
       return !file.match(/\.spec\.js$/);
     }), function(file) {
@@ -190,19 +198,21 @@ function setupAuthModelRoleRelationship(loopbackApplication, config) {
   var RoleMapping = loopbackApplication.models.RoleMapping; //built-in loopback Model
   var Role = loopbackApplication.models.Role; //built-in loopback Model
   var User = loopbackApplication.models[authModelName]; //ISBX projects uses "Account" model that overrides the User base model
-  var ACL = loopbackApplication.models.ACL;
   if (!User) User = loopbackApplication.models.User; //default base to base User class
-  RoleMapping.belongsTo(Role, {foreignKey: 'roleId', as: "Role"});
-  RoleMapping.belongsTo(Role, {foreignKey: 'roleId', as: "role"}); //issue with hasManyThrough looks for lowercase account
-  RoleMapping.belongsTo(User, {foreignKey: 'principalId', as: User.modelName});
-  RoleMapping.belongsTo(User, {foreignKey: 'principalId', as: User.modelName.toLowerCase()}); //issue with hasManyThrough looks for lowercase account
-  Role.hasMany(RoleMapping, {foreignKey: 'roleId', as: 'RoleMappings'});
-  User.hasMany(RoleMapping, {foreignKey: 'principalId', as: "RoleMappings"});
-  User.hasMany(Role, {through: RoleMapping, foreignKey: 'principalId', as : "Roles"});
-  Role.hasMany(User, {through: RoleMapping, as: inflection.pluralize(User.modelName)});
-
-  //Force ACL for default SuperAdmin Role
-  ACL.create({ model: "User", property: "*", accessType: "*", permission: "ALLOW", "principalType": "ROLE", "principalId": "SuperAdmin" });
+  if (RoleMapping) {
+    RoleMapping.belongsTo(Role, {foreignKey: 'roleId', as: "Role"});
+    RoleMapping.belongsTo(Role, {foreignKey: 'roleId', as: "role"}); //issue with hasManyThrough looks for lowercase account
+    RoleMapping.belongsTo(User, {foreignKey: 'principalId', as: User.modelName});
+    RoleMapping.belongsTo(User, {foreignKey: 'principalId', as: User.modelName.toLowerCase()}); //issue with hasManyThrough looks for lowercase account
+  }
+  if (Role) {
+    Role.hasMany(RoleMapping, {foreignKey: 'roleId', as: 'RoleMappings'});
+  }
+  if (User) {
+    User.hasMany(RoleMapping, {foreignKey: 'principalId', as: "RoleMappings"});
+    User.hasMany(Role, {through: RoleMapping, foreignKey: 'principalId', as : "Roles"});
+  }
+  if (Role) Role.hasMany(User, {through: RoleMapping, as: inflection.pluralize(User.modelName)});
 
   //Need the below for relational-upsert.js
   User.settings.relations.RoleMappings = {

@@ -17,7 +17,7 @@
   .top-nav
     position fixed
     height 64px
-    top: 0x
+    top: 0
     left 0
     right 0
     background-color #3a7dc2
@@ -61,7 +61,7 @@
     bottom 0
     right 0
     @media screen and (max-width: 768px)
-      position: absolute
+      position absolute
     //.content below styles the content layer directly after .dashboard
     & > .content
       position absolute
@@ -69,11 +69,15 @@
       left 125px
       bottom 0
       right 0
-      background-color #FFFFFF
+      background-color #f0f0f0
       overflow auto
       padding 10px
       -webkit-overflow-scrolling: touch
-    
+      @media screen and (max-width: 960px)
+        left 58px
+      @media screen and (max-width: 768px)
+        left 125px
+
   .left-nav
     position absolute
     width 128px
@@ -81,20 +85,23 @@
     left 0
     bottom 0
     background-color #2b2e33
-    color #ffffff
-
     a.nav-button
       display block
       width 128px
       text-align center 
       padding 14px 0 8px 0
       color #9499a1
-      border-bottom: solid 1px #4e4f52
+      border-bottom solid 1px #4e4f52
+      text-decoration none
+      &:hover
+          color #ddd
+          .label
+            color #ddd
       .icon
-        display: block
-        font-size: 30px
+        display block
+        font-size 30px
       .label
-        display: block
+        display block
         margin-top 4px
         font-size 14px
         font-weight 300
@@ -104,6 +111,23 @@
         color: #fff
         .label
           color #fff
+    @media screen and (max-width: 960px)
+      width 58px
+      a.nav-button
+        width 58px
+        padding 10px 0
+        .icon
+          font-size 24px
+        .label
+          display none
+    @media screen and (max-width: 768px)
+      width 128px
+      a.nav-button
+        width 128px
+        .icon
+          font-size 30px
+        .label
+          display block
 
 
 .dashboard

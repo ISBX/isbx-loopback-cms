@@ -1,4 +1,4 @@
-.model-sort
+.model-sort, model-field-reference-sort-edit, model-field-list-edit
   min-width: 320px
   h1
     margin: 10px 0
@@ -24,6 +24,7 @@
       background-color: #fefefe
       cursor: move
       clear: both
+      white-space nowrap
       .fa-reorder
         color: #eee
       .title
@@ -35,21 +36,50 @@
         right: 119px
         text-overflow: ellipsis
         overflow: hidden
+      .list-field-container
+        display block
+        position absolute
+        top 0
+        bottom 0
+        left 30px
+        right 40px
+        padding 5px 0
+      .list-field
+        display table-cell
+        padding-left 10px
+        input
+          border-color #eee
       .action
         float: right
         a
+          display: inline-block
           cursor: pointer
           text-align: center
         a.up
-          display: inline-block
           width: 32px
         a.down
-          display: inline-block
           width: 32px
         a.edit
-          display: inline-block
           width: 55px
+        a.remove
+          width 32px
+          color darkred
+          &:hover
+            color red
     li:last-child
       border-width: 1px 1px
   .save-sort-button
     margin: 20px 10px
+  .list-add-item
+    width 100%
+
+model-field-reference-sort-edit, model-field-list-edit
+  ul
+    margin 10px 0
+    .sortable-placeholder
+      height 44px
+      background-color #f3f3f3
+
+model-field-list-edit
+  ul
+    margin 0 0 10px 0

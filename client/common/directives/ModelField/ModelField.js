@@ -2,6 +2,9 @@ angular.module('dashboard.directives.ModelField', [
   'dashboard.directives.ModelFieldImage', 
   'dashboard.directives.ModelFieldFile', 
   'dashboard.directives.ModelFieldReference',
+  'dashboard.directives.ModelFieldReferenceSort',
+  'dashboard.directives.ModelFieldList',
+  'dashboard.directives.ModelFieldWYSIWYG',
   'dashboard.directive.DateTimePicker',
   'ngCookies',
   'ngSlider'
@@ -31,7 +34,7 @@ angular.module('dashboard.directives.ModelField', [
 })
 
 .directive('modelFieldEdit', function($compile, $cookies) {
-  function getTemplate(type) {
+  function getTemplate(type, scope) {
     var template = '';
     switch(type) {
       case 'reference':
@@ -41,7 +44,31 @@ angular.module('dashboard.directives.ModelField', [
             <model-field-reference-edit key="key" property="property" options="display.options" model-data="data" ng-model="data[key]" class="field" ng-required="{{ model.properties[key].required }}" ng-disabled="display.readonly"  /> \
             <div class="model-field-description" ng-if="display.description">{{ display.description }}</div>\
           </div> \
-          <div class="col-sm2"></div> \
+          <label class="col-sm-2 control-label"></label> \
+          <div class="col-sm-10"> \
+            <div class="model-field-description" ng-if="display.description">{{ display.description }}</div>\
+          </div>';
+        break;
+      case 'reference-sort':
+        // depends on directive modelFieldReferenceSortEdit
+        template = '<label class="col-sm-2 control-label">{{ display.label || key }}:</label> \
+          <div class="col-sm-10"> \
+            <model-field-reference-sort-edit key="key" property="property" options="display.options" model-data="data" ng-model="data[key]" class="field" ng-required="{{ model.properties[key].required }}" ng-disabled="display.readonly"  /> \
+            <div class="model-field-description" ng-if="display.description">{{ display.description }}</div>\
+          </div> \
+          <label class="col-sm-2 control-label"></label> \
+          <div class="col-sm-10"> \
+            <div class="model-field-description" ng-if="display.description">{{ display.description }}</div>\
+          </div>';
+        break;
+      case 'list':
+        // depends on directive modelFieldListEdit
+        template = '<label class="col-sm-2 control-label">{{ display.label || key }}:</label> \
+          <div class="col-sm-10"> \
+            <model-field-list-edit key="key" property="property" options="display.options" model-data="data" ng-model="data[key]" class="field" ng-required="{{ model.properties[key].required }}" ng-disabled="display.readonly"  /> \
+            <div class="model-field-description" ng-if="display.description">{{ display.description }}</div>\
+          </div> \
+          <label class="col-sm-2 control-label"></label> \
           <div class="col-sm-10"> \
             <div class="model-field-description" ng-if="display.description">{{ display.description }}</div>\
           </div>';
@@ -71,15 +98,16 @@ angular.module('dashboard.directives.ModelField', [
           <div class="col-sm-10"> \
             <p class="date-picker input-group"> \
               <input type="text" class="form-control" \
-              control="test"\
+              control="dateControl"\
               ng-model="data[key]" \
+              default-date="{{data[key]}}" \
               ng-format="display.options.format" \
               ng-view-mode="display.options.viewMode" \
               ng-required="{{ model.properties[key].required }}" ng-disabled="{{ display.readonly }}" \
               data-date-time-picker \
                /> \
               <span class="input-group-btn"> \
-                <button type="button" class="btn btn-default" ng-click="test.show()" ng-disabled="{{ display.readonly }}"><i class="fa fa-calendar"></i></button> \
+                <button type="button" class="btn btn-default" ng-click="dateControl.show()" ng-disabled="{{ display.readonly }}"><i class="fa fa-calendar"></i></button> \
               </span>\
             </p> \
             <div class="model-field-description" ng-if="display.description">{{ display.description }}</div>\
@@ -90,17 +118,34 @@ angular.module('dashboard.directives.ModelField', [
         template = '<label class="col-sm-2 control-label">{{ display.label || key }}:</label>\
           <div class="col-sm-10 multi-select">\
             <div class="select-item checkbox-container" ng-repeat="(itemKey, itemValue) in display.options">\
-              <input type="checkbox" class="field" ng-model="multiSelectOptions[itemKey]" ng-checked="multiSelectOptions[itemKey]" ng-disabled="{{ display.readonly }}" ng-change="clickMultiSelectCheckbox(itemKey, itemValue, multiSelectOptions[itemKey])">\
-              <span class="checkbox-label">{{ itemValue }}</span>\
+              <input type="checkbox" class="field" ng-attr-id="{{key+\'-\'+itemKey}}" ng-model="multiSelectOptions[itemKey]" ng-checked="multiSelectOptions[itemKey]" ng-disabled="{{ display.readonly }}" ng-change="clickMultiSelectCheckbox(itemKey, itemValue, multiSelectOptions[itemKey])">\
+              <label class="checkbox-label" ng-attr-for="{{key+\'-\'+itemKey}}">{{ itemValue }}</label>\
             </div>\
             <div class="model-field-description" ng-if="display.description">{{ display.description }}</div>\
           </div>';
         break;
       case 'select':
+        var ngOptions = 'key as value for (key, value) in display.options';
+        if (scope.display.options instanceof Array) {
+          //Handle when options is a an array vs key/value pair
+          ngOptions = 'value as value for value in display.options';
+        }
         //NOTE: need to add empty <option> element to prevent weird AngularJS select issue when handling first selection
         template = '<label class="col-sm-2 control-label">{{ display.label || key }}:</label>\
           <div class="col-sm-10">\
-            <select ng-model="data[key]" ng-options="key as value for (key, value) in display.options" ng-required="{{ model.properties[key].required }}" class="field form-control"><option value=""></option></select>\
+            <select ng-model="data[key]" ng-options="'+ngOptions+'" ng-required="{{ model.properties[key].required }}" class="field form-control" ng-disabled="{{ display.readonly }}"><option value=""></option></select>\
+            <div class="model-field-description" ng-if="display.description">{{ display.description }}</div>\
+          </div>';
+        break;
+      case 'radio':
+        var ngOptions = '(value, text) in display.options';
+        if (scope.display.options instanceof Array) {
+          //Handle when options is a an array vs key/value pair
+          ngOptions = 'text in display.options';
+        }
+        template = '<label class="col-sm-2 control-label">{{ display.label || key }}:</label>\
+          <div class="col-sm-10">\
+            <label ng-repeat="'+ngOptions+'" class="radio"><input type="radio" ng-model="data[key]" ng-value="value || text" ng-disabled="{{ display.readonly }}" name="{{key}}"> {{text}}</label>\
             <div class="model-field-description" ng-if="display.description">{{ display.description }}</div>\
           </div>';
         break;
@@ -114,8 +159,8 @@ angular.module('dashboard.directives.ModelField', [
       case 'boolean':
         template = '<div class="col-sm-2"></div> \
           <div class="col-sm-10 checkbox-container">\
-            <input type="checkbox" ng-model="data[key]" ng-checked="check(data, key)" class="field" ng-disabled="{{ display.readonly }}">\
-            <span class="checkbox-label">{{ display.label || key }}</span>\
+            <input type="checkbox" ng-attr-id="{{key}}" ng-model="data[key]" ng-checked="check(data, key)" class="field" ng-disabled="{{ display.readonly }}">\
+            <label class="checkbox-label" ng-attr-for="{{key}}">{{ display.label || key }}</label>\
             <div class="model-field-description" ng-if="display.description">{{ display.description }}</div>\
           </div>';
         break;
@@ -130,6 +175,21 @@ angular.module('dashboard.directives.ModelField', [
         template = '<label class="col-sm-2 control-label">{{ display.label || key }}:</label>\
           <div class="col-sm-10">\
             <textarea ng-model="data[key]" ng-disabled="{{ display.readonly }}" ng-required="{{ model.properties[key].required }}" class="field form-control"></textarea>\
+            <div class="model-field-description" ng-if="display.description">{{ display.description }}</div>\
+          </div>';
+        break;
+      case 'wysiwyg':
+      case 'WYSIWYG':
+        template = '<label class="col-sm-2 control-label">{{ display.label || key }}:</label>\
+          <div class="col-sm-10">\
+            <model-field-wysiwyg-edit key="key" property="property" options="display.options" model-data="data" ng-model="data[key]" class="field" ng-required="{{ model.properties[key].required }}" disabled="display.readonly"  /> \
+            <div class="model-field-description" ng-if="display.description">{{ display.description }}</div>\
+          </div>';
+        break;
+      case 'number':
+        template = '<label class="col-sm-2 control-label">{{ display.label || key }}:</label>\
+          <div class="col-sm-10">\
+            <input type="number" ng-model="data[key]" ng-pattern="{{ display.pattern }}" ng-disabled="{{ display.readonly }}" ng-required="{{ model.properties[key].required }}" class="field form-control">\
             <div class="model-field-description" ng-if="display.description">{{ display.description }}</div>\
           </div>';
         break;
@@ -279,7 +339,7 @@ angular.module('dashboard.directives.ModelField', [
         if (property.display.type == "custom") {
           element.html(property.display.editTemplate).show();
         } else {
-          element.html(getTemplate(property.display.type)).show();
+          element.html(getTemplate(property.display.type, scope)).show();
         }
         $compile(element.contents())(scope);
 

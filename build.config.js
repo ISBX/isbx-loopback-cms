@@ -90,7 +90,11 @@ module.exports = {
       'vendor/fullcalendar/dist/fullcalendar.min.js',
       'vendor/fullcalendar/dist/gcal.js',
       'vendor/eonasdan-bootstrap-datetimepicker/build/js/bootstrap-datetimepicker.min.js',
-      'vendor/ng-slider/dist/ng-slider.min.js'
+      'vendor/ng-slider/dist/ng-slider.min.js',
+      'vendor/bootstrap-wysiwyg/bootstrap-wysiwyg.js',
+      'vendor/jquery.hotkeys/jquery.hotkeys.js',
+      'vendor/spectrum/spectrum.js',
+      'vendor/js-beautify/js/lib/beautify-html.js'
     ],
     css: [
       'vendor/jquery-resizable-columns/dist/jquery.resizableColumns.css',
@@ -101,7 +105,8 @@ module.exports = {
       'vendor/fullcalendar/dist/fullcalendar.css',
       'vendor/bootstrap3-datetimepicker/build/css/bootstrap-datetimepicker.min.css',
       'vendor/eonasdan-bootstrap-datetimepicker/build/css/bootstrap-datetimepicker.min.css',
-      'vendor/ng-slider/dist/css/ng-slider.min.css'
+      'vendor/ng-slider/dist/css/ng-slider.min.css',
+      'vendor/spectrum/spectrum.css'
     ],
     assets: [
       'vendor/bootstrap/fonts/glyphicons-halflings-regular.eot',

@@ -17,23 +17,30 @@ angular.module('dashboard.Login', [
 })
 
 .controller('LoginCtrl', function LoginCtrl($scope, $state, $window, Config, SessionService) {
-  $scope.login = {};
 
-  function init() {
-  }
+  var self = this;
 
-  $scope.logIn = function() {
+  this.init = function() {
+    $scope.login = {};
+    $scope.clickLogin = self.clickLogin;
+  };
+
+  this.clickLogin = function() {
     SessionService.logIn($scope.login.email, $scope.login.password)
       .then(function(response) {
         localStorage.clear(); //clear out all previous cache when login
         $state.go('dashboard');
       })
       .catch(function(response) {
-        alert("Invalid login.");
+        if (response && response[0] && response[0].error && response[0].error.message) {
+          alert(response[0].error.message);
+        } else {
+          alert("Invalid login.");
+        }
       });
-  }
+  };
   
-  init();
+  self.init();
 })
 
 ;

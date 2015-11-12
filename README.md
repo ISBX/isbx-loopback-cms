@@ -7,7 +7,7 @@ The ISBX LoopBack CMS is in its early stage of development. The Node JS CMS is d
 This package is intended to be used as a Node Module. You should install the package with the command:
 
 ```
-npm https://github.com/ISBX/isbx-loopback-cms.git
+npm install https://github.com/ISBX/isbx-loopback-cms.git
 ```
 
 You can include it in your package.json using

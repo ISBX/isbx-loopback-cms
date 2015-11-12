@@ -37,6 +37,7 @@ function setupDefaultAdmin(loopbackApplication, config) {
   var RoleMapping = loopbackApplication.models.RoleMapping; //built-in loopback Model
   var Role = loopbackApplication.models.Role; //built-in loopback Model
   var User = loopbackApplication.models[authModelName]; //ISBX projects uses "Account" model that overrides the User base model
+  var ACL = loopbackApplication.models.ACL;
   if (!User) User = loopbackApplication.models.User; //default base to base User class
   User.count(function(error, count) {
     if (error) {
@@ -60,10 +61,10 @@ function setupDefaultAdmin(loopbackApplication, config) {
               console.dir(error);
               return;
             }
-            createDefaultAdmin(User, RoleMapping, role.id);
+            createDefaultAdmin(User, RoleMapping, ACL, role.id);
           });
         } else {
-          createDefaultAdmin(User, RoleMapping, result.id);
+          createDefaultAdmin(User, RoleMapping, ACL, result.id);
         }
       });
     }
@@ -78,7 +79,7 @@ function createSuperAdminRole(Role, callback) {
   Role.create(role, callback);
 }
 
-function createDefaultAdmin(User, RoleMapping, roleId) {
+function createDefaultAdmin(User, RoleMapping, ACL, roleId) {
   User.create({
     email: "admin@example.com",
     username: "admin",
@@ -102,6 +103,8 @@ function createDefaultAdmin(User, RoleMapping, roleId) {
       }
       console.log("Created default 'admin' user with password 'password'.");
     });
+    //Force ACL for default SuperAdmin Role
+    ACL.create({ model: User.definition.name, property: "*", accessType: "*", permission: "ALLOW", "principalType": "ROLE", "principalId": "SuperAdmin" });
   });
 }
 

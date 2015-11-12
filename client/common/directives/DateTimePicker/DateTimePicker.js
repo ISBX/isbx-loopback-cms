@@ -12,7 +12,8 @@ angular.module('dashboard.directive.DateTimePicker', [
           ngFormat: '=ngFormat',
           defaultDate: '@',
           viewMode: '@',
-          ngViewMode: '=ngViewMode'
+          ngViewMode: '=ngViewMode',
+          horizontal: '@'
       },
       link: function (scope, elem, attrs, ngModel) {
 
@@ -31,8 +32,9 @@ angular.module('dashboard.directive.DateTimePicker', [
         elem.datetimepicker({
           format: scope.format,
           useCurrent: false,
-          defaultDate: scope.defaultDate,
-          viewMode: scope.viewMode
+          defaultDate: scope.defaultDate ? moment.utc(scope.defaultDate, scope.format) : undefined,
+          viewMode: scope.viewMode,
+          widgetPositioning: { horizontal: scope.horizontal ? scope.horizontal : 'auto' }
         });
 
         //For companion button to launch the popup

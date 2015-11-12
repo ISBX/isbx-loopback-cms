@@ -23,8 +23,10 @@ angular.module('dashboard.Dashboard.Model.List', [
 })
 
 .controller('ModelListCtrl', function ModelListCtrl($scope, $cookies, $timeout, $state, $location, $window, $modal, Config, GeneralModelService, $location) {
-  
+
+  var isFirstLoad = true;
   var modalInstance = null;
+  $scope.moment = moment;
   $scope.columnCount = 0;
   $scope.list = [];
   $scope.selected = [];
@@ -133,12 +135,17 @@ angular.module('dashboard.Dashboard.Model.List', [
     });
     
     $scope.$on('ModelListLoadItems', function() {
-      $scope.loadItems();
+      $scope.getTotalServerItems(); //make sure to get the total server items and then reload data
     });
 
-    if (/(iPad|iPhone|iPod|Android)/g.test( navigator.userAgent ))  {
+    if (/(iPad|iPhone|iPod|Android)/g.test( navigator.userAgent ) || $scope.action.options.flexibleHeight)  {
       //For mobile let the page scroll rather just the ng-grid (Also see mouse binding details below for mobile mobile tweaks)
       $scope.gridOptions.plugins = [new ngGridFlexibleHeightPlugin()];
+    }
+
+    if ($scope.action.options.allowCSVExport) {
+      if (!$scope.gridOptions.plugins) $scope.gridOptions.plugins = [];
+      $scope.gridOptions.plugins.push(new ngGridCsvExportPlugin());
     }
 
   }
@@ -317,8 +324,10 @@ angular.module('dashboard.Dashboard.Model.List', [
     
     //TODO: Figure out a better way to preserve state; the following 
     $location.search("pageSize", $scope.pagingOptions.pageSize);
-    $location.search("currentPage", $scope.pagingOptions.currentPage); 
-    $location.search("sortInfo", JSON.stringify($scope.sortInfo));
+    $location.search("currentPage", $scope.pagingOptions.currentPage);
+    var sortInfo = angular.copy($scope.sortInfo); //make a copy of sortInfo so that the watch statement doesn't get called
+    delete sortInfo.columns; //cleanup sortInfo to declutter querystring
+    $location.search("sortInfo", JSON.stringify(sortInfo));
     $location.replace(); //replaces current history state rather then create new one when chaging querystring
     return params;
   }
@@ -350,12 +359,19 @@ angular.module('dashboard.Dashboard.Model.List', [
     GeneralModelService.count($scope.apiPath, params)
     .then(function(response) {
       if (!response) return; //in case http request was cancelled
+      //Check if response is an array or object
+      if (response instanceof Array && response.length > 0) response = response[0];
+      var keys = Object.keys(response);
+      if (!response.count && keys.length > 0) {
+        response.count = response[keys[0]]; //grab first key as the count if count property doesn't exist
+      }
       $scope.totalServerItems = response.count;
       $scope.loadItems();
     });  
   };
 
   $scope.loadItems = function() {
+    $scope.$emit("ModelListLoadItemsLoading");
     var params = setupPagination();
 
     if ($scope.isSearching) {
@@ -388,6 +404,8 @@ angular.module('dashboard.Dashboard.Model.List', [
         $scope.columnCount = $scope.list.length > 0 ? Object.keys($scope.list[0]).length : 0;
         localStorage[cacheKey] = JSON.stringify(response); //assign to cache
         processWindowSize(); //on first load check window size to determine if optional columns should be displayed
+        $scope.$emit("ModelListLoadItemsLoaded");
+        isFirstLoad = false;
       });  
   };
   
@@ -420,7 +438,8 @@ angular.module('dashboard.Dashboard.Model.List', [
       if (button.options) {
         if (button.options.model) $scope.action.options.model = button.options.model;
         if (button.options.key) $scope.action.options.key = button.options.key;
-        if (button.returnAfterEdit) $scope.action.options.returnAfterEdit = button.returnAfterEdit; 
+        if (button.options.display) $scope.action.options.display = button.options.display;
+        if (button.returnAfterEdit) $scope.action.options.returnAfterEdit = button.returnAfterEdit;
         if (button.options.data) {
           var keys = Object.keys(button.options.data);
           for (var i in keys) {
@@ -649,9 +668,9 @@ angular.module('dashboard.Dashboard.Model.List', [
   $scope.$watch("selected", function(newVal, oldVal) {
     if (newVal !== oldVal && newVal.length > 0 && !$scope.action.options.editable) {
       if ($scope.action.options.selectedState) {
-        $state.go($scope.action.options.selectedState.stateName || "dashboard.model.action.edit", { model: $scope.action.options.selectedState.stateModel || $scope.section.path, action: $scope.action.options.selectedState.stateAction || $scope.action.label, id: newVal[0][$scope.action.options.selectedState.stateId || $scope.action.options.key] });
+        $state.go($scope.action.options.selectedState.stateName || "dashboard.model.action.edit", { model: $scope.action.options.selectedState.stateModel || $scope.section.path, key: $scope.action.options.key, action: $scope.action.options.selectedState.stateAction || $scope.action.label, id: newVal[0][$scope.action.options.selectedState.stateId || $scope.action.options.key] });
       } else {
-        $state.go("dashboard.model.action.edit", { model: $scope.section.path, action: $scope.action.label, id: newVal[0][$scope.action.options.key] });
+        $state.go("dashboard.model.action.edit", { model: $scope.section.path, key: $scope.action.options.key, action: $scope.action.label, id: newVal[0][$scope.action.options.key] });
       }
     }    
   }, true);
@@ -673,7 +692,8 @@ angular.module('dashboard.Dashboard.Model.List', [
 //  }, true);
 
   $scope.$watch('sortInfo', function (newVal, oldVal) {
-    if (newVal !== oldVal) {
+    //Check isFirstLoad so that this watch statement does not get called when the page loads for the first time
+    if (!isFirstLoad && newVal !== oldVal) {
       $scope.loadItems();
     }
   }, true);
@@ -732,8 +752,8 @@ angular.module('dashboard.Dashboard.Model.List', [
     }
 
     //For Mobile let entire page scroll
-    if (/(iPad|iPhone|iPod|Android)/g.test( navigator.userAgent ))  {
-      $(".model-list .grid-container").css({overflow: "visible"});
+    if (/(iPad|iPhone|iPod|Android)/g.test( navigator.userAgent ) || $scope.action.options.flexibleHeight)  {
+      $(".model-list .grid-container").addClass("flexible");
       $(".model-list .grid").css({ bottom: "auto" });
       $(".model-list .ngFooterPanel").css({position: "static", bottom: "auto"});
       //$scope.gridOptions.plugins = [new ngGridFlexibleHeightPlugin()];
