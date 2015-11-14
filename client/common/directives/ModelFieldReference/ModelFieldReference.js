@@ -195,6 +195,16 @@ angular.module('dashboard.directives.ModelFieldReference', [
               //console.log("default select = " + JSON.stringify(response));
               scope.selected.item = response;
               scope.list = [scope.selected.item]; //make sure list contains item otherwise won't be displayed
+            }, function(error) {
+                if (scope.options.allowInsert) {
+                  //Not found so just add the item
+                  var newItem = {};
+                  newItem[scope.options.key] = scope.data;
+                  newItem[scope.options.searchField] = scope.data;
+                  scope.selected.item = newItem;
+                  scope.list.push(newItem);
+                }
+
             });
           }
        });
@@ -219,9 +229,13 @@ angular.module('dashboard.directives.ModelFieldReference', [
            var textValue = item[scope.options.searchField];
             if (item && item[scope.options.searchField] == "[Add New Item]") {
               //console.log("should add " + $select.search);
-              console.log("should add item");
               var value = element.find("input.ui-select-search").val();
-              console.log(value);
+              scope.data = value;
+              var newItem = {};
+              newItem[scope.options.key] = value;
+              newItem[scope.options.searchField] = value;
+              scope.selected.item = newItem;
+              scope.list.push(newItem);
             } else if (item && item[scope.options.searchField] == "[clear]") {
               //console.log("should add " + $select.search);
               scope.data = null;
