@@ -235,7 +235,8 @@ angular.module('dashboard.directives.ModelFieldImage', [
                   background: 'no-repeat center center url(' + scope.imageUrl + ')',
                   backgroundSize: thumbnailWidth + 'px ' + thumbnailHeight + 'px'
                 });
-                scale = 1.0;
+                var maxScale = 1.0;
+                scale = maxScale;
                 var zoomWidth = image.width * scale;
                 var zoomHeight = image.height * scale;
                 $zoom.css({
@@ -243,9 +244,14 @@ angular.module('dashboard.directives.ModelFieldImage', [
                   backgroundSize: zoomWidth + 'px ' + zoomHeight + 'px',
                   border: 'solid 1px #000'
                 });
-                $thumbnail.on("mousemove", function(event) {
-                  var x = event.offsetX;
-                  var y = event.offsetY;
+                var x = 'center';
+                var y = 'center';
+
+                var positionImage = function(event) {
+
+                  //Handle Positioning
+                  x = event.offsetX;
+                  y = event.offsetY;
                   if (!x) x = event.pageX; //Firefox
                   if (!y) y = event.pageY; //Firefox
 
@@ -258,7 +264,24 @@ angular.module('dashboard.directives.ModelFieldImage', [
                   y *= -zoomHeight/thumbnailHeight;
                   x += $zoom.width()/2; //center
                   y += $zoom.height()/2;
-                  $zoom.css({ backgroundPosition: x + "px " + y + "px" });
+                  $zoom.css({
+                    backgroundPosition: x + "px " + y + "px",
+                    backgroundSize: zoomWidth + 'px ' + zoomHeight + 'px'
+                  });
+                };
+
+                $thumbnail.on("mousemove", positionImage);
+                $thumbnail.bind('mousewheel', function(event) {
+                  //Handle Scaling
+                  var increment = 0.01;
+                  if(event.originalEvent.wheelDelta /120 > 0 && scale + increment <= maxScale * 1.1) {
+                    scale += increment;
+                  } else if (scale - increment >= 0.1) {
+                    scale -= increment;
+                  }
+                  zoomWidth = image.width * scale;
+                  zoomHeight = image.height * scale;
+                  positionImage(event);
                 });
 
               }
