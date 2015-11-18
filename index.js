@@ -278,7 +278,7 @@ function cms(loopbackApplication, options) {
   }
 
   app.get('/config.js', function(req, res) {
-    if (environment == "development") {
+    if (environment != "production") {
       //reload the config JS each refresh
       delete require.cache[configPath];
       var devConfig = require(configPath);
