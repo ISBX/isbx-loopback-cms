@@ -27,15 +27,15 @@ angular.module('dashboard.directives.ModelFieldList', [
           <i class="fa fa-reorder"></i>\
           <div class="list-field-container"> \
             <div class="list-field" ng-repeat="field in options.display">\
-              <input type="text" class="form-control list-edit-{{field}}" ng-model="list[index][field]" placeholder="{{options.properties[field].display.label}}", ng-change="updateData()"> \
+              <input type="text" class="form-control list-edit-{{field}}" ng-model="list[index][field]" placeholder="{{options.properties[field].display.label}}", ng-change="updateData()" ng-disabled="disabled"> \
             </div> \
           </div> \
           <div class="action"> \
-            <a href="" ng-click="removeItem(index)" class="remove"><i class="fa fa-times"></i></a> \
+            <a href="" ng-click="removeItem(index)" class="remove" ng-hide="disabled"><i class="fa fa-times"></i></a> \
           </div> \
         </li> \
       </ul>\
-      <button class="btn btn-default list-add-item" ng-click="addItem()">{{ options.addLabel }}</button>';
+      <button class="btn btn-default list-add-item" ng-click="addItem()" ng-disabled="disabled">{{ options.addLabel }}</button>';
       return template;
     }
     return {
@@ -55,7 +55,8 @@ angular.module('dashboard.directives.ModelFieldList', [
 
         scope.sortableOptions = {
           placeholder: 'sortable-placeholder',
-          update: self.updateData
+          update: self.updateData,
+          disabled: scope.disabled
         };
 
         scope.setData = function() {
