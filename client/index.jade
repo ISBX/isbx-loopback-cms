@@ -3,6 +3,8 @@ html(ng-app="dashboard", ng-controller="AppCtrl")
   head
     title(ng-bind="pageTitle")
     base(href="/cms/")
+    - if (config.public.isSEOBlock)
+      meta(name="robots", content="noindex, nofollow")
     meta(name='viewport', content='width=device-width, initial-scale=0.8, maximum-scale=0.8')
     link(href="https://www.google.com/fonts#UsePlace:use/Collection:Open+Sans:400,300,600,700" rel="stylesheet" type="text/css")
     link(href="//maxcdn.bootstrapcdn.com/font-awesome/4.4.0/css/font-awesome.min.css", rel="stylesheet")
