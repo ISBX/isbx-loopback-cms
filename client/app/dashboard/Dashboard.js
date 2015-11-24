@@ -40,6 +40,7 @@ angular.module('dashboard.Dashboard', [
       //Fail elegantly 
       console.error("Unable to parse $cookies.session");
     }
+    console.log('$scope.userInfo', $scope.userInfo)
     $scope.title = Config.serverParams.title || 'Content Management System';
     
     //When navigating to the dashboard state redirect to the default nav

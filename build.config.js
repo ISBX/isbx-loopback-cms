@@ -73,7 +73,7 @@ module.exports = {
       'vendor/angular-ui-utils/ui-utils.js',
       'vendor/angular-ui-select/dist/select.min.js',
       'vendor/angular-ui-sortable/sortable.min.js',
-      'vendor/angular-ui-calendar/calendar.min.js',
+      'vendor/angular-ui-calendar/src/calendar.js',
       'vendor/angular-grid/ng-grid-2.0.14.debug.js',
       'vendor/angular-grid/plugins/ng-grid-flexible-height.js',
       'vendor/angular-grid/plugins/ng-grid-csv-export.js',
