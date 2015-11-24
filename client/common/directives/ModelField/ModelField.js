@@ -126,7 +126,7 @@ angular.module('dashboard.directives.ModelField', [
         break;
       case 'select':
         var ngOptions = 'key as value for (key, value) in display.options';
-        if (scope.display.options instanceof Array) {
+        if (scope.property.display.options instanceof Array) {
           //Handle when options is a an array vs key/value pair
           ngOptions = 'value as value for value in display.options';
         }
@@ -139,7 +139,7 @@ angular.module('dashboard.directives.ModelField', [
         break;
       case 'radio':
         var ngOptions = '(value, text) in display.options';
-        if (scope.display.options instanceof Array) {
+        if (scope.property.display.options instanceof Array) {
           //Handle when options is a an array vs key/value pair
           ngOptions = 'text in display.options';
         }
@@ -211,7 +211,6 @@ angular.module('dashboard.directives.ModelField', [
       data: '=ngModel'
     },
     link: function(scope, element, attrs) {
-        
         //In situations where edit form has fields not in the model json properties object (i.e. ModelFieldReference multi-select)
         if(scope.key !== null && typeof scope.key === 'object') {
           if (!scope.model.properties[scope.key.property]) {
@@ -238,10 +237,17 @@ angular.module('dashboard.directives.ModelField', [
             default: property.display.type = "text"; break;
           }
         }
-        
-        scope.property = property;
-        scope.display = property.display;
 
+        if (property.display.type == 'file' && scope.data[scope.key]) {
+          //Check if image file is uploaded and convert schema property display type to image
+          var filename = scope.data[scope.key];
+          if (typeof filename === 'object' && filename.filename) filename = filename.filename
+          var extension = filename.toLowerCase().substring(filename.length-4);
+          if (extension == '.png' || extension == '.jpg' || extension == 'jpeg' || extension == '.bmp') {
+            property = angular.copy(property); //we don't want changes the schema property to persist outside of this directive
+            property.display.type = 'image';
+          }
+        }
 
         //Set default date format
         if (property.display.type == "datetime") {
@@ -253,7 +259,7 @@ angular.module('dashboard.directives.ModelField', [
           scope.check = function(data, key) {
             //This function is needed to accept string '1' and numeric 1 values when state changes
             var value = data[key];
-            if (value == undefined || value == null) return scope.display.default;
+            if (value == undefined || value == null) return property.display.default;
             data[key] = value == '1' || value == 1; //Fixes a bug where data[key] changes from bool to string can cause checkbox to get unchecked
             return data[key];
           }
@@ -262,7 +268,7 @@ angular.module('dashboard.directives.ModelField', [
         }
         
         if (property.display.type == "slider") {
-          if (!scope.data[scope.key]) scope.data[scope.key] = scope.display.options.from + ";" + scope.display.options.to;
+          if (!scope.data[scope.key]) scope.data[scope.key] = property.display.options.from + ";" + property.display.options.to;
         }
 
         //See if there is a default value
@@ -273,7 +279,7 @@ angular.module('dashboard.directives.ModelField', [
         //Set multi-select output type
         if (property.display.type == "multi-select") {
           if (typeof property.display.output === 'undefined') {
-            property.display.output = scope.display.options instanceof Array ? "comma" : "object";
+            property.display.output = property.display.options instanceof Array ? "comma" : "object";
           }
           switch (property.display.output) {
             case "comma":
@@ -284,7 +290,7 @@ angular.module('dashboard.directives.ModelField', [
                 var item = items[i];
                 if (item[0] == '"') item = item.substring(1, item.length);
                 if (item[item.length-1] == '"') item = item.substring(0, item.length-1);
-                var index = scope.display.options.indexOf(item);
+                var index = property.display.options.indexOf(item);
                 scope.multiSelectOptions[index] = true;
               }
               break;
@@ -307,18 +313,18 @@ angular.module('dashboard.directives.ModelField', [
           var output = property.display.output == "array" ? [] : property.display.output == "object" ? {} : "";
           if (property.display.output == "object") {
             //Return Key/Value Pair
-            var keys = Object.keys(scope.display.options);
+            var keys = Object.keys(property.display.options);
             for (var i in keys) {
               var key = keys[i];
-              var value = scope.display.options[key];
+              var value = property.display.options[key];
               var selected = scope.multiSelectOptions[key];
               if (selected) output[key] = value; //return object
 
             }
           } else {
-            //Results are always in order of scope.display.options
-            for (var i = 0; i < scope.display.options.length; i++) {
-              var value = scope.display.options[i];
+            //Results are always in order of property.display.options
+            for (var i = 0; i < property.display.options.length; i++) {
+              var value = property.display.options[i];
               var selected = scope.multiSelectOptions[i];
               switch (property.display.output) {
                 case "comma":
@@ -332,8 +338,12 @@ angular.module('dashboard.directives.ModelField', [
             if (property.display.output == "comma" && output.length > 0) output = output.substring(0, output.length-1); //remove last comma
           }
           scope.data[scope.key] = output;
-          
+
         };
+
+        //scope variables needed for the HTML Template
+        scope.property = property;
+        scope.display = property.display;
 
 
         if (property.display.type == "custom") {

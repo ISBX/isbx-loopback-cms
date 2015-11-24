@@ -52,7 +52,7 @@ angular.module('dashboard.Dashboard.Model.Edit', [
       $scope.model.properties[key].display.readonly = true;
     }
 
-    
+    $scope.isLoading = true;
     $scope.data = {};
     
     //Check to see if there's any passed in values from the referring page
@@ -61,20 +61,6 @@ angular.module('dashboard.Dashboard.Model.Edit', [
       for (var i in keys) {
         var key = keys[i];
         $scope.data[key] = $scope.action.options.data[key]; //only occurs for new records (this gets replaced when editing a record)
-      }
-    }
-    
-    
-    //Check if $scope.model.display is defined displaying the order of fields defined in the loopback model json 
-    $scope.modelDisplay = $scope.model.display;
-    if ($scope.action.options.display) $scope.modelDisplay = $scope.model[$scope.action.options.display];
-    if (!$scope.modelDisplay || $scope.modelDisplay.length == 0) {
-      $scope.modelDisplay = [];
-      var keys = Object.keys( $scope.model.properties);
-      for (var i in keys) {
-        var key = keys[i];
-        $scope.modelDisplay.push(key);
-        if (!$scope.data[key]) $scope.data[key] = null;
       }
     }
 
@@ -87,15 +73,35 @@ angular.module('dashboard.Dashboard.Model.Edit', [
     if ($scope.action.options.id && $scope.action.options.id > 0) id = $scope.action.options.id;
     if (id) {
       $scope.isEdit = true;
+      $scope.modelDisplay = null; //reset model display to prevent caching
       GeneralModelService.get($scope.model.plural, id)
       .then(function(response) {
         if (!response) return;  //in case http request was cancelled
         $scope.data = response;
+        layoutModelDisplay();
+        $scope.isLoading = false;
       });
     } else {
+      layoutModelDisplay();
       $scope.isEdit = false;
-    } 
+      $scope.isLoading = false;
+    }
   }
+
+  function layoutModelDisplay() {
+    //Check if $scope.model.display is defined displaying the order of fields defined in the loopback model json
+    $scope.modelDisplay = $scope.model.display;
+    if ($scope.action.options.display) $scope.modelDisplay = $scope.model[$scope.action.options.display];
+    if (!$scope.modelDisplay || $scope.modelDisplay.length == 0) {
+      $scope.modelDisplay = [];
+      var keys = Object.keys( $scope.model.properties);
+      for (var i in keys) {
+        var key = keys[i];
+        $scope.modelDisplay.push(key);
+        if (!$scope.data[key]) $scope.data[key] = null;
+      }
+    }
+  };
 
 
   /**
