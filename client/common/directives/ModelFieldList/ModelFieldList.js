@@ -85,7 +85,7 @@ angular.module('dashboard.directives.ModelFieldList', [
 
         var unwatch = scope.$watchCollection('[data, options, modelData]', function(results) {
           if (scope.data && scope.options) {
-            unwatch();
+            //unwatch(); //Don't unwatch so that updates to the scope.data outside of the directive will refresh the list
             if (scope.data instanceof Array) {
               scope.list = scope.data;
             } else {
