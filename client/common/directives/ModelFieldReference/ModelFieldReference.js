@@ -226,6 +226,8 @@ angular.module('dashboard.directives.ModelFieldReference', [
          } else {
            //For single record reference just assign the ID back to data
            scope.data = item[scope.options.key];
+           //emit an event when an item is selected
+           scope.$emit('onModelFieldReferenceSelect', scope.modelData, scope.key, item);
            var textValue = item[scope.options.searchField];
             if (item && item[scope.options.searchField] == "[Add New Item]") {
               //console.log("should add " + $select.search);
