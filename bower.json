@@ -27,7 +27,8 @@
     "spectrum": "~1.7.1",
     "jquery.hotkeys": "*",
     "bootstrap-wysiwyg": "*",
-    "js-beautify": "~1.5.10"
+    "js-beautify": "~1.5.10",
+    "ng-signature-pad": "*"
   },
   "resolutions": {
     "angular": ">=1.2.18"
