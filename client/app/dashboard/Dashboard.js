@@ -72,6 +72,9 @@ angular.module('dashboard.Dashboard', [
       $scope.locationPath = $location.path();
     })
 
+    $scope.$on('modelEditSaved', function() {
+      if ($scope.modalInstance) $scope.modalInstance.close();
+    });
   }
 
   /*
@@ -145,7 +148,7 @@ angular.module('dashboard.Dashboard', [
   };
   
   $scope.editProfile = function($event) {
-    $event.preventDefault();
+    if ($event) $event.preventDefault();
     $scope.action = {
         options: {
           model: Config.serverParams.profileModel,

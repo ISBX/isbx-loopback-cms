@@ -24,7 +24,7 @@ angular.module('dashboard.Dashboard.Model.Edit', [
     ;
 })
 
-.controller('ModelEditCtrl', function ModelEditCtrl($scope, $cookies, $stateParams, $state, $window, $modal, Config, GeneralModelService, FileUploadService, $location) {
+.controller('ModelEditCtrl', function ModelEditCtrl($rootScope, $scope, $cookies, $stateParams, $state, $window, $modal, Config, GeneralModelService, FileUploadService, $location) {
 
   var modalInstance = null;
       
@@ -104,7 +104,7 @@ angular.module('dashboard.Dashboard.Model.Edit', [
     GeneralModelService.saveWithFiles($scope.model.name, id, $scope.data)
       .then(function(response) {
         if (callback) {
-          callback();
+          callback(); //occurs when deleting model record
         } else if ($scope.action.options && $scope.action.options.returnAfterEdit) {
           $window.history.back();
         } else {
@@ -118,6 +118,7 @@ angular.module('dashboard.Dashboard.Model.Edit', [
           }
         }
         if (modalInstance) modalInstance.close();
+          $rootScope.$broadcast('modelEditSaved');
       },
       function(error) {
         if (typeof error === 'object' && error.message) {
