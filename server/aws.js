@@ -60,6 +60,7 @@ function getS3Credentials(path, fileType, callback) {
                        { success_action_status: "201" },
                        ["starts-with", "$key", path + "/"],
                        //["starts-with", "$Content-Type", fileType],
+                       ["starts-with", "$Cache-Control", "max-age=31536000"], // 1 year
                        ["content-length-range", 0, maxFileSize]
           ]
   };

@@ -26,7 +26,8 @@ angular.module('dashboard.services.FileUpload', [
       policy: credentials.policy, // base64-encoded json policy (see article below)
       signature: credentials.signature, // base64-encoded signature based on policy string (see article below)
       //"Content-Type": file.type != '' ? file.type : 'application/octet-stream', // content type of the file (NotEmpty),
-      success_action_status: "201"//,
+      success_action_status: "201",
+      "Cache-Control": "max-age=31536000"
       //filename:  credentials.uniqueFilePath // this is needed for Flash polyfill IE8-9
     };
   };
