@@ -155,6 +155,7 @@ angular.module('dashboard.directives.ModelFieldReferenceSort', [
 
         scope.onSelect = function(item, model) {
           var params = {};
+          scope.$emit('onModelFieldReferenceSortSelect', scope.modelData, scope.key, item);
           if (!item[scope.options.key] && item[scope.options.searchField]) {
             var value = element.find("input.ui-select-search").val();
             item[scope.options.key] = value;
