@@ -5,9 +5,11 @@ angular.module('dashboard.directives.ModelField', [
   'dashboard.directives.ModelFieldReferenceSort',
   'dashboard.directives.ModelFieldList',
   'dashboard.directives.ModelFieldWYSIWYG',
+  'dashboard.directives.ModelFieldCanvas',
   'dashboard.directive.DateTimePicker',
   'ngCookies',
-  'ngSlider'
+  'ngSlider',
+  'ngSignaturePad'
 ])
 
 .directive('modelFieldView', function($compile) {
@@ -183,6 +185,14 @@ angular.module('dashboard.directives.ModelField', [
         template = '<label class="col-sm-2 control-label">{{ display.label || key }}:</label>\
           <div class="col-sm-10">\
             <model-field-wysiwyg-edit key="key" property="property" options="display.options" model-data="data" ng-model="data[key]" class="field" ng-required="{{ model.properties[key].required }}" disabled="display.readonly"  /> \
+            <div class="model-field-description" ng-if="display.description">{{ display.description }}</div>\
+          </div>';
+        break;
+      case 'draw':
+      case 'signature':
+        template = '<label class="col-sm-2 control-label">{{ display.label || key }}:</label>\
+          <div class="col-sm-10">\
+            <model-field-canvas-edit key="key" property="property" options="display.options" ng-model="data[key]" class="field" ng-required="{{ model.properties[key].required }}" disabled="display.readonly"></model-field-canvas-edit>\
             <div class="model-field-description" ng-if="display.description">{{ display.description }}</div>\
           </div>';
         break;
