@@ -122,10 +122,12 @@ model-field-file-edit input[type=file] {
   opacity: 0;
   cursor: pointer;
 }
-model-field-image-edit {
+model-field-image-edit,
+model-field-video-edit {
   vertical-align: top;
 }
-model-field-image-edit .image-container {
+model-field-image-edit .image-container,
+model-field-video-edit .image-container {
   display: inline-block;
   width: 160px;
   height: 160px;
@@ -134,7 +136,8 @@ model-field-image-edit .image-container {
   border: solid 1px #dedede;
   cursor: pointer;
 }
-model-field-image-edit input[type=file] {
+model-field-image-edit input[type=file],
+model-field-video-edit input[type=file] {
   margin-left: -124px;
   display: inline-block;
   width: 120px;
@@ -143,12 +146,14 @@ model-field-image-edit input[type=file] {
   opacity: 0;
   cursor: pointer;
 }
-model-field-image-edit input[type=file].show-upload {
+model-field-image-edit input[type=file].show-upload,
+model-field-video-edit input[type=file].show-upload {
   margin-left: -160px;
   width: 160px;
   height: 160px;
 }
-model-field-image-edit .image-drop {
+model-field-image-edit .image-drop,
+model-field-video-edit .image-drop {
   display: none;
   width: 160px;
   height: 160px;
@@ -158,22 +163,28 @@ model-field-image-edit .image-drop {
   border: dashed 6px #dedede;
   vertical-align: top;
 }
-model-field-image-edit .image-drop.show-upload {
+model-field-image-edit .image-drop.show-upload,
+model-field-video-edit .image-drop.show-upload {
   display: inline-block;
 }
-model-field-image-edit .cancel-button {
+model-field-image-edit .cancel-button,
+model-field-video-edit .cancel-button {
   display: none;
 }
-model-field-image-edit .button-menu {
+model-field-image-edit .button-menu,
+model-field-video-edit .button-menu {
   display: inline-block;
 }
-model-field-image-edit .button-menu.hide-menu {
+model-field-image-edit .button-menu.hide-menu,
+model-field-video-edit .button-menu.hide-menu {
   display: none;
 }
-model-field-image-edit .upload-button {
+model-field-image-edit .upload-button,
+model-field-video-edit .upload-button {
   width: 120px;
 }
-model-field-image-edit .clear-button {
+model-field-image-edit .clear-button,
+model-field-video-edit .clear-button {
   display: block;
   margin-top: 8px;
 }
