@@ -335,12 +335,17 @@ angular.module('dashboard.Dashboard.Model.List', [
     .then(function(response) {
       if (!response) return; //in case http request was cancelled
       //Check if response is an array or object
-      if (response instanceof Array && response.length > 0) response = response[0];
-      var keys = Object.keys(response);
-      if (!response.count && keys.length > 0) {
-        response.count = response[keys[0]]; //grab first key as the count if count property doesn't exist
+      if (typeof response === 'string') {
+        $scope.totalServerItems = response;
+      } else {
+        if (response instanceof Array && response.length > 0) response = response[0];
+        var keys = Object.keys(response);
+        if (!response.count && keys.length > 0) {
+          response.count = response[keys[0]]; //grab first key as the count if count property doesn't exist
+
+        }
+        $scope.totalServerItems = response.count;
       }
-      $scope.totalServerItems = response.count;
       $scope.loadItems();
     });  
   };
