@@ -148,16 +148,7 @@ model-field-image-edit input[type=file].show-upload {
   width: 160px;
   height: 160px;
 }
-model-field-canvas-edit canvas {
-  border: solid 1px #ddd;
-  vertical-align: top;
-}
-model-field-canvas-edit button {
-  display: inline-block;
-  vertical-align: top;
-  margin-left: 10px;
-}
-model-field-canvas-edit .image-drop {
+model-field-image-edit .image-drop {
   display: none;
   width: 160px;
   height: 160px;
@@ -167,24 +158,33 @@ model-field-canvas-edit .image-drop {
   border: dashed 6px #dedede;
   vertical-align: top;
 }
-model-field-canvas-edit .image-drop.show-upload {
+model-field-image-edit .image-drop.show-upload {
   display: inline-block;
 }
-model-field-canvas-edit .cancel-button {
+model-field-image-edit .cancel-button {
   display: none;
 }
-model-field-canvas-edit .button-menu {
+model-field-image-edit .button-menu {
   display: inline-block;
 }
-model-field-canvas-edit .button-menu.hide-menu {
+model-field-image-edit .button-menu.hide-menu {
   display: none;
 }
-model-field-canvas-edit .upload-button {
+model-field-image-edit .upload-button {
   width: 120px;
 }
-model-field-canvas-edit .clear-button {
+model-field-image-edit .clear-button {
   display: block;
   margin-top: 8px;
+}
+model-field-canvas-edit canvas {
+  border: solid 1px #ddd;
+  vertical-align: top;
+}
+model-field-canvas-edit button {
+  display: inline-block;
+  vertical-align: top;
+  margin-left: 10px;
 }
 model-field-edit .checkbox-container input[type=checkbox] {
   margin: -2px 0 0 10px;
