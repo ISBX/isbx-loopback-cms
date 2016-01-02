@@ -364,7 +364,7 @@ angular.module('dashboard.directives.ModelField', [
         scope.display = property.display;
 
 
-        if (property.display.type == "custom") {
+        if (property.display.editTemplate) {
           element.html(property.display.editTemplate).show();
         } else {
           element.html(getTemplate(property.display.type, scope)).show();
