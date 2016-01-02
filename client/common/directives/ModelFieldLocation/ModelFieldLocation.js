@@ -118,6 +118,10 @@ angular.module('dashboard.directives.ModelFieldLocation', [
           // Search is initated once user presses enter within the search input field
           document.getElementById('searchInput').onkeypress = function(e) {
             if(e.keyCode == 13) {
+              // Clears results for new query
+              scope.searchResults = [];
+              scope.displayedSearchResults = []; 
+
               var userSearchInput = document.getElementById('searchInput').value;
               var zipCode = document.getElementById('zipCode').value;
               var miles = document.getElementById('radius').value;
