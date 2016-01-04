@@ -140,9 +140,10 @@ angular.module('dashboard.directives.ModelFieldLocation', [
                     var request = {
                       location: location,
                       radius: radius,
-                      types: [scope.options.placeTypes],
                       query: userSearchInput
                     };
+
+                    if (scope.options.placeTypes) request.types = scope.options.placeTypes;
 
                     service = new google.maps.places.PlacesService(map);
                     service.textSearch(request, callback);
