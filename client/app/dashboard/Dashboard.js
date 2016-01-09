@@ -27,7 +27,10 @@ angular.module('dashboard.Dashboard', [
 .controller('DashboardCtrl', function DashboardCtrl($scope, $rootScope, $state, $stateParams, $location, $cookies, $modal, Config) {
 
   function init() {
-    $scope.nav = $scope.restrictMenuItems(Config.serverParams.nav);
+
+    //make a copy of the nav as not to modify the original object
+    var nav = angular.copy(Config.serverParams.nav);
+    $scope.nav = $scope.restrictMenuItems(nav);
 
     $scope.locationPath = $location.path();
     $scope.username = $cookies.username;
@@ -167,7 +170,7 @@ angular.module('dashboard.Dashboard', [
 
   $scope.logout = function($event) {
     $rootScope.logOut();
-    $event.preventDefault();
+    if ($event) $event.preventDefault();
   };
   
   init();
