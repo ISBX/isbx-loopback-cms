@@ -2,6 +2,7 @@ angular.module('dashboard.Dashboard.Model.Edit', [
   'dashboard.Dashboard.Model.Edit.SaveDialog',                                                
   'dashboard.Config',
   'dashboard.directives.ModelField',
+  'dashboard.services.Cache',
   'dashboard.services.GeneralModel',
   'dashboard.services.FileUpload',
   'ui.router',
@@ -24,7 +25,7 @@ angular.module('dashboard.Dashboard.Model.Edit', [
     ;
 })
 
-.controller('ModelEditCtrl', function ModelEditCtrl($rootScope, $scope, $cookies, $stateParams, $state, $window, $modal, Config, GeneralModelService, FileUploadService, $location) {
+.controller('ModelEditCtrl', function ModelEditCtrl($rootScope, $scope, $cookies, $stateParams, $state, $window, $modal, Config, GeneralModelService, FileUploadService, CacheService, $location) {
 
   var modalInstance = null;
       
@@ -154,7 +155,12 @@ angular.module('dashboard.Dashboard.Model.Edit', [
       controller: 'ModelEditSaveDialogCtrl',
       scope: $scope
     });
-    save();
+    save(function(){
+      if( $scope.action.options && $scope.action.options.returnAfterEdit) {
+        $window.history.back();
+      }
+      CacheService.clear($scope.action.options.model);
+    });
   };
   
   $scope.clickDeleteModel = function(data) {
@@ -164,12 +170,14 @@ angular.module('dashboard.Dashboard.Model.Edit', [
       //Soft Delete
       $scope.data[$scope.model.options.softDeleteProperty] = true;
       save(function() {
+        CacheService.clear($scope.action.options.model);
         $window.history.back();
       });
     } else {
       //Hard Delete
       GeneralModelService.remove($scope.model.plural, id)
       .then(function(response) {
+        CacheService.clear($scope.action.options.model);
         $window.history.back();
       }, function(error) {
         if (typeof error === 'object' && error.message) {
