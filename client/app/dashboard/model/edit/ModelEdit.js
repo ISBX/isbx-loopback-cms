@@ -47,7 +47,8 @@ angular.module('dashboard.Dashboard.Model.Edit', [
     var i = 0;
     angular.forEach($scope.model.properties,function(item,key,index){
       if(!item.display) item.display = {};
-      if(item.display.order === undefined) item.display.order = i;
+      if(!item.display.options) item.display.options = {};
+      if(item.display.options.order === undefined) item.display.options.order = i;
       i++;
     });
 
@@ -97,16 +98,16 @@ angular.module('dashboard.Dashboard.Model.Edit', [
       for (var i in keys) {
         var key = keys[i];
         //Hide field if display.hidden is set to true in loopback model json
-        if( $scope.model.properties[key].display && $scope.model.properties[key].display.hidden === true ) continue;
+        if( $scope.model.properties[key].display.options && $scope.model.properties[key].display.options.hidden === true ) continue;
         $scope.modelDisplay.push(key);
         if (!$scope.data[key]) $scope.data[key] = null;
       }
     }
     //Sort fields by order property
     $scope.modelDisplay.sort(function(a,b){
-      if( $scope.model.properties[a].display.order === null ) return 0;
-      if( $scope.model.properties[a].display.order < $scope.model.properties[b].display.order ) return -1;
-      if( $scope.model.properties[a].display.order > $scope.model.properties[b].display.order ) return 1;
+      if( $scope.model.properties[a].display.options.order === null ) return 0;
+      if( $scope.model.properties[a].display.options.order < $scope.model.properties[b].display.options.order ) return -1;
+      if( $scope.model.properties[a].display.options.order > $scope.model.properties[b].display.options.order ) return 1;
       return 0;
     })
   };
