@@ -1,5 +1,6 @@
 angular.module('dashboard.Login', [
   'dashboard.Config',
+  'dashboard.services.Cache',
   'dashboard.services.Session',
   'ui.router'
 ])
@@ -16,7 +17,7 @@ angular.module('dashboard.Login', [
     });
 })
 
-.controller('LoginCtrl', function LoginCtrl($scope, $state, $window, Config, SessionService) {
+.controller('LoginCtrl', function LoginCtrl($scope, $state, $window, Config, SessionService, CacheService) {
 
   var self = this;
 
@@ -28,7 +29,7 @@ angular.module('dashboard.Login', [
   this.clickLogin = function() {
     SessionService.logIn($scope.login.email, $scope.login.password)
       .then(function(response) {
-        localStorage.clear(); //clear out all previous cache when login
+        CacheService.reset(); //clear out all previous cache when login
         $state.go('dashboard');
       })
       .catch(function(response) {

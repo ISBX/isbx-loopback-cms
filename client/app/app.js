@@ -6,6 +6,7 @@ angular.module('dashboard', [
   'dashboard.directives',
   'dashboard.filters',
 
+  'dashboard.services.Cache',
   'dashboard.services.Session',
 
   'templates-app',
@@ -54,7 +55,7 @@ angular.module('dashboard', [
 
 })
 
-.controller('AppCtrl', function AppCtrl ($scope, $location , $state , $rootScope, $timeout, $document, SessionService, Config) {
+.controller('AppCtrl', function AppCtrl ($scope, $location , $state , $rootScope, $timeout, $document, SessionService, CacheService, Config) {
   $rootScope.$state = $state;
   if (Config.serverParams.gaTrackingId) ga('create', Config.serverParams.gaTrackingId, 'auto');
 
@@ -79,7 +80,7 @@ angular.module('dashboard', [
   });
 
   $rootScope.logOut = function(){
-    localStorage.clear(); //clear out caching
+    CacheService.reset(); //clear out caching
     SessionService.logOut()
       .then(function(result){
         if (Config.serverParams.loginState) {
