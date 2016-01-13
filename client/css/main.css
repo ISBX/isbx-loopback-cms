@@ -728,7 +728,9 @@ model-field-list-edit ul li .list-field input {
 .model-sort ul li .action,
 model-field-reference-sort-edit ul li .action,
 model-field-list-edit ul li .action {
-  float: right;
+  position: absolute;
+  right: 10px;
+  display: inline-block;
 }
 .model-sort ul li .action a,
 model-field-reference-sort-edit ul li .action a,
