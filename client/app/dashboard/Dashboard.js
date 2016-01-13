@@ -52,7 +52,6 @@ angular.module('dashboard.Dashboard', [
         } else if (defaultNav.params && !defaultNav.params.action) {
           //defaultNav.params.action not specified so find defaultSubNav
           var nav = _.find($scope.nav, {path: defaultNav.params.model});
-          console.log('nav',nav);
           if (nav) {
             if (nav.hidden) {
               //default navigation is hidden so find one that is not hidden
@@ -73,7 +72,6 @@ angular.module('dashboard.Dashboard', [
             }
           }
         }
-        console.log("dashboard.model.action." + defaultNav.route, defaultNav.params);
         $state.go("dashboard.model.action." + defaultNav.route, defaultNav.params);
       }
     }
