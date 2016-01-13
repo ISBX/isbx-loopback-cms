@@ -177,7 +177,7 @@ angular.module('dashboard.Dashboard', [
 
   $scope.logout = function($event) {
     $rootScope.logOut();
-    $event.preventDefault();
+    if ($event) $event.preventDefault();
   };
   
   init();
