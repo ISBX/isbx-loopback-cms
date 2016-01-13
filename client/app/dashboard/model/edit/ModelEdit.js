@@ -104,22 +104,9 @@ angular.module('dashboard.Dashboard.Model.Edit', [
     var id = $scope.data[$scope.action.options.key];
     GeneralModelService.saveWithFiles($scope.model.name, id, $scope.data)
       .then(function(response) {
-        if (callback) {
-          callback(); //occurs when deleting model record
-        } else if ($scope.action.options && $scope.action.options.returnAfterEdit) {
-          $window.history.back();
-        } else {
-          //reload data
-          if (!$scope.section) {
-            //No section identified, so likely not called from main navigation via config.json
-            //Instead likely called from Modal Popup
-            if (modalInstance) modalInstance.close();
-          } else {
-            $state.go($scope.section.state ? $scope.section.state : "dashboard.model.action.edit", { model: $scope.section.path, action: $scope.action.label, id:response[$scope.action.options.key] });
-          }
-        }
         if (modalInstance) modalInstance.close();
-          $rootScope.$broadcast('modelEditSaved');
+        $rootScope.$broadcast('modelEditSaved');
+        if (callback) callback();
       },
       function(error) {
         if (typeof error === 'object' && error.message) {
@@ -156,10 +143,19 @@ angular.module('dashboard.Dashboard.Model.Edit', [
       scope: $scope
     });
     save(function(){
-      if( $scope.action.options && $scope.action.options.returnAfterEdit) {
-        $window.history.back();
-      }
       CacheService.clear($scope.action.options.model);
+      if($scope.action.options && $scope.action.options.returnAfterEdit) {
+        $window.history.back();
+      } else {
+        //reload data
+        if (!$scope.section) {
+          //No section identified, so likely not called from main navigation via config.json
+          //Instead likely called from Modal Popup
+          if (modalInstance) modalInstance.close();
+        } else {
+          $state.go($scope.section.state ? $scope.section.state : "dashboard.model.action.edit", { model: $scope.section.path, action: $scope.action.label, id:response[$scope.action.options.key] });
+        }
+      }
     });
   };
   
