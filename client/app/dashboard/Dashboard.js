@@ -27,11 +27,7 @@ angular.module('dashboard.Dashboard', [
 .controller('DashboardCtrl', function DashboardCtrl($scope, $rootScope, $state, $stateParams, $location, $cookies, $modal, Config) {
 
   function init() {
-
-    //make a copy of the nav as not to modify the original object
-    var nav = angular.copy(Config.serverParams.nav);
-    $scope.nav = $scope.restrictMenuItems(nav);
-
+    $scope.nav = $scope.restrictMenuItems(Config.serverParams.nav);
     $scope.locationPath = $location.path();
     $scope.username = $cookies.username;
     $scope.email = $cookies.email;
@@ -44,8 +40,7 @@ angular.module('dashboard.Dashboard', [
       console.error("Unable to parse $cookies.session");
     }
     console.log('$scope.userInfo', $scope.userInfo)
-    $scope.title = Config.serverParams.title || 'Content Management System';
-    
+    $scope.title = Config.serverParams.title || 'Content Management System';  
     //When navigating to the dashboard state redirect to the default nav
     if ($state.current.name == "dashboard") {
       //Navigate to default page defined in Config JSON
@@ -58,10 +53,22 @@ angular.module('dashboard.Dashboard', [
           //defaultNav.params.action not specified so find defaultSubNav
           var nav = _.find($scope.nav, {path: defaultNav.params.model});
           if (nav) {
+            if (nav.hidden) {
+              //default navigation is hidden so find one that is not hidden
+              for (var i = 0; i < $scope.nav.length; i++) {
+                nav = $scope.nav[i];
+                defaultNav = { params: { model: nav.path}};
+                if (!nav.hidden) break;
+              }
+              if (nav.hidden) return; //do not load any navigation items if no nav is visible
+            }
             var subnav = nav.subnav[nav.defaultSubNavIndex];
             if (subnav) {
+              if (!defaultNav.params) defaultNav.params = {};
               defaultNav.params.action = subnav.label;
               defaultNav.route = subnav.route;
+            } else {
+              console.error('No defaultSubNavIndex defined in nav', nav);
             }
           }
         }
