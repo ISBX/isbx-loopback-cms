@@ -112,6 +112,7 @@ angular.module('dashboard.Dashboard.Model.List', [
       //Simple model list query
       $scope.apiPath = $scope.model.plural;
     }
+    $scope.origApiPath = $scope.apiPath;
     addQueryStringParams();
     $scope.getTotalServerItems();
     
@@ -222,6 +223,7 @@ angular.module('dashboard.Dashboard.Model.List', [
   function addQueryStringParams() {
     var queryStringParams = $location.search();
     $scope.queryStringParams = queryStringParams; //so nggrid cell templates can have access
+    $scope.apiPath = $scope.origApiPath;
     var keys = Object.keys(queryStringParams);
     for (var i in keys) {
       var key = keys[i];
@@ -327,6 +329,7 @@ angular.module('dashboard.Dashboard.Model.List', [
     delete sortInfo.columns; //cleanup sortInfo to declutter querystring
     $location.search("sortInfo", JSON.stringify(sortInfo));
     $location.replace(); //replaces current history state rather then create new one when chaging querystring
+    addQueryStringParams();
     return params;
   }
   

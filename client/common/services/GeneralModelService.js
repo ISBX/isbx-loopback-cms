@@ -12,8 +12,8 @@ angular.module('dashboard.services.GeneralModel', [
   /**
    * Returns a list of models given filter params (see loopback.io filters)
    */
-  this.list = function(model, params) {
-    var apiPath = model + '?access_token=' + $cookies.accessToken;
+  this.list = function(apiPath, params) {
+    var apiPath = apiPath + (apiPath.indexOf('?')>-1 ? '&' : '?') + 'access_token=' + $cookies.accessToken;
     Utils.apiCancel('GET', apiPath); //cancels any prior calls to method + path
     return Utils.apiHelper('GET', apiPath, params);
   };
@@ -21,7 +21,8 @@ angular.module('dashboard.services.GeneralModel', [
   /**
    * Returns the total number of records for a given model
    */
-  this.count = function(model, params) {
+  this.count = function(apiPath, params) {
+    if( apiPath.indexOf('?')>-1 ) apiPath = apiPath.substr(0,apiPath.indexOf('?'));
     var keys = Object.keys(params);
     for (var i in keys) {
       var key = keys[i];
@@ -32,7 +33,7 @@ angular.module('dashboard.services.GeneralModel', [
         //TODO: parse through the filter JSON string looking for the where clause
       }
     }
-    var apiPath = model + '/count?access_token=' + $cookies.accessToken;
+    apiPath = apiPath + '/count?access_token=' + $cookies.accessToken;
     Utils.apiCancel('GET', apiPath); //cancels any prior calls to method + path
     return Utils.apiHelper('GET', apiPath, params);
   };
