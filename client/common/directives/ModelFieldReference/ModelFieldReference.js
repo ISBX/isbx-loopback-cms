@@ -49,10 +49,12 @@ angular.module('dashboard.directives.ModelFieldReference', [
       modelData: '=modelData',
       disabled: '=ngDisabled',
       rowData: "=ngRowData", //for use in the model list edit mode
-      textOutputPath: '=ngTextOutputPath' //output the selected text to this path in the rowData
+      textOutputPath: '=ngTextOutputPath', //output the selected text to this path in the rowData
+      onModelChanged: "&onModelChanged"
     },
     link: function(scope, element, attrs) {
-        
+
+        scope.isFirstTimeLoad = true;
         scope.selected= {};
         scope.selected.items = []; //for multi-select
         scope.selected.item = null; //for single select; initialize to null so placeholder is displayed
@@ -186,7 +188,6 @@ angular.module('dashboard.directives.ModelFieldReference', [
             });
             
           } else if (scope.data && scope.options && scope.options.model) {
-            unwatch();
             //Lookup default reference record
             var model = Config.serverParams.models[scope.options.model];
             GeneralModelService.get(model.plural, scope.data)
@@ -195,6 +196,7 @@ angular.module('dashboard.directives.ModelFieldReference', [
               //console.log("default select = " + JSON.stringify(response));
               scope.selected.item = response;
               scope.list = [scope.selected.item]; //make sure list contains item otherwise won't be displayed
+              if (scope.onModelChanged) scope.onModelChanged({'$item': scope.selected.item});
             }, function(error) {
                 if (scope.options.allowInsert) {
                   //Not found so just add the item

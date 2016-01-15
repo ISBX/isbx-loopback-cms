@@ -7,6 +7,7 @@ angular.module('dashboard.directives.ModelField', [
   'dashboard.directives.ModelFieldList',
   'dashboard.directives.ModelFieldWYSIWYG',
   'dashboard.directives.ModelFieldCanvas',
+  'dashboard.directives.ModelFieldLocation',
   'dashboard.directive.DateTimePicker',
   'ngCookies',
   'ngSlider',
@@ -205,6 +206,13 @@ angular.module('dashboard.directives.ModelField', [
             <div class="model-field-description" ng-if="display.description">{{ display.description }}</div>\
           </div>';
         break;
+      case 'location':
+        template = '<label class="col-sm-2 control-label">{{ display.label || key }}:</label>\
+          <div class="col-sm-10">\
+            <model-field-location-edit key="key" property="property" options="display.options" ng-model="data[key]" class="field" ng-required="{{ model.properties[key].required }}" disabled="display.readonly"></model-field-location-edit>\
+            <div class="model-field-description" ng-if="display.description">{{ display.description }}</div>\
+          </div>';
+        break;
       case 'number':
         template = '<label class="col-sm-2 control-label">{{ display.label || key }}:</label>\
           <div class="col-sm-10">\
@@ -365,7 +373,7 @@ angular.module('dashboard.directives.ModelField', [
         scope.display = property.display;
 
 
-        if (property.display.type == "custom") {
+        if (property.display.editTemplate) {
           element.html(property.display.editTemplate).show();
         } else {
           element.html(getTemplate(property.display.type, scope)).show();

@@ -111,6 +111,14 @@ function loadLoopbackModels(loopbackModelsPath) {
   };
   models.Role = {name: "Role", plural: "Roles"};
   models.RoleMapping = {name: "RoleMapping", plural: "RoleMappings"};
+
+  //Expose inherited properties
+  for(var i in models) {
+    if( models[i].base && models[models[i].base] ) {
+      models[i].properties = _.merge( models[i].properties, models[ models[i].base ].properties );
+    }
+  }
+
   return models;
 }
 

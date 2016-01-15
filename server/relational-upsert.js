@@ -194,7 +194,8 @@ function upsertManyToMany(model, data, relationshipKey, relationshipData, relati
   if (!relationSettings.through) {
     var message = "upsertManyToMany cannot proceed as no relations." + relationshipKey + ".through exists in " + model.name + " JSON definition";
     console.error("ERROR: " + message);
-    callback({ error: message });
+    //callback({ error: message });
+    callback();
     return;
   }
   
@@ -203,7 +204,8 @@ function upsertManyToMany(model, data, relationshipKey, relationshipData, relati
   if (!junctionSettings) {
     var message = "upsertManyToMany cannot proceed as no model.settings.relations." + relationSettings.through + " or "+ inflection.pluralize(relationSettings.through) +" exists in " + model.name + " JSON definition";
     console.error("ERROR: " + message);
-    callback({ error: message });
+    //callback({ error: message });
+    callback();
     return;
   }
   

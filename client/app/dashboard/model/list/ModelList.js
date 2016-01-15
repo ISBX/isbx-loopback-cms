@@ -1,6 +1,7 @@
 angular.module('dashboard.Dashboard.Model.List', [
   'dashboard.Dashboard.Model.Edit.SaveDialog',                                                
   'dashboard.Config',
+  'dashboard.services.Cache',
   'dashboard.services.GeneralModel',
   'dashboard.directives.ModelFieldReference',
   'ui.router',
@@ -22,7 +23,7 @@ angular.module('dashboard.Dashboard.Model.List', [
     ;
 })
 
-.controller('ModelListCtrl', function ModelListCtrl($scope, $cookies, $timeout, $state, $location, $window, $modal, Config, GeneralModelService, $location) {
+.controller('ModelListCtrl', function ModelListCtrl($scope, $cookies, $timeout, $state, $location, $window, $modal, Config, GeneralModelService, CacheService, $location) {
 
   var isFirstLoad = true;
   var modalInstance = null;
@@ -335,12 +336,17 @@ angular.module('dashboard.Dashboard.Model.List', [
     .then(function(response) {
       if (!response) return; //in case http request was cancelled
       //Check if response is an array or object
-      if (response instanceof Array && response.length > 0) response = response[0];
-      var keys = Object.keys(response);
-      if (!response.count && keys.length > 0) {
-        response.count = response[keys[0]]; //grab first key as the count if count property doesn't exist
+      if (typeof response === 'string') {
+        $scope.totalServerItems = response;
+      } else {
+        if (response instanceof Array && response.length > 0) response = response[0];
+        var keys = Object.keys(response);
+        if (!response.count && keys.length > 0) {
+          response.count = response[keys[0]]; //grab first key as the count if count property doesn't exist
+
+        }
+        $scope.totalServerItems = response.count;
       }
-      $scope.totalServerItems = response.count;
       $scope.loadItems();
     });  
   };
@@ -349,23 +355,31 @@ angular.module('dashboard.Dashboard.Model.List', [
     $scope.$emit("ModelListLoadItemsLoading");
     var params = setupPagination();
     //Rudimentary Caching (could use something more robust here)
-    var cacheKey = $scope.apiPath + JSON.stringify(params);
-    if(localStorage[cacheKey]) {
+    var cacheKey = CacheService.getKeyForAction($scope.action,params);
+    var isCached = false;
+    if(CacheService.get(cacheKey)) {
       try {
-        $scope.list = JSON.parse(localStorage[cacheKey]); //load from cache
+        isCached = true;
+        $scope.list = CacheService.get(cacheKey); //load from cache
         $scope.columnCount = $scope.list.length > 0 ? Object.keys($scope.list[0]).length : 0;
         processWindowSize(); //on first load check window size to determine if optional columns should be displayed
       } catch(e) {
+        isCached = false;
         console.warn("ModelList Cache is corupt for key = " + cacheKey);
       }
     }
+    if( isCached && angular.isArray($scope.list) ) return;
     GeneralModelService.list($scope.apiPath, params)
       .then(function(response) {
         if (!response) return; //in case http request was cancelled
         //console.log(JSON.stringify(response, null,'  '));
-        $scope.list = response;
+        if( $scope.action.options.resultField !== undefined
+          && response[$scope.action.options.resultField] !== undefined )
+          $scope.list = response[$scope.action.options.resultField];
+        else
+          $scope.list = response;
         $scope.columnCount = $scope.list.length > 0 ? Object.keys($scope.list[0]).length : 0;
-        localStorage[cacheKey] = JSON.stringify(response); //assign to cache
+        CacheService.set(cacheKey, $scope.list);
         processWindowSize(); //on first load check window size to determine if optional columns should be displayed
         $scope.$emit("ModelListLoadItemsLoaded");
         isFirstLoad = false;
