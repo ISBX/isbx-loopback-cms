@@ -2,6 +2,7 @@ angular.module('dashboard.Dashboard', [
   'dashboard.Config',
   'dashboard.Profile',
   'dashboard.Dashboard.Model',
+  'dashboard.services.Dashboard',
   'ui.router'
 ])
 
@@ -24,12 +25,18 @@ angular.module('dashboard.Dashboard', [
     });
 })
 
-.controller('DashboardCtrl', function DashboardCtrl($scope, $rootScope, $state, $stateParams, $location, $cookies, $modal, Config) {
+.controller('DashboardCtrl', function DashboardCtrl($scope, $rootScope, $state, $stateParams, $location, $cookies, $modal, Config, DashboardService) {
+  var self = this;
 
-  function init() {
-    //make a copy of the nav as not to modify the original object
-    var nav = angular.copy(Config.serverParams.nav);
-    $scope.nav = $scope.restrictMenuItems(nav);
+  this.init = function() {
+
+    //scope functions
+    $scope.toggleSideMenu = self.toggleSideMenu;
+    $scope.hideSideMenu = self.hideSideMenu;
+    $scope.editProfile = self.editProfile;
+    $scope.logout = self.logout;
+
+    //scope properties
     $scope.locationPath = $location.path();
     $scope.username = $cookies.username;
     $scope.email = $cookies.email;
@@ -41,40 +48,20 @@ angular.module('dashboard.Dashboard', [
       //Fail elegantly 
       console.error("Unable to parse $cookies.session");
     }
-    console.log('$scope.userInfo', $scope.userInfo)
-    $scope.title = Config.serverParams.title || 'Content Management System';  
+    console.log('DashboardCtrl: $scope.userInfo', $scope.userInfo);
+    $scope.title = Config.serverParams.title || 'Content Management System';
+    $scope.nav = DashboardService.getNavigation();
+
     //When navigating to the dashboard state redirect to the default nav
     if ($state.current.name == "dashboard") {
       //Navigate to default page defined in Config JSON
       if (Config.serverParams.defaultNav) {
-        var defaultNav = Config.serverParams.defaultNav;
+        var defaultNav = DashboardService.getDefaultNav(nav, angular.copy(Config.serverParams.defaultNav));
         if (defaultNav.state) {
           $state.go(defaultNav.state, defaultNav.params);
-          return;
-        } else if (defaultNav.params && !defaultNav.params.action) {
-          //defaultNav.params.action not specified so find defaultSubNav
-          var nav = _.find($scope.nav, {path: defaultNav.params.model});
-          if (nav) {
-            if (nav.hidden) {
-              //default navigation is hidden so find one that is not hidden
-              for (var i = 0; i < $scope.nav.length; i++) {
-                nav = $scope.nav[i];
-                defaultNav = { params: { model: nav.path}};
-                if (!nav.hidden) break;
-              }
-              if (nav.hidden) return; //do not load any navigation items if no nav is visible
-            }
-            var subnav = nav.subnav[nav.defaultSubNavIndex];
-            if (subnav) {
-              if (!defaultNav.params) defaultNav.params = {};
-              defaultNav.params.action = subnav.label;
-              defaultNav.route = subnav.route;
-            } else {
-              console.error('No defaultSubNavIndex defined in nav', nav);
-            }
-          }
+        } else {
+          $state.go("dashboard.model.action." + defaultNav.route, defaultNav.params);
         }
-        $state.go("dashboard.model.action." + defaultNav.route, defaultNav.params);
       }
     }
 
@@ -82,71 +69,17 @@ angular.module('dashboard.Dashboard', [
       return $location.path();
     }, function(){
       $scope.locationPath = $location.path();
-    })
+    });
 
     $scope.$on('modelEditSaved', function() {
       if ($scope.modalInstance) $scope.modalInstance.close();
     });
-  }
-
-  /*
-   * Check if any of the given roles has access to the menu item
-   */
-  $scope.hasAccess = function(roles, menu) {
-    // if menu item has no roles property, menu item is unrestricted
-    if (!menu.hasOwnProperty('roles') ||
-        !(menu.roles instanceof Array))
-      return true;
-
-    for (var idx in roles) {
-      if (menu.roles.indexOf(roles[idx].name) > -1)
-        return true;
-    }
-
-    // made it here, user has no access
-    return false;
   };
 
-  /*
-   * Only return menu items that the current user has access to
+  /**
+   * For responsive mobile implementation
    */
-  $scope.restrictMenuItems = function(menus) {
-    var roles = JSON.parse($cookies.roles);
-    for (var idx in menus) {
-      var menu = menus[idx];
-
-      if ($scope.hasAccess(roles, menu)) {
-        if (menu.hasOwnProperty('subnav') &&
-            menu.subnav.length > 0) {
-          var subItems = this.restrictMenuItems(menu.subnav);
-          if (subItems) {
-            menu.subnav = subItems;
-            //check if defaultSubNavIndex is hidden and if so find one to display
-            if (menu.defaultSubNavIndex !== null && menu.defaultSubNavIndex !== undefined) {
-              if (menu.subnav[menu.defaultSubNavIndex] && menu.subnav[menu.defaultSubNavIndex].hidden) {
-                //Find item the user does have access
-                for (var subNavIndex in menu.subnav) {
-                  var subnav = menu.subnav[subNavIndex];
-                  if ($scope.hasAccess(roles, subnav) && !subnav.hidden) {
-                    menu.defaultSubNavIndex = parseInt(subNavIndex);
-                    break;
-                  }
-                }
-              }
-            }          
-          }
-        }
-      } else {
-        //user does not have access
-        menu.hidden = true;
-      }
-      
-    }
-
-    return menus;
-  };
-
-  $scope.toggleSideMenu = function() {
+  this.toggleSideMenu = function() {
     var $dashboard = $(".dashboard");
     if ($dashboard.hasClass("show-side-menu")) {
       $dashboard.removeClass("show-side-menu");
@@ -155,11 +88,17 @@ angular.module('dashboard.Dashboard', [
     }
   };
 
-  $scope.hideSideMenu = function() {
+  /**
+   * For responsive mobile implementation
+   */
+  this.hideSideMenu = function() {
     $(".dashboard").removeClass("show-side-menu");
   };
-  
-  $scope.editProfile = function($event) {
+
+  /**
+   * Launches a modal dialog for editing the user's profile
+   */
+  this.editProfile = function($event) {
     if ($event) $event.preventDefault();
     $scope.action = {
         options: {
@@ -177,12 +116,16 @@ angular.module('dashboard.Dashboard', [
     });
   };
 
-  $scope.logout = function($event) {
+  /**
+   * Log out
+   * @param $event
+   */
+  this.logout = function($event) {
     $rootScope.logOut();
     if ($event) $event.preventDefault();
   };
   
-  init();
+  self.init();
 })
 
 ;
