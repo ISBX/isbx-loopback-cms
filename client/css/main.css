@@ -122,10 +122,12 @@ model-field-file-edit input[type=file] {
   opacity: 0;
   cursor: pointer;
 }
-model-field-image-edit {
+model-field-image-edit,
+model-field-video-edit {
   vertical-align: top;
 }
-model-field-image-edit .image-container {
+model-field-image-edit .image-container,
+model-field-video-edit .image-container {
   display: inline-block;
   width: 160px;
   height: 160px;
@@ -134,7 +136,37 @@ model-field-image-edit .image-container {
   border: solid 1px #dedede;
   cursor: pointer;
 }
-model-field-image-edit input[type=file] {
+model-field-image-edit .video-container,
+model-field-video-edit .video-container {
+  display: inline-block;
+  width: 320px;
+  vertical-align: top;
+  margin-right: 8px;
+  border: solid 1px #dedede;
+}
+model-field-image-edit .video-container video,
+model-field-video-edit .video-container video {
+  width: 320px;
+}
+model-field-image-edit .video-container .placeholder,
+model-field-video-edit .video-container .placeholder {
+  width: 100%;
+  height: 160px;
+  line-height: 150px;
+  text-align: center;
+}
+@media screen and (max-width: 480px) {
+  model-field-image-edit .video-container,
+  model-field-video-edit .video-container {
+    width: 160px;
+  }
+  model-field-image-edit .video-container video,
+  model-field-video-edit .video-container video {
+    width: 160px;
+  }
+}
+model-field-image-edit input[type=file],
+model-field-video-edit input[type=file] {
   margin-left: -124px;
   display: inline-block;
   width: 120px;
@@ -143,12 +175,14 @@ model-field-image-edit input[type=file] {
   opacity: 0;
   cursor: pointer;
 }
-model-field-image-edit input[type=file].show-upload {
+model-field-image-edit input[type=file].show-upload,
+model-field-video-edit input[type=file].show-upload {
   margin-left: -160px;
   width: 160px;
   height: 160px;
 }
-model-field-image-edit .image-drop {
+model-field-image-edit .image-drop,
+model-field-video-edit .image-drop {
   display: none;
   width: 160px;
   height: 160px;
@@ -158,22 +192,28 @@ model-field-image-edit .image-drop {
   border: dashed 6px #dedede;
   vertical-align: top;
 }
-model-field-image-edit .image-drop.show-upload {
+model-field-image-edit .image-drop.show-upload,
+model-field-video-edit .image-drop.show-upload {
   display: inline-block;
 }
-model-field-image-edit .cancel-button {
+model-field-image-edit .cancel-button,
+model-field-video-edit .cancel-button {
   display: none;
 }
-model-field-image-edit .button-menu {
+model-field-image-edit .button-menu,
+model-field-video-edit .button-menu {
   display: inline-block;
 }
-model-field-image-edit .button-menu.hide-menu {
+model-field-image-edit .button-menu.hide-menu,
+model-field-video-edit .button-menu.hide-menu {
   display: none;
 }
-model-field-image-edit .upload-button {
+model-field-image-edit .upload-button,
+model-field-video-edit .upload-button {
   width: 120px;
 }
-model-field-image-edit .clear-button {
+model-field-image-edit .clear-button,
+model-field-video-edit .clear-button {
   display: block;
   margin-top: 8px;
 }
@@ -237,6 +277,57 @@ model-field-edit .jslider .jslider-pointer {
   background-repeat: repeat-x;
   border: solid 1px #ccc;
   box-shadow: inset 0 1px 0 rgba(255,255,255,0.15), 0 1px 1px rgba(0,0,0,0.075);
+}
+model-field-location-edit {
+  min-width: 320px;
+}
+model-field-location-edit .map-canvas {
+  display: block;
+  width: 620px;
+  height: 275px;
+  background-color: #d3d3d3;
+}
+model-field-location-edit label .col-sm {
+  width: 100%;
+  margin-top: 8px;
+}
+model-field-location-edit .checkbox-container input[type=checkbox] {
+  margin: 2px 0 0 10px;
+  transform: scale(1.5);
+  -ms-transform: scale(1.5); /* IE */
+  -moz-transform: scale(1.5); /* FF */
+  -webkit-transform: scale(1.5); /* Safari and Chrome */
+  -o-transform: scale(1.5); /* Opera */
+}
+model-field-location-edit .checkbox-container .checkbox-label {
+  font-weight: bold;
+  float: right;
+  bottom: 50px;
+}
+model-field-location-edit .form-control {
+  margin-bottom: 10px;
+}
+model-field-location-edit .ui-select-bootstrap {
+  margin-top: 10px;
+  padding: 3px 0px;
+}
+model-field-location-edit ul {
+  list-style: none;
+  margin: 10px 0px;
+  padding: 0 0;
+}
+model-field-location-edit ul li {
+  position: relative;
+  border: solid 1px #dedede;
+  border-width: 1px 1px 1px 1px;
+  padding: 0px 10px;
+  line-height: 30px;
+  background-color: #fefefe;
+  clear: both;
+  white-space: nowrap;
+}
+model-field-location-edit ul li .location-title {
+  font-weight: bold;
 }
 model-field-wysiwyg-edit .wysiwyg-toolbar {
   display: block;

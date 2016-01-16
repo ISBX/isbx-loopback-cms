@@ -55,8 +55,8 @@ model-field-file-edit
     vertical-align top
     opacity 0
     cursor pointer
-    
-model-field-image-edit
+
+model-field-image-edit, model-field-video-edit
   vertical-align top
   .image-container
     display inline-block
@@ -66,6 +66,23 @@ model-field-image-edit
     margin-right 8px
     border solid 1px #dedede
     cursor: pointer
+  .video-container
+    display inline-block
+    width 320px
+    vertical-align top
+    margin-right 8px
+    border solid 1px #dedede
+    video
+      width 320px
+    .placeholder
+      width 100%
+      height 160px
+      line-height 150px
+      text-align center
+    @media screen and (max-width: 480px)
+      width 160px
+      video
+        width 160px
   input[type=file]
     margin-left -124px
     display inline-block
