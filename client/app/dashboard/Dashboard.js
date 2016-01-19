@@ -56,7 +56,7 @@ angular.module('dashboard.Dashboard', [
     if ($state.current.name == "dashboard") {
       //Navigate to default page defined in Config JSON
       if (Config.serverParams.defaultNav) {
-        var defaultNav = DashboardService.getDefaultNav(nav, angular.copy(Config.serverParams.defaultNav));
+        var defaultNav = DashboardService.getDefaultNav($scope.nav, angular.copy(Config.serverParams.defaultNav));
         if (defaultNav.state) {
           $state.go(defaultNav.state, defaultNav.params);
         } else {
