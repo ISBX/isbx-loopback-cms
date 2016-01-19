@@ -359,19 +359,18 @@ angular.module('dashboard.Dashboard.Model.List', [
     var params = setupPagination();
     //Rudimentary Caching (could use something more robust here)
     var cacheKey = CacheService.getKeyForAction($scope.action,params);
-    var isCached = false;
     if(CacheService.get(cacheKey)) {
+      //Instantly load from previous cached results for immediate response
       try {
-        isCached = true;
         $scope.list = CacheService.get(cacheKey); //load from cache
         $scope.columnCount = $scope.list.length > 0 ? Object.keys($scope.list[0]).length : 0;
         processWindowSize(); //on first load check window size to determine if optional columns should be displayed
       } catch(e) {
-        isCached = false;
         console.warn("ModelList Cache is corupt for key = " + cacheKey);
       }
     }
-    if( isCached && angular.isArray($scope.list) ) return;
+    //Always query for the latest list even if the cache has previously cached results so that any updates
+    //from the data source is refreshed
     GeneralModelService.list($scope.apiPath, params)
       .then(function(response) {
         if (!response) return; //in case http request was cancelled
