@@ -37,13 +37,21 @@ angular.module('dashboard.Dashboard.Model.Edit', [
     if (!$scope.action.options) $scope.action.options = { model: $stateParams.model, key: $stateParams.key };
 
     $scope.model = Config.serverParams.models[$scope.action.options.model];
-
     //Make Key field readonly
     if ($scope.action.options.key) {
       var key = $scope.action.options.key;
       if (!$scope.model.properties[key].display) $scope.model.properties[key].display = {};
       $scope.model.properties[key].display.readonly = true;
     }
+
+    //Give each property display definition an order property if undefined
+    var i = 0;
+    angular.forEach($scope.model.properties,function(item,key,index){
+      if(!item.display) item.display = {};
+      if(!item.display.options) item.display.options = {};
+      if(item.display.options.order === undefined) item.display.options.order = i;
+      i++;
+    });
 
     $scope.isLoading = true;
     $scope.data = {};
@@ -87,13 +95,22 @@ angular.module('dashboard.Dashboard.Model.Edit', [
     if ($scope.action.options.display) $scope.modelDisplay = $scope.model[$scope.action.options.display];
     if (!$scope.modelDisplay || $scope.modelDisplay.length == 0) {
       $scope.modelDisplay = [];
-      var keys = Object.keys( $scope.model.properties);
+      var keys = Object.keys($scope.model.properties);
       for (var i in keys) {
         var key = keys[i];
+        //Hide field if display.hidden is set to true in loopback model json
+        if( $scope.model.properties[key].display.options && $scope.model.properties[key].display.options.hidden === true ) continue;
         $scope.modelDisplay.push(key);
         if (!$scope.data[key]) $scope.data[key] = null;
       }
     }
+    //Sort fields by order property
+    $scope.modelDisplay.sort(function(a,b){
+      if( $scope.model.properties[a].display.options.order === null ) return 0;
+      if( $scope.model.properties[a].display.options.order < $scope.model.properties[b].display.options.order ) return -1;
+      if( $scope.model.properties[a].display.options.order > $scope.model.properties[b].display.options.order ) return 1;
+      return 0;
+    })
   };
 
 
