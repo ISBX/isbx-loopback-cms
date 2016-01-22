@@ -106,7 +106,7 @@ angular.module('dashboard.Dashboard.Model.Edit', [
       .then(function(response) {
         if (modalInstance) modalInstance.close();
         $rootScope.$broadcast('modelEditSaved');
-        if (callback) callback();
+        if (callback) callback(response);
       },
       function(error) {
         if (typeof error === 'object' && error.message) {
@@ -142,7 +142,7 @@ angular.module('dashboard.Dashboard.Model.Edit', [
       controller: 'ModelEditSaveDialogCtrl',
       scope: $scope
     });
-    save(function(){
+    save(function(response){
       CacheService.clear($scope.action.options.model);
       if($scope.action.options && $scope.action.options.returnAfterEdit) {
         $window.history.back();
