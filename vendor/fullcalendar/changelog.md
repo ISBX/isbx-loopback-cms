@@ -1,4 +1,21 @@
 
+v2.6.0 (2016-01-07)
+-------------------
+
+- current time indicator (#414)
+- bundled with most recent version of moment (2.11.0)
+- UMD wrapper around lang files now handles commonjs (#2918)
+- fix bug where external event dragging would not respect eventOverlap
+- fix bug where external event dropping would not render the whole-day highlight
+
+
+v2.5.0 (2015-11-30)
+-------------------
+
+- internal timezone refactor. fixes #2396, #2900, #2945, #2711
+- internal "grid" system refactor. improved API for plugins.
+
+
 v2.4.0 (2015-08-16)
 -------------------
 
