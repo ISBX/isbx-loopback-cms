@@ -140,17 +140,17 @@ angular.module('dashboard.directives.ModelFieldLocation', [
 
             //  Allow intializing a search from property.display.options
             var placeTypes = [];
-            if(scope.property.display.options.placeType) {
+            if(scope.property.display.options && scope.property.display.options.placeType) {
               placeTypes = angular.isArray(scope.property.display.options.placeType) ? scope.property.display.options.placeType : [scope.property.display.options.placeType];
             }
 
             var query = '';
-            if( scope.property.display.options.query ) {
+            if(scope.property.display.options && scope.property.display.options.query ) {
               query = scope.property.display.options.query;
             }
 
             var radius = scope.radiusOptions[1];
-            if(scope.property.display.options.radius) {
+            if(scope.property.display.options && scope.property.display.options.radius) {
               var customRadius = null;
               angular.forEach(scope.radiusOptions,function(item){
                 if(item.value==scope.property.display.options.radius) {
@@ -165,7 +165,7 @@ angular.module('dashboard.directives.ModelFieldLocation', [
             }
 
             //  Whether or not the place search is initially open
-            scope.placeSearchOpen = (scope.property.display.options.placeType!=undefined || scope.property.display.options.query!=undefined);
+            scope.placeSearchOpen = (scope.property.display.options && (scope.property.display.options.placeType!=undefined || scope.property.display.options.query!=undefined));
 
             //  Place Search request
             scope.request = {
