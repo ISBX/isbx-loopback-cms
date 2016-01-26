@@ -268,11 +268,14 @@ angular.module('dashboard.directives.ModelField', [
         if (property.display.type == 'file' && scope.data[scope.key]) {
           //Check if image file is uploaded and convert schema property display type to image
           var filename = scope.data[scope.key];
-          if (typeof filename === 'object' && filename.filename) filename = filename.filename
-          var extension = filename.toLowerCase().substring(filename.length-4);
-          if (extension == '.png' || extension == '.jpg' || extension == 'jpeg' || extension == '.bmp') {
-            property = angular.copy(property); //we don't want changes the schema property to persist outside of this directive
-            property.display.type = 'image';
+          if (typeof filename === 'object' && filename.filename) filename = filename.filename;
+          else if (typeof filename === 'object' && filename.file) filename = filename.file.name;
+          if (filename) {
+            var extension = filename.toLowerCase().substring(filename.length-4);
+            if (extension == '.png' || extension == '.jpg' || extension == 'jpeg' || extension == '.bmp') {
+              property = angular.copy(property); //we don't want changes the schema property to persist outside of this directive
+              property.display.type = 'image';
+            }
           }
         }
 
