@@ -54,6 +54,7 @@ angular.module('dashboard.directives.ModelFieldReference', [
     },
     link: function(scope, element, attrs) {
 
+        scope.moment = moment;
         scope.isFirstTimeLoad = true;
         scope.selected= {};
         scope.selected.items = []; //for multi-select
@@ -190,6 +191,7 @@ angular.module('dashboard.directives.ModelFieldReference', [
           } else if (scope.data && scope.options && scope.options.model) {
             //Lookup default reference record
             var model = Config.serverParams.models[scope.options.model];
+            unwatch(); //due to late binding need to unwatch here
             GeneralModelService.get(model.plural, scope.data)
             .then(function(response) {
               if (!response) return;  //in case http request was cancelled
