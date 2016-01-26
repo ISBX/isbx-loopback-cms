@@ -46,6 +46,11 @@ angular.module('dashboard.directives.ModelFieldFile', [
               scope.fileUrl = scope.data.replace(/%2F/g, "/");
               var pos = scope.fileUrl.lastIndexOf("/");
               scope.filename = scope.fileUrl.substring(pos+1);
+            } else if (typeof scope.data.file === 'object') {
+              var s3Path = scope.options.path; //S3 path needed when getting S3 Credentials for validation;
+              scope.data = {path: s3Path, file: scope.data.file};
+              scope.filename = scope.data.file.name;
+              scope.fileUrl = null;
             }
           }
        });
