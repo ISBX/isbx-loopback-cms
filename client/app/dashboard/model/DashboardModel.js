@@ -19,7 +19,7 @@ angular.module('dashboard.Dashboard.Model', [
 .controller('DashboardModelCtrl', function DashboardModelCtrl($rootScope, $scope, $stateParams, Config) {
 
   function init() {
-    $scope.section = angular.copy(_.find(Config.serverParams.nav, { path: $stateParams.model }));
+    $scope.section = angular.copy(_.find($scope.nav, { path: $stateParams.model }));
   }
 
   init();
