@@ -100,10 +100,9 @@ angular.module('dashboard.directives.ModelFieldPointsOfInterest', [
 				var map;
 				var milesToMeters = 1609.34;           // Conversion to miles to meters
 				var miles = 3;
-				var userSearchInput;
 				var geocoder;
 				var radius = miles*milesToMeters;
-				var bounds = new google.maps.LatLngBounds(); // Sets initial bounds for markers
+				var bounds;
 
 				scope.circle = {};                     // displayed cicle boundary
 				scope.markers = [];                    // Stored markers
@@ -116,27 +115,33 @@ angular.module('dashboard.directives.ModelFieldPointsOfInterest', [
 				scope.placeType = scope.property.display.options.placeType; //Default query value
 				scope.data = {};
 
-				//  Whether or not the place search is initially open
-				scope.placeSearchOpen = (scope.property.display.options && (scope.property.display.options.placeType!=undefined || scope.property.display.options.query!=undefined));
+				loadScript().then(function () {
 
-				scope.request = {
-					radius: radius,
-					query: scope.placeType,
-					types: scope.placeType
-				};
+					bounds = new google.maps.LatLngBounds(); // Set initial bounds for markers
+					geocoder = new google.maps.Geocoder();
+					//  Whether or not the place search is initially open
+					scope.placeSearchOpen = (scope.property.display.options && (scope.property.display.options.placeType!=undefined || scope.property.display.options.query!=undefined));
 
-				element.html(getTemplate()).show();
-				$compile(element.contents())(scope);
-				//Currently calls LocationService to get user's current location
-				LocationService.currentLocation().then(function (position) {
-					var pointLocation = {
-						lat: position.latitude,
-						lng: position.longitude
+					scope.request = {
+						radius: radius,
+						query: scope.placeType,
+						types: scope.placeType
 					};
-					scope.request.location = pointLocation;
-					initMap(scope.request.location);
-				});
 
+					element.html(getTemplate()).show();
+					$compile(element.contents())(scope);
+					//Currently calls LocationService to get user's current location
+					LocationService.currentLocation().then(function (position) {
+						var pointLocation = {
+							lat: position.latitude,
+							lng: position.longitude
+						};
+						scope.request.location = pointLocation;
+						initMap(scope.request.location);
+					});
+				}, function () {
+					console.error("Error loading Google Maps")
+				});
 				function initMap() {
 					scope.isMapLoading = false;
 					scope.isLoaded = true;
