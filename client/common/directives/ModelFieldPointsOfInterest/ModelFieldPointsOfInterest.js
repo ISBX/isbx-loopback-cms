@@ -53,7 +53,7 @@ angular.module('dashboard.directives.ModelFieldPointsOfInterest', [
         <div class="loading" ng-if="isMapLoading"><img src="http://www.nasa.gov/multimedia/videogallery/ajax-loader.gif" width="20" height="20" />Search results are loading...</div> \
         <div ng-show="isLoaded"> \
         <accordion close-others="oneAtATime"> \
-        <accordion-group id="accordion-group" heading="Pharmacy Search" is-open="placeSearchOpen"> \
+        <accordion-group id="accordion-group-1" heading="Pharmacy Search" is-open="true"> \
         <input id="zipCode" class="field form-control" placeholder="Zip Code" ng-model="data.zipCode">\
         <input id="searchInput" class="field form-control" placeholder="Search Location" ng-model="request[\'query\']">\
          <select id="radius" ng-options="value as value for value in display.options" ng-required="" class="field form-control ng-pristine ng-valid ng-valid-required" ng-disabled=""> \
@@ -118,8 +118,6 @@ angular.module('dashboard.directives.ModelFieldPointsOfInterest', [
 				loadScript().then(function () {
 					bounds = new google.maps.LatLngBounds(); // Set initial bounds for markers
 					geocoder = new google.maps.Geocoder();
-					//  Whether or not the place search is initially open
-					scope.placeSearchOpen = (scope.property.display.options && (scope.property.display.options.placeType!=undefined || scope.property.display.options.query!=undefined));
 
 					scope.request = {
 						radius: radius,
@@ -141,7 +139,7 @@ angular.module('dashboard.directives.ModelFieldPointsOfInterest', [
 				}, function () {
 					console.error("Error loading Google Maps")
 				});
-				
+
 				function initMap() {
 					scope.isMapLoading = false;
 					scope.isLoaded = true;
