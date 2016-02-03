@@ -57,7 +57,7 @@ angular.module('dashboard.directives.ModelFieldPointsOfInterest', [
         <input id="zipCode" class="field form-control" placeholder="Zip Code" ng-model="data.zipCode">\
         <input id="searchInput" class="field form-control" placeholder="Search Location" ng-model="request[\'query\']">\
          <select id="radius" ng-options="value as value for value in display.options" ng-required="" class="field form-control ng-pristine ng-valid ng-valid-required" ng-disabled=""> \
-           <option value="" disabled selected class="">3 Miles</option> \
+           <option value="" disabled selected class="">Radius</option> \
            <option value="1" label="1 Mile">1 Mile</option> \
 +          <option value="2" label="2 Miles">2 Miles</option> \
 +          <option value="3" label="3 Miles">3 Miles</option> \
@@ -116,7 +116,6 @@ angular.module('dashboard.directives.ModelFieldPointsOfInterest', [
 				scope.data = {};
 
 				loadScript().then(function () {
-
 					bounds = new google.maps.LatLngBounds(); // Set initial bounds for markers
 					geocoder = new google.maps.Geocoder();
 					//  Whether or not the place search is initially open
@@ -142,6 +141,7 @@ angular.module('dashboard.directives.ModelFieldPointsOfInterest', [
 				}, function () {
 					console.error("Error loading Google Maps")
 				});
+				
 				function initMap() {
 					scope.isMapLoading = false;
 					scope.isLoaded = true;
@@ -187,13 +187,7 @@ angular.module('dashboard.directives.ModelFieldPointsOfInterest', [
 				}
 
 				function initQuery() {
-					// Clears results for new query
-					scope.searchResults = [];
-					scope.displayedMarkers = [];
-					scope.displayedSearchResults = [];
-					scope.markers = [];
-					//Starts Google TextSearch API
-					var bounds = new google.maps.LatLngBounds();
+					scope.clearSearch();
 					var service = new google.maps.places.PlacesService(map);
 					service.textSearch(scope.request, callback);
 				}
@@ -210,6 +204,7 @@ angular.module('dashboard.directives.ModelFieldPointsOfInterest', [
 						createCircle();
 						displayMarkers();
 						listSearchResults();
+						scope.$digest();
 					} else {
 						//May need to handle this..
 					}
@@ -266,7 +261,6 @@ angular.module('dashboard.directives.ModelFieldPointsOfInterest', [
 							scope.displayedSearchResults.push(scope.searchResults[i]);
 						}
 					}
-					scope.$digest();
 				}
 
 				function clearOverlays() {
@@ -274,6 +268,15 @@ angular.module('dashboard.directives.ModelFieldPointsOfInterest', [
 						scope.boundaries[i].setMap(null);
 						scope.boundaries.length = 0;
 					}
+				}
+
+				scope.clearSearch = function() {
+					removeMarkers();
+					clearOverlays();
+					scope.searchResults = [];
+					scope.displayedMarkers = [];
+					scope.displayedSearchResults = [];
+					scope.markers = [];
 				}
 
 				scope.getSelectResultData = function(item) {
