@@ -6,13 +6,7 @@ angular.module('dashboard.directives.ModelFieldPointsOfInterest', [
 		"dashboard.services.GeneralModel",
 		"ui.select"
 	])
-	.run(function() {
-		var googleMapsApiJS = document.createElement('script');
-		googleMapsApiJS.type = 'text/javascript';
-		googleMapsApiJS.src = 'https://maps.googleapis.com/maps/api/js?v=3.exp&libraries=geometry,places';
-		document.getElementsByTagName('head')[0].appendChild(googleMapsApiJS);
-	})
-
+	
 	.directive('modelFieldPointsOfInterestView', function($compile) {
 		return {
 			restrict: 'E',
