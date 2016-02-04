@@ -169,7 +169,51 @@ model-field-edit
       background-repeat: repeat-x
       border: solid 1px #ccc
       box-shadow: inset 0 1px 0 rgba(255, 255, 255, .15), 0 1px 1px rgba(0, 0, 0, .075)
-      
+
+model-field-location-edit
+  min-width: 320px
+  .map-canvas
+    display: block;
+  width: 620px;
+  height: 275px;
+  background-color: #d3d3d3;
+  label
+    .col-sm
+      width: 100%
+      margin-top: 8px
+  .checkbox-container
+    input[type=checkbox]
+      margin: 2px 0 0 10px
+      transform: scale(1.5);
+      -ms-transform: scale(1.5); /* IE */
+      -moz-transform: scale(1.5); /* FF */
+      -webkit-transform: scale(1.5); /* Safari and Chrome */
+      -o-transform: scale(1.5); /* Opera */
+    .checkbox-label
+      font-weight: bold
+      float: right
+      bottom: 50px
+  .form-control
+    margin-bottom: 10px
+  .ui-select-bootstrap
+    margin-top: 10px
+    padding: 3px 0px
+  ul
+    list-style: none
+    margin: 10px 0px
+    padding: 0 0
+    li
+      position: relative
+      border: solid 1px #dedede
+      border-width: 1px 1px 1px 1px
+      padding: 0px 10px
+      line-height: 30px
+      background-color: #fefefe
+      clear: both
+      white-space nowrap
+      .location-title
+        font-weight: bold
+
 model-field-points-of-interest-edit
   min-width: 320px
   .map-canvas
