@@ -53,13 +53,12 @@ angular.module('dashboard.directives.ModelFieldPointsOfInterest', [
          <select id="radius" ng-options="value as value for value in display.options" ng-required="" class="field form-control ng-pristine ng-valid ng-valid-required" ng-disabled=""> \
            <option value="" disabled selected class="">Radius</option> \
            <option value="1" label="1 Mile">1 Mile</option> \
-+          <option value="2" label="2 Miles">2 Miles</option> \
-+          <option value="3" label="3 Miles">3 Miles</option> \
+           <option value="2" label="2 Miles">2 Miles</option> \
+           <option value="3" label="3 Miles">3 Miles</option> \
            <option value="5" label="5 Miles">5 Miles</option> \
--          <option value="10" label="10 Miles">10 Miles</option> \
-+          <option value="10" label="10 Mile">10 Mile</option> \
+           <option value="10" label="10 Miles">10 Miles</option> \
            <option value="20" label="20 Miles">20 Miles</option> \
-+          <option value="30" label="30 Miles">30 Miles</option> \
+        	 <option value="30" label="30 Miles">30 Miles</option> \
          </select> \
         <button class="btn" ng-click="doSearch()" ng-model="request.query">Search</button>\
         </accordion-group>\
