@@ -60,7 +60,7 @@ angular.module('dashboard.directives.ModelFieldPointsOfInterest', [
            <option value="20" label="20 Miles">20 Miles</option> \
         	 <option value="30" label="30 Miles">30 Miles</option> \
          </select> \
-        <button class="btn" ng-click="doSearch()" ng-model="request.query">Search</button>\
+        <button class="btn" ng-click="doSearch()" ng-model="request.query">Search</button><span class="search-error" ng-if="searchError">{{searchError}}</span>\
         </accordion-group>\
         </accordion> \
         <div class="map-canvas"id="map_canvas"></div> \
@@ -99,7 +99,7 @@ angular.module('dashboard.directives.ModelFieldPointsOfInterest', [
 				var zoom;
 				var markerLocation;
 				var infowindow;
-
+				var requestQuery;
 
 				scope.circle = {};                     // displayed cicle boundary
 				scope.markers = [];                    // Stored markers
@@ -123,38 +123,55 @@ angular.module('dashboard.directives.ModelFieldPointsOfInterest', [
 				}
 
 				loadScript().then(function () {
+					console.log('scope.data', scope.data);
 					bounds = new google.maps.LatLngBounds(); // Set initial bounds for markers
 					geocoder = new google.maps.Geocoder();
 					infowindow = new google.maps.InfoWindow();
-
+					if(scope.data.query) {
+						requestQuery = scope.data.query;
+					} else {
+						requestQuery = scope.placeType;
+					}
 					scope.request = {
 						radius: radius,
-						query: scope.placeType,
+						query: requestQuery,
 						types: scope.placeType
 					};
 
 					element.html(getTemplate()).show();
 					$compile(element.contents())(scope);
-					//Currently calls LocationService to get user's current location
-					LocationService.currentLocation().then(function (position) {
-						var pointLocation = {
-							lat: position.latitude,
-							lng: position.longitude
+					//Checked for saved coordinates
+					if(!scope.data.lat && !scope.data.lng) {
+						//Initial search with user's location
+						LocationService.currentLocation().then(function (position) {
+							var pointLocation = {
+								lat: position.latitude,
+								lng: position.longitude
+							};
+							zoom = 12;
+							scope.request.location = pointLocation;
+							scope.reverseGeocode(pointLocation);
+							initMap();
+						}, function () {
+							//Use default location
+							var defaultLocation = {
+								lat: 39.833333,
+								lng: -98.583333
+							};
+							zoom = 4;
+							scope.request.location = defaultLocation;
+							scope.reverseGeocode(defaultLocation);
+							initMap();
+						});
+					} else {
+						var savedLocation = {
+							lat: scope.data.lat,
+							lng: scope.data.lng
 						};
 						zoom = 12;
-						scope.request.location = pointLocation;
-						scope.reverseGeocode(pointLocation);
+						scope.request.location = savedLocation;
 						initMap();
-					}, function () {
-						var defaultLocation = {
-							lat: 39.833333,
-							lng: -98.583333
-						};
-						zoom = 4;
-						scope.request.location = defaultLocation;
-						scope.reverseGeocode(defaultLocation);
-						initMap();
-					});
+					}
 				}, function () {
 					console.error("Error loading Google Maps")
 				});
@@ -172,14 +189,15 @@ angular.module('dashboard.directives.ModelFieldPointsOfInterest', [
 				function initialize() {
 					initQuery();
 				}
-				// Search is initated once user presses search button
+				// Search is initialized once user presses search button
 				scope.doSearch = function () {
+					scope.searchError = null;
 					scope.data.query = scope.request.query;
 					scope.request.radius = (angular.element('#radius')[0].value) * milesToMeters;
 					scope.data.radius = angular.element('#radius')[0].value;
 					var zipCode = scope.data.zipCode;
 					if (!zipCode || zipCode.length !== 5) {
-						alert('Your zipcode is invalid!');
+						scope.searchError = 'Your Zip Code is invalid!';
 					} else {
 						geocoder = new google.maps.Geocoder();
 						geocoder.geocode({
@@ -202,30 +220,28 @@ angular.module('dashboard.directives.ModelFieldPointsOfInterest', [
 							}
 						});
 					}
-				}
+				};
 
 				function initQuery() {
 					scope.clearSearch();
 					var service = new google.maps.places.PlacesService(map);
-					service.textSearch(scope.request, callback);
-				}
-
-				function callback(results, status) {
-					if (status == google.maps.places.PlacesServiceStatus.OK) {
-						createMarkers(results);
-						if (scope.boundaries.length > 0) {
-							clearOverlays();
+					service.textSearch(scope.request, function(results, status) {
+						if (status == google.maps.places.PlacesServiceStatus.OK) {
+							createMarkers(results);
+							if (scope.boundaries.length > 0) {
+								clearOverlays();
+							}
+							if (scope.markers.length > 0) {
+								removeMarkers();
+							}
+							createCircle();
+							displayMarkers();
+							listSearchResults();
+							scope.$digest();
+						} else {
+							console.log("search was not successful for the following reason: " + status);
 						}
-						if (scope.markers.length > 0) {
-							removeMarkers();
-						}
-						createCircle();
-						displayMarkers();
-						listSearchResults();
-						scope.$digest();
-					} else {
-						console.log("search was not successful for the following reason: " + status);
-					}
+					});
 				}
 
 				scope.reverseGeocode = function (coordinates) {
@@ -235,7 +251,7 @@ angular.module('dashboard.directives.ModelFieldPointsOfInterest', [
 							if (results[0]) {
 								var resultPlaceId = {
 									placeId: results[0].place_id
-								}
+								};
 								scope.getAdditionPlaceInformation(resultPlaceId);
 							} else {
 								console.log("search was not successful for the following reason: " + status);
@@ -249,7 +265,7 @@ angular.module('dashboard.directives.ModelFieldPointsOfInterest', [
 				function createMarkers(results) {
 					if (infowindow) {
 						infowindow.close();
-					};
+					}
 					for (var i = 0; i < results.length; i++) {
 						scope.searchResults.push(results[i]);
 						var text = "Location:  " + results[i].name;
@@ -287,7 +303,7 @@ angular.module('dashboard.directives.ModelFieldPointsOfInterest', [
 					scope.boundaries.push(scope.circle);
 				}
 
-				function displayMarkers(location) {
+				function displayMarkers() {
 					for (var i = 0; i < scope.markers.length; i++) {
 						if (google.maps.geometry.spherical.computeDistanceBetween(scope.markers[i].getPosition(), scope.circle.center) < scope.request.radius) {
 							bounds.extend(scope.markers[i].getPosition());
@@ -300,9 +316,12 @@ angular.module('dashboard.directives.ModelFieldPointsOfInterest', [
 							scope.markers[i].setMap(null);
 						}
 					}
+					if (scope.displayedMarkers.length == 0) {
+						scope.searchError = "Couldn't find pharmacies!";
+					}
 				}
 
-				function listSearchResults(location) {
+				function listSearchResults() {
 					for (var i = 0; i < scope.searchResults.length; i++) {
 						if (google.maps.geometry.spherical.computeDistanceBetween(scope.searchResults[i].geometry.location, scope.circle.center) < scope.request.radius) {
 							//Adds correct results to list view
@@ -375,7 +394,7 @@ angular.module('dashboard.directives.ModelFieldPointsOfInterest', [
 					var text = "Location:  " + checkedLocation.name;
 					var marker = new google.maps.Marker({
 						map: map,
-						position: checkedLocation.geometry.location,
+						position: checkedLocation.geometry.location
 					});
 					infowindow.setContent(text);
 					infowindow.open(map, marker);
