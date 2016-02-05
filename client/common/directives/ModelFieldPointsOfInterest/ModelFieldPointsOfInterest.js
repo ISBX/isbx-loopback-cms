@@ -106,7 +106,17 @@ angular.module('dashboard.directives.ModelFieldPointsOfInterest', [
 				scope.isMapLoading = true;
 				scope.isLoaded = false;
 				scope.placeType = scope.property.display.options.placeType; //Default query value
-				scope.data = {};
+				if (!scope.data) scope.data = {};
+
+				//Check if scope.data is JSON string and try to parse it to load the data
+				if (scope.data && typeof scope.data === 'string') {
+					try {
+						scope.data = JSON.parse(scope.data);
+					} catch (e) {
+						console.error(e);
+						scope.data = {};
+					}
+				}
 
 				loadScript().then(function () {
 					bounds = new google.maps.LatLngBounds(); // Set initial bounds for markers
@@ -127,7 +137,7 @@ angular.module('dashboard.directives.ModelFieldPointsOfInterest', [
 							lng: position.longitude
 						};
 						scope.request.location = pointLocation;
-						initMap(scope.request.location);
+						initMap();
 					});
 				}, function () {
 					console.error("Error loading Google Maps")
