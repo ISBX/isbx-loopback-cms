@@ -330,6 +330,7 @@ angular.module('dashboard.directives.ModelFieldPointsOfInterest', [
 							scope.displayedSearchResults.push(scope.searchResults[i]);
 						}
 					}
+					scope.checkIfFinished();
 				}
 
 				function clearOverlays() {
@@ -338,19 +339,12 @@ angular.module('dashboard.directives.ModelFieldPointsOfInterest', [
 						scope.boundaries.length = 0;
 					}
 				}
-				function checkIfFinished(){
-					return(scope.displayedSearchResults.length > 0);
-				}
-				var timeout = setInterval(function() {
-					if(checkIfFinished()) {
-						clearInterval(timeout);
-						if (scope.data.placeId) {
-							perviouslySavedLatLng = new google.maps.LatLng(scope.data.lat, scope.data.lng);
-							scope.getClickedMarker(perviouslySavedLatLng);
-						}
-						isFinished = true;
+				scope.checkIfFinished = function(){
+					if (scope.data.placeId) {
+						perviouslySavedLatLng = new google.maps.LatLng(scope.data.lat, scope.data.lng);
+						scope.getClickedMarker(perviouslySavedLatLng);
 					}
-				}, 100);
+				};
 
 				scope.getClickedMarker = function(markerLocation) {
 					if(scope.displayedSearchResults) {
