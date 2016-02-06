@@ -47,7 +47,7 @@ angular.module('dashboard.directives.ModelFieldPointsOfInterest', [
         <div class="loading" ng-if="isMapLoading"><img src="http://www.nasa.gov/multimedia/videogallery/ajax-loader.gif" width="20" height="20" />Search results are loading...</div> \
         <div ng-show="isLoaded"> \
         <accordion close-others="oneAtATime"> \
-        <accordion-group id="accordion-group-1" heading="Location Search" is-open="true"> \
+        <accordion-group class="accordion-group" heading="Location Search" is-open="true"> \
         <input id="zipCode" class="field form-control" placeholder="Zip Code" ng-model="data.zipCode">\
         <input id="searchInput" class="field form-control" placeholder="Search Location" ng-model="request[\'query\']">\
          <select id="radius" ng-options="value as value for value in display.options" ng-required="" class="field form-control ng-pristine ng-valid ng-valid-required" ng-disabled=""> \
@@ -67,10 +67,10 @@ angular.module('dashboard.directives.ModelFieldPointsOfInterest', [
         <ul class="selected-location" ng-model="displayedSearchResults" > \
           <li ng-repeat="'+repeatExpression+'"> \
             <div class="location-title">{{ item.name }}</div> \
-              <span>{{item.formatted_address}}</span> \
+              <span class="search-results">{{item.formatted_address}}</span> \
             <div class="col-sm checkbox-container">\
-              <input type="checkbox" ng-attr-id="{{item.id}}" ng-model="item.checked" ng-click="updateSelection($index, displayedSearchResults)" class="field"> \
-              <label class="checkbox-label" ng-attr-for="{{item.id}}" ></label> \
+              <input type="checkbox" ng-attr-id="{{item.place_id}}" ng-model="item.checked" ng-click="updateSelection($index, displayedSearchResults)" class="field"> \
+              <label class="checkbox-label" ng-attr-for="{{item.place_id}}" ></label> \
             </div> \
           </li> \
         </ul>';
@@ -100,6 +100,8 @@ angular.module('dashboard.directives.ModelFieldPointsOfInterest', [
 				var markerLocation;
 				var infowindow;
 				var requestQuery;
+				var isfinished = false;
+				var perviouslySavedLatLng;
 
 				scope.circle = {};                     // displayed cicle boundary
 				scope.markers = [];                    // Stored markers
@@ -336,14 +338,28 @@ angular.module('dashboard.directives.ModelFieldPointsOfInterest', [
 						scope.boundaries.length = 0;
 					}
 				}
+				function checkIfFinished(){
+					return(scope.displayedSearchResults.length > 0);
+				}
+				var timeout = setInterval(function() {
+					if(checkIfFinished()) {
+						clearInterval(timeout);
+						if (scope.data.placeId) {
+							perviouslySavedLatLng = new google.maps.LatLng(scope.data.lat, scope.data.lng);
+							scope.getClickedMarker(perviouslySavedLatLng);
+						}
+						isFinished = true;
+					}
+				}, 100);
 
-				scope.getClickedMarker = function(markerLocation, marker) {
+				scope.getClickedMarker = function(markerLocation) {
 					if(scope.displayedSearchResults) {
 						for(var i = 0; i < scope.displayedSearchResults.length; i++) {
 							if(google.maps.geometry.spherical.computeDistanceBetween(markerLocation, scope.displayedSearchResults[i].geometry.location) == 0){
-								scope.updateSelection(scope.displayedSearchResults[i].id, scope.displayedSearchResults);
+								scope.updateSelection(scope.displayedSearchResults[i].place_id, scope.displayedSearchResults);
 								scope.displayedSearchResults[i].checked = true;
 								scope.getSelectResultData(scope.displayedSearchResults[i]);
+								scope.$digest();
 							}
 						}
 					}
@@ -378,14 +394,15 @@ angular.module('dashboard.directives.ModelFieldPointsOfInterest', [
 
 				scope.getSelectResultData = function (item) {
 					if (item) {
+						var placeRequest = {
+							placeId: item.place_id
+						};
 						scope.data.address = item.formatted_address;
 						scope.data.lat = item.geometry.location.lat();
 						scope.data.lng = item.geometry.location.lng();
 						scope.data.name = item.name;
+						scope.data.placeId = placeRequest.placeId;
 						//Calls getDetails to get extra information
-						var placeRequest = {
-							placeId: item.place_id
-						};
 						scope.getAdditionPlaceInformation(placeRequest);
 					}
 				};
