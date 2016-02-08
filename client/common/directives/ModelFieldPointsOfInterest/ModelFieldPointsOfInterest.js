@@ -100,7 +100,6 @@ angular.module('dashboard.directives.ModelFieldPointsOfInterest', [
 				var markerLocation;
 				var infowindow;
 				var requestQuery;
-				var isfinished = false;
 				var perviouslySavedLatLng;
 
 				scope.circle = {};                     // displayed cicle boundary
@@ -330,7 +329,10 @@ angular.module('dashboard.directives.ModelFieldPointsOfInterest', [
 							scope.displayedSearchResults.push(scope.searchResults[i]);
 						}
 					}
-					scope.checkIfFinished();
+					if (scope.data.placeId) { // pre-select point if exist
+						perviouslySavedLatLng = new google.maps.LatLng(scope.data.lat, scope.data.lng);
+						scope.getClickedMarker(perviouslySavedLatLng);
+					}
 				}
 
 				function clearOverlays() {
@@ -339,23 +341,18 @@ angular.module('dashboard.directives.ModelFieldPointsOfInterest', [
 						scope.boundaries.length = 0;
 					}
 				}
-				scope.checkIfFinished = function(){
-					if (scope.data.placeId) {
-						perviouslySavedLatLng = new google.maps.LatLng(scope.data.lat, scope.data.lng);
-						scope.getClickedMarker(perviouslySavedLatLng);
-					}
-				};
 
 				scope.getClickedMarker = function(markerLocation) {
 					if(scope.displayedSearchResults) {
 						for(var i = 0; i < scope.displayedSearchResults.length; i++) {
-							if(google.maps.geometry.spherical.computeDistanceBetween(markerLocation, scope.displayedSearchResults[i].geometry.location) == 0){
-								scope.updateSelection(scope.displayedSearchResults[i].place_id, scope.displayedSearchResults);
+							if(google.maps.geometry.spherical.computeDistanceBetween(markerLocation, scope.displayedSearchResults[i].geometry.location) == 0) {
 								scope.displayedSearchResults[i].checked = true;
 								scope.getSelectResultData(scope.displayedSearchResults[i]);
-								scope.$digest();
+							} else {
+								scope.displayedSearchResults[i].checked = false;
 							}
 						}
+						scope.$digest();
 					}
 				};
 
@@ -411,9 +408,9 @@ angular.module('dashboard.directives.ModelFieldPointsOfInterest', [
 					infowindow.open(map, marker);
 				};
 				// Prevents more than one checkbox at a time
-				scope.updateSelection = function (location, displayedSearchResults) {
+				scope.updateSelection = function (selectedIdx, displayedSearchResults) {
 					angular.forEach(displayedSearchResults, function (item, index) {
-						if (location != index) {
+						if (selectedIdx != index) {
 							item.checked = false;
 						} else {
 							scope.updateInfoWindow(item);
