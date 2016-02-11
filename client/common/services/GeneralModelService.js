@@ -87,7 +87,12 @@ angular.module('dashboard.services.GeneralModel', [
    * Helper POST method
    */
   this.post = function(path, params) {
-    var apiPath = path + '?access_token=' + $cookies.accessToken;
+    if(!params.accessToken) {
+      var apiPath = path + '?access_token=' + $cookies.accessToken;
+    }
+    else {
+      var apiPath = path + '?access_token=' + params.accessToken;
+    }
     return Utils.apiHelper('POST', apiPath, params);
   };
 
