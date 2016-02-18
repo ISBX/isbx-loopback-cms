@@ -57,6 +57,13 @@ angular.module('dashboard.Dashboard.Model.Edit', [
       }
     }
 
+    if ($scope.action.options.api) {
+      $scope.apiPath = $scope.action.options.api;
+    } else if ($scope.action.options.model) {
+      //Simple model list query
+      $scope.apiPath = $scope.model.plural;
+    }
+
     //Loop through fields and check for forced default fields
     GeneralModelService.checkDefaultValues($scope.model, $scope.data);
     
@@ -67,7 +74,7 @@ angular.module('dashboard.Dashboard.Model.Edit', [
     if (id) {
       $scope.isEdit = true;
       $scope.modelDisplay = null; //reset model display to prevent caching
-      GeneralModelService.get($scope.model.plural, id)
+      GeneralModelService.get($scope.apiPath, id)
       .then(function(response) {
         if (!response) return;  //in case http request was cancelled
         $scope.data = response;
