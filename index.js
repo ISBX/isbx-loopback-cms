@@ -50,7 +50,7 @@ var environment = process.env.NODE_ENV || 'development'
 module.exports = cms;
 
 // load all loopback model JSON files
-function loadLoopbackModels(loopbackModelsPath) {
+function loadLoopbackModels(loopbackModelsPath,loopbackApplication) {
   var models = {};
   var readDirRecursive = function(_path) {
     var files = fs.readdirSync(_path);
@@ -65,6 +65,7 @@ function loadLoopbackModels(loopbackModelsPath) {
           var modelString = fs.readFileSync(filePath);
           try {
             var model = JSON.parse(modelString);
+            model.properties = _.merge( model.properties, loopbackApplication.models[model.name] ? loopbackApplication.models[model.name].definition.properties : {} );
             if (!model.plural) {
               //add plural version if not exists
               model.plural = inflection.pluralize(model.name);
@@ -119,13 +120,6 @@ function loadLoopbackModels(loopbackModelsPath) {
   };
   models.Role = {name: "Role", plural: "Roles"};
   models.RoleMapping = {name: "RoleMapping", plural: "RoleMappings"};
-
-  //Expose inherited properties
-  for(var i in models) {
-    if( models[i].base && models[models[i].base] ) {
-      models[i].properties = _.merge( models[i].properties, models[ models[i].base ].properties );
-    }
-  }
 
   return models;
 }
@@ -266,7 +260,7 @@ function cms(loopbackApplication, options) {
   customSort.setLoopBack(loopbackApplication);
   aws.setConfig(config.private);
 
-  config.public.models = loadLoopbackModels(options.modelPath);
+  config.public.models = loadLoopbackModels(options.modelPath,loopbackApplication);
 
   app.set('views', __dirname + srcDir);
   app.set('view engine', 'jade');
@@ -298,7 +292,7 @@ function cms(loopbackApplication, options) {
       //reload the config JS each refresh
       delete require.cache[configPath];
       var devConfig = require(configPath);
-      devConfig.public.models = loadLoopbackModels(options.modelPath);
+      devConfig.public.models = loadLoopbackModels(options.modelPath,loopbackApplication);
       devConfig.public.apiBaseUrl = options.basePath;
       devConfig.public.cmsBaseUrl = app.mountpath;
       res.send('window.config = ' + JSON.stringify(devConfig.public) + ';');
