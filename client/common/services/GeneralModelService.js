@@ -44,10 +44,11 @@ angular.module('dashboard.services.GeneralModel', [
   this.get = function(apiPath, id, params) {
     if(apiPath.indexOf("{id}")>-1) {
       apiPath = apiPath.split('?');
-      apiPath = apiPath[0].replace("{id}",id) + '?access_token=' + $cookies.accessToken + '&' + apiPath[1];
+      apiPath = apiPath[0].replace("{id}",id) + '?access_token=' + $cookies.accessToken + (apiPath[1] ? '&' + apiPath[1] : '');
     } else {
       apiPath = apiPath + '/' + id + '?access_token=' + $cookies.accessToken;
     }
+    console.log(apiPath)
     //Below Utils.apiCancel() call appears to break when getting user profile
     //Utils.apiCancel('GET', apiPath); //cancels any prior calls to method + path
     return Utils.apiHelper('GET', apiPath, params);
