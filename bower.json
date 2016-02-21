@@ -29,7 +29,8 @@
     "jquery.hotkeys": "*",
     "bootstrap-wysiwyg": "*",
     "js-beautify": "~1.5.10",
-    "ng-signature-pad": "*"
+    "ng-signature-pad": "*",
+    "exif-js": "2.1.1"
   },
   "resolutions": {
     "angular": ">=1.2.18"
