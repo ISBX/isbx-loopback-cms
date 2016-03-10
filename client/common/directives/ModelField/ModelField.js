@@ -1,7 +1,7 @@
 angular.module('dashboard.directives.ModelField', [
   'dashboard.directives.ModelFieldImage',
-    'dashboard.directives.ModelFieldVideo',
-    'dashboard.directives.ModelFieldFile',
+  'dashboard.directives.ModelFieldVideo',
+  'dashboard.directives.ModelFieldFile',
   'dashboard.directives.ModelFieldReference',
   'dashboard.directives.ModelFieldReferenceSort',
   'dashboard.directives.ModelFieldList',
