@@ -230,7 +230,6 @@ angular.module('dashboard.directives.ModelField', [
             <div class="model-field-description" ng-if="display.description">{{ display.description }}</div>\
           </div>';
         break;
-      case 'text':
       case 'phoneNumber':
         template = '<label class="col-sm-2 control-label">{{ display.label || key }}:</label>\
           <div class="col-sm-10">\
@@ -239,6 +238,7 @@ angular.module('dashboard.directives.ModelField', [
             <div class="model-field-description" ng-if="display.description">{{ display.description }}</div>\
           </div>';
         break;
+      case 'text':
       default:
         template = '<label class="col-sm-2 control-label">{{ display.label || key }}:</label>\
           <div class="col-sm-10">\
