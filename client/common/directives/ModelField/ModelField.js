@@ -12,7 +12,8 @@ angular.module('dashboard.directives.ModelField', [
   'dashboard.directive.DateTimePicker',
   'ngCookies',
   'ngSlider',
-  'ngSignaturePad'
+  'ngSignaturePad',
+  'cwill747.phonenumber'
 ])
 
 .directive('modelFieldView', function($compile) {
