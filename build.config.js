@@ -96,7 +96,9 @@ module.exports = {
       'vendor/spectrum/spectrum.js',
       'vendor/js-beautify/js/lib/beautify-html.js',
       'vendor/signature_pad/signature_pad.min.js',
-      'vendor/ng-signature-pad/dist/ng-signature-pad.min.js'
+      'vendor/ng-signature-pad/dist/ng-signature-pad.min.js',
+      'vendor/angular-libphonenumber/dist/libphonenumber.js',
+      'vendor/angular-libphonenumber/dist/angular-libphonenumber.js'
     ],
     css: [
       'vendor/jquery-resizable-columns/dist/jquery.resizableColumns.css',

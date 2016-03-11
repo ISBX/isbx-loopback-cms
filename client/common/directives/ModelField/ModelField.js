@@ -1,7 +1,7 @@
 angular.module('dashboard.directives.ModelField', [
   'dashboard.directives.ModelFieldImage',
-    'dashboard.directives.ModelFieldVideo',
-    'dashboard.directives.ModelFieldFile',
+  'dashboard.directives.ModelFieldVideo',
+  'dashboard.directives.ModelFieldFile',
   'dashboard.directives.ModelFieldReference',
   'dashboard.directives.ModelFieldReferenceSort',
   'dashboard.directives.ModelFieldList',
@@ -12,7 +12,8 @@ angular.module('dashboard.directives.ModelField', [
   'dashboard.directive.DateTimePicker',
   'ngCookies',
   'ngSlider',
-  'ngSignaturePad'
+  'ngSignaturePad',
+  'cwill747.phonenumber'
 ])
 
 .directive('modelFieldView', function($compile) {
@@ -226,6 +227,14 @@ angular.module('dashboard.directives.ModelField', [
         template = '<label class="col-sm-2 control-label">{{ display.label || key }}:</label>\
           <div class="col-sm-10">\
             <input type="number" ng-model="data[key]" ng-pattern="{{ display.pattern }}" ng-disabled="{{ display.readonly }}" ng-required="{{ model.properties[key].required }}" class="field form-control">\
+            <div class="model-field-description" ng-if="display.description">{{ display.description }}</div>\
+          </div>';
+        break;
+      case 'phoneNumber':
+        template = '<label class="col-sm-2 control-label">{{ display.label || key }}:</label>\
+          <div class="col-sm-10">\
+            <input type="hidden" ng-model="countrycode" value="{{ display.region }}" />\
+            <input type="text" ng-model="data[key]" phone-number country-code="countrycode" ng-pattern="{{ display.pattern }}" ng-disabled="{{ display.readonly }}" ng-required="{{ model.properties[key].required }}" class="field form-control">\
             <div class="model-field-description" ng-if="display.description">{{ display.description }}</div>\
           </div>';
         break;
