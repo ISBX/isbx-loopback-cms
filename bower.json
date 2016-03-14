@@ -8,7 +8,7 @@
     "angular-ui-utils": "0.1.1",
     "angular-ui-select": "~0.8.3",
     "angular-ui-sortable": "~0.13.0",
-    "angular-ui-calendar": "~1.0.0",
+    "angular-ui-calendar": "~1.0.1",
     "angular-grid": "~2.0.13",
     "angular-sanitize": "1.2.27",
     "jquery": "2.1.1",
@@ -23,11 +23,14 @@
     "angular-google-chart": "~0.0.11",
     "eonasdan-bootstrap-datetimepicker": "~4.0.0",
     "moment": "~2.9.0",
+    "fullcalendar": "~2.6.0",
     "ng-slider": "~2.1.9",
     "spectrum": "~1.7.1",
     "jquery.hotkeys": "*",
     "bootstrap-wysiwyg": "*",
-    "js-beautify": "~1.5.10"
+    "js-beautify": "~1.5.10",
+    "ng-signature-pad": "*",
+    "angular-libphonenumber": "^1.0.0"
   },
   "resolutions": {
     "angular": ">=1.2.18"

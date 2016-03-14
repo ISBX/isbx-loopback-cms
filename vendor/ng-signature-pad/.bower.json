@@ -1,0 +1,32 @@
+{
+  "name": "ng-signature-pad",
+  "homepage": "https://github.com/ecentinela/ng-signature-pad",
+  "authors": [
+    "Javier Martínez Fernández <ecentinela@gmail.com>"
+  ],
+  "description": "SignaturePad directive for Angular",
+  "main": "dist/ng-signature-pad.js",
+  "keywords": [
+    "signature-pad",
+    "angular",
+    "directive"
+  ],
+  "license": "MIT",
+  "ignore": [
+    "**/.*",
+    "bower_components"
+  ],
+  "dependencies": {
+    "angular": "~1.2.9",
+    "signature_pad": "~1.3.2"
+  },
+  "_release": "49c42e2289",
+  "_resolution": {
+    "type": "branch",
+    "branch": "master",
+    "commit": "49c42e22890df47bfa3fe28ecf1ae1fff92c4e94"
+  },
+  "_source": "git://github.com/ecentinela/ng-signature-pad.git",
+  "_target": "*",
+  "_originalSource": "ng-signature-pad"
+}

@@ -2,6 +2,6 @@ angular.module('dashboard.Config', [
 ])
 
 .constant('Config', {
-  apiBaseUrl: '/api/' || window.config.apiBaseUrl,
+  apiBaseUrl: window.config.apiBaseUrl || '/api/',
   serverParams: window.config
 });

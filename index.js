@@ -52,28 +52,36 @@ module.exports = cms;
 // load all loopback model JSON files
 function loadLoopbackModels(loopbackModelsPath) {
   var models = {};
-  var files = fs.readdirSync(loopbackModelsPath);
-  //console.log(JSON.stringify(files, null, '  '));
-  for (var i in files) {
-    var file = files[i];
-    if (file.indexOf(".json") > -1) {
-      var filePath = loopbackModelsPath + file;
-      var modelString = fs.readFileSync(filePath);
-      try {
-        var model = JSON.parse(modelString);
-        if (!model.plural) {
-          //add plural version if not exists
-          model.plural = inflection.pluralize(model.name);
+  var readDirRecursive = function(_path) {
+    var files = fs.readdirSync(_path);
+    for (var i in files) {
+      var file = files[i];
+      var filePath = path.resolve(_path,file);
+      var stats = fs.statSync(filePath);
+      if( stats.isDirectory() ) {
+        readDirRecursive(filePath);
+      } else {
+        if (file.indexOf(".json") > -1) {
+          var modelString = fs.readFileSync(filePath);
+          try {
+            var model = JSON.parse(modelString);
+            if (!model.plural) {
+              //add plural version if not exists
+              model.plural = inflection.pluralize(model.name);
+            }
+            if (model.name) {
+              models[model.name] = model;
+            }
+          } catch (e) {
+            console.log("ERROR: parsing " + filePath);
+          }
         }
-        if (model.name) {
-          models[model.name] = model;
-        }
-      } catch (e) {
-        console.log("ERROR: parsing " + filePath);
       }
     }
   }
 
+  readDirRecursive(loopbackModelsPath);
+  
   //Add Base User, Role and RoleMappings
   var roleField = {
     "property": "role",
@@ -111,6 +119,14 @@ function loadLoopbackModels(loopbackModelsPath) {
   };
   models.Role = {name: "Role", plural: "Roles"};
   models.RoleMapping = {name: "RoleMapping", plural: "RoleMappings"};
+
+  //Expose inherited properties
+  for(var i in models) {
+    if( models[i].base && models[models[i].base] ) {
+      models[i].properties = _.merge( models[i].properties, models[ models[i].base ].properties );
+    }
+  }
+
   return models;
 }
 

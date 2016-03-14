@@ -3,6 +3,7 @@ angular.module('dashboard.Dashboard.Model.Edit', [
   'dashboard.services.String',                                                
   'dashboard.Config',
   'dashboard.directives.ModelField',
+  'dashboard.services.Cache',
   'dashboard.services.GeneralModel',
   'dashboard.services.FileUpload',
   'ui.router',
@@ -30,7 +31,7 @@ angular.module('dashboard.Dashboard.Model.Edit', [
     ;
 })
 
-.controller('ModelEditCtrl', function ModelEditCtrl($scope, $cookies, $location, $stateParams, $http, $state, $window, $modal, Config, GeneralModelService, FileUploadService, StringService) {
+.controller('ModelEditCtrl', function ModelEditCtrl($rootScope, $scope, $cookies, $location, $stateParams, $http, $state, $window, $modal, Config, GeneralModelService, FileUploadService, CacheService, StringService) {
 
   var modalInstance = null;
   $scope.deleteButton = StringService.useStingData().deleteButton;
@@ -111,21 +112,9 @@ angular.module('dashboard.Dashboard.Model.Edit', [
     var id = $scope.data[$scope.action.options.key];
     GeneralModelService.saveWithFiles($scope.model.name, id, $scope.data)
       .then(function(response) {
-        if (callback) {
-          callback();
-        } else if ($scope.action.options && $scope.action.options.returnAfterEdit) {
-          $window.history.back();
-        } else {
-          //reload data
-          if (!$scope.section) {
-            //No section identified, so likely not called from main navigation via config.json
-            //Instead likely called from Modal Popup
-            if (modalInstance) modalInstance.close();
-          } else {
-            $state.go($scope.section.state ? $scope.section.state : "dashboard.model.action.edit", { model: $scope.section.path, action: $scope.action.label, id:response[$scope.action.options.key] });
-          }
-        }
         if (modalInstance) modalInstance.close();
+        $rootScope.$broadcast('modelEditSaved');
+        if (callback) callback(response);
       },
       function(error) {
         if (typeof error === 'object' && error.message) {
@@ -161,7 +150,21 @@ angular.module('dashboard.Dashboard.Model.Edit', [
       controller: 'ModelEditSaveDialogCtrl',
       scope: $scope
     });
-    save();
+    save(function(response){
+      CacheService.clear($scope.action.options.model);
+      if($scope.action.options && $scope.action.options.returnAfterEdit) {
+        $window.history.back();
+      } else {
+        //reload data
+        if (!$scope.section) {
+          //No section identified, so likely not called from main navigation via config.json
+          //Instead likely called from Modal Popup
+          if (modalInstance) modalInstance.close();
+        } else {
+          $state.go($scope.section.state ? $scope.section.state : "dashboard.model.action.edit", { model: $scope.section.path, action: $scope.action.label, id:response[$scope.action.options.key] });
+        }
+      }
+    });
   };
   
   $scope.clickDeleteModel = function(data) {
@@ -171,12 +174,14 @@ angular.module('dashboard.Dashboard.Model.Edit', [
       //Soft Delete
       $scope.data[$scope.model.options.softDeleteProperty] = true;
       save(function() {
+        CacheService.clear($scope.action.options.model);
         $window.history.back();
       });
     } else {
       //Hard Delete
       GeneralModelService.remove($scope.model.plural, id)
       .then(function(response) {
+        CacheService.clear($scope.action.options.model);
         $window.history.back();
       }, function(error) {
         if (typeof error === 'object' && error.message) {

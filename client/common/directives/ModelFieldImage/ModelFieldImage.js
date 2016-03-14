@@ -53,6 +53,10 @@ angular.module('dashboard.directives.ModelFieldImage', [
               } else if (typeof data === "object") {
                 if (data.fileUrl) scope.imageUrl = data.fileUrl;
                 if (data.imageUrl) scope.imageUrl = data.imageUrl;
+                if (!scope.imageUrl && data.file) {
+                  //Handle file objects
+                  fileReader.readAsDataURL(data.file);
+                }
               }
             } else {
               //Media table reference (data is the ID reference)

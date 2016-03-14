@@ -1,13 +1,19 @@
 angular.module('dashboard.directives.ModelField', [
-  'dashboard.directives.ModelFieldImage', 
-  'dashboard.directives.ModelFieldFile', 
+  'dashboard.directives.ModelFieldImage',
+  'dashboard.directives.ModelFieldVideo',
+  'dashboard.directives.ModelFieldFile',
   'dashboard.directives.ModelFieldReference',
   'dashboard.directives.ModelFieldReferenceSort',
   'dashboard.directives.ModelFieldList',
   'dashboard.directives.ModelFieldWYSIWYG',
+  'dashboard.directives.ModelFieldCanvas',
+  'dashboard.directives.ModelFieldLocation',
+  'dashboard.directives.ModelFieldPointsOfInterest',
   'dashboard.directive.DateTimePicker',
   'ngCookies',
-  'ngSlider'
+  'ngSlider',
+  'ngSignaturePad',
+  'cwill747.phonenumber'
 ])
 
 .directive('modelFieldView', function($compile) {
@@ -90,6 +96,14 @@ angular.module('dashboard.directives.ModelField', [
         template = '<label class="col-sm-2 control-label">{{ display.label || key }}:</label> \
           <div class="col-sm-10"> \
             <model-field-image-edit key="key" options="display.options" disabled="display.readonly" model-data="data" ng-model="data[key]" class="field" /> \
+            <div class="model-field-description" ng-if="display.description">{{ display.description }}</div>\
+          </div>';
+        break;
+      case 'video':
+        // depends on directive modelFieldImageEdit
+        template = '<label class="col-sm-2 control-label">{{ display.label || key }}:</label> \
+          <div class="col-sm-10"> \
+            <model-field-video-edit key="key" options="display.options" disabled="display.readonly" model-data="data" ng-model="data[key]" class="field" /> \
             <div class="model-field-description" ng-if="display.description">{{ display.description }}</div>\
           </div>';
         break;
@@ -186,10 +200,41 @@ angular.module('dashboard.directives.ModelField', [
             <div class="model-field-description" ng-if="display.description">{{ display.description }}</div>\
           </div>';
         break;
+      case 'draw':
+      case 'signature':
+        template = '<label class="col-sm-2 control-label">{{ display.label || key }}:</label>\
+          <div class="col-sm-10">\
+            <model-field-canvas-edit key="key" property="property" options="display.options" ng-model="data[key]" class="field" ng-required="{{ model.properties[key].required }}" disabled="display.readonly"></model-field-canvas-edit>\
+            <div class="model-field-description" ng-if="display.description">{{ display.description }}</div>\
+          </div>';
+        break;
+      case 'location':
+        template = '<label class="col-sm-2 control-label">{{ display.label || key }}:</label>\
+          <div class="col-sm-10">\
+            <model-field-location-edit key="key" property="property" options="display.options" ng-model="data[key]" class="field" ng-required="{{ model.properties[key].required }}" disabled="display.readonly"></model-field-location-edit>\
+            <div class="model-field-description" ng-if="display.description">{{ display.description }}</div>\
+          </div>';
+        break;
+      case 'poi':
+      case 'POI':
+        template = '<label class="col-sm-2 control-label">{{ display.label || key }}:</label>\
+          <div class="col-sm-10">\
+            <model-field-points-of-interest-edit key="key" property="property" options="display.options" ng-model="data[key]" class="field" ng-required="{{ model.properties[key].required }}" disabled="display.readonly"></model-field-points-of-interest-edit>\
+            <div class="model-field-description" ng-if="display.description">{{ display.description }}</div>\
+          </div>';
+        break;
       case 'number':
         template = '<label class="col-sm-2 control-label">{{ display.label || key }}:</label>\
           <div class="col-sm-10">\
             <input type="number" ng-model="data[key]" ng-pattern="{{ display.pattern }}" ng-disabled="{{ display.readonly }}" ng-required="{{ model.properties[key].required }}" class="field form-control">\
+            <div class="model-field-description" ng-if="display.description">{{ display.description }}</div>\
+          </div>';
+        break;
+      case 'phoneNumber':
+        template = '<label class="col-sm-2 control-label">{{ display.label || key }}:</label>\
+          <div class="col-sm-10">\
+            <input type="hidden" ng-model="countrycode" value="{{ display.region }}" />\
+            <input type="text" ng-model="data[key]" phone-number country-code="countrycode" ng-pattern="{{ display.pattern }}" ng-disabled="{{ display.readonly }}" ng-required="{{ model.properties[key].required }}" class="field form-control">\
             <div class="model-field-description" ng-if="display.description">{{ display.description }}</div>\
           </div>';
         break;
@@ -241,11 +286,14 @@ angular.module('dashboard.directives.ModelField', [
         if (property.display.type == 'file' && scope.data[scope.key]) {
           //Check if image file is uploaded and convert schema property display type to image
           var filename = scope.data[scope.key];
-          if (typeof filename === 'object' && filename.filename) filename = filename.filename
-          var extension = filename.toLowerCase().substring(filename.length-4);
-          if (extension == '.png' || extension == '.jpg' || extension == 'jpeg' || extension == '.bmp') {
-            property = angular.copy(property); //we don't want changes the schema property to persist outside of this directive
-            property.display.type = 'image';
+          if (typeof filename === 'object' && filename.filename) filename = filename.filename;
+          else if (typeof filename === 'object' && filename.file) filename = filename.file.name;
+          if (filename) {
+            var extension = filename.toLowerCase().substring(filename.length-4);
+            if (extension == '.png' || extension == '.jpg' || extension == 'jpeg' || extension == '.bmp') {
+              property = angular.copy(property); //we don't want changes the schema property to persist outside of this directive
+              property.display.type = 'image';
+            }
           }
         }
 
@@ -346,7 +394,7 @@ angular.module('dashboard.directives.ModelField', [
         scope.display = property.display;
 
 
-        if (property.display.type == "custom") {
+        if (property.display.editTemplate) {
           element.html(property.display.editTemplate).show();
         } else {
           element.html(getTemplate(property.display.type, scope)).show();

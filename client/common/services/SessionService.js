@@ -4,7 +4,7 @@ angular.module('dashboard.services.Session', [
   'ngCookies'
 ])
 
-.service('SessionService', function($cookies, $http, $q, UserService, Config, Utils) {
+.service('SessionService', function($cookies, $cookieStore, $http, $q, UserService, Config, Utils) {
   var session = null;
   function init() {
     var sessionStr = $cookies.session;
@@ -58,12 +58,12 @@ angular.module('dashboard.services.Session', [
   this.logOut = function() {
   	var authModel = "Users";
   	if (config.authModel) authModel = config.authModel;
-  	  var accessToken = $cookies.accessToken;
-  	  $cookies.username = null;
-  	  $cookies.userId = null;
-  	  $cookies.accessToken = null;
-  	  $cookies.roles = null;
-	  $cookies.session = null;
+		var accessToken = $cookies.accessToken;
+		$cookieStore.remove('username');
+		$cookieStore.remove('userId');
+		$cookieStore.remove('accessToken');
+		$cookieStore.remove('roles');
+		$cookieStore.remove('session');
 	  return Utils.apiHelper('POST', authModel + '/logout?access_token=' + accessToken);
   };
 

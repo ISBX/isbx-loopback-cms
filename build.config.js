@@ -73,7 +73,7 @@ module.exports = {
       'vendor/angular-ui-utils/ui-utils.js',
       'vendor/angular-ui-select/dist/select.min.js',
       'vendor/angular-ui-sortable/sortable.min.js',
-      'vendor/angular-ui-calendar/calendar.min.js',
+      'vendor/angular-ui-calendar/src/calendar.js',
       'vendor/angular-grid/ng-grid-2.0.14.debug.js',
       'vendor/angular-grid/plugins/ng-grid-flexible-height.js',
       'vendor/angular-grid/plugins/ng-grid-csv-export.js',
@@ -94,7 +94,11 @@ module.exports = {
       'vendor/bootstrap-wysiwyg/bootstrap-wysiwyg.js',
       'vendor/jquery.hotkeys/jquery.hotkeys.js',
       'vendor/spectrum/spectrum.js',
-      'vendor/js-beautify/js/lib/beautify-html.js'
+      'vendor/js-beautify/js/lib/beautify-html.js',
+      'vendor/signature_pad/signature_pad.min.js',
+      'vendor/ng-signature-pad/dist/ng-signature-pad.min.js',
+      'vendor/angular-libphonenumber/dist/libphonenumber.js',
+      'vendor/angular-libphonenumber/dist/angular-libphonenumber.js'
     ],
     css: [
       'vendor/jquery-resizable-columns/dist/jquery.resizableColumns.css',

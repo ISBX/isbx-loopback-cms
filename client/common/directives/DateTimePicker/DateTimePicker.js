@@ -25,14 +25,14 @@ angular.module('dashboard.directive.DateTimePicker', [
           //Format the passed in date
           if (!scope.format) scope.format = scope.ngFormat;
           if (!value) return;
-          return moment.utc(value).format(scope.format);
+          return moment(value).format(scope.format);
         });
           
         //Bind the Element
         elem.datetimepicker({
           format: scope.format,
           useCurrent: false,
-          defaultDate: scope.defaultDate ? moment.utc(scope.defaultDate, scope.format) : undefined,
+          defaultDate: scope.defaultDate ? moment(scope.defaultDate, scope.format) : undefined,
           viewMode: scope.viewMode,
           widgetPositioning: { horizontal: scope.horizontal ? scope.horizontal : 'auto' }
         });
@@ -46,7 +46,7 @@ angular.module('dashboard.directive.DateTimePicker', [
         //On Blur update the ng-model
         elem.on('blur', function () {
           if (!scope.format) scope.format = scope.ngFormat;
-          var dateValue = moment.utc(elem.val(), scope.format);
+          var dateValue = moment(elem.val(), scope.format);
           if (dateValue.isValid()) {
             ngModel.$setViewValue(dateValue);
           } else {

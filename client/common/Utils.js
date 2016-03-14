@@ -27,9 +27,12 @@ angular.module('dashboard.Utils', [
     if (path[0] == "/") {
       params.url = path;
     } else {
+      if (Config.apiBaseUrl && Config.apiBaseUrl[Config.apiBaseUrl.length-1] != '/' && path[path.length-1] != '/') {
+        Config.apiBaseUrl += '/';
+      }
       params.url = Config.apiBaseUrl + path;
     }
-
+    
     if (method == 'POST' || method == 'PUT') {
       params.data = data;
     } else {
