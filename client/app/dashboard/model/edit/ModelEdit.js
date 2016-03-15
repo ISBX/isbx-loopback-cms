@@ -28,9 +28,6 @@ angular.module('dashboard.Dashboard.Model.Edit', [
 .controller('ModelEditCtrl', function ModelEditCtrl($rootScope, $scope, $cookies, $location, $stateParams, $http, $state, $window, $modal, Config, GeneralModelService, FileUploadService, CacheService) {
 
   var modalInstance = null;
-  $scope.deleteButtonText = Config.serverParams.strings.deleteButton;
-  $scope.saveButtonText = Config.serverParams.strings.saveButton;
-
   function init() {
 
     $scope.hideSideMenu();
@@ -48,9 +45,12 @@ angular.module('dashboard.Dashboard.Model.Edit', [
       $scope.model.properties[key].display.readonly = true;
     }
 
+    $scope.saveButtonText = Config.serverParams.strings.saveButton;
+    $scope.deleteButtonText = Config.serverParams.strings.deleteButton;
+    $scope.deleteDialogText = Config.serverParams.strings.deleteDiaglog ? Config.serverParams.strings.deleteDiaglog : "Are you sure you want to delete?";
     $scope.isLoading = true;
     $scope.data = {};
-    
+
     //Check to see if there's any passed in values from the referring page
     if ($scope.action.options.data) {
       var keys = Object.keys($scope.action.options.data);
@@ -163,7 +163,7 @@ angular.module('dashboard.Dashboard.Model.Edit', [
   };
   
   $scope.clickDeleteModel = function(data) {
-    if (!confirm("Are you sure you want to delete?")) return;
+    if (!confirm($scope.deleteDialogText)) return;
     var id = data[$scope.action.options.key];
     if ($scope.model.options && $scope.model.options.softDeleteProperty) {
       //Soft Delete
