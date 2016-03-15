@@ -78,7 +78,7 @@ function loadLoopbackModels(loopbackModelsPath) {
         }
       }
     }
-  }
+  };
 
   readDirRecursive(loopbackModelsPath);
   
@@ -294,19 +294,21 @@ function cms(loopbackApplication, options) {
   }
 
   app.get('/config.js', function(req, res) {
+    var localConfig = config;
+    var stringsPath = path.dirname(configPath) + '/strings.json';
     if (environment != "production") {
       //reload the config JS each refresh
       delete require.cache[configPath];
-      var devConfig = require(configPath);
-      devConfig.public.models = loadLoopbackModels(options.modelPath);
-      devConfig.public.apiBaseUrl = options.basePath;
-      devConfig.public.cmsBaseUrl = app.mountpath;
-      res.send('window.config = ' + JSON.stringify(devConfig.public) + ';');
-    } else {
-      config.public.apiBaseUrl = options.basePath;
-      config.public.cmsBaseUrl = app.mountpath;
-      res.send('window.config = ' + JSON.stringify(config.public) + ';');
+      delete require.cache[stringsPath];
+      localConfig = require(configPath);
+      localConfig.public.models = loadLoopbackModels(options.modelPath);
     }
+    fs.exists(stringsPath, function(exists) {
+      if (exists) localConfig.public.strings = require(stringsPath);
+      localConfig.public.apiBaseUrl = options.basePath;
+      localConfig.public.cmsBaseUrl = app.mountpath;
+      res.send('window.config = ' + JSON.stringify(localConfig.public) + ';');
+    });
   });
 
 

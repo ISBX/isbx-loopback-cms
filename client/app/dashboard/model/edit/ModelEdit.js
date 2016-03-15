@@ -1,6 +1,5 @@
 angular.module('dashboard.Dashboard.Model.Edit', [
   'dashboard.Dashboard.Model.Edit.SaveDialog',
-  'dashboard.services.String',                                                
   'dashboard.Config',
   'dashboard.directives.ModelField',
   'dashboard.services.Cache',
@@ -19,11 +18,6 @@ angular.module('dashboard.Dashboard.Model.Edit', [
       url: '/edit/:id',
       //controller: 'ModelEditCtrl', /* causes controller to init twice */
       templateUrl: 'app/dashboard/model/edit/ModelEdit.html',
-      resolve: {
-        StringServiceData:function(StringService){
-          return StringService.promise;
-        }
-      },
       data: {
         pageTitle: 'Edit'
       }
@@ -31,10 +25,11 @@ angular.module('dashboard.Dashboard.Model.Edit', [
     ;
 })
 
-.controller('ModelEditCtrl', function ModelEditCtrl($rootScope, $scope, $cookies, $location, $stateParams, $http, $state, $window, $modal, Config, GeneralModelService, FileUploadService, CacheService, StringService) {
+.controller('ModelEditCtrl', function ModelEditCtrl($rootScope, $scope, $cookies, $location, $stateParams, $http, $state, $window, $modal, Config, GeneralModelService, FileUploadService, CacheService) {
 
   var modalInstance = null;
-  $scope.deleteButton = StringService.useStingData().deleteButton;
+  $scope.deleteButtonText = Config.serverParams.strings.deleteButton;
+  $scope.saveButtonText = Config.serverParams.strings.saveButton;
 
   function init() {
 
