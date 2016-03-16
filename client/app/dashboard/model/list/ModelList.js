@@ -27,8 +27,6 @@ angular.module('dashboard.Dashboard.Model.List', [
 
   var isFirstLoad = true;
   var modalInstance = null;
-  $scope.cancelButtonText = Config.serverParams.strings.cancelButton;
-  $scope.saveButtonText = Config.serverParams.strings.saveButton;
   $scope.moment = moment;
   $scope.columnCount = 0;
   $scope.list = [];
@@ -149,6 +147,11 @@ angular.module('dashboard.Dashboard.Model.List', [
       $scope.gridOptions.plugins.push(new ngGridCsvExportPlugin());
     }
 
+    //Load Strings
+    if (Config.serverParams.strings) {
+      $scope.cancelButtonText = Config.serverParams.strings.cancelButton;
+      $scope.saveButtonText = Config.serverParams.strings.saveButton;
+    }
   }
 
   function getColumnDefinition() {

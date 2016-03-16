@@ -45,9 +45,6 @@ angular.module('dashboard.Dashboard.Model.Edit', [
       $scope.model.properties[key].display.readonly = true;
     }
 
-    $scope.saveButtonText = Config.serverParams.strings.saveButton;
-    $scope.deleteButtonText = Config.serverParams.strings.deleteButton;
-    $scope.deleteDialogText = Config.serverParams.strings.deleteDiaglog ? Config.serverParams.strings.deleteDiaglog : "Are you sure you want to delete?";
     $scope.isLoading = true;
     $scope.data = {};
 
@@ -81,6 +78,13 @@ angular.module('dashboard.Dashboard.Model.Edit', [
       layoutModelDisplay();
       $scope.isEdit = false;
       $scope.isLoading = false;
+    }
+
+    //Load Strings
+    if (Config.serverParams.strings) {
+      $scope.saveButtonText = Config.serverParams.strings.saveButton;
+      $scope.deleteButtonText = Config.serverParams.strings.deleteButton;
+      $scope.deleteDialogText = Config.serverParams.strings.deleteDiaglog ? Config.serverParams.strings.deleteDiaglog : "Are you sure you want to delete?";
     }
   }
 
