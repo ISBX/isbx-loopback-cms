@@ -1,5 +1,5 @@
 angular.module('dashboard.Dashboard.Model.Edit', [
-  'dashboard.Dashboard.Model.Edit.SaveDialog',                                                
+  'dashboard.Dashboard.Model.Edit.SaveDialog',
   'dashboard.Config',
   'dashboard.directives.ModelField',
   'dashboard.services.Cache',
@@ -25,11 +25,11 @@ angular.module('dashboard.Dashboard.Model.Edit', [
     ;
 })
 
-.controller('ModelEditCtrl', function ModelEditCtrl($rootScope, $scope, $cookies, $stateParams, $state, $window, $modal, Config, GeneralModelService, FileUploadService, CacheService, $location) {
+.controller('ModelEditCtrl', function ModelEditCtrl($rootScope, $scope, $cookies, $location, $stateParams, $http, $state, $window, $modal, Config, GeneralModelService, FileUploadService, CacheService) {
 
   var modalInstance = null;
-      
   function init() {
+
     $scope.hideSideMenu();
     if ($window.ga) $window.ga('send', 'pageview', { page: $location.path() });
 
@@ -45,9 +45,12 @@ angular.module('dashboard.Dashboard.Model.Edit', [
       $scope.model.properties[key].display.readonly = true;
     }
 
+    $scope.saveButtonText = Config.serverParams.strings.saveButton;
+    $scope.deleteButtonText = Config.serverParams.strings.deleteButton;
+    $scope.deleteDialogText = Config.serverParams.strings.deleteDiaglog ? Config.serverParams.strings.deleteDiaglog : "Are you sure you want to delete?";
     $scope.isLoading = true;
     $scope.data = {};
-    
+
     //Check to see if there's any passed in values from the referring page
     if ($scope.action.options.data) {
       var keys = Object.keys($scope.action.options.data);
@@ -160,7 +163,7 @@ angular.module('dashboard.Dashboard.Model.Edit', [
   };
   
   $scope.clickDeleteModel = function(data) {
-    if (!confirm("Are you sure you want to delete?")) return;
+    if (!confirm($scope.deleteDialogText)) return;
     var id = data[$scope.action.options.key];
     if ($scope.model.options && $scope.model.options.softDeleteProperty) {
       //Soft Delete

@@ -4,7 +4,6 @@ form.form-horizontal.model-edit(name="form", ng-controller="ModelEditCtrl", vali
     model-field-edit(key="key", model="model", ng-model="data")
   .form-group
     .col-sm-offset-2.col-sm-10
-      button.btn.btn-default(ng-click="clickSaveModel(data)", ng-disabled="form.$invalid", ng-hide="isLoading") Save
-      button.btn.btn-danger.delete-button(ng-click="clickDeleteModel(data)", ng-show="!isLoading && isEdit && !action.options.hideDelete") Delete
+      button.btn.btn-default(ng-click="clickSaveModel(data)", ng-disabled="form.$invalid", ng-hide="isLoading") {{saveButtonText || "Save"}}
+      button.btn.btn-danger.delete-button(ng-click="clickDeleteModel(data)", ng-show="!isLoading && isEdit && !action.options.hideDelete") {{deleteButtonText || "Delete"}}
       //.error {{ form.$error }} //debug form errors
-      
