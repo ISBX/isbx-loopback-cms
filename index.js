@@ -79,7 +79,7 @@ function loadLoopbackModels(loopbackModelsPath,loopbackApplication) {
         }
       }
     }
-  };
+  }
 
   readDirRecursive(loopbackModelsPath);
   
