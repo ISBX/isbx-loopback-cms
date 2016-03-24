@@ -41,7 +41,6 @@
 .dashboard .filter-nav a.subnav-button.selected {
   color: #000;
   background-color: #f0f0f0;
-  border-right: solid 1px #f0f0f0;
 }
 .dashboard .content {
   position: absolute;

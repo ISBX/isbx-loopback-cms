@@ -37,7 +37,7 @@ angular.module('dashboard', [
       .then(function() {
         modulesLoaded = true;
         $rootScope.$broadcast('modulesLoaded');
-      });
+      }, function(error){console.log(error)});
   } else {
     modulesLoaded = true;
   }

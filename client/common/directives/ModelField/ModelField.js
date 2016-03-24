@@ -248,6 +248,16 @@ angular.module('dashboard.directives.ModelField', [
     }
     return template;
   }
+
+  function addInputAttributes(element, inputAttr) {
+    var $input = $(element).find('input');
+    if (inputAttr && $input) {
+      for(var attr in inputAttr) {
+        $input.attr(attr, inputAttr[attr]);
+      }
+    }
+  }
+
   return {
     restrict: 'E',
     scope: {
@@ -399,6 +409,9 @@ angular.module('dashboard.directives.ModelField', [
         } else {
           element.html(getTemplate(property.display.type, scope)).show();
         }
+        // add input attributes if specified in schema
+        addInputAttributes(element, scope.property.display.inputAttr);
+
         $compile(element.contents())(scope);
 
     }
