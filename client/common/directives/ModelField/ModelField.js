@@ -96,6 +96,9 @@ angular.module('dashboard.directives.ModelField', [
         template = '<label class="col-sm-2 control-label">{{ display.label || key }}:</label> \
           <div class="col-sm-10"> \
             <model-field-image-edit key="key" options="display.options" disabled="display.readonly" model-data="data" ng-model="data[key]" class="field" /> \
+          </div>\
+          <label class="col-sm-2 control-label"></label> \
+          <div class="col-sm-10"> \
             <div class="model-field-description" ng-if="display.description">{{ display.description }}</div>\
           </div>';
         break;
