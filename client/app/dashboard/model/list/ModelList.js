@@ -624,7 +624,7 @@ angular.module('dashboard.Dashboard.Model.List', [
         //Record doesn't have an id so must be a record that has not been created yet
         $scope.list.splice(row.rowIndex, 1);
       } else {
-        if ($scope.model.options.softDeleteProperty) {
+        if ($scope.model.options && $scope.model.options.softDeleteProperty) {
           startEdit();
           row.entity[$scope.model.options.softDeleteProperty] = true; //soft delete
           $scope.clickSaveEdit();
