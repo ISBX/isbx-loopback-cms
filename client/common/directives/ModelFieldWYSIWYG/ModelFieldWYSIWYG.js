@@ -26,8 +26,9 @@ angular.module('dashboard.directives.ModelFieldWYSIWYG', [
     var template = '\
       <div class="wysiwyg-toolbar" data-role="editor-toolbar" data-target=".wysiwyg-editor" ng-hide="disabled">\
         <div class="btn-group">\
-          <a class="btn btn-default dropdown-toggle" data-toggle="dropdown" title="Font Size" ng-disabled="isEditingCode"><i class="fa fa-text-height"></i>&nbsp;<b class="caret"></b></a>\
-          <ul class="dropdown-menu">\
+          <span class="dropdown">\
+          <a class="btn btn-default" title="Font Size" ng-click="toggleDropdown($event)" ng-disabled="isEditingCode"><i class="fa fa-text-height"></i>&nbsp;<b class="caret"></b></a>\
+          <ul class="menu" ng-click="toggleDropdown($event)" >\
             <li><a data-edit="fontSize 7">24 pt</a></li>\
             <li><a data-edit="fontSize 6">18 pt</a></li>\
             <li><a data-edit="fontSize 5">16 pt</a></li>\
@@ -35,7 +36,7 @@ angular.module('dashboard.directives.ModelFieldWYSIWYG', [
             <li><a data-edit="fontSize 3">12 pt</a></li>\
             <li><a data-edit="fontSize 2">10 pt</a></li>\
             <li><a data-edit="fontSize 1">7 pt</a></li>\
-          </ul>\
+          </ul></span>\
         </div>\
         <div class="btn-group">\
           <span class="dropdown">\
@@ -98,6 +99,7 @@ angular.module('dashboard.directives.ModelFieldWYSIWYG', [
       disabled: '=disabled'
     },
     link: function(scope, element, attrs, ngModel) {
+      var $wysiwyg, codeEditor;
 
       function init() {
         scope.isEditingCode = false;
@@ -108,10 +110,10 @@ angular.module('dashboard.directives.ModelFieldWYSIWYG', [
         element.html(getTemplate()).show();
         $compile(element.contents())(scope);
 
-        var $wysiwyg = initWysiwygEditor();
-        initColorPicker($wysiwyg);
+        initWysiwygEditor();
+        initColorPicker();
 
-        var codeEditor = ace.edit(element.find('.code-editor')[0]);
+        codeEditor = ace.edit(element.find('.code-editor')[0]);
         codeEditor.getSession().setMode("ace/mode/html");
 
         $(element).find('.wysiwyg-toolbar [data-role=magic-overlay]').each(function () {
@@ -142,7 +144,7 @@ angular.module('dashboard.directives.ModelFieldWYSIWYG', [
         if(instances && instances.length > 0) {
           instanceIdx = instances.length;
         }
-        var $wysiwyg = angular.element(element).find('.wysiwyg-editor');
+        $wysiwyg = angular.element(element).find('.wysiwyg-editor');
         var editorId = 'wysiwyg-editor-'+instanceIdx;
         var toolbarId = 'editor'+instanceIdx+'-toolbar';
         $wysiwyg.attr('id', editorId);
@@ -155,10 +157,9 @@ angular.module('dashboard.directives.ModelFieldWYSIWYG', [
           hotKeys: {},
           dragAndDropImages: false
         });
-        return $wysiwyg;
       }
 
-      function initColorPicker($wysiwyg) {
+      function initColorPicker() {
         var $colorPicker = angular.element(element).find(".font-color-picker");
         if($colorPicker) {
           $colorPicker.spectrum({

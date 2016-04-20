@@ -473,6 +473,14 @@ model-field-wysiwyg-edit .wysiwyg-toolbar .menu {
 }
 model-field-wysiwyg-edit .wysiwyg-toolbar .menu.open {
   display: block;
+  list-style-type: none;
+}
+model-field-wysiwyg-edit .wysiwyg-toolbar .menu.open li {
+  line-height: normal;
+  padding: 5px;
+}
+model-field-wysiwyg-edit .wysiwyg-toolbar .menu.open li a {
+  cursor: pointer;
 }
 model-field-wysiwyg-edit .wysiwyg-toolbar .menu .add-button {
   width: 100%;
