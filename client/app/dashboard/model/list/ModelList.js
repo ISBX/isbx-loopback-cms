@@ -612,6 +612,14 @@ angular.module('dashboard.Dashboard.Model.List', [
       endEdit();
     }
   };
+
+  $scope.deleteRowWithMessage = function(row, msg) {
+    if (msg) {
+      if (confirm(msg)) $scope.deleteRow(row, true);
+      return;
+    }
+    $scope.deleteRow(row);
+  };
   
   $scope.deleteRow = function(row, bypassPrompt) {
     if (!$scope.model || !$scope.model.plural) {
