@@ -110,7 +110,17 @@ angular.module('dashboard', [
     var minutesSuffix = minutes > 1 ? 's' : '';
     var seconds = parseInt((millis/1000)%60);
     var secondsSuffix = seconds > 1 ? 's' : '';
-    return minutes + ' minute' + minutesSuffix + ' and ' + seconds + ' second' + secondsSuffix;
+    if (minutes > 0 && seconds == 0) {
+      minutes -= 1;
+      seconds = 60;
+    }
+    var countdownStr = '';
+    if (minutes > 0) {
+      countdownStr = minutes + ' minute' + minutesSuffix + ' and ' + seconds + ' second' + secondsSuffix;
+    } else {
+      countdownStr = seconds + ' second' + secondsSuffix;
+    }
+    return countdownStr;
   }
 
   function timeoutWarningMessage() {
