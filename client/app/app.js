@@ -105,11 +105,17 @@ angular.module('dashboard', [
       });
   };
 
+  function timeoutWarningMessage() {
+    $scope.alertMessage = 'You will be logged out in ' + parseInt($scope.warningTimeout / 1000) + ' minutes for being idle. To avoid being automatically logged out, please click the OK button.';
+    if ($scope.warningTimeout > 0) $scope.warningTimeout -= 1000;
+    else $scope.alertMessage = 'Logging Out...';
+  }
+
   function sessionTimeoutWarning() {
     $rootScope.timeoutId = $interval($rootScope.logOut, $scope.warningTimeout, 1);
     if (SessionService.getAuthToken()) {
       $scope.alertTitle = 'Session Timeout Warning';
-      $scope.alertMessage = 'You will be logged out in ' + parseInt($scope.warningTimeout / 1000) + ' minutes for being idle. To avoid being automatically logged out, please click the OK button.';
+      $interval(timeoutWarningMessage, 1000);
       $scope.allowAlertOkay = true;
       $scope.allowAlertClose = false;
       $scope.okayAlert = function() {
