@@ -110,12 +110,10 @@ angular.module('dashboard', [
     var minutesSuffix = minutes > 1 ? 's' : '';
     var seconds = parseInt((millis/1000)%60);
     var secondsSuffix = seconds > 1 ? 's' : '';
-    if (minutes > 0 && seconds == 0) {
-      minutes -= 1;
-      seconds = 60;
-    }
     var countdownStr = '';
-    if (minutes > 0) {
+    if (minutes > 0 && seconds == 0) {
+      countdownStr = minutes + ' minute' + minutesSuffix;
+    } else if (minutes > 0 && seconds < 60) {
       countdownStr = minutes + ' minute' + minutesSuffix + ' and ' + seconds + ' second' + secondsSuffix;
     } else {
       countdownStr = seconds + ' second' + secondsSuffix;
