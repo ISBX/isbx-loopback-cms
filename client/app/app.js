@@ -105,10 +105,22 @@ angular.module('dashboard', [
       });
   };
 
+  function millisToMinutesAndSeconds(millis) {
+    var minutes = Math.floor(millis / 60000);
+    var minutesSuffix = minutes > 1 ? 's' : '';
+    var seconds = ((millis % 60000) / 1000).toFixed(0);
+    if (minutes > 0 && seconds == 0) seconds = 60;
+    var secondsSuffix = seconds > 1 ? 's' : '';
+    return minutes + ' minute' + minutesSuffix + ' and ' + seconds + ' second' + secondsSuffix;
+  }
+
   function timeoutWarningMessage() {
-    $scope.alertMessage = 'You will be logged out in ' + parseInt($scope.warningTimeout / 1000) + ' minutes for being idle. To avoid being automatically logged out, please click the OK button.';
-    if ($scope.warningTimeout > 0) $scope.warningTimeout -= 1000;
-    else $scope.alertMessage = 'Logging Out...';
+    $scope.alertMessage = 'You will be logged out in ' + millisToMinutesAndSeconds($scope.warningTimeout) + ' for being idle. To avoid being automatically logged out, please click the OK button.';
+    if ($scope.warningTimeout > 0) {
+      $scope.warningTimeout -= 1000;
+    } else {
+      $scope.alertMessage = 'Logging Out...';
+    }
   }
 
   function sessionTimeoutWarning() {
