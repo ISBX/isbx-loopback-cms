@@ -21,10 +21,10 @@ angular.module('dashboard', [
   $locationProvider.html5Mode(true);
 
   $stateProvider
-      .state('public', {
-        abstract: true,
-        template: '<ui-view />'
-      });
+    .state('public', {
+      abstract: true,
+      template: '<ui-view />'
+    });
 
   $urlRouterProvider.deferIntercept(); // defer routing until custom modules are loaded
 })
@@ -34,10 +34,10 @@ angular.module('dashboard', [
   var modulesLoaded = false;
   if (Config.serverParams.customModules) {
     $ocLazyLoad.load(Config.serverParams.customModules)
-        .then(function() {
-          modulesLoaded = true;
-          $rootScope.$broadcast('modulesLoaded');
-        }, function(error){console.log(error)});
+      .then(function() {
+        modulesLoaded = true;
+        $rootScope.$broadcast('modulesLoaded');
+      }, function(error){console.log(error)});
   } else {
     modulesLoaded = true;
   }
@@ -94,15 +94,15 @@ angular.module('dashboard', [
   $rootScope.logOut = function() {
     CacheService.reset(); //clear out caching
     SessionService.logOut()
-        .then(function (result) {
-          if (Config.serverParams.loginState) {
-            $state.go(Config.serverParams.loginState); //custom login controller
-          } else {
-            $state.go('public.login');
-          }
-        })
-        .catch(function (error) {
-        });
+      .then(function (result) {
+        if (Config.serverParams.loginState) {
+          $state.go(Config.serverParams.loginState); //custom login controller
+        } else {
+          $state.go('public.login');
+        }
+      })
+      .catch(function (error) {
+      });
   };
 
   function sessionTimeoutWarning() {
@@ -136,4 +136,3 @@ angular.module('dashboard', [
     $rootScope.timeoutId = $interval(sessionTimeoutWarning, Config.serverParams.sessionTimeout - $scope.warningTimeout, 1);
   }
 });
-
