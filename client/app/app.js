@@ -73,7 +73,7 @@ angular.module('dashboard', [
       event.preventDefault();
     }
     //Handle Idle Timer for SessionTimeout
-    if (Config.serverParams.sessionTimeout) {
+    if (Config.serverParams.sessionTimeout && location.host() != 'localhost') {
       setSessionTimeout();
       $document.on("click keydown keyup scroll DOMMouseScroll mousedown mousemove mousewheel touchstart touchmove", function() {
         if(!$scope.$modalInstance) {
