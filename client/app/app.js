@@ -21,10 +21,10 @@ angular.module('dashboard', [
   $locationProvider.html5Mode(true);
 
   $stateProvider
-    .state('public', {
-      abstract: true,
-      template: '<ui-view />'
-    });
+      .state('public', {
+        abstract: true,
+        template: '<ui-view />'
+      });
 
   $urlRouterProvider.deferIntercept(); // defer routing until custom modules are loaded
 })
@@ -34,10 +34,10 @@ angular.module('dashboard', [
   var modulesLoaded = false;
   if (Config.serverParams.customModules) {
     $ocLazyLoad.load(Config.serverParams.customModules)
-      .then(function() {
-        modulesLoaded = true;
-        $rootScope.$broadcast('modulesLoaded');
-      });
+        .then(function() {
+          modulesLoaded = true;
+          $rootScope.$broadcast('modulesLoaded');
+        }, function(error){console.log(error)});
   } else {
     modulesLoaded = true;
   }
@@ -52,11 +52,12 @@ angular.module('dashboard', [
       });
     }
   });
-
 })
 
-.controller('AppCtrl', function AppCtrl ($scope, $location , $state , $rootScope, $timeout, $document, SessionService, CacheService, Config) {
+.controller('AppCtrl', function AppCtrl ($scope, $location , $state , $rootScope, $interval, $modal, $document, SessionService, CacheService, Config) {
   $rootScope.$state = $state;
+  $scope.warningTimeout = Config.serverParams.sessionTimeout / 3;
+  $scope.$modalInstance = null;
   if (Config.serverParams.gaTrackingId) ga('create', Config.serverParams.gaTrackingId, 'auto');
 
   $rootScope.$on('$stateChangeStart', function(event, toState, toParams, fromState, fromParams) {
@@ -71,6 +72,17 @@ angular.module('dashboard', [
       }
       event.preventDefault();
     }
+    //Handle Idle Timer for SessionTimeout
+    if (Config.serverParams.sessionTimeout) {
+      setSessionTimeout();
+      $document.on("click keydown keyup scroll DOMMouseScroll mousedown mousemove mousewheel touchstart touchmove", function() {
+        if(!$scope.$modalInstance) {
+          //Keep session alive by resetting session timeout on move detection
+          $interval.cancel($rootScope.timeoutId);
+          setSessionTimeout();
+        }
+      });
+    }
   });
 
   $scope.$on('$stateChangeSuccess', function(event, toState, toParams, fromState, fromParams){
@@ -79,40 +91,49 @@ angular.module('dashboard', [
     }
   });
 
-  $rootScope.logOut = function(){
+  $rootScope.logOut = function() {
     CacheService.reset(); //clear out caching
     SessionService.logOut()
-      .then(function(result){
-        if (Config.serverParams.loginState) {
-          $state.go(Config.serverParams.loginState); //custom login controller
-        } else {
-          $state.go('public.login');
-        }
-      })
-      .catch(function(error){
-      });
+        .then(function (result) {
+          if (Config.serverParams.loginState) {
+            $state.go(Config.serverParams.loginState); //custom login controller
+          } else {
+            $state.go('public.login');
+          }
+        })
+        .catch(function (error) {
+        });
   };
 
+  function sessionTimeoutWarning() {
+    $rootScope.timeoutId = $interval($rootScope.logOut, $scope.warningTimeout, 1);
+    if (SessionService.getAuthToken()) {
+      $scope.alertTitle = 'Session Timeout Warning';
+      $scope.alertMessage = 'You will be logged out in ' + parseInt($scope.warningTimeout / 1000) + ' minutes for being idle. To avoid being automatically logged out, please click the OK button.';
+      $scope.allowAlertOkay = true;
+      $scope.allowAlertClose = false;
+      $scope.okayAlert = function() {
+        $interval.cancel($rootScope.timeoutId);
+        setSessionTimeout();
+        $scope.$modalInstance.close();
+        $scope.$modalInstance = null;
+      };
+      if(!$scope.$modalInstance) {
+        $scope.$modalInstance = $modal.open({
+          templateUrl: 'app/dashboard/alert/Alert.html',
+          controller: 'AppCtrl',
+          size: "md",
+          keyboard: false, //ESC to dismiss the modal
+          backdrop: "static",
+          scope: $scope
+        });
+      }
+    }
+  }
+
   function setSessionTimeout() {
-    $rootScope.timeoutId = $timeout($rootScope.logOut, Config.serverParams.sessionTimeout);
+    $interval.cancel($rootScope.timeoutId);
+    $rootScope.timeoutId = $interval(sessionTimeoutWarning, Config.serverParams.sessionTimeout - $scope.warningTimeout, 1);
   }
-
-  //Handle Idle Timer for SessionTimeout
-  if (Config.serverParams.sessionTimeout && $location.host() != 'localhost') {
-    setSessionTimeout();
-    $document.on("mousemove", function() {
-      //For Desktop devices
-      $timeout.cancel($rootScope.timeoutId);
-      setSessionTimeout();
-    });
-    $document.on("touchmove", function() {
-      //For Mobile devices
-      $timeout.cancel($rootScope.timeoutId);
-      setSessionTimeout();
-    });
-  }
-
-  })
-
-;
+});
 

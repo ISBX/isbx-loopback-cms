@@ -15,7 +15,7 @@ angular.module('dashboard.services.Session', [
 
   this.logIn = function(email, password) {
 	  var authModel = "Users";
-	  if (config.authModel) authModel = config.authModel; 
+	  if (config.authModel) authModel = config.authModel;
        return Utils.apiHelper('POST', authModel + '/login?include=user', { email: email, password: password })
 	      .then(function(userInfo) {
 	        return Utils.apiHelper('GET', 'Roles?access_token=' + userInfo.id)
@@ -36,14 +36,14 @@ angular.module('dashboard.services.Session', [
 	                      roleMap.description = role.description;
 	                    }
 	                  }
-	                  $cookies.roles = JSON.stringify(roleMappings);	                  
+	                  $cookies.roles = JSON.stringify(roleMappings);
 	                  return userInfo;
-	              
+
 	              })["catch"](function() {
 	                  $cookies.session = null;
 	                  return $q.reject(arguments);
 	                });
-	            
+
 	          })["catch"](function() {
 	              $cookies.session = null;
 	              return $q.reject(arguments);
@@ -58,12 +58,13 @@ angular.module('dashboard.services.Session', [
   this.logOut = function() {
   	var authModel = "Users";
   	if (config.authModel) authModel = config.authModel;
-		var accessToken = $cookies.accessToken;
-		$cookieStore.remove('username');
-		$cookieStore.remove('userId');
-		$cookieStore.remove('accessToken');
-		$cookieStore.remove('roles');
-		$cookieStore.remove('session');
+	  var accessToken = $cookies.accessToken;
+	  $cookieStore.remove('username');
+	  $cookieStore.remove('userId');
+	  $cookieStore.remove('accessToken');
+	  $cookieStore.remove('roles');
+	  $cookieStore.remove('session');
+	  session = null;
 	  return Utils.apiHelper('POST', authModel + '/logout?access_token=' + accessToken);
   };
 
@@ -72,6 +73,4 @@ angular.module('dashboard.services.Session', [
   };
 
   init();
-})
-
-;
+});

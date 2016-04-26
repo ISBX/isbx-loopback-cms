@@ -1,5 +1,6 @@
 .modal-header
   h4.modal-title {{ alertTitle }}
 .modal-body {{ alertMessage }}
-.modal-footer(ng-show="allowAlertClose")
-  button.btn.btn-default(ng-click="closeAlert()", ng-show="allowAlertClose") Close
+.modal-footer(ng-show="allowAlertOkay || allowAlertClose")
+  button.btn.btn-primary(ng-click="okayAlert()", ng-show="allowAlertOkay") {{ alertOkayText ? alertOkayText : "OK" }}
+  button.btn.btn-default(ng-click="closeAlert()", ng-show="allowAlertClose") {{ alertCloseText ? alertCloseText : "Close" }}
