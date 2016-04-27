@@ -57,7 +57,7 @@ angular.module('dashboard', [
 .controller('AppCtrl', function AppCtrl ($scope, $location , $state , $rootScope, $interval, $modal, $document, SessionService, CacheService, Config) {
   $rootScope.$state = $state;
   $scope.warningTimeout = Config.serverParams.sessionTimeout / 3;
-  $scope.$modalInstance = null;
+  $scope.modalInstance = null;
   if (Config.serverParams.gaTrackingId) ga('create', Config.serverParams.gaTrackingId, 'auto');
 
   $rootScope.$on('$stateChangeStart', function(event, toState, toParams, fromState, fromParams) {
@@ -76,7 +76,7 @@ angular.module('dashboard', [
     if (Config.serverParams.sessionTimeout && location.host() != 'localhost') {
       setSessionTimeout();
       $document.on("click keydown keyup scroll DOMMouseScroll mousedown mousemove mousewheel touchstart touchmove", function() {
-        if(!$scope.$modalInstance) {
+        if(!$scope.modalInstance) {
           //Keep session alive by resetting session timeout on move detection
           $interval.cancel($rootScope.timeoutId);
           setSessionTimeout();
@@ -140,11 +140,11 @@ angular.module('dashboard', [
       $scope.okayAlert = function() {
         $interval.cancel($rootScope.timeoutId);
         setSessionTimeout();
-        $scope.$modalInstance.close();
-        $scope.$modalInstance = null;
+        $scope.modalInstance.close();
+        $scope.modalInstance = null;
       };
-      if(!$scope.$modalInstance) {
-        $scope.$modalInstance = $modal.open({
+      if(!$scope.modalInstance) {
+        $scope.modalInstance = $modal.open({
           templateUrl: 'app/dashboard/alert/Alert.html',
           controller: 'AppCtrl',
           size: "md",
