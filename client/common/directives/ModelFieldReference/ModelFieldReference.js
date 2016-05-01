@@ -25,7 +25,7 @@ angular.module('dashboard.directives.ModelFieldReference', [
     if (multiple) {
       //multi-select
       template = '\
-      <ui-select multiple ng-model="selected.items" on-select="onSelect($item, $model)" on-remove="onRemove($item, $model)"> \
+      <ui-select multiple ng-model="selected.items" on-select="onSelect($item, $model)" on-remove="onRemove($item, $model)"  ng-disabled="disabled"> \
       <ui-select-match placeholder="{{ options.placeholder }}">'+ matchTemplate +'</ui-select-match> \
       <ui-select-choices repeat="item in list" refresh="refreshChoices($select.search)" refresh-delay="200">' + choiceTemplate + '</ui-select-choices> \
       </ui-select>';
