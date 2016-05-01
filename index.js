@@ -123,7 +123,7 @@ function loadLoopbackModels(loopbackModelsPath) {
   //Expose inherited properties
   for(var i in models) {
     if( models[i].base && models[models[i].base] ) {
-      models[i].properties = _.merge( models[i].properties, models[ models[i].base ].properties );
+      models[i].properties = _.merge( models[ models[i].base ].properties, models[i].properties  );
     }
   }
 
