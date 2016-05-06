@@ -163,7 +163,12 @@ angular.module('dashboard.directives.ModelFieldReferenceSort', [
           }
           params[scope.options.key] = item[scope.options.key];
           var selectedItem = _.find(scope.selectedList, params);
-          if (!selectedItem) {
+          var lowerCaseList = _.map(scope.selectedList,function(element) {
+                                return _.object(_.keys(element), _.values(element).map(function(value) {
+                                  return _.isString(value)? value.toLowerCase():value; }));
+                              });
+          var selectedName = _.find(lowerCaseList, { name:item.name.toLowerCase() });
+          if (!selectedItem && !selectedName) {
             scope.selectedList.push(item);
             scope.data = scope.selectedList;
           }
