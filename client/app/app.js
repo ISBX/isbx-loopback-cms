@@ -107,7 +107,7 @@ angular.module('dashboard', [
       if (interval > Config.serverParams.sessionTimeout) {
         $rootScope.logOut();
       } else {
-        $rootScope.timeoutId = $timeout(setSessionTimeout, Config.serverParams.sessionTimeout);
+        $rootScope.timeoutId = $timeout(setSessionTimeout, 5000); //Wait another 5 sec to check again
       }
     }, Config.serverParams.sessionTimeout);
   }
