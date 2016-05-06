@@ -55,7 +55,7 @@ angular.module('dashboard', [
 
 })
 
-.controller('AppCtrl', function AppCtrl ($scope, $location , $state , $rootScope, $timeout, $document, SessionService, CacheService, Config) {
+.controller('AppCtrl', function AppCtrl ($scope, $location, $state, $rootScope, $timeout, $document, SessionService, CacheService, Config) {
   $rootScope.$state = $state;
   if (Config.serverParams.gaTrackingId) ga('create', Config.serverParams.gaTrackingId, 'auto');
 
@@ -75,7 +75,7 @@ angular.module('dashboard', [
 
   $scope.$on('$stateChangeSuccess', function(event, toState, toParams, fromState, fromParams){
     if (angular.isDefined(toState.data.pageTitle)) {
-      $scope.pageTitle = toState.data.pageTitle + ' | CMS' ;
+      $scope.pageTitle = toState.data.pageTitle;
     }
   });
 
@@ -94,21 +94,52 @@ angular.module('dashboard', [
   };
 
   function setSessionTimeout() {
-    $rootScope.timeoutId = $timeout($rootScope.logOut, Config.serverParams.sessionTimeout);
+    $rootScope.timeoutId = $timeout(function() {
+      if ($state.current.name.indexOf('public') > -1) {
+        return; //don't timeout if on the public website
+      }
+      if (!localStorage['lastActive']) {
+        console.error('Session Timedout on another window/tab');
+        $state.go('public.login');
+      }
+      var lastActiveDate = new Date(localStorage['lastActive']);
+      var interval = new Date() - lastActiveDate;
+      if (interval > Config.serverParams.sessionTimeout) {
+        $rootScope.logOut();
+      } else {
+        $rootScope.timeoutId = $timeout(setSessionTimeout, Config.serverParams.sessionTimeout);
+      }
+    }, Config.serverParams.sessionTimeout);
+  }
+
+  function persistSession() {
+    $timeout.cancel($rootScope.refreshRateId);
+    $timeout.cancel($rootScope.timeoutId);
+    if (new Date() - lastPersistDate > 5000) {
+      lastPersistDate = new Date();
+      localStorage['lastActive'] = new Date();
+    } else {
+      $rootScope.refreshRateId = $timeout(function() {
+        localStorage['lastActive'] = new Date();
+      }, 5000);
+    }
+    setSessionTimeout();
   }
 
   //Handle Idle Timer for SessionTimeout
   if (Config.serverParams.sessionTimeout && $location.host() != 'localhost') {
     setSessionTimeout();
+    var lastPersistDate = new Date();
     $document.on("mousemove", function() {
       //For Desktop devices
-      $timeout.cancel($rootScope.timeoutId);
-      setSessionTimeout();
+      persistSession();
     });
     $document.on("touchmove", function() {
       //For Mobile devices
-      $timeout.cancel($rootScope.timeoutId);
-      setSessionTimeout();
+      persistSession();
+    });
+    $document.on("keydown", function() {
+      persistSession();
     });
   }
 
