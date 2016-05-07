@@ -60,13 +60,13 @@ angular.module('dashboard.directives.ModelFieldPointsOfInterest', [
            <option value="20" label="20 Miles">20 Miles</option> \
         	 <option value="30" label="30 Miles">30 Miles</option> \
          </select> \
-        <button class="btn" ng-click="doSearch()" ng-model="request.query">Search</button><span class="search-error" ng-if="searchError">{{searchError}}</span>\
+        <button class="btn" ng-click="clearSearch(); doSearch();" ng-model="request.query">Search</button><span class="search-error" ng-if="searchError">{{searchError}}</span> <button id="more" ng-hide="data.zipCode !== storedLocationValue" class="btn" ng-model="request.query">Load More</button>\
         </accordion-group>\
         </accordion> \
         <div class="map-canvas"id="map_canvas"></div> \
         <ul class="selected-location" ng-model="displayedSearchResults" > \
           <li ng-repeat="'+repeatExpression+'"> \
-            <div class="location-title">{{ item.name }}</div> \
+            <div class="location-title">{{$index + 1}}: {{ item.name }}</div> \
               <span class="search-results">{{item.formatted_address}}</span> \
             <div class="col-sm checkbox-container">\
               <input type="checkbox" ng-attr-id="{{item.place_id}}" ng-model="item.checked" ng-click="updateSelection($index, displayedSearchResults)" class="field"> \
@@ -110,6 +110,7 @@ angular.module('dashboard.directives.ModelFieldPointsOfInterest', [
 				scope.displayedSearchResults = [];     // Data for location list
 				scope.isMapLoading = true;
 				scope.isLoaded = false;
+				scope.storedLocationValue = '';
 				scope.placeType = scope.property.display.options.placeType; //Default query value
 				if (!scope.data) scope.data = {};
 
@@ -171,6 +172,7 @@ angular.module('dashboard.directives.ModelFieldPointsOfInterest', [
 						};
 						zoom = 12;
 						scope.request.location = savedLocation;
+						scope.storedLocationValue = scope.data.zipCode;
 						initMap();
 					}
 				}, function () {
@@ -197,6 +199,7 @@ angular.module('dashboard.directives.ModelFieldPointsOfInterest', [
 					scope.request.radius = (angular.element('#radius')[0].value) * milesToMeters;
 					scope.data.radius = angular.element('#radius')[0].value;
 					var zipCode = scope.data.zipCode;
+					scope.storedLocationValue = zipCode;
 					if (!zipCode || zipCode.length !== 5) {
 						scope.searchError = 'Your Zip Code is invalid!';
 					} else {
@@ -226,9 +229,16 @@ angular.module('dashboard.directives.ModelFieldPointsOfInterest', [
 				function initQuery() {
 					scope.clearSearch();
 					var service = new google.maps.places.PlacesService(map);
-					service.textSearch(scope.request, function(results, status) {
+					service.textSearch(scope.request, function(results, status, pagination) {
 						if (status == google.maps.places.PlacesServiceStatus.OK) {
-							createMarkers(results);
+							if (pagination.hasNextPage) {
+								var moreButton = document.getElementById('more');
+								moreButton.disabled = false;
+								$(moreButton).one('click', function() {
+									moreButton.disabled = true;
+									pagination.nextPage();
+								});
+							}
 							if (scope.boundaries.length > 0) {
 								clearOverlays();
 							}
@@ -236,6 +246,8 @@ angular.module('dashboard.directives.ModelFieldPointsOfInterest', [
 								removeMarkers();
 							}
 							createCircle();
+							filterSearchResults(results);
+							createMarkers();
 							displayMarkers();
 							listSearchResults();
 							scope.$digest();
@@ -253,7 +265,9 @@ angular.module('dashboard.directives.ModelFieldPointsOfInterest', [
 								var resultPlaceId = {
 									placeId: results[0].place_id
 								};
-								scope.getAdditionPlaceInformation(resultPlaceId);
+								scope.getAdditionPlaceInformation(resultPlaceId, function(zipCode) {
+									scope.storedLocationValue = zipCode;
+								});
 							} else {
 								console.log("search was not successful for the following reason: " + status);
 							}
@@ -267,12 +281,12 @@ angular.module('dashboard.directives.ModelFieldPointsOfInterest', [
 					if (infowindow) {
 						infowindow.close();
 					}
-					for (var i = 0; i < results.length; i++) {
-						scope.searchResults.push(results[i]);
-						var text = "Location:  " + results[i].name;
+					for (var i = 0; i < scope.displayedSearchResults.length; i++) {
+						var text = "Location:  " + scope.displayedSearchResults[i].name;
 						var marker = new google.maps.Marker({
 							map: map,
-							position: results[i].geometry.location,
+							position: scope.displayedSearchResults[i].geometry.location,
+							icon: "https://chart.googleapis.com/chart?chst=d_map_pin_letter&chld=" + (i + 1) + "|7bbc2a|000000"
 						});
 						google.maps.event.addListener(marker, 'click', (function(marker, text) {
 							return function() {
@@ -304,18 +318,21 @@ angular.module('dashboard.directives.ModelFieldPointsOfInterest', [
 					scope.boundaries.push(scope.circle);
 				}
 
+				function filterSearchResults(resultSet) {
+					for (var i = 0; i < resultSet.length; i++) {
+						if (google.maps.geometry.spherical.computeDistanceBetween(resultSet[i].geometry.location, scope.circle.center) < scope.request.radius) {
+							//Adds correct results to list view
+							scope.displayedSearchResults.push(resultSet[i]);
+						}
+					}
+				}
+
 				function displayMarkers() {
 					for (var i = 0; i < scope.markers.length; i++) {
-						if (google.maps.geometry.spherical.computeDistanceBetween(scope.markers[i].getPosition(), scope.circle.center) < scope.request.radius) {
-							bounds.extend(scope.markers[i].getPosition());
-							map.fitBounds(bounds);
-							scope.displayedMarkers.push(scope.markers[i]);
-							// Display markers
-							scope.markers[i].setMap(map);
-						} else {
-							// Hide the markers outside of the boundary
-							scope.markers[i].setMap(null);
-						}
+						bounds.extend(scope.markers[i].getPosition());
+						map.fitBounds(bounds);
+						scope.displayedMarkers.push(scope.markers[i]);
+						scope.markers[i].setMap(map);
 					}
 					if (scope.displayedMarkers.length == 0) {
 						scope.searchError = "Couldn't find any locations matching the search criteria!";
@@ -323,12 +340,6 @@ angular.module('dashboard.directives.ModelFieldPointsOfInterest', [
 				}
 
 				function listSearchResults() {
-					for (var i = 0; i < scope.searchResults.length; i++) {
-						if (google.maps.geometry.spherical.computeDistanceBetween(scope.searchResults[i].geometry.location, scope.circle.center) < scope.request.radius) {
-							//Adds correct results to list view
-							scope.displayedSearchResults.push(scope.searchResults[i]);
-						}
-					}
 					if (scope.data.placeId) { // pre-select point if exist
 						perviouslySavedLatLng = new google.maps.LatLng(scope.data.lat, scope.data.lng);
 						scope.getClickedMarker(perviouslySavedLatLng);
@@ -352,7 +363,6 @@ angular.module('dashboard.directives.ModelFieldPointsOfInterest', [
 								scope.displayedSearchResults[i].checked = false;
 							}
 						}
-						scope.$digest();
 					}
 				};
 
@@ -365,7 +375,7 @@ angular.module('dashboard.directives.ModelFieldPointsOfInterest', [
 					scope.markers = [];
 				};
 
-				scope.getAdditionPlaceInformation = function (placeRequest) {
+				scope.getAdditionPlaceInformation = function (placeRequest, callback) {
 					service = new google.maps.places.PlacesService(map);
 					service.getDetails(placeRequest, function(place, status) {
 						if (status == google.maps.places.PlacesServiceStatus.OK) {
@@ -373,8 +383,12 @@ angular.module('dashboard.directives.ModelFieldPointsOfInterest', [
 								for(var i = 0; i < place.address_components.length; i++) {
 									if(place.address_components[i].types[0] == "postal_code") {
 										scope.data.zipCode = place.address_components[i].short_name;
+										if (callback) {
+											callback(scope.data.zipCode);
+										}
 									}
 								}
+								scope.$apply();
 							}
 							scope.data.phoneNumber = place.formatted_phone_number;
 						} else {
@@ -398,11 +412,12 @@ angular.module('dashboard.directives.ModelFieldPointsOfInterest', [
 					}
 				};
 
-				scope.updateInfoWindow = function(checkedLocation) {
+				scope.updateInfoWindow = function(checkedLocation, index) {
 					var text = "Location:  " + checkedLocation.name;
 					var marker = new google.maps.Marker({
 						map: map,
-						position: checkedLocation.geometry.location
+						position: checkedLocation.geometry.location,
+						icon: "https://chart.googleapis.com/chart?chst=d_map_pin_letter&chld=" + (index + 1) + "|7bbc2a|000000"
 					});
 					infowindow.setContent(text);
 					infowindow.open(map, marker);
@@ -413,7 +428,7 @@ angular.module('dashboard.directives.ModelFieldPointsOfInterest', [
 						if (selectedIdx != index) {
 							item.checked = false;
 						} else {
-							scope.updateInfoWindow(item);
+							scope.updateInfoWindow(item, index);
 							scope.getSelectResultData(item);
 						}
 					});
