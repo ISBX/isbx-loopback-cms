@@ -13,7 +13,8 @@ angular.module('dashboard.services.FileUpload', [
     var params = {
         access_token: $cookies.accessToken,
         path: path,
-        fileType: fileType
+        fileType: fileType,
+        r: new Date().getTime() //IE caches results so passing timestamp helps with cache prevention
     };
     return Utils.apiHelper('GET', Config.serverParams.cmsBaseUrl + '/aws/s3/credentials', params);
   };
