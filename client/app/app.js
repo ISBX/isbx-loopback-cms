@@ -136,7 +136,7 @@ angular.module('dashboard', [
   };
 
   //Handle Idle Timer for SessionTimeout
-  if (Config.serverParams.sessionTimeout/* && $location.host() != 'localhost'*/) {
+  if (Config.serverParams.sessionTimeout && $location.host() != 'localhost') {
     $document.on("mousemove", function() {
       //For Desktop devices
       persistSession();
