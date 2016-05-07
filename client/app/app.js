@@ -90,46 +90,53 @@ angular.module('dashboard', [
         }
       })
       .catch(function(error){
+        $state.go('public.login');
       });
   };
 
-  function setSessionTimeout() {
-    $rootScope.timeoutId = $timeout(function() {
-      if ($state.current.name.indexOf('public') > -1) {
-        return; //don't timeout if on the public website
-      }
-      if (!localStorage['lastActive']) {
-        console.error('Session Timedout on another window/tab');
-        $state.go('public.login');
-      }
-      var lastActiveDate = new Date(localStorage['lastActive']);
-      var interval = new Date() - lastActiveDate;
-      if (interval > Config.serverParams.sessionTimeout) {
-        $rootScope.logOut();
-      } else {
-        $rootScope.timeoutId = $timeout(setSessionTimeout, 5000); //Wait another 5 sec to check again
-      }
-    }, Config.serverParams.sessionTimeout);
-  }
-
+  localStorage['lastActive'] = new Date();
+  var lastPersistDate = new Date();
   function persistSession() {
-    $timeout.cancel($rootScope.refreshRateId);
-    $timeout.cancel($rootScope.timeoutId);
+    $timeout.cancel($rootScope.persistId);
+    if ($state.current.name.indexOf('public') > -1) {
+      return; //don't timeout if on the public website
+    }
+    lastPersistDate = new Date();
+    //limit the amount of time localStorage is written to
     if (new Date() - lastPersistDate > 5000) {
-      lastPersistDate = new Date();
-      localStorage['lastActive'] = new Date();
-    } else {
-      $rootScope.refreshRateId = $timeout(function() {
+      if (checkTimeout()) {
         localStorage['lastActive'] = new Date();
+      }
+    } else {
+      $rootScope.persistId = $timeout(function() {
+        if (checkTimeout()) {
+          localStorage['lastActive'] = new Date();
+        }
       }, 5000);
     }
-    setSessionTimeout();
   }
 
+  function checkTimeout() {
+    $timeout.cancel($rootScope.timeoutId);
+    if (!localStorage['lastActive']) {
+      console.error('Session Timedout on another window/tab');
+      $state.go('public.login');
+      return false;
+    }
+    var lastActiveDate = new Date(localStorage['lastActive']);
+    var interval = new Date() - lastActiveDate;
+    if (interval > Config.serverParams.sessionTimeout) {
+      $rootScope.logOut();
+      return false;
+    } else {
+      $rootScope.timeoutId = $timeout(checkTimeout, 5000); //Wait another 5 sec to check again
+      return true;
+    }
+
+  };
+
   //Handle Idle Timer for SessionTimeout
-  if (Config.serverParams.sessionTimeout && $location.host() != 'localhost') {
-    setSessionTimeout();
-    var lastPersistDate = new Date();
+  if (Config.serverParams.sessionTimeout/* && $location.host() != 'localhost'*/) {
     $document.on("mousemove", function() {
       //For Desktop devices
       persistSession();
