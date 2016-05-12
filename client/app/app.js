@@ -78,10 +78,8 @@ angular.module('dashboard', [
       $document.on("click keydown keyup scroll DOMMouseScroll mousedown mousemove mousewheel touchstart touchmove", function() {
         if(!$scope.modalInstance) {
           //Keep session alive by resetting session timeout on move detection
-          $interval.cancel($rootScope.timeoutId);
-          setSessionTimeout();
-        } else {
           persistSession();
+          setSessionTimeout();
         }
       });
     }
