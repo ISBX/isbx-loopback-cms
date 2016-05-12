@@ -1,7 +1,7 @@
 angular.module('dashboard.directives.ModelField', [
   'dashboard.directives.ModelFieldImage',
-    'dashboard.directives.ModelFieldVideo',
-    'dashboard.directives.ModelFieldFile',
+  'dashboard.directives.ModelFieldVideo',
+  'dashboard.directives.ModelFieldFile',
   'dashboard.directives.ModelFieldReference',
   'dashboard.directives.ModelFieldReferenceSort',
   'dashboard.directives.ModelFieldList',
@@ -12,7 +12,8 @@ angular.module('dashboard.directives.ModelField', [
   'dashboard.directive.DateTimePicker',
   'ngCookies',
   'ngSlider',
-  'ngSignaturePad'
+  'ngSignaturePad',
+  'cwill747.phonenumber'
 ])
 
 .directive('modelFieldView', function($compile) {
@@ -95,6 +96,9 @@ angular.module('dashboard.directives.ModelField', [
         template = '<label class="col-sm-2 control-label">{{ display.label || key }}:</label> \
           <div class="col-sm-10"> \
             <model-field-image-edit key="key" options="display.options" disabled="display.readonly" model-data="data" ng-model="data[key]" class="field" /> \
+          </div>\
+          <label class="col-sm-2 control-label"></label> \
+          <div class="col-sm-10"> \
             <div class="model-field-description" ng-if="display.description">{{ display.description }}</div>\
           </div>';
         break;
@@ -131,7 +135,7 @@ angular.module('dashboard.directives.ModelField', [
         template = '<label class="col-sm-2 control-label">{{ display.label || key }}:</label>\
           <div class="col-sm-10 multi-select">\
             <div class="select-item checkbox-container" ng-repeat="(itemKey, itemValue) in display.options">\
-              <input type="checkbox" class="field" ng-attr-id="{{key+\'-\'+itemKey}}" ng-model="multiSelectOptions[itemKey]" ng-checked="multiSelectOptions[itemKey]" ng-disabled="{{ display.readonly }}" ng-change="clickMultiSelectCheckbox(itemKey, itemValue, multiSelectOptions[itemKey])">\
+              <input type="checkbox" class="field" ng-attr-id="{{key+\'-\'+itemKey}}" ng-model="multiSelectOptions[itemKey]" ng-checked="multiSelectOptions[itemKey]" ng-disabled="{{ display.readonly }}" ng-change="clickMultiSelectCheckbox(key, itemKey, itemValue, multiSelectOptions)">\
               <label class="checkbox-label" ng-attr-for="{{key+\'-\'+itemKey}}">{{ itemValue }}</label>\
             </div>\
             <div class="model-field-description" ng-if="display.description">{{ display.description }}</div>\
@@ -229,6 +233,14 @@ angular.module('dashboard.directives.ModelField', [
             <div class="model-field-description" ng-if="display.description">{{ display.description }}</div>\
           </div>';
         break;
+      case 'phoneNumber':
+        template = '<label class="col-sm-2 control-label">{{ display.label || key }}:</label>\
+          <div class="col-sm-10">\
+            <input type="hidden" ng-model="countrycode" value="{{ display.region }}" />\
+            <input type="text" ng-model="data[key]" phone-number country-code="countrycode" ng-pattern="{{ display.pattern }}" ng-disabled="{{ display.readonly }}" ng-required="{{ model.properties[key].required }}" class="field form-control">\
+            <div class="model-field-description" ng-if="display.description">{{ display.description }}</div>\
+          </div>';
+        break;
       case 'text':
       default:
         template = '<label class="col-sm-2 control-label">{{ display.label || key }}:</label>\
@@ -239,6 +251,16 @@ angular.module('dashboard.directives.ModelField', [
     }
     return template;
   }
+
+  function addInputAttributes(element, inputAttr) {
+    var $input = $(element).find('input');
+    if (inputAttr && $input) {
+      for(var attr in inputAttr) {
+        $input.attr(attr, inputAttr[attr]);
+      }
+    }
+  }
+
   return {
     restrict: 'E',
     scope: {
@@ -348,7 +370,7 @@ angular.module('dashboard.directives.ModelField', [
         }
         
         //Handle translating multi-select checks to scope.data[scope.key] output format
-        scope.clickMultiSelectCheckbox = function() {
+        scope.clickMultiSelectCheckbox = function(questionKey, itemKey, itemValue, multiSelectOptions) {
           var output = property.display.output == "array" ? [] : property.display.output == "object" ? {} : "";
           if (property.display.output == "object") {
             //Return Key/Value Pair
@@ -377,7 +399,7 @@ angular.module('dashboard.directives.ModelField', [
             if (property.display.output == "comma" && output.length > 0) output = output.substring(0, output.length-1); //remove last comma
           }
           scope.data[scope.key] = output;
-
+          scope.$emit('onModelFieldMultiSelectCheckboxClick', questionKey, itemKey, itemValue, multiSelectOptions);
         };
 
         //scope variables needed for the HTML Template
@@ -390,6 +412,9 @@ angular.module('dashboard.directives.ModelField', [
         } else {
           element.html(getTemplate(property.display.type, scope)).show();
         }
+        // add input attributes if specified in schema
+        addInputAttributes(element, scope.property.display.inputAttr);
+
         $compile(element.contents())(scope);
 
     }

@@ -13,6 +13,6 @@
         button.btn.btn-default.add(ng-click="clickAdd()", ng-if="action.options.editable && !action.options.disableAdd") <i class="fa fa-plus"></i>      
     .grid(ng-grid="gridOptions", ng-class="{ search: action.options.showFilter }")
     .edit-controls(ng-show="isEditing")
-      button.btn.btn-primary.save(ng-click="clickSaveEdit()") Save
-      button.btn.btn-danger.cancel(ng-click="clickCancelEdit()") Cancel
+      button.btn.btn-primary.save(ng-click="clickSaveEdit()") {{ saveButtonText || 'Save' }}
+      button.btn.btn-danger.cancel(ng-click="clickCancelEdit()") {{ cancelButtonText || 'Cancel' }}
 

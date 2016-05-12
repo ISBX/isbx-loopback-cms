@@ -1,4 +1,4 @@
-{(
+{
   "name": "isbx-loopback-cms",
   "version": "0.0.0",
   "dependencies": {
@@ -29,7 +29,8 @@
     "jquery.hotkeys": "*",
     "bootstrap-wysiwyg": "*",
     "js-beautify": "~1.5.10",
-    "ng-signature-pad": "*"
+    "ng-signature-pad": "*",
+    "angular-libphonenumber": "^1.0.0"
   },
   "resolutions": {
     "angular": ">=1.2.18"

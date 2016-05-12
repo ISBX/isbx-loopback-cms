@@ -76,7 +76,20 @@ angular.module('dashboard.directives.ModelFieldImage', [
         //Use the FileReader to display a preview of the image before uploading
         var fileReader = new FileReader();
         fileReader.onload = function (event) {
-          
+
+          //bind back to parent scope's __ModelFieldImageData object with info on selected file
+          var s3Path = scope.options.path; //S3 path needed when getting S3 Credentials for validation;
+          var imageData = {path: s3Path, file: selectedFile};
+          if (!scope.modelData.__ModelFieldImageData) scope.modelData.__ModelFieldImageData = {};
+          if (scope.options && scope.options.urlKey) {
+            //When field options involve a reference table use model key and urlKey as reference
+            if (!scope.modelData.__ModelFieldImageData[scope.key]) scope.modelData.__ModelFieldImageData[scope.key] = {};
+            scope.modelData.__ModelFieldImageData[scope.key][scope.options.urlKey] = imageData;
+          } else {
+            //No table reference (file URL assigned directly into current model's field)
+            scope.modelData.__ModelFieldImageData[scope.key] = imageData;
+          }
+
           //Set the preview image via scope.imageUrl binding
           scope.imageUrl = event.target.result;
           
@@ -86,6 +99,10 @@ angular.module('dashboard.directives.ModelFieldImage', [
             scope.exportImages(function() {
               scope.uploadStatus = "Upload File";
               scope.$apply();
+            });
+          } else if (scope.options && scope.options.resize) {
+            scope.resizeImage(event.target.result, scope.options.resize, function(blob) {
+              imageData.file = blob; //Set the resized image back to the ModelFieldImageData
             });
           }
           scope.$apply();
@@ -108,22 +125,9 @@ angular.module('dashboard.directives.ModelFieldImage', [
           //$files: an array of files selected, each file has name, size, and type.
           if ($files.length < 1) return;
           selectedFile = $files[0];
-          var s3Path = scope.options.path; //S3 path needed when getting S3 Credentials for validation;
-          
-          //bind back to parent scope's __ModelFieldImageData object with info on selected file
-          if (!scope.modelData.__ModelFieldImageData) scope.modelData.__ModelFieldImageData = {};
-          if (scope.options && scope.options.urlKey) {
-            //When field options involve a reference table use model key and urlKey as reference 
-            if (!scope.modelData.__ModelFieldImageData[scope.key]) scope.modelData.__ModelFieldImageData[scope.key] = {};
-            scope.modelData.__ModelFieldImageData[scope.key][scope.options.urlKey] = {path: s3Path, file: selectedFile};
-          } else {
-            //No table reference (file URL assigned directly into current model's field)
-            scope.modelData.__ModelFieldImageData[scope.key] = {path: s3Path, file: selectedFile};
-          }
-                    
+
           //Load the Preview before uploading
           fileReader.readAsDataURL(selectedFile);
-
         };
 
         scope.exportImages = function(callback) {

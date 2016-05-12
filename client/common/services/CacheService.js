@@ -52,6 +52,7 @@ angular.module('dashboard.services.Cache', [
   this.reset = function()
   {
     localStorage.clear();
+    localStorage['lastActive'] = new Date(); //for session tracking
   }
 })
 

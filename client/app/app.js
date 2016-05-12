@@ -37,7 +37,7 @@ angular.module('dashboard', [
       .then(function() {
         modulesLoaded = true;
         $rootScope.$broadcast('modulesLoaded');
-      });
+      }, function(error){console.log(error)});
   } else {
     modulesLoaded = true;
   }
@@ -54,7 +54,7 @@ angular.module('dashboard', [
   });
 })
 
-.controller('AppCtrl', function AppCtrl ($scope, $location , $state , $rootScope, $interval, $modal, $document, SessionService, CacheService, Config) {
+.controller('AppCtrl', function AppCtrl ($scope, $location, $state, $rootScope, $timeout, $interval, $document, SessionService, CacheService, Config) {
   $rootScope.$state = $state;
   $scope.warningTimeout = Config.serverParams.sessionTimeout / 3;
   $scope.modalInstance = null;
@@ -80,6 +80,8 @@ angular.module('dashboard', [
           //Keep session alive by resetting session timeout on move detection
           $interval.cancel($rootScope.timeoutId);
           setSessionTimeout();
+        } else {
+          persistSession();
         }
       });
     }
@@ -87,7 +89,7 @@ angular.module('dashboard', [
 
   $scope.$on('$stateChangeSuccess', function(event, toState, toParams, fromState, fromParams){
     if (angular.isDefined(toState.data.pageTitle)) {
-      $scope.pageTitle = toState.data.pageTitle + ' | CMS' ;
+      $scope.pageTitle = toState.data.pageTitle;
     }
   });
 
@@ -101,9 +103,32 @@ angular.module('dashboard', [
           $state.go('public.login');
         }
       })
-      .catch(function (error) {
+      .catch(function(error) {
+        $state.go('public.login');
       });
   };
+
+  localStorage['lastActive'] = new Date();
+  var lastPersistDate = new Date();
+  function persistSession() {
+    $timeout.cancel($rootScope.persistId);
+    if ($state.current.name.indexOf('public') > -1) {
+      return; //don't timeout if on the public website
+    }
+    lastPersistDate = new Date();
+    //limit the amount of time localStorage is written to
+    if (new Date() - lastPersistDate > 5000) {
+      if (checkTimeout()) {
+        localStorage['lastActive'] = new Date();
+      }
+    } else {
+      $rootScope.persistId = $timeout(function() {
+        if (checkTimeout()) {
+          localStorage['lastActive'] = new Date();
+        }
+      }, 5000);
+    }
+  }
 
   function millisToMinutesAndSeconds(millis) {
     var minutes = parseInt((millis/(1000*60))%60);
@@ -120,6 +145,25 @@ angular.module('dashboard', [
     }
     return countdownStr;
   }
+
+  function checkTimeout() {
+    $timeout.cancel($rootScope.timeoutId);
+    if (!localStorage['lastActive']) {
+      console.error('Session Timedout on another window/tab');
+      $state.go('public.login');
+      return false;
+    }
+    var lastActiveDate = new Date(localStorage['lastActive']);
+    var interval = new Date() - lastActiveDate;
+    if (interval > Config.serverParams.sessionTimeout) {
+      $rootScope.logOut();
+      return false;
+    } else {
+      $rootScope.timeoutId = $timeout(checkTimeout, 5000); //Wait another 5 sec to check again
+      return true;
+    }
+
+  };
 
   function timeoutWarningMessage() {
     $scope.alertMessage = 'You will be logged out in ' + millisToMinutesAndSeconds($scope.warningTimeout) + ' for being idle. To avoid being automatically logged out, please click the OK button.';
