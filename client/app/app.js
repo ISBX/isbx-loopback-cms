@@ -54,7 +54,7 @@ angular.module('dashboard', [
   });
 })
 
-.controller('AppCtrl', function AppCtrl ($scope, $location, $state, $rootScope, $timeout, $interval, $modal, $document, SessionService, CacheService, Config) {
+.controller('AppCtrl', function AppCtrl ($scope, $location, $state, $rootScope, $interval, $modal, $document, SessionService, CacheService, Config) {
   $rootScope.$state = $state;
   $scope.warningTimeout = Config.serverParams.sessionTimeout / 3;
   $scope.modalInstance = null;
@@ -111,7 +111,7 @@ angular.module('dashboard', [
   localStorage['lastActive'] = new Date();
   var lastPersistDate = new Date();
   function persistSession() {
-    $timeout.cancel($rootScope.persistId);
+    $interval.cancel($rootScope.persistId);
     if ($state.current.name.indexOf('public') > -1) {
       return; //don't timeout if on the public website
     }
@@ -122,7 +122,7 @@ angular.module('dashboard', [
         localStorage['lastActive'] = new Date();
       }
     } else {
-      $rootScope.persistId = $timeout(function() {
+      $rootScope.persistId = $interval(function() {
         if (checkTimeout()) {
           localStorage['lastActive'] = new Date();
         }
@@ -147,7 +147,7 @@ angular.module('dashboard', [
   }
 
   function checkTimeout() {
-    $timeout.cancel($rootScope.timeoutId);
+    $interval.cancel($rootScope.timeoutId);
     if (!localStorage['lastActive']) {
       console.error('Session Timedout on another window/tab');
       $state.go('public.login');
@@ -159,7 +159,7 @@ angular.module('dashboard', [
       $rootScope.logOut();
       return false;
     } else {
-      $rootScope.timeoutId = $timeout(checkTimeout, 5000); //Wait another 5 sec to check again
+      $rootScope.timeoutId = $interval(checkTimeout, 5000); //Wait another 5 sec to check again
       return true;
     }
 
@@ -167,7 +167,7 @@ angular.module('dashboard', [
 
   function timeoutWarningMessage() {
     $scope.alertMessage = 'You will be logged out in ' + millisToMinutesAndSeconds($scope.warningTimeout) + ' for being idle. To avoid being automatically logged out, please click the OK button.';
-    if ($scope.warningTimeout > 1000) {
+    if ($scope.warningTimeout > 0) {
       $scope.warningTimeout -= 1000;
     } else {
       $scope.alertMessage = 'Logging Out...';
