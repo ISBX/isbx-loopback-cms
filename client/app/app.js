@@ -54,7 +54,7 @@ angular.module('dashboard', [
   });
 })
 
-.controller('AppCtrl', function AppCtrl ($scope, $location, $state, $rootScope, $timeout, $interval, $document, SessionService, CacheService, Config) {
+.controller('AppCtrl', function AppCtrl ($scope, $location, $state, $rootScope, $timeout, $interval, $modal, $document, SessionService, CacheService, Config) {
   $rootScope.$state = $state;
   $scope.warningTimeout = Config.serverParams.sessionTimeout / 3;
   $scope.modalInstance = null;
@@ -167,7 +167,7 @@ angular.module('dashboard', [
 
   function timeoutWarningMessage() {
     $scope.alertMessage = 'You will be logged out in ' + millisToMinutesAndSeconds($scope.warningTimeout) + ' for being idle. To avoid being automatically logged out, please click the OK button.';
-    if ($scope.warningTimeout > 0) {
+    if ($scope.warningTimeout > 1000) {
       $scope.warningTimeout -= 1000;
     } else {
       $scope.alertMessage = 'Logging Out...';
