@@ -14,7 +14,7 @@
     "jquery": "2.1.1",
     "lodash": "~2.4.1",
     "bootstrap": "~3.2.0",
-    "angular-bootstrap": "~0.11.2",
+    "angular-bootstrap": "~0.13.3",
     "angular-cookies": "~1.2.27",
     "danialfarid-angular-file-upload": "*",
     "json-editor": "coolwr/json-editor",
