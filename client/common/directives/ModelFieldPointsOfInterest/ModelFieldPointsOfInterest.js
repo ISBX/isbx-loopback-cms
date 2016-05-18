@@ -66,7 +66,7 @@ angular.module('dashboard.directives.ModelFieldPointsOfInterest', [
         <div class="map-canvas"id="map_canvas"></div> \
         <ul class="selected-location" ng-model="displayedSearchResults" > \
           <li ng-repeat="'+repeatExpression+'" ng-click="updateSelection($index, displayedSearchResults)"> \
-            <div class="location-title">{{ item.name }}</div> \
+            <div class="location-title">{{ $index + 1 }}. {{ item.name }}</div> \
               <span class="search-results">{{item.formatted_address}}</span> \
             <div class="col-sm checkbox-container">\
               <input type="checkbox" ng-attr-id="{{item.place_id}}" ng-model="item.checked" class="field"> \
@@ -225,8 +225,16 @@ angular.module('dashboard.directives.ModelFieldPointsOfInterest', [
 
 				function initQuery() {
 					scope.clearSearch();
+
+					/*  DEV NOTES: Hack to ensure that most all results fall within our original radius
+					 TEXT SEARCH URL: https://developers.google.com/maps/documentation/javascript/places#place_search_responses
+					 DOCUMENTATION: "You may bias results to a specified circle by passing a location and a radius parameter.
+					 Results outside the defined area may still be displayed!"    - Google Maps */
+					var request = jQuery.extend(true, {}, scope.request);
+					request.radius = 0.5*request.radius;
+
 					var service = new google.maps.places.PlacesService(map);
-					service.textSearch(scope.request, function(results, status) {
+					service.textSearch(request, function(results, status) {
 						if (status == google.maps.places.PlacesServiceStatus.OK) {
 							createMarkers(results);
 							if (scope.boundaries.length > 0) {
@@ -306,17 +314,20 @@ angular.module('dashboard.directives.ModelFieldPointsOfInterest', [
 
 				function displayMarkers() {
 					for (var i = 0; i < scope.markers.length; i++) {
-						if (google.maps.geometry.spherical.computeDistanceBetween(scope.markers[i].getPosition(), scope.circle.center) < scope.request.radius) {
-							bounds.extend(scope.markers[i].getPosition());
-							map.fitBounds(bounds);
-							scope.displayedMarkers.push(scope.markers[i]);
+						var marker = scope.markers[i];
+						var distance = google.maps.geometry.spherical.computeDistanceBetween(marker.getPosition(), scope.circle.center);
+						if (distance < scope.request.radius) {
+							bounds.extend(marker.getPosition());
+							scope.displayedMarkers.push(marker);
 							// Display markers
-							scope.markers[i].setMap(map);
+							marker.setMap(map);
 						} else {
 							// Hide the markers outside of the boundary
-							scope.markers[i].setMap(null);
+							marker.setMap(null);
 						}
 					}
+
+					map.fitBounds(bounds);
 					if (scope.displayedMarkers.length == 0) {
 						scope.searchError = "Couldn't find any locations matching the search criteria!";
 					}
@@ -324,9 +335,11 @@ angular.module('dashboard.directives.ModelFieldPointsOfInterest', [
 
 				function listSearchResults() {
 					for (var i = 0; i < scope.searchResults.length; i++) {
-						if (google.maps.geometry.spherical.computeDistanceBetween(scope.searchResults[i].geometry.location, scope.circle.center) < scope.request.radius) {
+						var result = scope.searchResults[i];
+						var distance = google.maps.geometry.spherical.computeDistanceBetween(result.geometry.location, scope.circle.center);
+						if (distance < scope.request.radius) {
 							//Adds correct results to list view
-							scope.displayedSearchResults.push(scope.searchResults[i]);
+							scope.displayedSearchResults.push(result);
 						}
 					}
 					if (scope.data.placeId) { // pre-select point if exist
