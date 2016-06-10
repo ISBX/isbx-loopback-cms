@@ -5,6 +5,10 @@ angular.module('dashboard.Alert', [
 
 .controller('AlertCtrl', function AlertCtrl($scope, $modalInstance) {
 
+  $scope.okayAlert = function() {
+    $modalInstance.close();
+  };
+
   $scope.closeAlert = function() {
     $modalInstance.close();
   };
