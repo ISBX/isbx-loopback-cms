@@ -21,7 +21,7 @@ angular.module('dashboard.directives.ModelFieldFile', [
     restrict: 'E',
     template: '<button class="btn btn-default select-file" ng-hide="disabled">Select File</button> \
       <input type="file" ng-file-select="onFileSelect($files)" ng-hide="disabled"> \
-      <span class="file-upload-info" ng-if="filename"><i class="fa {{getFileIcon(filename)}}"></i>&nbsp;&nbsp;{{ filename }}&nbsp;&nbsp;<span ng-if="fileUrl">(<a href="{{fileUrl}}">download</a>)</span></span> \
+      <span class="file-upload-info" ng-if="filename"><i class="fa {{getFileIcon(filename)}}"></i>&nbsp;&nbsp;{{ filename }}&nbsp;&nbsp;<span ng-if="fileUrl">(<a href="{{fileUrl}}">download</a> | <a target="_blank" href="{{previewUrl}}">preview</a>)</span></span> \
       <div ng-file-drop="onFileSelect($files)" ng-file-drag-over-class="optional-css-class-name-or-function" ng-show="dropSupported" class="file-drop">Drop File Here</div>',
     scope: {
       key: "=key",
@@ -42,6 +42,7 @@ angular.module('dashboard.directives.ModelFieldFile', [
               //expects scope.data to be an object with {filename, fileUrl}
               scope.filename = scope.data.filename;
               scope.fileUrl = scope.data.fileUrl;
+              scope.previewUrl = scope.data.previewUrl;
             } else if (typeof scope.data === 'string') {
               scope.fileUrl = scope.data.replace(/%2F/g, "/");
               var pos = scope.fileUrl.lastIndexOf("/");
@@ -51,6 +52,7 @@ angular.module('dashboard.directives.ModelFieldFile', [
               scope.data = {path: s3Path, file: scope.data.file};
               scope.filename = scope.data.file.name;
               scope.fileUrl = null;
+              scope.previewUrl = null;
             }
           }
        });
