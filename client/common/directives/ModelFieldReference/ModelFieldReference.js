@@ -33,7 +33,7 @@ angular.module('dashboard.directives.ModelFieldReference', [
       //single-select
       template = '\
       <ui-select ng-model="selected.item" on-select="onSelect($item, $model)" ng-required="ngRequired" ng-disabled="disabled" > \
-      <ui-select-match placeholder="{{ options.placeholder }}">'+ matchTemplate +'</ui-select-match> \
+      <ui-select-match ng-focus="refreshChoices($select.search)" placeholder="{{ options.placeholder }}">'+ matchTemplate +'</ui-select-match> \
       <ui-select-choices repeat="item in list" refresh="refreshChoices($select.search)" refresh-delay="200">' + choiceTemplate + '</ui-select-choices> \
       </ui-select>';
     }
