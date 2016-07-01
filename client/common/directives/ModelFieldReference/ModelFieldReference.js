@@ -197,7 +197,6 @@ angular.module('dashboard.directives.ModelFieldReference', [
               if (!response) return;  //in case http request was cancelled
               //console.log("default select = " + JSON.stringify(response));
               scope.selected.item = response;
-              scope.list = [scope.selected.item]; //make sure list contains item otherwise won't be displayed
               if (scope.onModelChanged) scope.onModelChanged({'$item': scope.selected.item});
             }, function(error) {
                 if (scope.options.allowInsert) {
