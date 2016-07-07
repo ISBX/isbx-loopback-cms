@@ -18,6 +18,6 @@
       strong Loading...
     .grid(ng-grid="gridOptions", ng-class="{ search: action.options.showFilter }", ng-if="list.length")
     .edit-controls(ng-show="isEditing")
-      button.btn.btn-primary.save(ng-click="clickSaveEdit()") Save
-      button.btn.btn-danger.cancel(ng-click="clickCancelEdit()") Cancel
+      button.btn.btn-primary.save(ng-click="clickSaveEdit()") {{ saveButtonText || 'Save' }}
+      button.btn.btn-danger.cancel(ng-click="clickCancelEdit()") {{ cancelButtonText || 'Cancel' }}
 

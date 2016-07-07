@@ -25,10 +25,10 @@ angular.module('dashboard.directives.ModelFieldWYSIWYG', [
   function getTemplate() {
     var template = '\
       <div class="wysiwyg-toolbar" data-role="editor-toolbar" data-target=".wysiwyg-editor" ng-hide="disabled">\
-        <!--\
         <div class="btn-group">\
-          <a class="btn btn-default dropdown-toggle" data-toggle="dropdown" title="Font Size"><i class="fa fa-text-height"></i>&nbsp;<b class="caret"></b></a>\
-          <ul class="dropdown-menu">\
+          <span class="dropdown">\
+          <a class="btn btn-default" title="Font Size" ng-click="toggleDropdown($event)" ng-disabled="isEditingCode"><i class="fa fa-text-height"></i>&nbsp;<b class="caret"></b></a>\
+          <ul class="menu" ng-click="toggleDropdown($event)" >\
             <li><a data-edit="fontSize 7">24 pt</a></li>\
             <li><a data-edit="fontSize 6">18 pt</a></li>\
             <li><a data-edit="fontSize 5">16 pt</a></li>\
@@ -36,15 +36,15 @@ angular.module('dashboard.directives.ModelFieldWYSIWYG', [
             <li><a data-edit="fontSize 3">12 pt</a></li>\
             <li><a data-edit="fontSize 2">10 pt</a></li>\
             <li><a data-edit="fontSize 1">7 pt</a></li>\
-          </ul>\
+          </ul></span>\
         </div>\
         <div class="btn-group">\
-          <a class="btn btn-default dropdown-toggle color-picker" data-toggle="dropdown" title="Font Color"><i class="color-sample"></i>&nbsp;<b class="caret"></b></a>\
-          <div class="dropdown-menu input-append">\
+          <span class="dropdown">\
+          <a class="btn btn-default color-picker" title="Font Color" ng-click="toggleDropdown($event)" ng-disabled="isEditingCode"><i class="color-sample"></i>&nbsp;<b class="caret"></b></a>\
+          <div class="menu input-append">\
             <input type="color" class="font-color-picker" value="#000" />\
-          </div>\
+          </div></span>\
         </div>\
-        -->\
         <div class="btn-group">\
           <a class="btn btn-default" data-edit="bold" title="Bold" ng-disabled="isEditingCode"><i class="fa fa-bold"></i></a>\
           <a class="btn btn-default" data-edit="italic" title="Italic" ng-disabled="isEditingCode"><i class="fa fa-italic"></i></a>\
@@ -99,18 +99,95 @@ angular.module('dashboard.directives.ModelFieldWYSIWYG', [
       disabled: '=disabled'
     },
     link: function(scope, element, attrs, ngModel) {
-      scope.toggleDropdown = function(event) {
+      var $wysiwyg, codeEditor;
+
+      function init() {
+        scope.isEditingCode = false;
+        scope.toggleDropdown = toggleDropdown;
+        scope.onFileSelect = onFileSelect;
+        scope.toggleCodeEdit = toggleCodeEdit;
+
+        element.html(getTemplate()).show();
+        $compile(element.contents())(scope);
+
+        initWysiwygEditor();
+        initColorPicker();
+
+        codeEditor = ace.edit(element.find('.code-editor')[0]);
+        codeEditor.getSession().setMode("ace/mode/html");
+
+        $(element).find('.wysiwyg-toolbar [data-role=magic-overlay]').each(function () {
+          var overlay = $(this), target = $(overlay.data('target'));
+          overlay.css({opacity: 0, position: 'absolute', width: "40px", height: "34px", top: "0", left: "0" });
+        });
+
+        ngModel.$render = function() {
+          $wysiwyg.html(ngModel.$viewValue || "");
+        };
+
+        $wysiwyg.bind("blur keyup change", function() {
+          scope.$apply(function() {
+            ngModel.$setViewValue($wysiwyg.html());
+          });
+        });
+
+        codeEditor.on("blur", function() {
+          ngModel.$setViewValue(codeEditor.getValue());
+          $wysiwyg.html(ngModel.$viewValue);
+        });
+      }
+
+      function initWysiwygEditor() {
+        // check for multiple instances
+        var instances = $('.wysiwyg-editor');
+        var instanceIdx = 0
+        if(instances && instances.length > 0) {
+          instanceIdx = instances.length;
+        }
+        $wysiwyg = angular.element(element).find('.wysiwyg-editor');
+        var editorId = 'wysiwyg-editor-'+instanceIdx;
+        var toolbarId = 'editor'+instanceIdx+'-toolbar';
+        $wysiwyg.attr('id', editorId);
+        var $toolbar = angular.element(element).find('.wysiwyg-toolbar');
+        $toolbar.attr('data-role', toolbarId);
+        $toolbar.attr('data-target', '#'+editorId);
+
+        if (!scope.disabled) $wysiwyg.wysiwyg({
+          toolbarSelector: '[data-role='+toolbarId+']',
+          hotKeys: {},
+          dragAndDropImages: false
+        });
+      }
+
+      function initColorPicker() {
+        var $colorPicker = angular.element(element).find(".font-color-picker");
+        if($colorPicker) {
+          $colorPicker.spectrum({
+            flat: true,
+            cancelText: "",
+            clickoutFiresChange: false,
+            preferredFormat: "rgb",
+            showInput: true,
+            change: function(color) {
+              $(this).closest('.dropdown').find('.color-sample').css({backgroundColor: color.toHexString()});
+              $wysiwyg.focus();
+              document.execCommand("foreColor", 0,  color.toHexString());
+              $(this).parent('.menu').removeClass('open');
+            }
+          });
+        }
+      }
+
+      function toggleDropdown(event) {
         var $element = $(event.currentTarget).parent().find('.menu');
         if ($element.hasClass('open')) {
           $element.removeClass('open');
         } else {
           $element.addClass('open');
         }
-      };
+      }
 
-      scope.isEditingCode = false;
-
-      scope.onFileSelect = function($files) {
+      function onFileSelect($files) {
         if (!scope.options.allowImageUpload || $files.length == 0) return;
         scope.status = "Uploading Image";
         scope.progress = 0.0;
@@ -130,9 +207,9 @@ angular.module('dashboard.directives.ModelFieldWYSIWYG', [
           }, function(progress) {
             scope.progress = progress;
           });
-      };
+      }
 
-      scope.toggleCodeEdit = function() {
+      function toggleCodeEdit() {
         scope.isEditingCode = !scope.isEditingCode;
         if (scope.isEditingCode) {
           var htmlCode = $wysiwyg[0].innerHTML;
@@ -143,37 +220,9 @@ angular.module('dashboard.directives.ModelFieldWYSIWYG', [
           ngModel.$setViewValue(codeEditor.getValue());
           $wysiwyg.html(ngModel.$viewValue);
         }
-      };
+      }
 
-      element.html(getTemplate()).show();
-      $compile(element.contents())(scope);
-
-      var $wysiwyg = $(element).find('.wysiwyg-editor');
-      if (!scope.disabled) $wysiwyg.wysiwyg({hotKeys: {}, dragAndDropImages: false});
-
-      var codeEditor = ace.edit(element.find('.code-editor')[0]);
-      codeEditor.getSession().setMode("ace/mode/html");
-
-      $(element).find('.wysiwyg-toolbar [data-role=magic-overlay]').each(function () {
-        var overlay = $(this), target = $(overlay.data('target'));
-        overlay.css({opacity: 0, position: 'absolute', width: "40px", height: "34px", top: "0", left: "0" });
-      });
-
-      ngModel.$render = function() {
-        $wysiwyg.html(ngModel.$viewValue || "");
-      };
-
-      $wysiwyg.bind("blur keyup change", function() {
-        scope.$apply(function() {
-          ngModel.$setViewValue($wysiwyg.html());
-        });
-      });
-
-      codeEditor.on("blur", function() {
-        ngModel.$setViewValue(codeEditor.getValue());
-        $wysiwyg.html(ngModel.$viewValue);
-
-      });
+      init();
     }
   };
 })

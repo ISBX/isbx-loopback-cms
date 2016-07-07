@@ -1,3 +1,3 @@
 .filter-nav
-  a.subnav-button(ng-repeat="subnav in section.subnav track by subnav.label", ng-hide="subnav.hidden", href="{{ $state.href('dashboard.model.action.' + subnav.route, { model: section.path, action: subnav.label, id: null }) }}", ng-class="{ selected: $state.includes('dashboard.model.action', { model: section.path, action: subnav.label, id: null }) }") {{ subnav.label }}
+  a.subnav-button(ng-repeat="subnav in section.subnav track by subnav.label", ng-hide="subnav.hidden", href="{{ $state.href('dashboard.model.action.' + subnav.route, { model: section.path, action: subnav.label, id: null }) }}", ng-class="[{ selected: $state.includes('dashboard.model.action', { model: section.path, action: subnav.label, id: null })}, subnav.className ]") {{ subnav.label }}
 .content(ui-view="")

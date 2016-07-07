@@ -25,7 +25,7 @@ angular.module('dashboard.directives.ModelFieldReference', [
     if (multiple) {
       //multi-select
       template = '\
-      <ui-select multiple ng-model="selected.items" on-select="onSelect($item, $model)" on-remove="onRemove($item, $model)"> \
+      <ui-select multiple ng-model="selected.items" on-select="onSelect($item, $model)" on-remove="onRemove($item, $model)"  ng-disabled="disabled"> \
       <ui-select-match placeholder="{{ options.placeholder }}">'+ matchTemplate +'</ui-select-match> \
       <ui-select-choices repeat="item in list" refresh="refreshChoices($select.search)" refresh-delay="200">' + choiceTemplate + '</ui-select-choices> \
       </ui-select>';
@@ -33,7 +33,7 @@ angular.module('dashboard.directives.ModelFieldReference', [
       //single-select
       template = '\
       <ui-select ng-model="selected.item" on-select="onSelect($item, $model)" ng-required="ngRequired" ng-disabled="disabled" > \
-      <ui-select-match placeholder="{{ options.placeholder }}">'+ matchTemplate +'</ui-select-match> \
+      <ui-select-match ng-click="refreshChoices($select.search);" placeholder="{{ options.placeholder }}">'+ matchTemplate +'</ui-select-match> \
       <ui-select-choices repeat="item in list" refresh="refreshChoices($select.search)" refresh-delay="200">' + choiceTemplate + '</ui-select-choices> \
       </ui-select>';
     }
@@ -133,7 +133,7 @@ angular.module('dashboard.directives.ModelFieldReference', [
               var addNewItem = {};
               addNewItem[scope.options.searchField] = "[clear]";
               scope.list.unshift(addNewItem);
-              
+
             }
             if (typeof scope.options.defaultIndex === 'number') {
               if (response[scope.options.defaultIndex]) {

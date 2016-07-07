@@ -41,7 +41,6 @@
 .dashboard .filter-nav a.subnav-button.selected {
   color: #000;
   background-color: #f0f0f0;
-  border-right: solid 1px #f0f0f0;
 }
 .dashboard .content {
   position: absolute;
@@ -437,7 +436,7 @@ model-field-wysiwyg-edit .wysiwyg-toolbar .picture-button .picture-tool {
   border-bottom-right-radius: 4px !important;
 }
 model-field-wysiwyg-edit .wysiwyg-toolbar .btn {
-  padding: 6px 11px;
+  padding: 3px 8px;
 }
 model-field-wysiwyg-edit .wysiwyg-toolbar .btn .color-sample {
   display: inline-block;
@@ -474,6 +473,14 @@ model-field-wysiwyg-edit .wysiwyg-toolbar .menu {
 }
 model-field-wysiwyg-edit .wysiwyg-toolbar .menu.open {
   display: block;
+  list-style-type: none;
+}
+model-field-wysiwyg-edit .wysiwyg-toolbar .menu.open li {
+  line-height: normal;
+  padding: 5px;
+}
+model-field-wysiwyg-edit .wysiwyg-toolbar .menu.open li a {
+  cursor: pointer;
 }
 model-field-wysiwyg-edit .wysiwyg-toolbar .menu .add-button {
   width: 100%;

@@ -65,11 +65,11 @@ angular.module('dashboard.directives.ModelFieldPointsOfInterest', [
         </accordion> \
         <div class="map-canvas"id="map_canvas"></div> \
         <ul class="selected-location" ng-model="displayedSearchResults" > \
-          <li ng-repeat="'+repeatExpression+'"> \
+          <li ng-repeat="'+repeatExpression+'" ng-click="updateSelection($index, displayedSearchResults)"> \
             <div class="location-title">{{ item.name }}</div> \
               <span class="search-results">{{item.formatted_address}}</span> \
             <div class="col-sm checkbox-container">\
-              <input type="checkbox" ng-attr-id="{{item.place_id}}" ng-model="item.checked" ng-click="updateSelection($index, displayedSearchResults)" class="field"> \
+              <input type="checkbox" ng-attr-id="{{item.place_id}}" ng-model="item.checked" class="field"> \
               <label class="checkbox-label" ng-attr-for="{{item.place_id}}" ></label> \
             </div> \
           </li> \
@@ -413,6 +413,7 @@ angular.module('dashboard.directives.ModelFieldPointsOfInterest', [
 						if (selectedIdx != index) {
 							item.checked = false;
 						} else {
+							item.checked = true;
 							scope.updateInfoWindow(item);
 							scope.getSelectResultData(item);
 						}

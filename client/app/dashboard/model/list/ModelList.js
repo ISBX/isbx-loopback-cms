@@ -148,6 +148,11 @@ angular.module('dashboard.Dashboard.Model.List', [
       $scope.gridOptions.plugins.push(new ngGridCsvExportPlugin());
     }
 
+    //Load Strings
+    if (Config.serverParams.strings) {
+      $scope.cancelButtonText = Config.serverParams.strings.cancelButton;
+      $scope.saveButtonText = Config.serverParams.strings.saveButton;
+    }
   }
 
   function getColumnDefinition() {
@@ -612,6 +617,14 @@ angular.module('dashboard.Dashboard.Model.List', [
       endEdit();
     }
   };
+
+  $scope.deleteRowWithMessage = function(row, msg) {
+    if (msg) {
+      if (confirm(msg)) $scope.deleteRow(row, true);
+      return;
+    }
+    $scope.deleteRow(row);
+  };
   
   $scope.deleteRow = function(row, bypassPrompt) {
     if (!$scope.model || !$scope.model.plural) {
@@ -624,7 +637,7 @@ angular.module('dashboard.Dashboard.Model.List', [
         //Record doesn't have an id so must be a record that has not been created yet
         $scope.list.splice(row.rowIndex, 1);
       } else {
-        if ($scope.model.options.softDeleteProperty) {
+        if ($scope.model.options && $scope.model.options.softDeleteProperty) {
           startEdit();
           row.entity[$scope.model.options.softDeleteProperty] = true; //soft delete
           $scope.clickSaveEdit();

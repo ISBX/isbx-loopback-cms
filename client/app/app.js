@@ -37,7 +37,7 @@ angular.module('dashboard', [
       .then(function() {
         modulesLoaded = true;
         $rootScope.$broadcast('modulesLoaded');
-      });
+      }, function(error){console.log(error)});
   } else {
     modulesLoaded = true;
   }
@@ -55,7 +55,7 @@ angular.module('dashboard', [
 
 })
 
-.controller('AppCtrl', function AppCtrl ($scope, $location , $state , $rootScope, $timeout, $document, SessionService, CacheService, Config) {
+.controller('AppCtrl', function AppCtrl ($scope, $location, $state, $rootScope, $timeout, $document, SessionService, CacheService, Config) {
   $rootScope.$state = $state;
   if (Config.serverParams.gaTrackingId) ga('create', Config.serverParams.gaTrackingId, 'auto');
 
@@ -64,6 +64,9 @@ angular.module('dashboard', [
     toStateName = toStateName.substr(toStateName, toStateName.indexOf('.'));
 
     if (!SessionService.getAuthToken() && toStateName != 'public') {
+      var desiredState = { state: toState, params: toParams };
+      CacheService.set('desiredState', desiredState);
+
       if (Config.serverParams.loginState) {
         $state.go(Config.serverParams.loginState); //custom login controller
       } else if (toStateName != 'public') {
@@ -75,7 +78,7 @@ angular.module('dashboard', [
 
   $scope.$on('$stateChangeSuccess', function(event, toState, toParams, fromState, fromParams){
     if (angular.isDefined(toState.data.pageTitle)) {
-      $scope.pageTitle = toState.data.pageTitle + ' | CMS' ;
+      $scope.pageTitle = toState.data.pageTitle;
     }
   });
 
@@ -90,25 +93,63 @@ angular.module('dashboard', [
         }
       })
       .catch(function(error){
+        $state.go('public.login');
       });
   };
 
-  function setSessionTimeout() {
-    $rootScope.timeoutId = $timeout($rootScope.logOut, Config.serverParams.sessionTimeout);
+  localStorage['lastActive'] = new Date();
+  var lastPersistDate = new Date();
+  function persistSession() {
+    $timeout.cancel($rootScope.persistId);
+    if ($state.current.name.indexOf('public') > -1) {
+      return; //don't timeout if on the public website
+    }
+    lastPersistDate = new Date();
+    //limit the amount of time localStorage is written to
+    if (new Date() - lastPersistDate > 5000) {
+      if (checkTimeout()) {
+        localStorage['lastActive'] = new Date();
+      }
+    } else {
+      $rootScope.persistId = $timeout(function() {
+        if (checkTimeout()) {
+          localStorage['lastActive'] = new Date();
+        }
+      }, 5000);
+    }
   }
+
+  function checkTimeout() {
+    $timeout.cancel($rootScope.timeoutId);
+    if (!localStorage['lastActive']) {
+      console.error('Session Timedout on another window/tab');
+      $state.go('public.login');
+      return false;
+    }
+    var lastActiveDate = new Date(localStorage['lastActive']);
+    var interval = new Date() - lastActiveDate;
+    if (interval > Config.serverParams.sessionTimeout) {
+      $rootScope.logOut();
+      return false;
+    } else {
+      $rootScope.timeoutId = $timeout(checkTimeout, 5000); //Wait another 5 sec to check again
+      return true;
+    }
+
+  };
 
   //Handle Idle Timer for SessionTimeout
   if (Config.serverParams.sessionTimeout && $location.host() != 'localhost') {
-    setSessionTimeout();
     $document.on("mousemove", function() {
       //For Desktop devices
-      $timeout.cancel($rootScope.timeoutId);
-      setSessionTimeout();
+      persistSession();
     });
     $document.on("touchmove", function() {
       //For Mobile devices
-      $timeout.cancel($rootScope.timeoutId);
-      setSessionTimeout();
+      persistSession();
+    });
+    $document.on("keydown", function() {
+      persistSession();
     });
   }
 
