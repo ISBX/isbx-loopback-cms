@@ -27,6 +27,7 @@ angular.module('dashboard.Dashboard.Model.List', [
 
   var isFirstLoad = true;
   var modalInstance = null;
+  $scope.isLoading = true;
   $scope.moment = moment;
   $scope.columnCount = 0;
   $scope.list = [];
@@ -390,7 +391,11 @@ angular.module('dashboard.Dashboard.Model.List', [
         processWindowSize(); //on first load check window size to determine if optional columns should be displayed
         $scope.$emit("ModelListLoadItemsLoaded");
         isFirstLoad = false;
-      });  
+      })
+      .finally(function() {
+        $scope.isLoading = false;
+        $scope.loadAttempted = true;
+      });
   };
   
   /**
