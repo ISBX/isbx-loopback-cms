@@ -29,8 +29,13 @@ angular.module('dashboard.Login', [
   this.clickLogin = function() {
     SessionService.logIn($scope.login.email, $scope.login.password)
       .then(function(response) {
+        var desiredState = CacheService.get('desiredState');
         CacheService.reset(); //clear out all previous cache when login
-        $state.go('dashboard');
+        if (desiredState) {
+          $state.go(desiredState.state.name, desiredState.params);
+        } else {
+          $state.go('dashboard');
+        }
       })
       .catch(function(response) {
         if (response && response[0] && response[0].error && response[0].error.message) {

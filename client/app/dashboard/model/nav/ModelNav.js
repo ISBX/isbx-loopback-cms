@@ -74,6 +74,7 @@ angular.module('dashboard.Dashboard.Model.Nav', [
                   },
                   properties: {
                     label: { title: "Label", type: "string", required: true },
+                    className: { title: "ClassName", type: "string", required: false },
                     route: { title: "Route", type: "string", enum: ["list", "sort", "edit", "nav", "definition"], required: true },
                     options: { 
                         type: "object",
