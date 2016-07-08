@@ -26,7 +26,7 @@ angular.module('dashboard.directives.ModelFieldFile', [
     scope: {
       key: "=key",
       options: '=options',
-      disabled: '=disabled',
+      disabled: '=ngDisabled',
       data: '=ngModel',
       modelData: '=modelData'
     },

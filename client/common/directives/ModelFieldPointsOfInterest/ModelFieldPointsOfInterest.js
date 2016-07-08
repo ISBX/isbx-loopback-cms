@@ -86,7 +86,7 @@ angular.module('dashboard.directives.ModelFieldPointsOfInterest', [
 				options: '=options',
 				data: '=ngModel',
 				modelData: '=modelData',
-				disabled: '=disabled'
+				disabled: '=ngDisabled'
 			},
 			link: function(scope, element, attrs) {
 

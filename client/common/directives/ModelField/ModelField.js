@@ -84,7 +84,7 @@ angular.module('dashboard.directives.ModelField', [
         // depends on directive modelFieldFileEdit
         template = '<label class="col-sm-2 control-label">{{ display.label || key }}:</label> \
           <div class="col-sm-10"> \
-            <model-field-file-edit key="key" options="display.options" disabled="display.readonly" model-data="data" ng-model="data[key]" class="field" /> \
+            <model-field-file-edit key="key" options="display.options" ng-disabled="display.readonly" model-data="data" ng-model="data[key]" class="field" /> \
           </div> \
           <br /> \
           <label class="col-sm-2 control-label place-holder-file-label"></label> \
@@ -96,7 +96,7 @@ angular.module('dashboard.directives.ModelField', [
         // depends on directive modelFieldImageEdit
         template = '<label class="col-sm-2 control-label">{{ display.label || key }}:</label> \
           <div class="col-sm-10"> \
-            <model-field-image-edit key="key" options="display.options" disabled="display.readonly" model-data="data" ng-model="data[key]" class="field" /> \
+            <model-field-image-edit key="key" options="display.options" ng-disabled="display.readonly" model-data="data" ng-model="data[key]" class="field" /> \
           </div>\
           <label class="col-sm-2 control-label"></label> \
           <div class="col-sm-10"> \
@@ -107,7 +107,7 @@ angular.module('dashboard.directives.ModelField', [
         // depends on directive modelFieldImageEdit
         template = '<label class="col-sm-2 control-label">{{ display.label || key }}:</label> \
           <div class="col-sm-10"> \
-            <model-field-video-edit key="key" options="display.options" disabled="display.readonly" model-data="data" ng-model="data[key]" class="field" /> \
+            <model-field-video-edit key="key" options="display.options" ng-disabled="display.readonly" model-data="data" ng-model="data[key]" class="field" /> \
             <div class="model-field-description" ng-if="display.description">{{ display.description }}</div>\
           </div>';
         break;
@@ -200,7 +200,7 @@ angular.module('dashboard.directives.ModelField', [
       case 'WYSIWYG':
         template = '<label class="col-sm-2 control-label">{{ display.label || key }}:</label>\
           <div class="col-sm-10">\
-            <model-field-wysiwyg-edit key="key" property="property" options="display.options" model-data="data" ng-model="data[key]" class="field" ng-required="{{ model.properties[key].required }}" disabled="display.readonly"  /> \
+            <model-field-wysiwyg-edit key="key" property="property" options="display.options" model-data="data" ng-model="data[key]" class="field" ng-required="{{ model.properties[key].required }}" ng-disabled="display.readonly"  /> \
             <div class="model-field-description" ng-if="display.description">{{ display.description }}</div>\
           </div>';
         break;
@@ -208,14 +208,14 @@ angular.module('dashboard.directives.ModelField', [
       case 'signature':
         template = '<label class="col-sm-2 control-label">{{ display.label || key }}:</label>\
           <div class="col-sm-10">\
-            <model-field-canvas-edit key="key" property="property" options="display.options" ng-model="data[key]" class="field" ng-required="{{ model.properties[key].required }}" disabled="display.readonly"></model-field-canvas-edit>\
+            <model-field-canvas-edit key="key" property="property" options="display.options" ng-model="data[key]" class="field" ng-required="{{ model.properties[key].required }}" ng-disabled="display.readonly"></model-field-canvas-edit>\
             <div class="model-field-description" ng-if="display.description">{{ display.description }}</div>\
           </div>';
         break;
       case 'location':
         template = '<label class="col-sm-2 control-label">{{ display.label || key }}:</label>\
           <div class="col-sm-10">\
-            <model-field-location-edit key="key" property="property" options="display.options" ng-model="data[key]" class="field" ng-required="{{ model.properties[key].required }}" disabled="display.readonly"></model-field-location-edit>\
+            <model-field-location-edit key="key" property="property" options="display.options" ng-model="data[key]" class="field" ng-required="{{ model.properties[key].required }}" ng-disabled="display.readonly"></model-field-location-edit>\
             <div class="model-field-description" ng-if="display.description">{{ display.description }}</div>\
           </div>';
         break;
@@ -223,7 +223,7 @@ angular.module('dashboard.directives.ModelField', [
       case 'POI':
         template = '<label class="col-sm-2 control-label">{{ display.label || key }}:</label>\
           <div class="col-sm-10">\
-            <model-field-points-of-interest-edit key="key" property="property" options="display.options" ng-model="data[key]" class="field" ng-required="{{ model.properties[key].required }}" disabled="display.readonly"></model-field-points-of-interest-edit>\
+            <model-field-points-of-interest-edit key="key" property="property" options="display.options" ng-model="data[key]" class="field" ng-required="{{ model.properties[key].required }}" ng-disabled="display.readonly"></model-field-points-of-interest-edit>\
             <div class="model-field-description" ng-if="display.description">{{ display.description }}</div>\
           </div>';
         break;

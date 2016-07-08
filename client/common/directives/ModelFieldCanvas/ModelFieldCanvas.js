@@ -39,7 +39,7 @@ angular.module('dashboard.directives.ModelFieldCanvas', [
       options: '=options',
       data: '=ngModel',
       modelData: '=modelData',
-      disabled: '=disabled'
+      disabled: '=ngDisabled'
     },
     link: function(scope, element, attrs, ngModel) {
 
