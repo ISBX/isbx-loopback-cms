@@ -13,7 +13,8 @@ angular.module('dashboard.directives.ModelField', [
   'ngCookies',
   'ngSlider',
   'ngSignaturePad',
-  'cwill747.phonenumber'
+  'cwill747.phonenumber',
+  'monospaced.elastic'
 ])
 
 .directive('modelFieldView', function($compile) {
@@ -191,7 +192,7 @@ angular.module('dashboard.directives.ModelField', [
       case 'textarea':
         template = '<label class="col-sm-2 control-label">{{ display.label || key }}:</label>\
           <div class="col-sm-10">\
-            <textarea ng-model="data[key]" ng-disabled="{{ display.readonly }}" ng-required="{{ model.properties[key].required }}" class="field form-control"></textarea>\
+            <textarea msd-elastic ng-model="data[key]" ng-disabled="{{ display.readonly }}" ng-required="{{ model.properties[key].required }}" class="field form-control"></textarea>\
             <div class="model-field-description" ng-if="display.description">{{ display.description }}</div>\
           </div>';
         break;

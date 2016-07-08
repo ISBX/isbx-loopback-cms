@@ -30,7 +30,8 @@
     "bootstrap-wysiwyg": "*",
     "js-beautify": "~1.5.10",
     "ng-signature-pad": "*",
-    "angular-libphonenumber": "^1.0.0"
+    "angular-libphonenumber": "^1.0.0",
+    "angular-elastic": "~2.5.1"
   },
   "resolutions": {
     "angular": ">=1.2.18"
