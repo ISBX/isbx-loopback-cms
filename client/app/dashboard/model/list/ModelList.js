@@ -697,7 +697,8 @@ angular.module('dashboard.Dashboard.Model.List', [
 
   //Wait till ngGrid is loaded and then add scroll events
   var ngGridUnWatch = $scope.$watch('gridOptions.ngGrid', function() {
-    var $viewport = $scope.gridOptions.ngGrid.$viewport; 
+    if (!$scope.gridOptions.ngGrid) return;
+    var $viewport = $scope.gridOptions.ngGrid.$viewport;
     ngGridUnWatch(); //remove watch on ngGrid
     $footerPanel = $(".ngFooterPanel");
     $listContainer = $(".grid-container.list");
