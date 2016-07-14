@@ -149,7 +149,7 @@ angular.module('dashboard.directives.ModelFieldPointsOfInterest', [
 								lat: position.latitude,
 								lng: position.longitude
 							};
-							zoom = 12;
+							zoom = 11;
 							scope.request.location = pointLocation;
 							scope.reverseGeocode(pointLocation);
 							initMap();
@@ -169,7 +169,7 @@ angular.module('dashboard.directives.ModelFieldPointsOfInterest', [
 							lat: scope.data.lat,
 							lng: scope.data.lng
 						};
-						zoom = 12;
+						zoom = 11;
 						scope.request.location = savedLocation;
 						initMap();
 					}
@@ -308,7 +308,6 @@ angular.module('dashboard.directives.ModelFieldPointsOfInterest', [
 					for (var i = 0; i < scope.markers.length; i++) {
 						if (google.maps.geometry.spherical.computeDistanceBetween(scope.markers[i].getPosition(), scope.circle.center) < scope.request.radius) {
 							bounds.extend(scope.markers[i].getPosition());
-							map.fitBounds(bounds);
 							scope.displayedMarkers.push(scope.markers[i]);
 							// Display markers
 							scope.markers[i].setMap(map);
