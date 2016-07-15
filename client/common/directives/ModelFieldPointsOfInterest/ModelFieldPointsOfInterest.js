@@ -50,17 +50,16 @@ angular.module('dashboard.directives.ModelFieldPointsOfInterest', [
         <accordion-group class="accordion-group" heading="Location Search" is-open="true"> \
         <input id="zipCode" class="field form-control" placeholder="Zip Code" ng-model="data.zipCode">\
         <input id="searchInput" class="field form-control" placeholder="Search Location" ng-model="request[\'query\']">\
-         <select id="radius" ng-options="value as value for value in display.options" ng-required="" class="field form-control ng-pristine ng-valid ng-valid-required" ng-disabled=""> \
-           <option value="3" disabled selected class="">3 Miles</option> \
+         <select id="radius" ng-model="data.radius" ng-required="" class="field form-control ng-pristine ng-valid ng-valid-required" ng-disabled=""> \
            <option value="1" label="1 Mile">1 Mile</option> \
            <option value="2" label="2 Miles">2 Miles</option> \
-           <option value="3" label="3 Miles">3 Miles</option> \
+           <option value="3" label="3 Miles" selected>3 Miles</option> \
            <option value="5" label="5 Miles">5 Miles</option> \
            <option value="10" label="10 Miles">10 Miles</option> \
            <option value="20" label="20 Miles">20 Miles</option> \
         	 <option value="30" label="30 Miles">30 Miles</option> \
          </select> \
-        <button class="btn" ng-click="doSearch()" ng-model="request.query">Search</button><span class="search-error" ng-if="searchError">{{searchError}}</span>\
+        <button class="btn btn-default" ng-click="doSearch()" ng-model="request.query">Search</button><span class="search-error" ng-if="searchError">{{searchError}}</span>\
         </accordion-group>\
         </accordion> \
         <div class="map-canvas"id="map_canvas"></div> \
@@ -123,6 +122,7 @@ angular.module('dashboard.directives.ModelFieldPointsOfInterest', [
 						scope.data = {};
 					}
 				}
+				if (!scope.data.radius) scope.data.radius = miles;
 
 				loadScript().then(function () {
 					console.log('scope.data', scope.data);
@@ -142,38 +142,46 @@ angular.module('dashboard.directives.ModelFieldPointsOfInterest', [
 
 					element.html(getTemplate()).show();
 					$compile(element.contents())(scope);
+					/**
+					 * Disabled browser geolocation
+           */
 					//Checked for saved coordinates
-					if(!scope.data.lat && !scope.data.lng) {
-						//Initial search with user's location
-						LocationService.currentLocation().then(function (position) {
-							var pointLocation = {
-								lat: position.latitude,
-								lng: position.longitude
-							};
-							zoom = 12;
-							scope.request.location = pointLocation;
-							scope.reverseGeocode(pointLocation);
-							initMap();
-						}, function () {
-							//Use default location
-							var defaultLocation = {
-								lat: 39.833333,
-								lng: -98.583333
-							};
-							zoom = 4;
-							scope.request.location = defaultLocation;
-							scope.reverseGeocode(defaultLocation);
-							initMap();
-						});
-					} else {
-						var savedLocation = {
-							lat: scope.data.lat,
-							lng: scope.data.lng
-						};
-						zoom = 12;
-						scope.request.location = savedLocation;
-						initMap();
-					}
+					// if(!scope.data.lat && !scope.data.lng) {
+					// 	//Initial search with user's location
+					// 	LocationService.currentLocation().then(function (position) {
+					// 		var pointLocation = {
+					// 			lat: position.latitude,
+					// 			lng: position.longitude
+					// 		};
+					// 		zoom = 12;
+					// 		scope.request.location = pointLocation;
+					// 		scope.reverseGeocode(pointLocation);
+					// 		initMap();
+					// 	}, function () {
+					// 		//Use default location
+					// 		var defaultLocation = {
+					// 			lat: 39.833333,
+					// 			lng: -98.583333
+					// 		};
+					// 		zoom = 4;
+					// 		scope.request.location = defaultLocation;
+					// 		scope.reverseGeocode(defaultLocation);
+					// 		initMap();
+					// 	});
+					// } else {
+					// 	var savedLocation = {
+					// 		lat: scope.data.lat,
+					// 		lng: scope.data.lng
+					// 	};
+					// 	zoom = 12;
+					// 	scope.request.location = savedLocation;
+					// 	initMap();
+					// }
+
+					scope.isMapLoading = false;
+					scope.isLoaded = true;
+					scope.doSearch();
+
 				}, function () {
 					console.error("Error loading Google Maps")
 				});
@@ -195,8 +203,7 @@ angular.module('dashboard.directives.ModelFieldPointsOfInterest', [
 				scope.doSearch = function () {
 					scope.searchError = null;
 					scope.data.query = scope.request.query;
-					scope.request.radius = (angular.element('#radius')[0].value) * milesToMeters;
-					scope.data.radius = angular.element('#radius')[0].value;
+					scope.request.radius = scope.data.radius * milesToMeters;
 					var zipCode = scope.data.zipCode;
 					if (!zipCode || zipCode.length !== 5) {
 						scope.searchError = 'Your Zip Code is invalid!';
