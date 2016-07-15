@@ -317,15 +317,13 @@ angular.module('dashboard.directives.ModelField', [
           if (!property.display.options.format) property.display.options.format = "YYYY-MM-DD  h:mm A";
         }
 
-        if (property.display.convertToLocalTime === false) {
-          // remove the 'Z' from the end of the timestamp so that it is not converted to local time
-          if (scope.data[scope.key]) {
-            scope.data[scope.key] = scope.data[scope.key].substring(0, scope.data[scope.key].length-1);
-          }
+        if (!scope.data[scope.key] && property.display.defaultValueUsingModelKey) {
+          scope.data[scope.key] = scope.data[property.display.defaultValueUsingModelKey];
         }
 
-        if (property.display.defaultValueUsingModelKey) {
-          scope.data[scope.key] = scope.data[property.display.defaultValueUsingModelKey];
+        if (scope.data[scope.key] && property.display.convertToLocalTime === false) {
+          //remove the 'Z' from the end of the timestamp so that it is not converted to local time
+          scope.data[scope.key] = scope.data[scope.key].substring(0, scope.data[scope.key].length-1);
         }
 
         if (property.display.type == "boolean") {
