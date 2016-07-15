@@ -1,5 +1,6 @@
 angular.module('dashboard.directives.ModelFieldImage', [
-  "dashboard.services.GeneralModel"
+  "dashboard.services.GeneralModel",
+  "dashboard.services.Image"
 ])
 
 .directive('modelFieldImageView', function($compile) {
@@ -16,7 +17,7 @@ angular.module('dashboard.directives.ModelFieldImage', [
   };
 })
 
-.directive('modelFieldImageEdit', function($compile, $document, GeneralModelService, SessionService) {
+.directive('modelFieldImageEdit', function($compile, $document, GeneralModelService, ImageService, SessionService) {
   return {
     restrict: 'E',
     template: '<div class="image-container" style="background: no-repeat center center url(\'{{ imageUrl }}\'); background-size: contain;" ng-click="imageClick()"></div> \
@@ -67,9 +68,8 @@ angular.module('dashboard.directives.ModelFieldImage', [
                 scope.imageUrl = response[scope.options.urlKey];
                 if (!scope.imageUrl) scope.imageUrl = response["mediumUrl"]; //HACK FOR SMS PROJECT (PROB SHOULD REMOVE)
               });
-              
             }
-            
+            ImageService.fixOrientation(scope.imageUrl, element.find('.image-container'));
           }
        });
 
@@ -165,22 +165,22 @@ angular.module('dashboard.directives.ModelFieldImage', [
                 canvas.width = width;
                 canvas.height = height;
                 break;
-              case "fill": {
+              case "fill":
                 canvas.width = width;
                 canvas.height = height;
                 var scale = Math.max(width / image.width, height / image.height);
                 width = image.width * scale;
                 height = image.height * scale;
-              } break;
+                break;
               case "fit":
-              default: {
+              default:
                 var scale = Math.min(width / image.width, height / image.height);
                 width = image.width * scale;
                 height = image.height * scale;
                 canvas.width = width;
                 canvas.height = height;
-              } break;
-          }
+                break;
+            }
             
             context.drawImage(image, 0, 0, width, height);
             var dataUrl = canvas.toDataURL("image/jpeg", 0.8);
@@ -230,27 +230,38 @@ angular.module('dashboard.directives.ModelFieldImage', [
                   background: 'no-repeat center center url(' + scope.imageUrl + ')',
                   backgroundSize: width + 'px ' + height + 'px'
                 });
+                ImageService.fixOrientation(scope.imageUrl, $container);
               } else {
                 //Lightbox with zoom capability
-                var $thumbnail = $('<div style="display: inline-block; width: 30%; height: 100%;"></div>');
-                var $zoom = $('<div style="display: inline-block; width: 70%; height: 100%"></div>');
+                var $thumbnail = $('<div style="display: inline-block; width: 30%; height: 100%; overflow: hidden;"><div></div></div>');
+                var $zoom = $('<div style="display: inline-block; width: 70%; height: 100%; overflow: hidden;"><div></div></div>');
                 $container.append($thumbnail);
                 $container.append($zoom);
                 var scale = Math.min($thumbnail.width() / image.width, $thumbnail.height() / image.height);
                 var thumbnailWidth = image.width * scale;
                 var thumbnailHeight = image.height * scale;
-                $thumbnail.css({
+                $thumbnail.find('div').css({
                   background: 'no-repeat center center url(' + scope.imageUrl + ')',
-                  backgroundSize: thumbnailWidth + 'px ' + thumbnailHeight + 'px'
+                  backgroundSize: thumbnailWidth + 'px ' + thumbnailHeight + 'px',
+                  width: '100%',
+                  height: '100%'
+                });
+                ImageService.getOrientation(scope.imageUrl).then(function(orientation) {
+                  ImageService.reOrient(orientation, $thumbnail.find('div'));
+                  ImageService.reOrient(orientation, $zoom.find('div'));
                 });
                 var maxScale = 1.0;
                 scale = maxScale;
                 var zoomWidth = image.width * scale;
                 var zoomHeight = image.height * scale;
                 $zoom.css({
-                  background: 'no-repeat center center url(' + scope.imageUrl + '), #111',
-                  backgroundSize: zoomWidth + 'px ' + zoomHeight + 'px',
+                  backgroundColor: '#111',
                   border: 'solid 1px #000'
+                }).find('div').css({
+                  background: 'no-repeat center center url(' + scope.imageUrl + ')',
+                  backgroundSize: zoomWidth + 'px ' + zoomHeight + 'px',
+                  width: '100%',
+                  height: '100%'
                 });
                 var x = 'center';
                 var y = 'center';
@@ -272,7 +283,7 @@ angular.module('dashboard.directives.ModelFieldImage', [
                   y *= -zoomHeight/thumbnailHeight;
                   x += $zoom.width()/2; //center
                   y += $zoom.height()/2;
-                  $zoom.css({
+                  $zoom.find('div').css({
                     backgroundPosition: x + "px " + y + "px",
                     backgroundSize: zoomWidth + 'px ' + zoomHeight + 'px'
                   });
