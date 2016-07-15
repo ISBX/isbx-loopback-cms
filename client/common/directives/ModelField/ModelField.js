@@ -324,6 +324,10 @@ angular.module('dashboard.directives.ModelField', [
           }
         }
 
+        if (property.display.defaultValueUsingModelKey) {
+          scope.data[scope.key] = scope.data[property.display.defaultValueUsingModelKey];
+        }
+
         if (property.display.type == "boolean") {
           scope.check = function(data, key) {
             //This function is needed to accept string '1' and numeric 1 values when state changes
