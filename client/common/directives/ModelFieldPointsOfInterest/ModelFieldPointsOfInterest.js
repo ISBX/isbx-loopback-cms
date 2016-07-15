@@ -6,7 +6,7 @@ angular.module('dashboard.directives.ModelFieldPointsOfInterest', [
 		"dashboard.services.GeneralModel",
 		"ui.select"
 	])
-	
+
 	.directive('modelFieldPointsOfInterestView', function($compile) {
 		return {
 			restrict: 'E',
@@ -94,7 +94,6 @@ angular.module('dashboard.directives.ModelFieldPointsOfInterest', [
 				var miles = 3;
 				var geocoder;
 				var radius = miles * milesToMeters;
-				var bounds;
 				var zoom;
 				var markerLocation;
 				var infowindow;
@@ -126,7 +125,6 @@ angular.module('dashboard.directives.ModelFieldPointsOfInterest', [
 
 				loadScript().then(function () {
 					console.log('scope.data', scope.data);
-					bounds = new google.maps.LatLngBounds(); // Set initial bounds for markers
 					geocoder = new google.maps.Geocoder();
 					infowindow = new google.maps.InfoWindow();
 					if(scope.data.query) {
@@ -321,6 +319,7 @@ angular.module('dashboard.directives.ModelFieldPointsOfInterest', [
 				}
 
 				function displayMarkers() {
+					var bounds = new google.maps.LatLngBounds(); // Set initial bounds for markers
 					for (var i = 0; i < scope.markers.length; i++) {
 						var marker = scope.markers[i];
 						var distance = google.maps.geometry.spherical.computeDistanceBetween(marker.getPosition(), scope.circle.center);
