@@ -112,6 +112,7 @@ angular.module('dashboard.directives.ModelFieldPointsOfInterest', [
 				scope.isLoaded = false;
 				scope.placeType = scope.property.display.options.placeType; //Default query value
 				if (!scope.data) scope.data = {};
+				if (scope.property.display.zipCode) scope.data.zipCode = scope.property.display.zipCode; //pass in zip code if available
 
 				//Check if scope.data is JSON string and try to parse it to load the data
 				if (scope.data && typeof scope.data === 'string') {
