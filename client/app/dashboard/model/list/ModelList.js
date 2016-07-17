@@ -134,7 +134,8 @@ angular.module('dashboard.Dashboard.Model.List', [
       startEdit();
     });
     
-    $scope.$on('ModelListLoadItems', function() {
+    $scope.$on('ModelListLoadItems', function($event, options) {
+      if (options && options.resetPaging) $scope.pagingOptions.currentPage = 1;
       $scope.getTotalServerItems(); //make sure to get the total server items and then reload data
     });
 
