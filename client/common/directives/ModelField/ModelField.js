@@ -316,7 +316,16 @@ angular.module('dashboard.directives.ModelField', [
           if (!property.display.options) property.display.options = {};
           if (!property.display.options.format) property.display.options.format = "YYYY-MM-DD  h:mm A";
         }
-        
+
+        if (!scope.data[scope.key] && property.display.defaultValueUsingModelKey) {
+          scope.data[scope.key] = scope.data[property.display.defaultValueUsingModelKey];
+        }
+
+        if (scope.data[scope.key] && property.display.convertToLocalTime === false) {
+          //remove the 'Z' from the end of the timestamp so that it is not converted to local time
+          scope.data[scope.key] = scope.data[scope.key].substring(0, scope.data[scope.key].length-1);
+        }
+
         if (property.display.type == "boolean") {
           scope.check = function(data, key) {
             //This function is needed to accept string '1' and numeric 1 values when state changes
@@ -406,7 +415,6 @@ angular.module('dashboard.directives.ModelField', [
         //scope variables needed for the HTML Template
         scope.property = property;
         scope.display = property.display;
-
 
         if (property.display.editTemplate) {
           element.html(property.display.editTemplate).show();
