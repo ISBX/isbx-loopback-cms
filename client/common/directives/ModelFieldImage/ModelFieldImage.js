@@ -76,7 +76,6 @@ angular.module('dashboard.directives.ModelFieldImage', [
         //Use the FileReader to display a preview of the image before uploading
         var fileReader = new FileReader();
         fileReader.onload = function (event) {
-
           //bind back to parent scope's __ModelFieldImageData object with info on selected file
           var s3Path = scope.options.path; //S3 path needed when getting S3 Credentials for validation;
           var imageData = {path: s3Path, file: selectedFile};
@@ -106,6 +105,7 @@ angular.module('dashboard.directives.ModelFieldImage', [
             });
           }
           scope.$apply();
+          ImageService.fixOrientation(scope.imageUrl, element.find('.image-container'));
         };
         fileReader.onerror = function(error) {
           console.log(error);
