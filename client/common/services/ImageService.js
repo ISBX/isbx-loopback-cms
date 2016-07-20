@@ -65,7 +65,9 @@ angular.module('dashboard.services.Image', [
 	this.getOrientation = function(imageUrl) {
 		var deferred = $q.defer();
 
-		if (imageUrl.indexOf('data:image') === 0) {
+		if (!imageUrl || imageUrl.length == 0) {
+			deferred.reject("Undefined URL");
+		} else if (imageUrl.indexOf('data:image') === 0) {
 			var base64 = imageUrl.split(',')[1];
 			var exifData = EXIF.readFromBinaryFile(self.base64ToArrayBuffer(base64));
 			deferred.resolve(parseInt(exifData.Orientation || 1, 10));
