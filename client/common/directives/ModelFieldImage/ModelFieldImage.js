@@ -69,9 +69,14 @@ angular.module('dashboard.directives.ModelFieldImage', [
                 if (!scope.imageUrl) scope.imageUrl = response["mediumUrl"]; //HACK FOR SMS PROJECT (PROB SHOULD REMOVE)
               });
             }
-            ImageService.fixOrientation(scope.imageUrl, element.find('.image-container'));
           }
-       });
+        });
+
+        scope.$watch('imageUrl', function(value) {
+          if (value && value.length > 0) {
+            ImageService.fixOrientation(value, element.find('.image-container'));
+          }
+        });
 
         //Use the FileReader to display a preview of the image before uploading
         var fileReader = new FileReader();
@@ -181,7 +186,7 @@ angular.module('dashboard.directives.ModelFieldImage', [
                 canvas.height = height;
                 break;
             }
-            
+
             context.drawImage(image, 0, 0, width, height);
             var dataUrl = canvas.toDataURL("image/jpeg", 0.8);
             var blob = scope.dataURItoBlob(dataUrl);
