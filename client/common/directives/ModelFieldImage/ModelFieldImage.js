@@ -113,12 +113,14 @@ angular.module('dashboard.directives.ModelFieldImage', [
 
         scope.clear = function() {
           //Clear out an existing selected image
-          scope.data = null; //null out the data field
-          if (scope.modelData.__ModelFieldImageData && scope.modelData.__ModelFieldImageData[scope.key]) {
-            //make sure to remove any pending image uploads for this image field
-            delete scope.modelData.__ModelFieldImageData[scope.key];
+          if (confirm('Are you sure you would like to clear this photo?')) {
+            scope.data = null; //null out the data field
+            if (scope.modelData.__ModelFieldImageData && scope.modelData.__ModelFieldImageData[scope.key]) {
+              //make sure to remove any pending image uploads for this image field
+              delete scope.modelData.__ModelFieldImageData[scope.key];
+            }
+            delete scope.imageUrl; //remove the preview image
           }
-          delete scope.imageUrl; //remove the preview image
         };
         
         scope.onFileSelect = function($files) {
