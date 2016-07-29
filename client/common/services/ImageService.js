@@ -1,96 +1,85 @@
-angular.module('dashboard.services.Image', [
-	'dashboard.Config',
-	'dashboard.Utils'
-])
+angular.module('dashboard.services.Image', [])
 
 .service('ImageService', function($q) {
 	var self = this;
 
-	this.base64ToArrayBuffer = function(base64) {
-		var binaryString = window.atob(base64);
-		var len = binaryString.length;
-		var bytes = new Uint8Array( len );
+  this.loadImageURI = function(imageUrl, callback) {
+    var image = new Image();
+    image.onload = function() {
+      callback(null, image);
+    };
+    image.onerror = function(error) {
+      callback(error);
+    };
 
-		for (var i = 0; i < len; i++)        {
-			bytes[i] = binaryString.charCodeAt(i);
-		}
+    image.src = imageUrl;
+  };
 
-		return bytes.buffer;
-	};
+  this.fixOrientationWithDataURI = function(dataURI, callback) {
+    self.loadImageURI(dataURI, function(error, image) {
+      if (error) return callback(error);
+      EXIF.getData(image, function(exif) {
+        var canvas = document.createElement("canvas");
+        var context = canvas.getContext("2d");
+        //console.log('EXIF', EXIF.pretty(this))
+        canvas.width = image.width;
+        canvas.height = image.height;
+        context.save();
+        switch (EXIF.getTag(this, "Orientation")) {
+          case 2:
+            // horizontal flip
+            context.translate(image.width, 0);
+            context.scale(-1, 1);
+            break;
+          case 3:
+            // 180° rotate left
+            context.translate(image.width, image.height);
+            context.rotate(Math.PI);
+            break;
+          case 4:
+            // vertical flip
+            context.translate(0, image.height);
+            context.scale(1, -1);
+            break;
+          case 5:
+            // vertical flip + 90 rotate right
+            canvas.width = image.height;
+            canvas.height = image.width;
+            context.rotate(0.5 * Math.PI);
+            context.scale(1, -1);
+            break;
+          case 6:
+            // 90° rotate right
+            canvas.width = image.height;
+            canvas.height = image.width;
+            context.rotate(0.5 * Math.PI);
+            context.translate(0, -image.height);
+            break;
+          case 7:
+            // horizontal flip + 90 rotate right
+            canvas.width = image.height;
+            canvas.height = image.width;
+            context.rotate(0.5 * Math.PI);
+            context.translate(image.width, -image.height);
+            context.scale(-1, 1);
+            break;
+          case 8:
+            // 90° rotate left
+            canvas.width = image.height;
+            canvas.height = image.width;
+            context.rotate(-0.5 * Math.PI);
+            context.translate(-image.width, 0);
+            break;
+        }
+        context.drawImage(image, 0, 0);
+        context.restore();
+        var dataUrl = canvas.toDataURL("image/jpeg", 0.8);
+        callback(null, dataUrl);
+      });
 
-	this.setTransform = function(transform, element) {
-		element.css('-webkit-transform', transform);
-		element.css('-moz-transform', transform);
-		element.css('-ms-transform', transform);
-		element.css('-o-transform', transform);
-		element.css('transform', transform);
-	};
+    });
+  };
 
-	this.reOrient = function(orientation, element, isCanvas, width, height) {
-		var width = width || element.width();
-		var height = height || element.height();
-
-		switch (orientation) {
-			case 2:
-				if (isCanvas) element.transform(-1, 0, 0, 1, width, 0);
-				else self.setTransform('rotateY(180deg)', element);
-				break;
-			case 3:
-				if (isCanvas) element.transform(-1, 0, 0, -1, width, height);
-				else self.setTransform('rotate(180deg)', element);
-				break;
-			case 4:
-				if (isCanvas) element.transform(1, 0, 0, -1, 0, height);
-				else self.setTransform('rotateX(180deg)', element);
-				break;
-			case 5:
-				if (isCanvas) element.transform(0, 1, 1, 0, 0, 0);
-				else self.setTransform('rotateZ(90deg) rotateX(180deg)', element);
-				break;
-			case 6:
-				if (isCanvas) element.transform(0, 1, -1, 0, height, 0);
-				else self.setTransform('rotate(90deg)', element);
-				break;
-			case 7:
-				if (isCanvas) element.transform(0, 1, -1, 0, height, 0);
-				else self.setTransform('rotateZ(90deg) rotateY(180deg)', element);
-				break;
-			case 8:
-				if(isCanvas) element.transform(0, -1, 1, 0, 0, width);
-				else self.setTransform('rotate(-90deg)', element);
-				break;
-		}
-	};
-
-	this.getOrientation = function(imageUrl) {
-		var deferred = $q.defer();
-
-		if (!imageUrl || imageUrl.length == 0) {
-			deferred.reject("Undefined URL");
-		} else if (imageUrl.indexOf('data:image') === 0) {
-			var base64 = imageUrl.split(',')[1];
-			var exifData = EXIF.readFromBinaryFile(self.base64ToArrayBuffer(base64));
-			deferred.resolve(parseInt(exifData.Orientation || 1, 10));
-		} else {
-			var xhr = new XMLHttpRequest();
-			xhr.open("GET", imageUrl, true);
-			xhr.responseType = "arraybuffer";
-			xhr.onload = function(e) {
-				var arrayBuffer = new Uint8Array(this.response);
-				var exifData = EXIF.readFromBinaryFile(arrayBuffer.buffer);
-				deferred.resolve(parseInt(exifData.Orientation || 1, 10));
-			};
-			xhr.send();
-		}
-
-		return deferred.promise;
-	};
-
-	this.fixOrientation = function(imageUrl, element, isCanvas, width, height) {
-		self.getOrientation(imageUrl).then(function(orientation) {
-			self.reOrient(orientation, element, isCanvas, width, height);
-		});
-	};
 })
 
 ;

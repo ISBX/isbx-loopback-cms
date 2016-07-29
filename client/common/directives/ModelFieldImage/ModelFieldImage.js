@@ -72,12 +72,6 @@ angular.module('dashboard.directives.ModelFieldImage', [
           }
         });
 
-        scope.$watch('imageUrl', function(value) {
-          if (value && value.length > 0) {
-            ImageService.fixOrientation(value, element.find('.image-container'));
-          }
-        });
-
         //Use the FileReader to display a preview of the image before uploading
         var fileReader = new FileReader();
         fileReader.onload = function (event) {
@@ -95,22 +89,24 @@ angular.module('dashboard.directives.ModelFieldImage', [
           }
 
           //Set the preview image via scope.imageUrl binding
-          scope.imageUrl = event.target.result;
-          
-          //Check for any export requirements and export image of various sizes specified in config
-          if (scope.options && scope.options.export) {
-            scope.uploadStatus = "Creatimg Image Sizes";
-            scope.exportImages(function() {
-              scope.uploadStatus = "Upload File";
-              scope.$apply();
-            });
-          } else if (scope.options && scope.options.resize) {
-            scope.resizeImage(event.target.result, scope.options.resize, function(blob) {
-              imageData.file = blob; //Set the resized image back to the ModelFieldImageData
-            });
-          }
-          scope.$apply();
-          ImageService.fixOrientation(scope.imageUrl, element.find('.image-container'));
+          ImageService.fixOrientationWithDataURI(event.target.result, function(error, dataURI) {
+            scope.imageUrl = dataURI;
+            imageData.file = scope.dataURItoBlob(dataURI);
+            imageData.file.name = selectedFile.name;
+            //Check for any export requirements and export image of various sizes specified in config
+            if (scope.options && scope.options.export) {
+              scope.uploadStatus = "Creatimg Image Sizes";
+              scope.exportImages(function() {
+                scope.uploadStatus = "Upload File";
+                scope.$apply();
+              });
+            } else if (scope.options && scope.options.resize) {
+              scope.resizeImage(dataURI, scope.options.resize, function(blob) {
+                imageData.file = blob; //Set the resized image back to the ModelFieldImageData
+              });
+            }
+            scope.$apply();
+          });
         };
         fileReader.onerror = function(error) {
           console.log(error);
@@ -235,38 +231,27 @@ angular.module('dashboard.directives.ModelFieldImage', [
                   background: 'no-repeat center center url(' + scope.imageUrl + ')',
                   backgroundSize: width + 'px ' + height + 'px'
                 });
-                ImageService.fixOrientation(scope.imageUrl, $container);
               } else {
                 //Lightbox with zoom capability
-                var $thumbnail = $('<div style="display: inline-block; width: 30%; height: 100%; overflow: hidden;"><div></div></div>');
-                var $zoom = $('<div style="display: inline-block; width: 70%; height: 100%; overflow: hidden;"><div></div></div>');
+                var $thumbnail = $('<div style="display: inline-block; width: 30%; height: 100%;"></div>');
+                var $zoom = $('<div style="display: inline-block; width: 70%; height: 100%;"></div>');
                 $container.append($thumbnail);
                 $container.append($zoom);
                 var scale = Math.min($thumbnail.width() / image.width, $thumbnail.height() / image.height);
                 var thumbnailWidth = image.width * scale;
                 var thumbnailHeight = image.height * scale;
-                $thumbnail.find('div').css({
+                $thumbnail.css({
                   background: 'no-repeat center center url(' + scope.imageUrl + ')',
-                  backgroundSize: thumbnailWidth + 'px ' + thumbnailHeight + 'px',
-                  width: '100%',
-                  height: '100%'
-                });
-                ImageService.getOrientation(scope.imageUrl).then(function(orientation) {
-                  ImageService.reOrient(orientation, $thumbnail.find('div'));
-                  ImageService.reOrient(orientation, $zoom.find('div'));
+                  backgroundSize: thumbnailWidth + 'px ' + thumbnailHeight + 'px'
                 });
                 var maxScale = 1.0;
                 scale = maxScale;
                 var zoomWidth = image.width * scale;
                 var zoomHeight = image.height * scale;
                 $zoom.css({
-                  backgroundColor: '#111',
-                  border: 'solid 1px #000'
-                }).find('div').css({
-                  background: 'no-repeat center center url(' + scope.imageUrl + ')',
+                  background: 'no-repeat center center url(' + scope.imageUrl + '), #111',
                   backgroundSize: zoomWidth + 'px ' + zoomHeight + 'px',
-                  width: '100%',
-                  height: '100%'
+                  border: 'solid 1px #000'
                 });
                 var x = 'center';
                 var y = 'center';
@@ -288,7 +273,7 @@ angular.module('dashboard.directives.ModelFieldImage', [
                   y *= -zoomHeight/thumbnailHeight;
                   x += $zoom.width()/2; //center
                   y += $zoom.height()/2;
-                  $zoom.find('div').css({
+                  $zoom.css({
                     backgroundPosition: x + "px " + y + "px",
                     backgroundSize: zoomWidth + 'px ' + zoomHeight + 'px'
                   });
