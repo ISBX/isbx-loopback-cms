@@ -151,44 +151,10 @@ angular.module('dashboard.directives.ModelFieldImage', [
         };
         
         scope.resizeImage = function(imageUrl, settings, callback) {
-          var canvas = document.createElement("canvas");
-          var context = canvas.getContext("2d");
-
-          var image = new Image();
-          image.onload = function() {
-            var width = settings.width;
-            var height = settings.height;
-            if (!settings.aspect) {
-              settings.aspect = "fit";
-            }
-            switch(settings.aspect) {
-              case "stretch":
-                canvas.width = width;
-                canvas.height = height;
-                break;
-              case "fill":
-                canvas.width = width;
-                canvas.height = height;
-                var scale = Math.max(width / image.width, height / image.height);
-                width = image.width * scale;
-                height = image.height * scale;
-                break;
-              case "fit":
-              default:
-                var scale = Math.min(width / image.width, height / image.height);
-                width = image.width * scale;
-                height = image.height * scale;
-                canvas.width = width;
-                canvas.height = height;
-                break;
-            }
-
-            context.drawImage(image, 0, 0, width, height);
-            var dataUrl = canvas.toDataURL("image/jpeg", 0.8);
+          ImageService.resize(imageUrl, settings, function(error, dataUrl) {
             var blob = scope.dataURItoBlob(dataUrl);
             callback(blob);
-          };
-          image.src = imageUrl;
+          });
         };
         
         scope.dataURItoBlob = function(dataURI) {
