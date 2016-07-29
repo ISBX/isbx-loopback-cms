@@ -249,6 +249,28 @@ function upsertManyToMany(model, data, relationshipKey, relationshipData, relati
   //FIRST Delete Any existing Primary Model's records from junction table
   var where = {};
   where[junctionModelIdKey] = modelId;
+  for (var i in relationshipData) {
+    var junctionData = relationshipData[i];
+    if (junctionData && junctionData[relationIdKey]) {
+      //delete only the junction table records matching the junction meta (this is import as not to delete records
+      //that should not be deleted (i.e. when 2 ModelFieldReference fields exists with different junctionMeta values)
+      if (junctionData.junctionMeta) {
+        var keys = Object.keys(junctionData.junctionMeta);
+        for (var i in keys) {
+          var key = keys[i];
+          if (typeof where[key] !== 'undefined' && where[key] != junctionData.junctionMeta[key]) {
+            if (typeof where[key] === 'string' || typeof where[key] === 'number') {
+              where[key] = {inq: [where[key]]};
+            }
+            where[key]['inq'].push(junctionData.junctionMeta[key]);
+          } else {
+            where[key] = junctionData.junctionMeta[key]; //meta data for junction table
+          }
+        }
+      }
+    }
+  }
+
   junctionModel.destroyAll(where, function(error) {
     //WARNING: Ignore errors here in case of referential integrity issues (however, may cause duplicates if no unique indexes are defined in junction table)
     //SECOND Start inserting new records
