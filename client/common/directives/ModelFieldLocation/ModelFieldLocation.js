@@ -74,7 +74,7 @@ angular.module('dashboard.directives.ModelFieldLocation', [
         options: '=options',
         data: '=ngModel',
         modelData: '=modelData',
-        disabled: '=disabled'
+        disabled: '=ngDisabled'
       },
       link: function(scope, element, attrs) {
 

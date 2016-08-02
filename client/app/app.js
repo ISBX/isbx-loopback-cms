@@ -64,6 +64,9 @@ angular.module('dashboard', [
     toStateName = toStateName.substr(toStateName, toStateName.indexOf('.'));
 
     if (!SessionService.getAuthToken() && toStateName != 'public') {
+      var desiredState = { state: toState, params: toParams };
+      CacheService.set('desiredState', desiredState);
+
       if (Config.serverParams.loginState) {
         $state.go(Config.serverParams.loginState); //custom login controller
       } else if (toStateName != 'public') {

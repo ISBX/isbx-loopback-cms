@@ -10,7 +10,18 @@ angular.module('dashboard.Alert', [
   };
   
   function init() {
+    $scope.isConfirm = ($scope.alertType == 'confirm');
   }
+
+  $scope.okAlert = function() {
+    if(typeof $scope.okHandler == 'function') $scope.okHandler();
+    $modalInstance.close();
+  };
+
+  $scope.cancelAlert = function() {
+    if(typeof $scope.cancelHandler == 'function') $scope.cancelHandler();
+    $modalInstance.close();
+  };
   
   init();
 })

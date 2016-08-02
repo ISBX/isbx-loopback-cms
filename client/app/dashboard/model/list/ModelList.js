@@ -27,6 +27,7 @@ angular.module('dashboard.Dashboard.Model.List', [
 
   var isFirstLoad = true;
   var modalInstance = null;
+  $scope.isLoading = true;
   $scope.moment = moment;
   $scope.columnCount = 0;
   $scope.list = [];
@@ -133,7 +134,8 @@ angular.module('dashboard.Dashboard.Model.List', [
       startEdit();
     });
     
-    $scope.$on('ModelListLoadItems', function() {
+    $scope.$on('ModelListLoadItems', function($event, options) {
+      if (options && options.resetPaging) $scope.pagingOptions.currentPage = 1;
       $scope.getTotalServerItems(); //make sure to get the total server items and then reload data
     });
 
@@ -390,7 +392,11 @@ angular.module('dashboard.Dashboard.Model.List', [
         processWindowSize(); //on first load check window size to determine if optional columns should be displayed
         $scope.$emit("ModelListLoadItemsLoaded");
         isFirstLoad = false;
-      });  
+      })
+      .finally(function() {
+        $scope.isLoading = false;
+        $scope.loadAttempted = true;
+      });
   };
   
   /**
@@ -692,7 +698,8 @@ angular.module('dashboard.Dashboard.Model.List', [
 
   //Wait till ngGrid is loaded and then add scroll events
   var ngGridUnWatch = $scope.$watch('gridOptions.ngGrid', function() {
-    var $viewport = $scope.gridOptions.ngGrid.$viewport; 
+    if (!$scope.gridOptions.ngGrid) return;
+    var $viewport = $scope.gridOptions.ngGrid.$viewport;
     ngGridUnWatch(); //remove watch on ngGrid
     $footerPanel = $(".ngFooterPanel");
     $listContainer = $(".grid-container.list");

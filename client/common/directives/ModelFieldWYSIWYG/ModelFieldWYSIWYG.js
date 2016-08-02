@@ -96,7 +96,7 @@ angular.module('dashboard.directives.ModelFieldWYSIWYG', [
       options: '=options',
       data: '=ngModel',
       modelData: '=modelData',
-      disabled: '=disabled'
+      disabled: '=ngDisabled'
     },
     link: function(scope, element, attrs, ngModel) {
       var $wysiwyg, codeEditor;

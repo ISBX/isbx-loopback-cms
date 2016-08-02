@@ -1,5 +1,6 @@
 angular.module('dashboard.directives.ModelFieldImage', [
-  "dashboard.services.GeneralModel"
+  "dashboard.services.GeneralModel",
+  "dashboard.services.Image"
 ])
 
 .directive('modelFieldImageView', function($compile) {
@@ -16,7 +17,7 @@ angular.module('dashboard.directives.ModelFieldImage', [
   };
 })
 
-.directive('modelFieldImageEdit', function($compile, $document, GeneralModelService, SessionService) {
+.directive('modelFieldImageEdit', function($compile, $document, GeneralModelService, ImageService, SessionService) {
   return {
     restrict: 'E',
     template: '<div class="image-container" style="background: no-repeat center center url(\'{{ imageUrl }}\'); background-size: contain;" ng-click="imageClick()"></div> \
@@ -31,7 +32,7 @@ angular.module('dashboard.directives.ModelFieldImage', [
     scope: {
       key: "=key",
       options: '=options',
-      disabled: '=disabled',
+      disabled: '=ngDisabled',
       data: '=ngModel',
       modelData: '=modelData'
     },
@@ -67,16 +68,13 @@ angular.module('dashboard.directives.ModelFieldImage', [
                 scope.imageUrl = response[scope.options.urlKey];
                 if (!scope.imageUrl) scope.imageUrl = response["mediumUrl"]; //HACK FOR SMS PROJECT (PROB SHOULD REMOVE)
               });
-              
             }
-            
           }
-       });
+        });
 
         //Use the FileReader to display a preview of the image before uploading
         var fileReader = new FileReader();
         fileReader.onload = function (event) {
-
           //bind back to parent scope's __ModelFieldImageData object with info on selected file
           var s3Path = scope.options.path; //S3 path needed when getting S3 Credentials for validation;
           var imageData = {path: s3Path, file: selectedFile};
@@ -91,21 +89,24 @@ angular.module('dashboard.directives.ModelFieldImage', [
           }
 
           //Set the preview image via scope.imageUrl binding
-          scope.imageUrl = event.target.result;
-          
-          //Check for any export requirements and export image of various sizes specified in config
-          if (scope.options && scope.options.export) {
-            scope.uploadStatus = "Creatimg Image Sizes";
-            scope.exportImages(function() {
-              scope.uploadStatus = "Upload File";
-              scope.$apply();
-            });
-          } else if (scope.options && scope.options.resize) {
-            scope.resizeImage(event.target.result, scope.options.resize, function(blob) {
-              imageData.file = blob; //Set the resized image back to the ModelFieldImageData
-            });
-          }
-          scope.$apply();
+          ImageService.fixOrientationWithDataURI(event.target.result, function(error, dataURI) {
+            scope.imageUrl = dataURI;
+            imageData.file = scope.dataURItoBlob(dataURI);
+            imageData.file.name = selectedFile.name;
+            //Check for any export requirements and export image of various sizes specified in config
+            if (scope.options && scope.options.export) {
+              scope.uploadStatus = "Creatimg Image Sizes";
+              scope.exportImages(function() {
+                scope.uploadStatus = "Upload File";
+                scope.$apply();
+              });
+            } else if (scope.options && scope.options.resize) {
+              scope.resizeImage(dataURI, scope.options.resize, function(blob) {
+                imageData.file = blob; //Set the resized image back to the ModelFieldImageData
+              });
+            }
+            scope.$apply();
+          });
         };
         fileReader.onerror = function(error) {
           console.log(error);
@@ -163,44 +164,10 @@ angular.module('dashboard.directives.ModelFieldImage', [
         };
         
         scope.resizeImage = function(imageUrl, settings, callback) {
-          var canvas = document.createElement("canvas");
-          var context = canvas.getContext("2d");
-
-          var image = new Image();
-          image.onload = function() {
-            var width = settings.width;
-            var height = settings.height;
-            if (!settings.aspect) {
-              settings.aspect = "fit";
-            }
-            switch(settings.aspect) {
-              case "stretch":
-                canvas.width = width;
-                canvas.height = height;
-                break;
-              case "fill": {
-                canvas.width = width;
-                canvas.height = height;
-                var scale = Math.max(width / image.width, height / image.height);
-                width = image.width * scale;
-                height = image.height * scale;
-              } break;
-              case "fit":
-              default: {
-                var scale = Math.min(width / image.width, height / image.height);
-                width = image.width * scale;
-                height = image.height * scale;
-                canvas.width = width;
-                canvas.height = height;
-              } break;
-          }
-            
-            context.drawImage(image, 0, 0, width, height);
-            var dataUrl = canvas.toDataURL("image/jpeg", 0.8);
+          ImageService.resize(imageUrl, settings, function(error, dataUrl) {
             var blob = scope.dataURItoBlob(dataUrl);
             callback(blob);
-          };
-          image.src = imageUrl;
+          });
         };
         
         scope.dataURItoBlob = function(dataURI) {
@@ -246,7 +213,7 @@ angular.module('dashboard.directives.ModelFieldImage', [
               } else {
                 //Lightbox with zoom capability
                 var $thumbnail = $('<div style="display: inline-block; width: 30%; height: 100%;"></div>');
-                var $zoom = $('<div style="display: inline-block; width: 70%; height: 100%"></div>');
+                var $zoom = $('<div style="display: inline-block; width: 70%; height: 100%;"></div>');
                 $container.append($thumbnail);
                 $container.append($zoom);
                 var scale = Math.min($thumbnail.width() / image.width, $thumbnail.height() / image.height);

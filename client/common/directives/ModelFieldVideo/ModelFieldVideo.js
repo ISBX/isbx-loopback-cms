@@ -31,7 +31,7 @@ angular.module('dashboard.directives.ModelFieldVideo', [
     scope: {
       key: "=key",
       options: '=options',
-      disabled: '=disabled',
+      disabled: '=ngDisabled',
       data: '=ngModel',
       modelData: '=modelData'
     },

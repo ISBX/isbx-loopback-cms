@@ -12,9 +12,9 @@ angular.module('dashboard.services.GeneralModel', [
   /**
    * Returns a list of models given filter params (see loopback.io filters)
    */
-  this.list = function(apiPath, params) {
+  this.list = function(apiPath, params, options) {
     var apiPath = apiPath + (apiPath.indexOf('?')>-1 ? '&' : '?') + 'access_token=' + $cookies.accessToken;
-    Utils.apiCancel('GET', apiPath); //cancels any prior calls to method + path
+    if (!options || !options.preventCancel) Utils.apiCancel('GET', apiPath); //cancels any prior calls to method + path
     return Utils.apiHelper('GET', apiPath, params);
   };
   
@@ -51,11 +51,11 @@ angular.module('dashboard.services.GeneralModel', [
   /**
    * For loopback.io hasMany relationship (see ModelFieldReference directive)
    */
-  this.getMany = function(sourceModel, sourceId, relationship) {
+  this.getMany = function(sourceModel, sourceId, relationship, params, options) {
     var path = sourceModel + '/' + sourceId + '/' + relationship;
     var apiPath = path + '?access_token=' + $cookies.accessToken;
-    Utils.apiCancel('GET', apiPath); //cancels any prior calls to method + path
-    return Utils.apiHelper('GET', apiPath);
+    if (!options || !options.preventCancel) Utils.apiCancel('GET', apiPath); //cancels any prior calls to method + path
+    return Utils.apiHelper('GET', apiPath, params);
   };
 
 

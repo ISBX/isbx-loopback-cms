@@ -98,7 +98,9 @@ module.exports = {
       'vendor/signature_pad/signature_pad.min.js',
       'vendor/ng-signature-pad/dist/ng-signature-pad.min.js',
       'vendor/angular-libphonenumber/dist/libphonenumber.js',
-      'vendor/angular-libphonenumber/dist/angular-libphonenumber.js'
+      'vendor/angular-libphonenumber/dist/angular-libphonenumber.js',
+      "vendor/angular-elastic/elastic.js",
+      "vendor/exif-js/exif.js"
     ],
     css: [
       'vendor/jquery-resizable-columns/dist/jquery.resizableColumns.css',
