@@ -113,20 +113,12 @@ angular.module('dashboard.directives.ModelFieldImage', [
         };
 
         scope.clear = function() {
-          // Check for server confirm config
-          var showConfirm = scope.options.confirm ? true : false;
-          if (showConfirm) {
-            // Show confirmation alert window
-            if (confirm('Are you sure you would like to clear this photo?')) {
-              scope.clearImage();
+          if (scope.options.confirm) {
+            // Requires confirmation alert
+            if (!confirm('Are you sure you would like to clear this photo?')) {
+              return;
             }
-
-          } else {
-            scope.clearImage();
           }
-        };
-
-        scope.clearImage = function() {
           scope.data = null; //null out the data field
           if (scope.modelData.__ModelFieldImageData && scope.modelData.__ModelFieldImageData[scope.key]) {
             //make sure to remove any pending image uploads for this image field
