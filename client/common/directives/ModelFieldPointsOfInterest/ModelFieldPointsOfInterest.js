@@ -37,15 +37,15 @@ angular.module('dashboard.directives.ModelFieldPointsOfInterest', [
 			googleMapsApiJS.id = 'google_maps';
 			googleMapsApiJS.type = 'text/javascript';
 			googleMapsApiJS.src = 'https://maps.googleapis.com/maps/api/js?v=3.exp&libraries=geometry,places';
-      if (googleApiKey) googleMapsApiJS.src += '&key=' + googleApiKey;
+			if (googleApiKey) googleMapsApiJS.src += '&key=' + googleApiKey;
 			document.getElementsByTagName('head')[0].appendChild(googleMapsApiJS);
 			return deferred.promise;
 		}
-
-    // makes the string lowercase and converts spaces into underscore
-    function convertStringToGoogleTypeFormat(str) {
-      return str.replace(/ /g,"_").toLowerCase();
-    }
+	
+		// makes the string lowercase and converts spaces into underscore
+		function convertStringToGoogleTypeFormat(str) {
+			return str.replace(/ /g,"_").toLowerCase();
+		}
 
 		function getTemplate() {
 			var repeatExpression = 'item in displayedSearchResults track by item.id';
@@ -115,8 +115,8 @@ angular.module('dashboard.directives.ModelFieldPointsOfInterest', [
 				scope.isMapLoading = true;
 				scope.isLoaded = false;
 				scope.placeType = scope.property.display.options.placeType; //Default query value
-        scope.googleApiKey = scope.property.display.options.googleApiKey;
-        scope.googleType = [convertStringToGoogleTypeFormat(scope.placeType)];
+				scope.googleApiKey = scope.property.display.options.googleApiKey;
+				scope.googleType = [convertStringToGoogleTypeFormat(scope.placeType)];
 				if (!scope.data) scope.data = {};
 				if (scope.property.display.zipCode) scope.data.zipCode = scope.property.display.zipCode; //pass in zip code if available
 
