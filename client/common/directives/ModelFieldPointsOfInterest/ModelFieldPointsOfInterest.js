@@ -24,7 +24,7 @@ angular.module('dashboard.directives.ModelFieldPointsOfInterest', [
 
   .directive('modelFieldPointsOfInterestEdit', function($compile, $cookies, $timeout, $modal, $http, $q, $window, Config, GeneralModelService, LocationService) {
 		//  load google maps javascript asynchronously
-		function loadScript() {
+		function loadScript(googleApiKey) {
 			var deferred = $q.defer();
 			if(angular.element('#google_maps').length ) {
 				deferred.resolve();
@@ -37,8 +37,14 @@ angular.module('dashboard.directives.ModelFieldPointsOfInterest', [
 			googleMapsApiJS.id = 'google_maps';
 			googleMapsApiJS.type = 'text/javascript';
 			googleMapsApiJS.src = 'https://maps.googleapis.com/maps/api/js?v=3.exp&libraries=geometry,places';
+			if (googleApiKey) googleMapsApiJS.src += '&key=' + googleApiKey;
 			document.getElementsByTagName('head')[0].appendChild(googleMapsApiJS);
 			return deferred.promise;
+		}
+	
+		// makes the string lowercase and converts spaces into underscore
+		function convertStringToGoogleTypeFormat(str) {
+			return str.replace(/ /g,"_").toLowerCase();
 		}
 
 		function getTemplate() {
@@ -109,6 +115,8 @@ angular.module('dashboard.directives.ModelFieldPointsOfInterest', [
 				scope.isMapLoading = true;
 				scope.isLoaded = false;
 				scope.placeType = scope.property.display.options.placeType; //Default query value
+				scope.googleApiKey = scope.property.display.options.googleApiKey;
+				scope.googleType = [convertStringToGoogleTypeFormat(scope.placeType)];
 				if (!scope.data) scope.data = {};
 				if (scope.property.display.zipCode) scope.data.zipCode = scope.property.display.zipCode; //pass in zip code if available
 
@@ -123,7 +131,7 @@ angular.module('dashboard.directives.ModelFieldPointsOfInterest', [
 				}
 				if (!scope.data.radius) scope.data.radius = miles;
 
-				loadScript().then(function () {
+				loadScript(scope.googleApiKey).then(function () {
 					console.log('scope.data', scope.data);
 					geocoder = new google.maps.Geocoder();
 					infowindow = new google.maps.InfoWindow();
@@ -135,7 +143,7 @@ angular.module('dashboard.directives.ModelFieldPointsOfInterest', [
 					scope.request = {
 						radius: radius,
 						query: requestQuery,
-						types: scope.placeType
+						type: scope.googleType
 					};
 
 					element.html(getTemplate()).show();
