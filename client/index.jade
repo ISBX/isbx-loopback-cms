@@ -20,5 +20,9 @@ html(ng-app="dashboard", ng-controller="AppCtrl")
         (i[r].q=i[r].q||[]).push(arguments)},i[r].l=1*new Date();a=s.createElement(o),
         m=s.getElementsByTagName(o)[0];a.async=1;a.src=g;m.parentNode.insertBefore(a,m)
         })(window,document,'script','//www.google-analytics.com/analytics.js','ga');
-
+    noscript
+      div.bg-warning.no-script-warning
+        i.fa.fa-warning
+        span  Javascript is required.
+        p This website needs Javascript to be enabled in your browser to work properly.
 body(ui-view)
