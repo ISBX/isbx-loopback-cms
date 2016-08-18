@@ -88,7 +88,8 @@ angular.module('dashboard.Dashboard.Model.Edit', [
     }
 
     $scope.$on('saveModel', function() { $scope.clickSaveModel($scope.data); });
-    $scope.$on('deleteModel', function() { $scope.clickDeleteModel($scope.data); })
+    $scope.$on('deleteModel', function() { $scope.clickDeleteModel($scope.data); });
+
   }
 
   function layoutModelDisplay() {
@@ -104,7 +105,7 @@ angular.module('dashboard.Dashboard.Model.Edit', [
         if (!$scope.data[key]) $scope.data[key] = null;
       }
     }
-  };
+  }
 
 
   /**
@@ -210,9 +211,25 @@ angular.module('dashboard.Dashboard.Model.Edit', [
       var property = $scope.model.properties[key];
       displayInfo = property.display;
     }
-    if (!displayInfo || !displayInfo.roles) {
+
+    if (!displayInfo) {
+      return true;
+    }
+
+    if (displayInfo.askIf) {
+      var properties = Object.keys(displayInfo.askIf);
+      for (var i in properties) {
+        var property = properties[i];
+        if ($scope.data[property] != displayInfo.askIf[property]) {
+          return false; //don't display if doesn't match criteria
+        }
+      }
+    }
+
+    if (!displayInfo.roles) {
       return true; //no roles specified so grant permission
     }
+
     if (!$cookies.roles) {
       return false; //user has no role access
     }
