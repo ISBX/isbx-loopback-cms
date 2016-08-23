@@ -131,7 +131,7 @@ angular.module('dashboard.directives.ModelFieldReference', [
         }
         var apiPath = model.plural;
         if (scope.options.api) apiPath = replaceSessionVariables(scope.options.api);
-        GeneralModelService.list(apiPath, params).then(function(response) {
+        GeneralModelService.list(apiPath, params, {preventCancel: true}).then(function(response) {
           if (!response) return; //in case http request was cancelled by newer request
           scope.list = response;
           if (scope.options.allowInsert) {
