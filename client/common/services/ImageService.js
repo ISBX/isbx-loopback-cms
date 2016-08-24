@@ -39,6 +39,7 @@ angular.module('dashboard.services.Image', [])
           case "fit":
           default:
             var scale = Math.min(width / image.width, height / image.height);
+            if (scale > 1.0) scale = 1.0; //don't enlarge the image
             width = image.width * scale;
             height = image.height * scale;
             canvas.width = width;
