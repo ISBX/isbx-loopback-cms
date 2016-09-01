@@ -325,18 +325,38 @@ function cms(loopbackApplication, options) {
    * Save a model hierarchy; req.body contains a model and its relationship data 
    */
   app.put('/model/save', function(req, res) {
-    //TODO: validate ACL
+    var AccessToken = loopbackApplication.models.AccessToken;
+    var ACL = loopbackApplication.models.ACL;
+
     validateToken(req, function(err, isValid) {
+
       if (err) { return res.status(500).send(err); }
       if (!isValid) { return res.status(403).send('Forbidden'); }
 
       var data = req.body;
-      relationalUpsert.upsert(data, function(error, response) {
-        if (error) {
-          res.status(500).send(error);
-        } else {
-          res.send(response);
-        }
+
+      AccessToken.findById(data.__accessToken, function(err, token) {
+        if (err) { return res.status(500).send(err); }
+        var context = {
+          accessToken: token,
+          model: data.__model,
+          property: 'upsert',
+          accessType: data.__id ? '*' : 'EXECUTE',
+          modelId: data.__id || null
+        };
+
+        ACL.checkAccessForContext(context, function(err, acl) {
+          if (err) { return res.status(500).send(err); }
+          if (acl.permission === 'DENY') { return res.status(403).send('Forbidden'); }
+
+          relationalUpsert.upsert(data, function(error, response) {
+            if (error) {
+              res.status(500).send(error);
+            } else {
+              res.send(response);
+            }
+          });
+        });
       });
     });
   });
