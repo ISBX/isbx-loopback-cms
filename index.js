@@ -317,7 +317,9 @@ function cms(loopbackApplication, options) {
     var tokenString = request.body.__accessToken || request.query.access_token;
     AccessToken.findById(tokenString, function(err, token) {
       if (err || !token) { return callback(err); }
-      return token.validate(callback);
+      token.validate(function(err, isValid) {
+        return callback(err, isValid, token);
+      });
     });
   }
 
@@ -325,37 +327,30 @@ function cms(loopbackApplication, options) {
    * Save a model hierarchy; req.body contains a model and its relationship data 
    */
   app.put('/model/save', function(req, res) {
-    var AccessToken = loopbackApplication.models.AccessToken;
     var ACL = loopbackApplication.models.ACL;
 
-    validateToken(req, function(err, isValid) {
-
+    validateToken(req, function(err, isValid, token) {
       if (err) { return res.status(500).send(err); }
       if (!isValid) { return res.status(403).send('Forbidden'); }
 
       var data = req.body;
+      var context = {
+        accessToken: token,
+        model: data.__model,
+        property: data.__id ? 'updateAttributes' : 'create',
+        modelId: data.__id || null
+      };
 
-      AccessToken.findById(data.__accessToken, function(err, token) {
+      ACL.checkAccessForContext(context, function(err, acl) {
         if (err) { return res.status(500).send(err); }
-        var context = {
-          accessToken: token,
-          model: data.__model,
-          property: 'upsert',
-          accessType: data.__id ? '*' : 'EXECUTE',
-          modelId: data.__id || null
-        };
+        if (acl.permission === 'DENY') { return res.status(403).send('Forbidden'); }
 
-        ACL.checkAccessForContext(context, function(err, acl) {
-          if (err) { return res.status(500).send(err); }
-          if (acl.permission === 'DENY') { return res.status(403).send('Forbidden'); }
-
-          relationalUpsert.upsert(data, function(error, response) {
-            if (error) {
-              res.status(500).send(error);
-            } else {
-              res.send(response);
-            }
-          });
+        relationalUpsert.upsert(data, function(error, response) {
+          if (error) {
+            res.status(500).send(error);
+          } else {
+            res.send(response);
+          }
         });
       });
     });
