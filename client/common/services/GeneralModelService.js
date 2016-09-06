@@ -60,7 +60,7 @@ angular.module('dashboard.services.GeneralModel', [
 
 
   this.sort = function(model, key, sortField, sortData) {
-    var path = Config.serverParams.cmsBaseUrl + '/model/sort?access_token=' + $cookies.accessToken;
+    var path = Config.serverParams.cmsBaseUrl + '/model/sort';
     var params = {
         model: model,
         key: key,
