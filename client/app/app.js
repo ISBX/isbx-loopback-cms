@@ -77,6 +77,7 @@ angular.module('dashboard', [
   });
 
   $scope.$on('$stateChangeSuccess', function(event, toState, toParams, fromState, fromParams){
+    persistSession(); // start timeout
     if (angular.isDefined(toState.data.pageTitle)) {
       $scope.pageTitle = toState.data.pageTitle;
     }
