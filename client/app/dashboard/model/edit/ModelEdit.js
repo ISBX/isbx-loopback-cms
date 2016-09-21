@@ -81,11 +81,12 @@ angular.module('dashboard.Dashboard.Model.Edit', [
     }
 
     //Load Strings
-    if (Config.serverParams.strings) {
-      $scope.saveButtonText = Config.serverParams.strings.saveButton;
-      $scope.deleteButtonText = Config.serverParams.strings.deleteButton;
-      $scope.deleteDialogText = Config.serverParams.strings.deleteDiaglog ? Config.serverParams.strings.deleteDiaglog : "Are you sure you want to delete?";
+    if (!Config.serverParams.strings) {
+      Config.serverParams.strings = {};
     }
+    $scope.saveButtonText = Config.serverParams.strings.saveButton;
+    $scope.deleteButtonText = Config.serverParams.strings.deleteButton;
+    $scope.deleteDialogText = Config.serverParams.strings.deleteDiaglog ? Config.serverParams.strings.deleteDiaglog : "Are you sure you want to delete?";
 
     $scope.$on('saveModel', function() { $scope.clickSaveModel($scope.data); });
     $scope.$on('deleteModel', function() { $scope.clickDeleteModel($scope.data); });
