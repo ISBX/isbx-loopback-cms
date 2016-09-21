@@ -337,7 +337,6 @@ angular.module('dashboard.Dashboard.Model.List', [
           params = _.extend(params, { 
             [key]: '%'+filterText+'%'
           });
-          delete params['[where][or]['+idx+']['+field+'][like]'];
         });
       }
     }
