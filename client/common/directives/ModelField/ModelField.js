@@ -14,7 +14,8 @@ angular.module('dashboard.directives.ModelField', [
   'ngSlider',
   'ngSignaturePad',
   'cwill747.phonenumber',
-  'monospaced.elastic'
+  'monospaced.elastic',
+  'puElasticInput'
 ])
 
 .directive('modelFieldView', function($compile) {
@@ -242,11 +243,18 @@ angular.module('dashboard.directives.ModelField', [
             <div class="model-field-description" ng-if="display.description">{{ display.description }}</div>\
           </div>';
         break;
+      case 'dynamicText':
+        template = '<label class="col-sm-2 control-label">{{ display.label || key }}:</label>\
+          <div class="col-sm-10">\
+            <input type="text" ng-model="data[key]" ng-pattern="{{ display.pattern }}" ng-disabled="{{ display.readonly }} && data[key] < 0" ng-required="{{ model.properties[key].required }}" class="field form-control" pu-elastic-input pu-elastic-input-minwidth="300px" pu-elastic-input-maxwidth="none">\
+            <div class="model-field-description" ng-if="display.description">{{ display.description }}</div>\
+          </div>';
+        break;
       case 'text':
       default:
         template = '<label class="col-sm-2 control-label">{{ display.label || key }}:</label>\
           <div class="col-sm-10">\
-            <input type="text" ng-model="data[key]" ng-pattern="{{ display.pattern }}" ng-disabled="{{ display.readonly }}" ng-required="{{ model.properties[key].required }}" class="field form-control">\
+            <input type="text" ng-model="data[key]" ng-pattern="{{ display.pattern }}" ng-disabled="{{ display.readonly }} && data[key] < 0" ng-required="{{ model.properties[key].required }}" class="field form-control">\
             <div class="model-field-description" ng-if="display.description">{{ display.description }}</div>\
           </div>';
     }

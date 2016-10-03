@@ -100,6 +100,7 @@ module.exports = {
       'vendor/angular-libphonenumber/dist/libphonenumber.js',
       'vendor/angular-libphonenumber/dist/angular-libphonenumber.js',
       "vendor/angular-elastic/elastic.js",
+      "vendor/angular-elastic-input/dist/angular-elastic-input.min.js",
       "vendor/exif-js/exif.js"
     ],
     css: [
