@@ -21,6 +21,7 @@ angular.module('dashboard.directives.ModelFieldFile', [
     restrict: 'E',
     template: '<button class="btn btn-default select-file" ng-hide="disabled">Select File</button> \
       <input type="file" ng-file-select="onFileSelect($files)" ng-hide="disabled"> \
+      <button ng-if="filename" class="btn btn-danger fa fa-trash" ng-click="clear($event)"></button> \
       <span class="file-upload-info" ng-if="filename"><i class="fa {{getFileIcon(filename)}}"></i>&nbsp;&nbsp;{{ filename }}&nbsp;&nbsp;<span ng-if="fileUrl">(<a href="{{fileUrl}}">download</a><span ng-if="previewUrl"> | <a target="_blank" href="{{previewUrl}}">preview</a></span>)</span></span> \
       <div ng-file-drop="onFileSelect($files)" ng-file-drag-over-class="optional-css-class-name-or-function" ng-show="dropSupported" class="file-drop">Drop File Here</div>',
     scope: {
@@ -104,6 +105,20 @@ angular.module('dashboard.directives.ModelFieldFile', [
           scope.fileUrl = null;
 
         };
+
+        scope.clear = function(e) {
+          e.preventDefault();
+          if (scope.options.confirm) {
+            // Requires confirmation alert
+            if (!confirm('Are you sure you would like to clear the file?')) {
+              return;
+            }
+          }
+          scope.data = null;
+          scope.filename = null;
+          scope.fileUrl = null;
+        };
+
         //Prevent accidental file drop
         $document.on("drop", function(event) {
           if (event.target.nodeName != "INPUT") {
