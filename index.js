@@ -81,7 +81,7 @@ function loadLoopbackModels(loopbackModelsPath) {
   };
 
   readDirRecursive(loopbackModelsPath);
-  
+
   //Add Base User, Role and RoleMappings
   var roleField = {
     "property": "role",
@@ -205,11 +205,11 @@ function renderIndex(req, res) {
  * @param config
  */
 function setupAuthModelRoleRelationship(loopbackApplication, config) {
-  
+
   var authModelName = config["public"].authModel;
   if (!authModelName) authModelName = "User"; //if no authModel specified, use default "User" model
   authModelName = inflection.singularize(authModelName);
-  
+
   //create relationships in built-in models
   var RoleMapping = loopbackApplication.models.RoleMapping; //built-in loopback Model
   var Role = loopbackApplication.models.Role; //built-in loopback Model
@@ -242,7 +242,7 @@ function setupAuthModelRoleRelationship(loopbackApplication, config) {
     through: "RoleMapping",
     foreignKey: "principalId"
   };
-  
+
 }
 
 /**
@@ -290,19 +290,12 @@ function cms(loopbackApplication, options) {
   var appDir = path.dirname(require.main.filename); //Get the application root path
   if (config.private && config.private.src) {
     //Allows for custom static files outside the node module /client folder
-    app.use(express.static(appDir + "/.." + config.private.src)); 
+    app.use(express.static(appDir + "/.." + config.private.src));
   }
 
   app.get('/config.js', function(req, res) {
     var localConfig = config;
     var stringsPath = path.dirname(configPath) + '/strings.json';
-    if (environment != "production") {
-      //reload the config JS each refresh
-      delete require.cache[configPath];
-      delete require.cache[stringsPath];
-      localConfig = require(configPath);
-      localConfig.public.models = loadLoopbackModels(options.modelPath);
-    }
     fs.exists(stringsPath, function(exists) {
       if (exists) localConfig.public.strings = require(stringsPath);
       localConfig.public.apiBaseUrl = options.basePath;
@@ -313,7 +306,7 @@ function cms(loopbackApplication, options) {
 
 
   /**
-   * Save a model hierarchy; req.body contains a model and its relationship data 
+   * Save a model hierarchy; req.body contains a model and its relationship data
    */
   app.put('/model/save', function(req, res) {
     //TODO: validate access token and ACL
@@ -352,9 +345,9 @@ function cms(loopbackApplication, options) {
     });
 
   });
-  
+
   /**
-   * Generate AWS S3 Policy and Credentials 
+   * Generate AWS S3 Policy and Credentials
    */
   app.get('/aws/s3/credentials', function(req, res) {
     //TODO: validate access token
