@@ -45,6 +45,16 @@ angular.module('dashboard.Dashboard.Model.Edit', [
       $scope.model.properties[key].display.readonly = true;
     }
 
+    //Check if readonly view
+    if ($scope.action.options.readonly) {
+      var keys = Object.keys($scope.model.properties);
+      for (var i in keys) {
+        var key = keys[i];
+        if (!$scope.model.properties[key].display) $scope.model.properties[key].display = {};
+        $scope.model.properties[key].display.readonly = true;
+      }
+    }
+
     $scope.isLoading = true;
     $scope.data = {};
 
