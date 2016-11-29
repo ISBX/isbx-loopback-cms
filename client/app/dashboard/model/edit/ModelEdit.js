@@ -171,7 +171,7 @@ angular.module('dashboard.Dashboard.Model.Edit', [
     });
   };
   
-  $scope.clickDeleteModel = function(data) {
+  $scope.clickDeleteModel = function(data, formParams) {
     $scope.deleteDialogText = (formParams && formParams.deleteDialogText) ? formParams.deleteDialogText : $scope.deleteDialogText;
     if (!confirm($scope.deleteDialogText)) return;
     var id = data[$scope.action.options.key];
