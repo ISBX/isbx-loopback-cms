@@ -311,6 +311,9 @@ function cms(loopbackApplication, options) {
     });
   });
 
+  if (!config.public.isStrictUpsert) {
+    console.warn('Warning: Your \'/model/save\' is not running in safe mode. You may need to update your model rules for specific \'updateAttributes\' and \'create\' properties.');
+  }
 
   function validateToken(request, callback) {
     var AccessToken = loopbackApplication.models.AccessToken;
@@ -358,7 +361,6 @@ function cms(loopbackApplication, options) {
           upsertData();
         });
       } else {
-        console.log('Warning: Your model setup is unsafe please update your model rules for specific \'updateAttribues\' and \'create\' properties.');
         upsertData();
       }
 
