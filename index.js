@@ -311,7 +311,7 @@ function cms(loopbackApplication, options) {
     });
   });
 
-  if (!config.public.isStrictUpsert) {
+  if (config.public.isUnsafeUpsert) {
     console.warn('Warning: Your \'/model/save\' is not running in safe mode. You may need to update your model rules for specific \'updateAttributes\' and \'create\' properties.');
   }
 
@@ -354,16 +354,15 @@ function cms(loopbackApplication, options) {
         });
       }
 
-      if (config.public.isStrictUpsert) {
+      if (config.public.isUnsafeUpsert) {
+        upsertData();
+      } else {
         ACL.checkAccessForContext(context, function(err, acl) {
           if (err) { return res.status(500).send(err); }
           if (acl.permission === 'DENY') { return res.status(403).send('Forbidden'); }
           upsertData();
         });
-      } else {
-        upsertData();
       }
-
     });
   });
 
