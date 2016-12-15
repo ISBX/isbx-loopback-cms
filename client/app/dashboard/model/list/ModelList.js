@@ -691,7 +691,7 @@ angular.module('dashboard.Dashboard.Model.List', [
 
   $scope.$watch('sortInfo', function (newVal, oldVal) {
     //Check isFirstLoad so that this watch statement does not get called when the page loads for the first time
-    if (!isFirstLoad && newVal !== oldVal) {
+    if (!isFirstLoad && ((newVal.fields[0] !== oldVal.fields[0]) || (newVal.directions[0] !== oldVal.directions[0]))) {
       $scope.loadItems();
     }
   }, true);
