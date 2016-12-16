@@ -1332,3 +1332,7 @@ button {
 a:hover {
   text-decoration: none;
 }
+.no-script-warning {
+  padding: 10px;
+  text-align: center;
+}

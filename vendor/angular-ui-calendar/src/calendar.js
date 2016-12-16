@@ -261,7 +261,9 @@ angular.module('ui.calendar', [])
         };
 
         eventSourcesWatcher.onAdded = function(source) {
-          calendar.fullCalendar('addEventSource', source);
+          try {
+            calendar.fullCalendar('addEventSource', source);
+          } catch(e) {}
           sourcesChanged = true;
         };
 

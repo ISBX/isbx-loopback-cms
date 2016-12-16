@@ -45,6 +45,16 @@ angular.module('dashboard.Dashboard.Model.Edit', [
       $scope.model.properties[key].display.readonly = true;
     }
 
+    //Check if readonly view
+    if ($scope.action.options.readonly) {
+      var keys = Object.keys($scope.model.properties);
+      for (var i in keys) {
+        var key = keys[i];
+        if (!$scope.model.properties[key].display) $scope.model.properties[key].display = {};
+        $scope.model.properties[key].display.readonly = true;
+      }
+    }
+
     $scope.isLoading = true;
     $scope.data = {};
 
@@ -81,11 +91,12 @@ angular.module('dashboard.Dashboard.Model.Edit', [
     }
 
     //Load Strings
-    if (Config.serverParams.strings) {
-      $scope.saveButtonText = Config.serverParams.strings.saveButton;
-      $scope.deleteButtonText = Config.serverParams.strings.deleteButton;
-      $scope.deleteDialogText = Config.serverParams.strings.deleteDiaglog ? Config.serverParams.strings.deleteDiaglog : "Are you sure you want to delete?";
+    if (!Config.serverParams.strings) {
+      Config.serverParams.strings = {};
     }
+    $scope.saveButtonText = Config.serverParams.strings.saveButton;
+    $scope.deleteButtonText = Config.serverParams.strings.deleteButton;
+    $scope.deleteDialogText = Config.serverParams.strings.deleteDiaglog ? Config.serverParams.strings.deleteDiaglog : "Are you sure you want to delete?";
 
     $scope.$on('saveModel', function() { $scope.clickSaveModel($scope.data); });
     $scope.$on('deleteModel', function(event, formParams) {
@@ -106,7 +117,7 @@ angular.module('dashboard.Dashboard.Model.Edit', [
         if (!$scope.data[key]) $scope.data[key] = null;
       }
     }
-  };
+  }
 
 
   /**
@@ -214,9 +225,25 @@ angular.module('dashboard.Dashboard.Model.Edit', [
       var property = $scope.model.properties[key];
       displayInfo = property.display;
     }
-    if (!displayInfo || !displayInfo.roles) {
+
+    if (!displayInfo) {
+      return true;
+    }
+
+    if (displayInfo.askIf) {
+      var properties = Object.keys(displayInfo.askIf);
+      for (var i in properties) {
+        var property = properties[i];
+        if ($scope.data[property] != displayInfo.askIf[property]) {
+          return false; //don't display if doesn't match criteria
+        }
+      }
+    }
+
+    if (!displayInfo.roles) {
       return true; //no roles specified so grant permission
     }
+
     if (!$cookies.roles) {
       return false; //user has no role access
     }
