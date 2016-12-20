@@ -243,25 +243,11 @@ angular.module('dashboard.directives.ModelField', [
             <div class="model-field-description" ng-if="display.description">{{ display.description }}</div>\
           </div>';
         break;
-      case 'height':
-        template = '<label class="col-sm-2 control-label">{{ display.label || key }}:</label>\
-          <div class="col-sm-10">\
-            <input type="text" ng-model="data[key]" ng-pattern="{{ display.pattern }}" ng-disabled="{{ display.readonly }}" ng-required="{{ model.properties[key].required }}" class="field form-control" ui-mask="9&#39;9?9&#34;" ui-mask-placeholder ui-mask-placeholder-char="space" />\
-            <div class="model-field-description" ng-if="display.description">{{ display.description }}</div>\
-          </div>';
-        break;
-      case 'weight':
-         template = '<label class="col-sm-2 control-label">{{ display.label || key }}:</label>\
-          <div class="col-sm-10">\
-            <input type="text" ng-model="data[key]" ng-pattern="{{ display.pattern }}" ng-disabled="{{ display.readonly }}" ng-required="{{ model.properties[key].required }}" class="field form-control" ui-mask="99?9 lbs" ui-mask-placeholder ui-mask-placeholder-char="space" />\
-            <div class="model-field-description" ng-if="display.description">{{ display.description }}</div>\
-          </div>';
-        break;
       case 'text':
       default:
         template = '<label class="col-sm-2 control-label">{{ display.label || key }}:</label>\
           <div class="col-sm-10">\
-            <input type="text" ng-model="data[key]" ng-pattern="{{ display.pattern }}" ng-disabled="{{ display.readonly }}" ng-required="{{ model.properties[key].required }}" class="field form-control">\
+            <input type="text" ng-model="data[key]" ng-pattern="{{ display.pattern }}" ng-disabled="display.readonly" ng-required="{{ model.properties[key].required }}" class="field form-control" ui-mask="{{display.options.mask}}" ui-mask-placeholder ui-mask-placeholder-char="space" />\
             <div class="model-field-description" ng-if="display.description">{{ display.description }}</div>\
           </div>';
     }
