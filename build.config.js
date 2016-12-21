@@ -100,7 +100,8 @@ module.exports = {
       'vendor/angular-libphonenumber/dist/libphonenumber.js',
       'vendor/angular-libphonenumber/dist/angular-libphonenumber.js',
       "vendor/angular-elastic/elastic.js",
-      "vendor/exif-js/exif.js"
+      "vendor/exif-js/exif.js",
+      "vendor/angular-ui-mask/dist/mask.js"
     ],
     css: [
       'vendor/jquery-resizable-columns/dist/jquery.resizableColumns.css',
