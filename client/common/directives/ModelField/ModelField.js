@@ -231,7 +231,7 @@ angular.module('dashboard.directives.ModelField', [
       case 'number':
         template = '<label class="col-sm-2 control-label">{{ display.label || key }}:</label>\
           <div class="col-sm-10">\
-            <input type="number" ng-model="data[key]" ng-pattern="{{ display.pattern }}" ng-disabled="display.readonly" ng-required="{{ model.properties[key].required }}" class="field form-control">\
+            <input type="number" min="{{ display.minValue }}" ng-model="data[key]" ng-pattern="{{ display.pattern }}" ng-disabled="display.readonly" ng-required="{{ model.properties[key].required }}" class="field form-control">\
             <div class="model-field-description" ng-if="display.description">{{ display.description }}</div>\
           </div>';
         break;
@@ -278,8 +278,8 @@ angular.module('dashboard.directives.ModelField', [
             scope.model.properties[scope.key.property].display = scope.key;
           }
           scope.key = scope.key.property;
-        } 
-        
+        }
+
         var property = { display: {type: "text"} };
         if (scope.model.properties && scope.model.properties[scope.key]) property = scope.model.properties[scope.key];
         if (!property) {
@@ -290,7 +290,7 @@ angular.module('dashboard.directives.ModelField', [
           if (!property.display) property.display = {};
           //TODO: check the property definition in the loopback model and pick a better default "type"
           switch (property.type) {
-            case "date": 
+            case "date":
             case "Date":
                 property.display.type = "datetime";
             break;
@@ -338,7 +338,7 @@ angular.module('dashboard.directives.ModelField', [
           //Make sure boolean (checkbox) values are numeric (below only gets called on init and not when state changes)
           if (typeof scope.data[scope.key] === "string") scope.data[scope.key] = parseInt(scope.data[scope.key]);
         }
-        
+
         if (property.display.type == "slider") {
           if (!scope.data[scope.key]) scope.data[scope.key] = property.display.options.from + ";" + property.display.options.to;
         }
@@ -379,7 +379,7 @@ angular.module('dashboard.directives.ModelField', [
               break;
           }
         }
-        
+
         //Handle translating multi-select checks to scope.data[scope.key] output format
         scope.clickMultiSelectCheckbox = function(questionKey, itemKey, itemValue, multiSelectOptions) {
           var output = property.display.output == "array" ? [] : property.display.output == "object" ? {} : "";
