@@ -37,6 +37,7 @@ var express = require('express')
   , settingsEditor = require('./server/settings-editor')
   , customSort = require('./server/sort')
   , aws = require('./server/aws.js')
+  , package = require('./package.json');
   ;
 
 
@@ -194,7 +195,7 @@ function renderIndex(req, res) {
       }
     }).concat(files.javascript);
     files.javascript.unshift(app.mountpath + '/config.js');
-    res.render(__dirname + srcDir + '/index.jade', { files: files, config: config });
+    res.render(__dirname + srcDir + '/index.jade', { version: package.version, files: files, config: config });
   });
 }
 
@@ -260,6 +261,19 @@ function cms(loopbackApplication, options) {
     //Perform this after application starts so that all models are loaded
     setup.setupDefaultAdmin(loopbackApplication, config);
   });
+
+  //force browser cache refresh on custom UI modules after deployment (when service restarts)
+  if (config.public.customModules) {
+    var version = Math.ceil((new Date).getTime()/300000)*300000; //unique code within 5min window (for multi-web server instances)
+    for (var i in config.public.customModules) {
+      var customModule = config.public.customModules[i];
+      if (!customModule.files) continue;
+      for (var k in customModule.files) {
+        var file = customModule.files[k];
+        customModule.files[k] = file + '?v=' + version; //force browser to refresh local cache after deploying updates
+      }
+    }
+  }
 
   //for CMS custom services provide context to loopbackApplication
   relationalUpsert.setLoopBack(loopbackApplication);
