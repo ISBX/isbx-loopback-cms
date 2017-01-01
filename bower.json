@@ -1,6 +1,6 @@
 {
   "name": "isbx-loopback-cms",
-  "version": "0.0.0",
+  "version": "0.1.0",
   "dependencies": {
     "angular": "1.6.1",
     "angular-cookies": "~1.6.1",
