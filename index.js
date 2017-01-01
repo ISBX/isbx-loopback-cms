@@ -319,18 +319,32 @@ function cms(loopbackApplication, options) {
   });
 
 
+  function validateToken(request, callback) {
+    var AccessToken = loopbackApplication.models.AccessToken;
+    var tokenString = request.body.__accessToken || request.query.access_token;
+    AccessToken.findById(tokenString, function(err, token) {
+      if (err || !token) { return callback(err); }
+      return token.validate(callback);
+    });
+  }
+
   /**
    * Save a model hierarchy; req.body contains a model and its relationship data
    */
   app.put('/model/save', function(req, res) {
-    //TODO: validate access token and ACL
-    var data = req.body;
-    relationalUpsert.upsert(data, function(error, response) {
-      if (error) {
-        res.status(500).send(error);
-      } else {
-        res.send(response);
-      }
+    //TODO: validate ACL
+    validateToken(req, function(err, isValid) {
+      if (err) { return res.status(500).send(err); }
+      if (!isValid) { return res.status(403).send('Forbidden'); }
+
+      var data = req.body;
+      relationalUpsert.upsert(data, function(error, response) {
+        if (error) {
+          res.status(500).send(error);
+        } else {
+          res.send(response);
+        }
+      });
     });
   });
 
@@ -345,31 +359,40 @@ function cms(loopbackApplication, options) {
    * }
    */
   app.post('/model/sort', function(req, res) {
-    //TODO: validate access token
-    var model = req.body["model"];
-    var key = req.body["key"];
-    var sortField = req.body["sortField"];
-    var sortData = req.body["sortData"];
-    customSort.sort(model, key, sortField, sortData, function(error, response) {
-      if (error) {
-        res.status(500).send(error);
-      } else {
-        res.send(response);
-      }
-    });
+    //TODO: validate ACL
+    validateToken(req, function(err, isValid) {
+      if (err) { return res.status(500).send(err); }
+      if (!isValid) { return res.status(403).send('Forbidden'); }
 
+      var model = req.body["model"];
+      var key = req.body["key"];
+      var sortField = req.body["sortField"];
+      var sortData = req.body["sortData"];
+      customSort.sort(model, key, sortField, sortData, function(error, response) {
+        if (error) {
+          res.status(500).send(error);
+        } else {
+          res.send(response);
+        }
+      });
+    });
   });
 
   /**
    * Generate AWS S3 Policy and Credentials
    */
   app.get('/aws/s3/credentials', function(req, res) {
-    //TODO: validate access token
-    aws.getS3Credentials(req.query["path"], req.query["fileType"], function(error, credentials) {
-      if (error) {
-        res.status(500).send(error);
-      }
-      res.send(credentials);
+    //TODO: validate ACL
+    validateToken(req, function(err, isValid) {
+      if (err) { return res.status(500).send(err); }
+      if (!isValid) { return res.status(403).send('Forbidden'); }
+
+      aws.getS3Credentials(req.query["path"], req.query["fileType"], function(error, credentials) {
+        if (error) {
+          res.status(500).send(error);
+        }
+        res.send(credentials);
+      });
     });
   });
 
@@ -377,10 +400,15 @@ function cms(loopbackApplication, options) {
    * API to save config.json navigation
    */
   app.post('/settings/config/nav', function(req, res) {
-    //TODO: validate access token
-    var nav = req.body;
-    settingsEditor.setNav(configPath, nav);
-    res.send(true);
+    //TODO: validate ACL
+    validateToken(req, function(err, isValid) {
+      if (err) { return res.status(500).send(err); }
+      if (!isValid) { return res.status(403).send('Forbidden'); }
+
+      var nav = req.body;
+      settingsEditor.setNav(configPath, nav);
+      res.send(true);
+    });
   });
 
   app.get('*', renderIndex);
