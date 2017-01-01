@@ -3,7 +3,7 @@ angular.module('dashboard.services.User', [
   'dashboard.Utils'
 ])
 
-.service('UserService', function(Config, Utils, $http, $q, $rootScope) {
+.service('UserService', function(Config, Utils, $q, $rootScope) {
   this.register = function(email, password) {
 	  var authModel = "Users";
 	  if (config.authModel) authModel = config.authModel; 

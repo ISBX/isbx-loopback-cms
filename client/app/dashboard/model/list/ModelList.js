@@ -23,7 +23,7 @@ angular.module('dashboard.Dashboard.Model.List', [
     ;
 })
 
-.controller('ModelListCtrl', function ModelListCtrl($scope, $cookies, $timeout, $state, $location, $window, $modal, Config, GeneralModelService, CacheService, $location) {
+.controller('ModelListCtrl', function ModelListCtrl($scope, $cookies, $timeout, $state, $location, $window, $modal, Config, GeneralModelService, CacheService) {
 
   var isFirstLoad = true;
   var modalInstance = null;
@@ -175,8 +175,8 @@ angular.module('dashboard.Dashboard.Model.List', [
 	}
 	//Check column role access
 	columns = angular.copy(columns); //make copy
-	if (columns && $cookies.roles) {
-      var roles = JSON.parse($cookies.roles);
+	if (columns && $cookies.get('roles')) {
+      var roles = JSON.parse($cookies.get('roles'));
       if (roles) {
         for (var i = 0; i < columns.length; i++) {
           var column = columns[i];
@@ -246,7 +246,7 @@ angular.module('dashboard.Dashboard.Model.List', [
     
     //Look for session variables in $scope.apiPath
     try {
-      var session = JSON.parse($cookies.session); //needed for eval() below
+      var session = JSON.parse($cookies.get('session')); //needed for eval() below
       var searchString = "{session.";
       var startPos = $scope.apiPath.indexOf(searchString);
       while (startPos > -1) {
@@ -404,8 +404,8 @@ angular.module('dashboard.Dashboard.Model.List', [
    */
   $scope.hasButtonPermission = function(button) {
     if (!button.roles) return true;
-    if (!$cookies.roles) return false; //user does not have any roles
-    var roles = JSON.parse($cookies.roles);
+    if (!$cookies.get('roles')) return false; //user does not have any roles
+    var roles = JSON.parse($cookies.get('roles'));
     for (var i in roles) {
       var role = roles[i];
       if (button.roles.indexOf(role.name) > -1) {

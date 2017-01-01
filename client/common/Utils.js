@@ -42,11 +42,10 @@ angular.module('dashboard.Utils', [
     apiRequests[method+":"+path] = deferred;
     params.timeout = deferred.promise; 
     $http(params)
-      .success(function(response) {
-        deferred.resolve(response);
-      })
-      .error(function(response) {
-        deferred.reject(response);
+      .then(function(response) {
+        deferred.resolve(response.data);
+      }, function(response) {
+        deferred.reject(response.data);
       });
 
     return deferred.promise; 

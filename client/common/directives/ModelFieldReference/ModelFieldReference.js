@@ -65,7 +65,7 @@ angular.module('dashboard.directives.ModelFieldReference', [
         if (typeof string !== 'string') return string;
         try {
           //Look for session variables in string
-          var session = JSON.parse($cookies.session); //needed for eval() below
+          var session = JSON.parse($cookies.get('session')); //needed for eval() below
           var searchString = "{session.";
           var startPos = string.indexOf(searchString);
           while (startPos > -1) {

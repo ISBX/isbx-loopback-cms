@@ -38,15 +38,15 @@ angular.module('dashboard.Dashboard', [
 
     //scope properties
     $scope.locationPath = $location.path();
-    $scope.username = $cookies.username;
-    $scope.email = $cookies.email;
-    $scope.userId = $cookies.userId;
+    $scope.username = $cookies.get('username');
+    $scope.email = $cookies.get('email');
+    $scope.userId = $cookies.get('userId');
     try {
-      $scope.userInfo = JSON.parse($cookies.session);
-      $scope.userInfo.user.roles = JSON.parse($cookies.roles);
+      $scope.userInfo = JSON.parse($cookies.get('session'));
+      $scope.userInfo.user.roles = JSON.parse($cookies.get('roles'));
     } catch(e) {
       //Fail elegantly 
-      console.error("Unable to parse $cookies.session");
+      console.error("Unable to parse $cookies.get(session)", e);
     }
     console.log('DashboardCtrl: $scope.userInfo', $scope.userInfo);
     $scope.title = Config.serverParams.title || 'Content Management System';
@@ -104,7 +104,7 @@ angular.module('dashboard.Dashboard', [
         options: {
           model: Config.serverParams.profileModel,
           key: Config.serverParams.profileKey,
-          id: $cookies.userId,
+          id: $cookies.get('userId'),
           hideDelete: true
         }
     };

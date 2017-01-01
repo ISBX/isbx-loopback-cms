@@ -4,10 +4,10 @@ angular.module('dashboard.services.Session', [
   'ngCookies'
 ])
 
-.service('SessionService', function($cookies, $cookieStore, $http, $q, UserService, Config, Utils) {
+.service('SessionService', function($cookies, $cookieStore, $q, UserService, Config, Utils) {
   var session = null;
   function init() {
-    var sessionStr = $cookies.session;
+    var sessionStr = $cookies.get('session');
     if (sessionStr) {
       session = JSON.parse(sessionStr);
     }
@@ -18,15 +18,16 @@ angular.module('dashboard.services.Session', [
 	  if (config.authModel) authModel = config.authModel; 
        return Utils.apiHelper('POST', authModel + '/login?include=user', { email: email, password: password })
 	      .then(function(userInfo) {
+	      	console.log('userInfo', userInfo);
 	        return Utils.apiHelper('GET', 'Roles?access_token=' + userInfo.id)
 	          .then(function(roles) {
 	            return Utils.apiHelper('GET', 'RoleMappings?filter[where][principalId]='+userInfo.userId+'&access_token=' + userInfo.id)
 	              .then(function(roleMappings) {
 	                  session = userInfo;
-	                  $cookies.username = userInfo.user.username;
-	                  $cookies.userId = userInfo.userId;
-	                  $cookies.accessToken = userInfo.id;
-	                  $cookies.session = JSON.stringify(session);
+	                  $cookies.put('username', userInfo.user.username);
+	                  $cookies.put('userId', userInfo.userId);
+	                  $cookies.put('accessToken', userInfo.id);
+	                  $cookies.put('session', JSON.stringify(session));
 	                  //get role name and description
 	                  for (var i in roleMappings) {
 	                    var roleMap = roleMappings[i];
@@ -36,21 +37,21 @@ angular.module('dashboard.services.Session', [
 	                      roleMap.description = role.description;
 	                    }
 	                  }
-	                  $cookies.roles = JSON.stringify(roleMappings);	                  
+	                  $cookies.put('roles', JSON.stringify(roleMappings));
 	                  return userInfo;
 	              
 	              })["catch"](function() {
-	                  $cookies.session = null;
+	                  $cookies.put('session', null);
 	                  return $q.reject(arguments);
 	                });
 	            
 	          })["catch"](function() {
-	              $cookies.session = null;
+	              $cookies.put('session', null);
 	              return $q.reject(arguments);
 	            });
 	        })
 	      ["catch"](function() {
-	          $cookies.session = null;
+	          $cookies.put('session', null);
 	          return $q.reject(arguments);
 	        });
   };
@@ -58,7 +59,7 @@ angular.module('dashboard.services.Session', [
   this.logOut = function() {
   	var authModel = "Users";
   	if (config.authModel) authModel = config.authModel;
-		var accessToken = $cookies.accessToken;
+		var accessToken = $cookies.get('accessToken');
 		$cookieStore.remove('username');
 		$cookieStore.remove('userId');
 		$cookieStore.remove('accessToken');

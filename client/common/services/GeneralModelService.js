@@ -5,7 +5,7 @@ angular.module('dashboard.services.GeneralModel', [
   'ngCookies'
 ])
 
-.service('GeneralModelService', function($cookies, $http, $q, Config, Utils, FileUploadService) {
+.service('GeneralModelService', function($cookies, $q, Config, Utils, FileUploadService) {
 
   var self = this;
 
@@ -13,7 +13,7 @@ angular.module('dashboard.services.GeneralModel', [
    * Returns a list of models given filter params (see loopback.io filters)
    */
   this.list = function(apiPath, params, options) {
-    var apiPath = apiPath + (apiPath.indexOf('?')>-1 ? '&' : '?') + 'access_token=' + $cookies.accessToken;
+    var apiPath = apiPath + (apiPath.indexOf('?')>-1 ? '&' : '?') + 'access_token=' + $cookies.get('accessToken');
     if (!options || !options.preventCancel) Utils.apiCancel('GET', apiPath); //cancels any prior calls to method + path
     return Utils.apiHelper('GET', apiPath, params);
   };
@@ -33,7 +33,7 @@ angular.module('dashboard.services.GeneralModel', [
         //TODO: parse through the filter JSON string looking for the where clause
       }
     }
-    apiPath = apiPath + '/count?access_token=' + $cookies.accessToken;
+    apiPath = apiPath + '/count?access_token=' + $cookies.get('accessToken');
     Utils.apiCancel('GET', apiPath); //cancels any prior calls to method + path
     return Utils.apiHelper('GET', apiPath, params);
   };
@@ -42,7 +42,7 @@ angular.module('dashboard.services.GeneralModel', [
    * Get the model data for a particular ID
    */
   this.get = function(model, id, params) {
-    var apiPath = model + '/' + id + '?access_token=' + $cookies.accessToken;
+    var apiPath = model + '/' + id + '?access_token=' + $cookies.get('accessToken');
     //Below Utils.apiCancel() call appears to break when getting user profile
     //Utils.apiCancel('GET', apiPath); //cancels any prior calls to method + path
     return Utils.apiHelper('GET', apiPath, params);
@@ -53,7 +53,7 @@ angular.module('dashboard.services.GeneralModel', [
    */
   this.getMany = function(sourceModel, sourceId, relationship, params, options) {
     var path = sourceModel + '/' + sourceId + '/' + relationship;
-    var apiPath = path + '?access_token=' + $cookies.accessToken;
+    var apiPath = path + '?access_token=' + $cookies.get('accessToken');
     if (!options || !options.preventCancel) Utils.apiCancel('GET', apiPath); //cancels any prior calls to method + path
     return Utils.apiHelper('GET', apiPath, params);
   };
@@ -78,7 +78,7 @@ angular.module('dashboard.services.GeneralModel', [
     if (id) {
       path = path + '/' + id;
     }
-    path += '?access_token=' + $cookies.accessToken;
+    path += '?access_token=' + $cookies.get('accessToken');
     return Utils.apiHelper('DELETE', path, {});
 
   };
@@ -87,7 +87,7 @@ angular.module('dashboard.services.GeneralModel', [
    * Helper POST method
    */
   this.post = function(path, params) {
-    var apiPath = path + '?access_token=' + $cookies.accessToken;
+    var apiPath = path + '?access_token=' + $cookies.get('accessToken');
     return Utils.apiHelper('POST', apiPath, params);
   };
 
@@ -101,7 +101,7 @@ angular.module('dashboard.services.GeneralModel', [
     var path = Config.serverParams.cmsBaseUrl + '/model/save';
     params.__model = model;
     params.__id = id;
-    params.__accessToken = $cookies.accessToken;
+    params.__accessToken = $cookies.get('accessToken');
     return Utils.apiHelper('PUT', path, params);
   };
 

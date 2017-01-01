@@ -25,7 +25,7 @@ angular.module('dashboard.Dashboard.Model.Edit', [
     ;
 })
 
-.controller('ModelEditCtrl', function ModelEditCtrl($rootScope, $scope, $cookies, $location, $stateParams, $http, $state, $window, $modal, Config, GeneralModelService, FileUploadService, CacheService) {
+.controller('ModelEditCtrl', function ModelEditCtrl($rootScope, $scope, $cookies, $location, $stateParams, $state, $window, $modal, Config, GeneralModelService, FileUploadService, CacheService) {
 
   var modalInstance = null;
   function init() {
@@ -244,11 +244,11 @@ angular.module('dashboard.Dashboard.Model.Edit', [
       return true; //no roles specified so grant permission
     }
 
-    if (!$cookies.roles) {
+    if (!$cookies.get('roles')) {
       return false; //user has no role access
     }
     
-    var userRoles = JSON.parse($cookies.roles);
+    var userRoles = JSON.parse($cookies.get('roles'));
     for (var i in userRoles) {
       var role = userRoles[i];
       if (displayInfo.roles.indexOf(role.name) > -1) {
