@@ -161,7 +161,7 @@ angular.module('dashboard.directives.ModelFieldReferenceSort', [
             item[scope.options.searchField] = value;
           }
           var selectedItem = _.find(scope.selectedList, function(i) {
-            return i[scope.options.key] === item[scope.options.key] || i.name.toLowerCase() === item.name.toLowerCase();
+            return i[scope.options.key] === item[scope.options.key] || (i.name && item.name && i.name.toLowerCase() === item.name.toLowerCase());
           });
           if (!selectedItem) {
             scope.selectedList.push(item);
