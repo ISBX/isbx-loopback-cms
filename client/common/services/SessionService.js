@@ -18,7 +18,6 @@ angular.module('dashboard.services.Session', [
 	  if (config.authModel) authModel = config.authModel; 
        return Utils.apiHelper('POST', authModel + '/login?include=user', { email: email, password: password })
 	      .then(function(userInfo) {
-	      	console.log('userInfo', userInfo);
 	        return Utils.apiHelper('GET', 'Roles?access_token=' + userInfo.id)
 	          .then(function(roles) {
 	            return Utils.apiHelper('GET', 'RoleMappings?filter[where][principalId]='+userInfo.userId+'&access_token=' + userInfo.id)

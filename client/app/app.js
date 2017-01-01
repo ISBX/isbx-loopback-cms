@@ -84,7 +84,6 @@ angular.module('dashboard', [
   });
 
   $rootScope.logOut = function(){
-    console.log('rootScope logOut');
     CacheService.reset(); //clear out caching
     SessionService.logOut()
       .then(function(result){
