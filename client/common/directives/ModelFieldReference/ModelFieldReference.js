@@ -32,7 +32,7 @@ angular.module('dashboard.directives.ModelFieldReference', [
     } else {
       //single-select
       template = '\
-      <ui-select ng-model="selected.item" on-select="onSelect($item, $model)" ng-required="ngRequired" ng-disabled="disabled" > \
+      <ui-select ng-model="selected.item" on-select="onSelect($item, $model)" ng-required="ngRequired" ng-disabled="disabled" append-to-body="{{appendToBody}}"> \
       <ui-select-match ng-click="refreshChoices($select.search);" placeholder="{{ options.placeholder }}">'+ matchTemplate +'</ui-select-match> \
       <ui-select-choices repeat="item in list" refresh="refreshChoices($select.search)" refresh-delay="200">' + choiceTemplate + '</ui-select-choices> \
       </ui-select>';
@@ -50,7 +50,8 @@ angular.module('dashboard.directives.ModelFieldReference', [
       disabled: '=ngDisabled',
       rowData: "=ngRowData", //for use in the model list edit mode
       textOutputPath: '=ngTextOutputPath', //output the selected text to this path in the rowData
-      onModelChanged: "&onModelChanged"
+      onModelChanged: "&onModelChanged",
+      appendToBody: "=appendToBody"
     },
     link: function(scope, element, attrs) {
 
