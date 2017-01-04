@@ -82,7 +82,7 @@ angular.module('dashboard.directives.ModelFieldWYSIWYG', [
           <a class="btn btn-default" title="Edit HTML" ng-click="toggleCodeEdit()"><i class="fa fa-code"></i></a>\
         </div>\
         <div class="btn-group" ng-show="property.display && property.display.maxLength && data.length + 200 > property.display.maxLength">\
-         <p> &nbsp; Characters left: {{ property.display.maxLength - data.length }} </p>\
+          <p> &nbsp; Characters left: {{ property.display.maxLength - data.length }} </p>\
         </div>\
       </div>\
       <div class="wysiwyg-editor" ng-hide="isEditingCode"></div>\
