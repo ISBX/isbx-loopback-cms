@@ -25,7 +25,9 @@ angular.module('dashboard.directive.DateTimePicker', [
           //Format the passed in date
           if (!scope.format) scope.format = scope.ngFormat;
           if (!value) return;
-          return moment(value).format(scope.format);
+          var formattedValue = moment(value).format(scope.format)
+          elem.data('DateTimePicker').date(formattedValue);
+          return formattedValue;
         });
           
         //Bind the Element
@@ -51,6 +53,9 @@ angular.module('dashboard.directive.DateTimePicker', [
             ngModel.$setViewValue(dateValue);
           } else {
             ngModel.$setViewValue(null);
+          }
+          if (!scope.$$phase) {
+            scope.$apply();
           }
         });
       }
