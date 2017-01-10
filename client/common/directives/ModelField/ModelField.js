@@ -339,7 +339,9 @@ angular.module('dashboard.directives.ModelField', [
         }
         
         if (property.display.type == "slider") {
-          if (!scope.data[scope.key]) scope.data[scope.key] = property.display.options.from + ";" + property.display.options.to;
+          if (typeof scope.data[scope.key] === 'undefined' || scope.data[scope.key] == null) {
+            scope.data[scope.key] = property.display.options.from + ";" + property.display.options.to;
+          }
         }
 
         //See if there is a default value
