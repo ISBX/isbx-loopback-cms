@@ -311,8 +311,10 @@ function cms(loopbackApplication, options) {
     });
   });
 
-  if (config.public.isUnsafeUpsert) {
+  if (config.allowUnsafeUpsert) {
     console.warn('Warning: Your \'/model/save\' is not running in safe mode. You may need to update your model rules for specific \'updateAttributes\' and \'create\' properties.');
+  } else {
+    console.warn('Warning: Your \'/model/save\' is running in safe mode. This will potentially break the app if you didn\'t update your models ACLs. Please set config.allowUnsafeUpsert to true in your cms config for backwards compatibility.');
   }
 
   function validateToken(request, callback) {
