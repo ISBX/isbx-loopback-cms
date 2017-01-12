@@ -4,6 +4,7 @@
   "dependencies": {
     "angular": "1.2.27",
     "angular-mocks": "1.2.27",
+    "angular-ui-mask": "1.8.7",
     "angular-ui-router": "0.2.11",
     "angular-ui-utils": "0.1.1",
     "angular-ui-select": "~0.8.3",
