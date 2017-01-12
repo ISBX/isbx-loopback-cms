@@ -312,9 +312,9 @@ function cms(loopbackApplication, options) {
   });
 
   if (config.allowUnsafeUpsert) {
-    console.warn('Warning: Your \'/model/save\' is not running in safe mode. You may need to update your model rules for specific \'updateAttributes\' and \'create\' properties.');
+    console.warn('Warning (isbx-loopback-cms): /model/save end point is running in compatibility mode, please update your ACL rules asap then remove config.allowUnsafeUpsert or set it to false');
   } else {
-    console.warn('Warning: Your \'/model/save\' is running in safe mode. This will potentially break the app if you didn\'t update your models ACLs. Please set config.allowUnsafeUpsert to true in your cms config for backwards compatibility.');
+    console.warn('Warning (isbx-loopback-cms): /model/save end point is running in secure mode. This can potentially break your application if have not updated your ACL rules. For backwards compatibility, you may set config.allowUnsafeUpsert to true in your CMS Config if you are not ready to update your ACL rules yet.');
   }
 
   function validateToken(request, callback) {
