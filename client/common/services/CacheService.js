@@ -14,7 +14,6 @@ angular.module('dashboard.services.Cache', [
     if (!localStorage.getItem(key)) return null;
     try {
       var cached = JSON.parse(localStorage.getItem(key));
-      console.log(cached)
       return cached;
     } catch(e) {
       return null;
