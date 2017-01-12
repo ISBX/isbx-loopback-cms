@@ -46,7 +46,7 @@ angular.module('dashboard.directive.DateTimePicker', [
         //On Blur update the ng-model
         elem.on('blur', function () {
           if (!scope.format) scope.format = scope.ngFormat;
-          var dateValue = moment(elem.val());
+          var dateValue = moment(elem.val(), scope.format);
           if (dateValue.isValid()) {
             ngModel.$setViewValue(dateValue);
           } else {
