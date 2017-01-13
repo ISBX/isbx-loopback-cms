@@ -262,9 +262,9 @@ angular.module('dashboard.services.GeneralModel', [
     for (var i in keys) {
       var key = keys[i];
       var property = modelDef.properties[key];
-      if ((property && property.display) && (!data[key] || property.display.forceDefaultOnSave)) {
+      if ((property && property.display) && (typeof data[key] === 'undefined' || data[key] == null || property.display.forceDefaultOnSave)) {
         if (typeof property["default"] !== 'undefined') data[key] = property["default"];
-        if (typeof property.display.evalDefault !=='undefined')data[key] = eval(property.display.evalDefault);
+        if (typeof property.display.evalDefault !=='undefined') data[key] = eval(property.display.evalDefault);
       }
     }
 
