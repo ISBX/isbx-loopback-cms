@@ -27,12 +27,14 @@ angular.module('dashboard.directive.DateTimePicker', [
           if (!value) return;
           return moment(value).format(scope.format);
         });
-          
+        
+        scope.defaultDate = scope.defaultDate ? scope.defaultDate.replace(/"/g, '') : scope.defaultDate; //remove quotes  
+        
         //Bind the Element
         elem.datetimepicker({
           format: scope.format,
           useCurrent: false,
-          defaultDate: scope.defaultDate ? moment(scope.defaultDate, scope.format) : undefined,
+          defaultDate: scope.defaultDate ? moment(scope.defaultDate).format(scope.format) : undefined,
           viewMode: scope.viewMode,
           widgetPositioning: { horizontal: scope.horizontal ? scope.horizontal : 'auto' }
         });
