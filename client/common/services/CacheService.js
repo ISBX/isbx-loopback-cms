@@ -32,7 +32,11 @@ angular.module('dashboard.services.Cache', [
   };
 
   this.remove = function(key) {
-    localStorage.removeItem(key);
+    if (localStorage && localStorage.length > 0) {
+      localStorage.removeItem(key);
+    } else {
+      memoryStorage.removeItem(key);
+    }
   };
 
   this.getKeyForAction = function(action, params) {
@@ -45,7 +49,8 @@ angular.module('dashboard.services.Cache', [
   this.clear = function(model) {
     var key = model;
     var regex = new RegExp('^' + key);
-    for (var k in localStorage) {
+    var storage = localStorage && localStorage.length > 0 ? localStorage : memoryStorage;
+    for (var k in storage) {
       if (regex.test(k)) {
         this.remove(k);
       }
