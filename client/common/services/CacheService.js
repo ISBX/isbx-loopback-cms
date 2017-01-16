@@ -32,11 +32,8 @@ angular.module('dashboard.services.Cache', [
   };
 
   this.remove = function(key) {
-    if (localStorage && localStorage.length > 0) {
-      localStorage.removeItem(key);
-    } else {
-      memoryStorage.removeItem(key);
-    }
+    var storage = localStorage && localStorage.length > 0 ? localStorage : memoryStorage;
+    storage.removeItem(key);
   };
 
   this.getKeyForAction = function(action, params) {
