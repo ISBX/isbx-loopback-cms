@@ -33,6 +33,7 @@ angular.module('dashboard.services.Cache', [
 
   this.getKeyForAction = function(action,params) {
     var key = action.options.model + this.KEY_DELIMITER + action.route;
+    if (action.options.api) key = action.options.api;
     if(params) key += this.KEY_DELIMITER + JSON.stringify(params);
     return key;
   }
