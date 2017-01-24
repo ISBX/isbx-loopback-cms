@@ -323,9 +323,7 @@ function cms(loopbackApplication, options) {
     var tokenString = request.body.__accessToken || request.query.access_token;
     AccessToken.findById(tokenString, function(err, token) {
       if (err || !token) { return callback(err); }
-      token.validate(function(err, isValid) {
-        return callback(err, isValid, token);
-      });
+      return token.validate(callback);
     });
   }
 
