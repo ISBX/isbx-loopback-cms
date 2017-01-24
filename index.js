@@ -334,10 +334,11 @@ function cms(loopbackApplication, options) {
    */
   app.put('/model/save', function(req, res) {
     var ACL = loopbackApplication.models.ACL;
-
     validateToken(req, function(err, isValid, token) {
       if (err) { return res.status(500).send(err); }
       if (!isValid) { return res.status(403).send('Forbidden'); }
+
+      var data = req.body;
       relationalUpsert.upsert(data, function(error, response) {
         if (error) {
           res.status(500).send(error);
