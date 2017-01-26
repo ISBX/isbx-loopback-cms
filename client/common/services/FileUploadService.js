@@ -8,14 +8,14 @@ angular.module('dashboard.services.FileUpload', [
 .service('FileUploadService', function($cookies, $http, $q, $upload, Config, Utils) {
 
   var self = this;
-  var uploadACL = Config.serverParams.unsafeFileUpload ? 'public-read' : 'private';
+  var defaultACL = Config.serverParams.defaultACL || 'public-read';
 
   this.getS3Credentials = function(path, fileType) {
     var params = {
         access_token: $cookies.accessToken,
         path: path,
         fileType: fileType,
-        acl: uploadACL,
+        acl: defaultACL,
         r: new Date().getTime() //IE caches results so passing timestamp helps with cache prevention
     };
     return Utils.apiHelper('GET', Config.serverParams.cmsBaseUrl + '/aws/s3/credentials', params);
@@ -25,7 +25,7 @@ angular.module('dashboard.services.FileUpload', [
     return {
       key: credentials.uniqueFilePath, // the key to store the file on S3, could be file name or customized
       AWSAccessKeyId: credentials.AWSAccessKeyId, 
-      acl: uploadACL, // sets the access to the uploaded file in the bucker: private or public 
+      acl: defaultACL, // sets the access to the uploaded file in the bucker: private or public 
       policy: credentials.policy, // base64-encoded json policy (see article below)
       signature: credentials.signature, // base64-encoded signature based on policy string (see article below)
       //"Content-Type": file.type != '' ? file.type : 'application/octet-stream', // content type of the file (NotEmpty),
