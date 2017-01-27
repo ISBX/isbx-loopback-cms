@@ -120,6 +120,7 @@ angular.module('dashboard.directives.ModelField', [
               ng-model="data[key]" \
               default-date="{{data[key]}}" \
               ng-format="display.options.format" \
+              ng-time-zone="display.options.timeZone" \
               ng-view-mode="display.options.viewMode" \
               ng-required="{{ model.properties[key].required }}" ng-disabled="{{ display.readonly }}" \
               data-date-time-picker \
