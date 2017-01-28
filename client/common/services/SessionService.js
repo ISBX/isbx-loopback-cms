@@ -77,16 +77,13 @@ angular.module('dashboard.services.Session', [
    * @param value
    */
   this.put = function(key, value) {
-    var session = JSON.parse($cookies.session);
-    //var session = JSON.parse($cookies.get('session'));
+    var session = JSON.parse($cookies.get('session'));
     session[key] = value;
-    $cookies.session = JSON.stringify(session);
-    //$cookies.put('session', JSON.stringify(session));
+    $cookies.put('session', JSON.stringify(session));
 	};
 
   this.get = function(key) {
-    var session = JSON.parse($cookies.session);
-    //var session = JSON.parse($cookies.get('session'));
+    var session = JSON.parse($cookies.get('session'));
     return session[key];
 	};
 
