@@ -71,6 +71,25 @@ angular.module('dashboard.services.Session', [
     return session && session.id;
   };
 
+  /**
+	 * Stores a key/value pair in session object
+   * @param key
+   * @param value
+   */
+  this.put = function(key, value) {
+    var session = JSON.parse($cookies.session);
+    //var session = JSON.parse($cookies.get('session'));
+    session[key] = value;
+    $cookies.session = JSON.stringify(session);
+    //$cookies.put('session', JSON.stringify(session));
+	};
+
+  this.get = function(key) {
+    var session = JSON.parse($cookies.session);
+    //var session = JSON.parse($cookies.get('session'));
+    return session[key];
+	};
+
   init();
 })
 
