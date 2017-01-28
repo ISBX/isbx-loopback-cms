@@ -10,6 +10,7 @@ angular.module('dashboard.directive.DateTimePicker', [
           control: '=',
           format: '@',
           ngFormat: '=ngFormat',
+          ngTimeZone: '=ngTimeZone',
           defaultDate: '@',
           viewMode: '@',
           ngViewMode: '=ngViewMode',
@@ -25,9 +26,10 @@ angular.module('dashboard.directive.DateTimePicker', [
           //Format the passed in date
           if (!scope.format) scope.format = scope.ngFormat;
           if (!value) return;
-          var formattedValue = moment(value).format(scope.format)
-          elem.data('DateTimePicker').date(formattedValue);
-          return formattedValue;
+
+          var date = moment(value);
+          if (scope.ngTimeZone && date.tz) date = date.tz(scope.ngTimeZone); //NOTE: requires moment-timezone
+          return date.format(scope.format);
         });
           
         //Bind the Element
