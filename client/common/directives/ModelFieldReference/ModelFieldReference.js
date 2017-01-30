@@ -241,7 +241,7 @@ angular.module('dashboard.directives.ModelFieldReference', [
            item[scope.key] = value;
          }
          //For multi-select add as relationship array objects to modelData (when saving, the CMS relational-upsert.js will handle it)
-         scope.selected.items.push(item);
+         //scope.selected.items.push(item); //NOTE: commenting out this line fixes issue with dulpicate entries for Angular v1.6 update
          //Make sure to loop through all items for junctionMeta (previously loaded items will not have junctionMeta populated)
          if (scope.options.junctionMeta) {
            for (var i in scope.selected.items) {
