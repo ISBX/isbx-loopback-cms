@@ -13,10 +13,10 @@ angular.module('dashboard.services.Session', [
     }
   }
 
-  this.logIn = function(email, password) {
+  this.logIn = function(email, password, options) {
 	  var authModel = "Users";
 	  if (config.authModel) authModel = config.authModel; 
-       return Utils.apiHelper('POST', authModel + '/login?include=user', { email: email, password: password })
+       return Utils.apiHelper('POST', authModel + '/login?include=user', { email: email, password: password,  options: options})
 	      .then(function(userInfo) {
 	        return Utils.apiHelper('GET', 'Roles?access_token=' + userInfo.id)
 	          .then(function(roles) {
