@@ -260,6 +260,7 @@ angular.module('dashboard.directives.ModelFieldReference', [
        } else {
          //For single record reference just assign the ID back to data
          scope.data = item[scope.options.key];
+         if (scope.rowData) scope.rowData[scope.options.key] = scope.data; //work around for ui-grid not being able to set ng-model for cell edit
          //emit an event when an item is selected
          scope.$emit('onModelFieldReferenceSelect', scope.modelData, scope.key, item);
          var textValue = item[scope.options.searchField];
