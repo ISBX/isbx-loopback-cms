@@ -427,6 +427,11 @@ angular.module('dashboard.directives.ModelField', [
         // add input attributes if specified in schema
         addInputAttributes(element, scope.property.display.inputAttr);
 
+        if (scope.display.pattern && scope.display.pattern[0] == '/' && scope.display.pattern[scope.display.pattern.length-1] == '/') {
+          //As of Angular 1.6 upgrade ng-pattern does not accept leading and trailing / in string regex; angular uses new RegExp() which does not accept / characters
+          scope.display.pattern = scope.display.pattern.slice(1, scope.display.pattern.length-2);
+        }
+
         $compile(element.contents())(scope);
 
     }
