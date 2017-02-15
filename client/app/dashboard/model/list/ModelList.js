@@ -49,8 +49,8 @@ angular.module('dashboard.Dashboard.Model.List', [
   };
   $scope.pagingOptions = {
       //Follow ng-grid pagination model
-      pageSizes: [25, 50, 100, 250, 500],
-      pageSize: $scope.action.options.pageSize ? $scope.action.options.pageSize : 25,
+      pageSizes: ['25', '50', '100', '250', '500'],
+      pageSize: $scope.action.options.pageSize ? $scope.action.options.pageSize : '25',
       currentPage: 1 //1-based index
   };
   
@@ -268,7 +268,7 @@ angular.module('dashboard.Dashboard.Model.List', [
     $scope.filterDescription = filterDescription ? filterDescription : $scope.action.label; 
 
     //Check if paging and sorting exists in querystring
-    if (queryStringParams.pageSize) $scope.pagingOptions.pageSize = parseInt(queryStringParams.pageSize);
+    if (queryStringParams.pageSize) $scope.pagingOptions.pageSize = queryStringParams.pageSize;
     if (queryStringParams.currentPage) $scope.pagingOptions.currentPage = parseInt(queryStringParams.currentPage);
     if (queryStringParams.sortInfo) {
       try {
@@ -290,8 +290,8 @@ angular.module('dashboard.Dashboard.Model.List', [
       //use of filter JSON string
       try {
         var filter = JSON.parse(params.filter);
-        filter.limit = $scope.pagingOptions.pageSize;
-        filter.skip = ($scope.pagingOptions.currentPage-1) * $scope.pagingOptions.pageSize;
+        filter.limit = parseInt($scope.pagingOptions.pageSize);
+        filter.skip = ($scope.pagingOptions.currentPage-1) * parseInt($scope.pagingOptions.pageSize);
         if ($scope.sortInfo.fields.length > 0) {
           filter.order = "";
           for (var i in $scope.sortInfo.fields) {
@@ -310,8 +310,8 @@ angular.module('dashboard.Dashboard.Model.List', [
     } else {
       //use of loopback.io querystring syntax
       params = _.extend(params, {
-        'filter[limit]': $scope.pagingOptions.pageSize,
-        'filter[skip]': ($scope.pagingOptions.currentPage-1) * $scope.pagingOptions.pageSize
+        'filter[limit]': parseInt($scope.pagingOptions.pageSize),
+        'filter[skip]': ($scope.pagingOptions.currentPage-1) * parseInt($scope.pagingOptions.pageSize)
       });
       if ($scope.sortInfo.fields.length > 0) {
         var sortOrder = "";
@@ -675,6 +675,7 @@ angular.module('dashboard.Dashboard.Model.List', [
   
   $scope.$watch('pagingOptions', function (newVal, oldVal) {
     if (newVal.currentPage != oldVal.currentPage || newVal.pageSize != oldVal.pageSize) {
+      $scope.pagingOptions.pageSize = $scope.pagingOptions.pageSize.toString();
       $scope.loadItems();
     }
   }, true);
