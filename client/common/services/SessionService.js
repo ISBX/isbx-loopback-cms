@@ -5,6 +5,8 @@ angular.module('dashboard.services.Session', [
 ])
 
 .service('SessionService', function($cookies, $cookieStore, $q, UserService, Config, Utils) {
+  var self = this;
+  
   var session = null;
   function init() {
     var sessionStr = $cookies.get('session');
