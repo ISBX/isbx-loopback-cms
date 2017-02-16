@@ -295,6 +295,12 @@ angular.module('dashboard.directives.ModelField', [
                 property.display.type = "datetime";
             break;
             default: property.display.type = "text"; break;
+            if (property.display.convertToLocalTime === false) {
+              //remove the 'Z' from the end of the timestamp so that it is not converted to local time
+              if(scope.data[scope.key]) {
+                scope.data[scope.key] = scope.data[scope.key].substring(0, scope.data[scope.key].length-1);
+              }
+            }
           }
         }
 
