@@ -19,7 +19,7 @@ angular.module('dashboard', [
   $compileProvider.aHrefSanitizationWhitelist(/^\s*(http|https|ftp|mailto|tel|file|blo‌​b|data):/);
   $urlRouterProvider.otherwise('/login');
   $locationProvider.html5Mode(true);
-  $qProvider.errorOnUnhandledRejections(false); //angular 1.6.1 'Possibly unhandled rejection:' issues
+  // $qProvider.errorOnUnhandledRejections(false); //angular 1.6.1 'Possibly unhandled rejection:' issues
 
   $stateProvider
     .state('public', {
