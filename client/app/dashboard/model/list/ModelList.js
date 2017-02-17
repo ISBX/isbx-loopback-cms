@@ -54,6 +54,9 @@ angular.module('dashboard.Dashboard.Model.List', [
       pageSize: $scope.action.options.pageSize ? $scope.action.options.pageSize : '25',
       currentPage: 1 //1-based index
   };
+
+  if (!$scope.sortInfo) $scope.sortInfo = {};
+  if (!$scope.sortInfo.columns) $scope.sortInfo.columns = [];
   
   $scope.gridOptions = { 
       data: "list",
@@ -334,9 +337,7 @@ angular.module('dashboard.Dashboard.Model.List', [
         var filterText = $scope.gridOptions.filterOptions.filterText;
         angular.forEach($scope.searchFields, function(field, idx) {
           var key = 'filter[where][or]['+idx+']['+field+'][like]';
-          params = _.extend(params, { 
-            [key]: '%'+filterText+'%'
-          });
+          params[key] = '%'+filterText+'%';
         });
       }
     }
