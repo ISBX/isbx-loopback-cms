@@ -36,6 +36,7 @@ angular.module('dashboard.Dashboard.Model.List', [
   $scope.listTemplateUrl = '';
   $scope.totalServerItems = 0;
   $scope.isEditing = false;
+  $scope.searchFields = $scope.action.options.searchFields;
   if ($scope.action.options.sort) {
 	  //Custom Sort Override
 	  $scope.sortInfo = $scope.action.options.sort;
@@ -313,6 +314,7 @@ angular.module('dashboard.Dashboard.Model.List', [
         'filter[limit]': parseInt($scope.pagingOptions.pageSize),
         'filter[skip]': ($scope.pagingOptions.currentPage-1) * parseInt($scope.pagingOptions.pageSize)
       });
+
       if ($scope.sortInfo.fields.length > 0) {
         var sortOrder = "";
         for (var i in $scope.sortInfo.fields) {
@@ -325,6 +327,16 @@ angular.module('dashboard.Dashboard.Model.List', [
 
         params = _.extend(params, { 
           'filter[order]': sortOrder
+        });
+      }
+
+      if ($scope.searchFields && $scope.gridOptions.filterOptions.filterText && $scope.totalServerItems > $scope.pagingOptions.pageSize) {
+        var filterText = $scope.gridOptions.filterOptions.filterText;
+        angular.forEach($scope.searchFields, function(field, idx) {
+          var key = 'filter[where][or]['+idx+']['+field+'][like]';
+          params = _.extend(params, { 
+            [key]: '%'+filterText+'%'
+          });
         });
       }
     }
@@ -353,7 +365,6 @@ angular.module('dashboard.Dashboard.Model.List', [
         var keys = Object.keys(response);
         if (!response.count && keys.length > 0) {
           response.count = response[keys[0]]; //grab first key as the count if count property doesn't exist
-
         }
         $scope.totalServerItems = response.count;
       }
@@ -679,16 +690,17 @@ angular.module('dashboard.Dashboard.Model.List', [
       $scope.loadItems();
     }
   }, true);
-  
-  //TODO: Implement external filtering option 
-  //(allow configuration between ng-grid search vs. external search from config.json)
 
-//  $scope.$watch('filterOptions', function (newVal, oldVal) {
-//      console.log("filterOptions = " + JSON.stringify($scope.filterOptions, null, '  '));
-//      if (newVal !== oldVal) {
-//        //$scope.getPagedDataAsync($scope.pagingOptions.pageSize, $scope.pagingOptions.currentPage, $scope.filterOptions.filterText);
-//      }
-//  }, true);
+  //debounce instant search
+  var filterTextTimeout = $timeout(function(){});
+  $scope.$watch('gridOptions.$gridScope.filterText', function (value) {
+    if (value === undefined) return;
+    if (filterTextTimeout) $timeout.cancel(filterTextTimeout);
+    filterTextTimeout = $timeout(function() {
+      $scope.filterOptions.filterText = value;
+      $scope.loadItems();
+    }, 1000);
+  }, true);
 
   $scope.$watch('sortInfo', function (newVal, oldVal) {
     //Check isFirstLoad so that this watch statement does not get called when the page loads for the first time
@@ -831,8 +843,19 @@ angular.module('dashboard.Dashboard.Model.List', [
     }
     
   }
+
+  // reset grid when clicking all users
+  $scope.$on('$locationChangeSuccess', function() {
+    if (Object.keys($location.search()).length === 0) {
+      $scope.filterOptions.filterText = '';
+      $scope.pagingOptions.currentPage = 1;
+      $scope.pagingOptions.pageSize = $scope.action.options.pageSize;
+      init();
+    }
+  });
   
   init();
+
 })
 
 .filter('encodeURIComponent', function() {
