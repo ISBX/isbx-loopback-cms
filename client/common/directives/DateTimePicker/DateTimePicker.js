@@ -37,7 +37,7 @@ angular.module('dashboard.directive.DateTimePicker', [
         elem.datetimepicker({
           format: scope.format,
           useCurrent: false,
-          defaultDate: scope.defaultDate ? moment(scope.defaultDate).format(scope.format) : undefined,
+          defaultDate: scope.defaultDate ? moment(scope.defaultDate).format('YYYY-MM-DD h:mm:ss a') : undefined,
           viewMode: scope.viewMode,
           widgetPositioning: { horizontal: scope.horizontal ? scope.horizontal : 'auto' }
         });
