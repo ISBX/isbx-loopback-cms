@@ -390,10 +390,9 @@ angular.module('dashboard.Dashboard.Model.List', [
     }
     //Always query for the latest list even if the cache has previously cached results so that any updates
     //from the data source is refreshed
-    GeneralModelService.list($scope.apiPath, params)
-      .then(function(response) {
+    GeneralModelService.list($scope.apiPath, params).then(
+      function(response) {
         if (!response) return; //in case http request was cancelled
-        //console.log(JSON.stringify(response, null,'  '));
         if( $scope.action.options.resultField !== undefined
           && response[$scope.action.options.resultField] !== undefined )
           $scope.list = response[$scope.action.options.resultField];
@@ -404,11 +403,13 @@ angular.module('dashboard.Dashboard.Model.List', [
         processWindowSize(); //on first load check window size to determine if optional columns should be displayed
         $scope.$emit("ModelListLoadItemsLoaded");
         isFirstLoad = false;
-      })
-      .finally(function() {
         $scope.isLoading = false;
         $scope.loadAttempted = true;
-      });
+      },
+      function(error) {
+        $scope.errorMessage = 'There was an error while loading...';
+        console.error(error);
+      })
   };
   
   /**
