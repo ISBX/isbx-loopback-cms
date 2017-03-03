@@ -59,6 +59,12 @@ angular.module('dashboard', [
   $rootScope.$state = $state;
   if (Config.serverParams.gaTrackingId) ga('create', Config.serverParams.gaTrackingId, 'auto');
 
+  $rootScope.$on('$locationChangeStart', function(event, newUrl, oldUrl) {
+      if (!SessionService.getAuthToken()) {
+          CacheService.set('prevDestination', oldUrl);
+      }
+  });
+
   $rootScope.$on('$stateChangeStart', function(event, toState, toParams, fromState, fromParams) {
     var toStateName = toState.name;
     toStateName = toStateName.substr(toStateName, toStateName.indexOf('.'));
