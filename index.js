@@ -318,7 +318,6 @@ function cms(loopbackApplication, options) {
     });
   });
 
-
   function validateToken(request, callback) {
     var AccessToken = loopbackApplication.models.AccessToken;
     var tokenString = request.body.__accessToken || request.query.access_token;
@@ -332,8 +331,8 @@ function cms(loopbackApplication, options) {
    * Save a model hierarchy; req.body contains a model and its relationship data
    */
   app.put('/model/save', function(req, res) {
-    //TODO: validate ACL
-    validateToken(req, function(err, isValid) {
+    var ACL = loopbackApplication.models.ACL;
+    validateToken(req, function(err, isValid, token) {
       if (err) { return res.status(500).send(err); }
       if (!isValid) { return res.status(403).send('Forbidden'); }
 
@@ -386,8 +385,7 @@ function cms(loopbackApplication, options) {
     validateToken(req, function(err, isValid) {
       if (err) { return res.status(500).send(err); }
       if (!isValid) { return res.status(403).send('Forbidden'); }
-
-      aws.getS3Credentials(req.query["path"], req.query["fileType"], function(error, credentials) {
+      aws.getS3Credentials(req.query.path, req.query.fileType, req.query.acl, function(error, credentials) {
         if (error) {
           res.status(500).send(error);
         }
