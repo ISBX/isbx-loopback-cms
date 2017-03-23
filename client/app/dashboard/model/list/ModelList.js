@@ -288,6 +288,7 @@ angular.module('dashboard.Dashboard.Model.List', [
   function setupPagination() {
     //make a copy of config params
     var params = angular.copy($scope.action.options.params);
+
     if (params && params.filter && params.filter.length > 0) {
       //use of filter JSON string
       try {
@@ -332,12 +333,32 @@ angular.module('dashboard.Dashboard.Model.List', [
       }
       //TODO: this needs to be improved at it does not properly work with an and operator in where clause
       if ($scope.searchFields && $scope.gridOptions.filterOptions.filterText) {
+        // convert to json to work around query string limitation
+        params = GeneralModelService.queryStringParamsToJSON(params);
         var filterText = $scope.gridOptions.filterOptions.filterText;
-        angular.forEach($scope.searchFields, function(field, idx) {
-          var key = 'filter[where][or]['+idx+']['+field+'][like]';
-          params[key] = '%'+filterText+'%';
-        });
+        if(typeof params.filter.where == "object") {
+          var where = angular.copy(params.filter.where);
+          params.filter.where = {and:[]};
+          _.forEach(where, function(v,k) {
+            var item = {};
+            item[k] = v;
+            params.filter.where.and.push(item);
+          });
+          var orFilter = {or:[]};
+          angular.forEach($scope.searchFields, function(field, idx) {
+              var key = '['+field+'][like]';
+              var searchFilter = _.set({}, key, '%'+filterText+'%');
+              orFilter.or.push(searchFilter);
+          });
+          params.filter.where.and.push(orFilter);
+        } else {
+          angular.forEach($scope.searchFields, function (field, idx) {
+            var key = 'filter[where][or][' + idx + '][' + field + '][like]';
+            params = _.set(params, key, '%' + filterText + '%');
+          });
+        }
       }
+      console.log('**params', params);
     }
     
     //TODO: Figure out a better way to preserve state; the following
@@ -395,7 +416,7 @@ angular.module('dashboard.Dashboard.Model.List', [
 
     //Always query for the latest list even if the cache has previously cached results so that any updates
     //from the data source is refreshed
-    console.log('** params', params);
+
     $scope.isLoading = true;
     GeneralModelService.list($scope.apiPath, params).then(
       function(response) {
