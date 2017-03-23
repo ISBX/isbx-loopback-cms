@@ -358,7 +358,6 @@ angular.module('dashboard.Dashboard.Model.List', [
           });
         }
       }
-      console.log('**params', params);
     }
     
     //TODO: Figure out a better way to preserve state; the following
