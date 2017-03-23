@@ -30,7 +30,7 @@ angular.module('dashboard.services.GeneralModel', [
         newKey = key.replace("filter[where]", "where"); //count REST API uses where instead of filter[where]
         params[newKey] = params[key]; 
       } else if (key == "filter") {
-        //TODO: parse through the filter JSON string looking for the where clause
+        params.where = params.filter.where;
       }
     }
     apiPath = apiPath + '/count?access_token=' + $cookies.get('accessToken');
@@ -270,5 +270,16 @@ angular.module('dashboard.services.GeneralModel', [
 
   };
 
+    /**
+     * Convert to JSON query string parameter in the form of filter[where][and][0][isDeleted] = 1
+     * @param params
+     */
+  this.queryStringParamsToJSON = function(params) {
+    var json = {};
+    _.forEach(params, function(value, key) {
+      json = _.set(json, key, value);
+    });
+    return json;
+  };
 });
 
