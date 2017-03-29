@@ -842,16 +842,6 @@ angular.module('dashboard.Dashboard.Model.List', [
     }
     
   }
-
-  // reset grid when clicking all users
-  $scope.$on('$locationChangeSuccess', function() {
-    if (Object.keys($location.search()).length === 0) {
-      $scope.filterOptions.filterText = '';
-      $scope.pagingOptions.currentPage = 1;
-      $scope.pagingOptions.pageSize = $scope.action.options.pageSize;
-      init();
-    }
-  });
   
   init();
 
