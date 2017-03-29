@@ -162,6 +162,7 @@ angular.module('dashboard.directives.ModelFieldReference', [
             //No sourceModel so try to populate from modelData for items already selected
             if (scope.modelData[scope.property.display.options.relationship]) {
               scope.selected.items = scope.modelData[scope.property.display.options.relationship];
+              assignJunctionMeta();
               scope.list = scope.selected.items; //make sure list contains item otherwise won't be displayed
             }
             return;
@@ -201,10 +202,12 @@ angular.module('dashboard.directives.ModelFieldReference', [
               GeneralModelService.list(apiPath, params, {preventCancel: true}).then(function(response) {
                 if (!response) return;  //in case http request was cancelled
                 scope.selected.items = response;
+                assignJunctionMeta();
                 scope.list = response;
               });
             } else {
               scope.selected.items = response;
+              assignJunctionMeta();
               scope.list = response;
             }
           });
@@ -218,6 +221,7 @@ angular.module('dashboard.directives.ModelFieldReference', [
             if (!response) return;  //in case http request was cancelled
             //console.log("default select = " + JSON.stringify(response));
             scope.selected.item = response;
+            assignJunctionMeta();
             scope.list = [scope.selected.item]; //make sure list contains item otherwise won't be displayed
             if (scope.onModelChanged) scope.onModelChanged({'$item': scope.selected.item});
           }, function(error) {
@@ -227,12 +231,24 @@ angular.module('dashboard.directives.ModelFieldReference', [
                 newItem[scope.options.key] = scope.data;
                 newItem[scope.options.searchField] = scope.data;
                 scope.selected.item = newItem;
+                assignJunctionMeta();
                 scope.list.push(newItem);
               }
 
           });
         }
      });
+
+     function assignJunctionMeta() {
+       if (scope.options.junctionMeta) {
+         //Make sure to loop through all items for junctionMeta (previously loaded items will not have junctionMeta populated)
+         for (var i in scope.selected.items) {
+           var selectedItem = scope.selected.items[i];
+           //meta data for junction table in a many-to-many situation
+           selectedItem.junctionMeta = scope.options.junctionMeta;
+         }
+       }
+     }
 
      scope.onSelect = function(item, model) {
        if (scope.options.multiple) {
@@ -243,13 +259,8 @@ angular.module('dashboard.directives.ModelFieldReference', [
          //For multi-select add as relationship array objects to modelData (when saving, the CMS relational-upsert.js will handle it)
          //scope.selected.items.push(item); //NOTE: commenting out this line fixes issue with dulpicate entries for Angular v1.6 update
          //Make sure to loop through all items for junctionMeta (previously loaded items will not have junctionMeta populated)
-         if (scope.options.junctionMeta) {
-           for (var i in scope.selected.items) {
-             var item = scope.selected.items[i];
-             //meta data for junction table in a many-to-many situation
-             item.junctionMeta = scope.options.junctionMeta;
-           }
-         }
+         assignJunctionMeta();
+
          //Assign to model data
          if (scope.modelData[scope.options.relationship]) {
            //Append to object if already exists; this is needed if more than one reference field for same relationship
@@ -311,14 +322,7 @@ angular.module('dashboard.directives.ModelFieldReference', [
          var index = scope.selected.items.indexOf(item);
          if (index > -1) {
            scope.selected.items.splice(index, 1);
-           if (scope.options.junctionMeta) {
-             //Make sure to loop through all items for junctionMeta (previously loaded items will not have junctionMeta populated)
-             for (var i in scope.selected.items) {
-               var selectedItem = scope.selected.items[i];
-               //meta data for junction table in a many-to-many situation
-               selectedItem.junctionMeta = scope.options.junctionMeta;
-             }
-           }
+           assignJunctionMeta();
          }
          if (scope.modelData[scope.options.relationship]) {
            //Remove object if relationship object exists; this is needed if more than one reference field for same relationship
