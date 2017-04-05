@@ -136,8 +136,8 @@ angular.module('dashboard.directives.ModelField', [
       case 'multi-select':
         template = '<label class="col-sm-2 control-label">{{ display.label || key }}:</label>\
           <div class="col-sm-10 multi-select">\
-            <div class="select-item checkbox-container" ng-repeat="(itemKey, itemValue) in display.options">\
-              <input type="checkbox" class="field" ng-attr-id="{{key+\'-\'+itemKey}}" ng-model="multiSelectOptions[itemKey]" ng-checked="multiSelectOptions[itemKey]" ng-disabled="{{ display.readonly }}" ng-change="clickMultiSelectCheckbox(key, itemKey, itemValue, multiSelectOptions)">\
+            <div class="select-item checkbox-container" ng-repeat="(itemKey, itemValue) in display.options"> \
+              <input type="checkbox" class="field" ng-attr-id="{{key+\'-\'+itemKey}}" ng-model="multiSelectOptions[itemKey]" ng-checked="multiSelectOptions[itemKey]" ng-disabled="{{ display.readonly }}" ng-click="clickMultiSelectCheckbox(key, itemKey, itemValue, multiSelectOptions)">\
               <label class="checkbox-label" ng-attr-for="{{key+\'-\'+itemKey}}">{{ itemValue }}</label>\
             </div>\
             <div class="model-field-description" ng-if="display.description">{{ display.description }}</div>\
@@ -404,6 +404,13 @@ angular.module('dashboard.directives.ModelField', [
             case "object":
               if (!scope.data[scope.key]) scope.data[scope.key] = {};
               scope.multiSelectOptions = angular.copy(scope.data[scope.key]);
+              try {
+                scope.multiSelectOptions = JSON.parse(scope.multiSelectOptions);
+                for (var key in scope.multiSelectOptions) {
+                  scope.multiSelectOptions[key] = true;
+                }
+              } catch(e) {
+              }
               break;
           }
         }
@@ -418,8 +425,12 @@ angular.module('dashboard.directives.ModelField', [
               var key = keys[i];
               var value = property.display.options[key];
               var selected = scope.multiSelectOptions[key];
-              if (selected) output[key] = value; //return object
-
+              // if currently selected
+              if (selected) {
+                output[key] = value
+              } else {
+                delete output[key]
+              } ; //return object
             }
           } else {
             //Results are always in order of property.display.options
