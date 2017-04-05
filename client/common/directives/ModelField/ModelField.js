@@ -50,7 +50,6 @@ angular.module('dashboard.directives.ModelField', [
         template = '<label class="col-sm-2 control-label">{{ display.label || key }}:</label> \
           <div class="col-sm-10"> \
             <model-field-reference-edit key="key" property="property" options="display.options" model-data="data" ng-model="data[key]" class="field" ng-required="{{ model.properties[key].required }}" ng-disabled="display.readonly"  /> \
-            <div class="model-field-description" ng-if="display.description">{{ display.description }}</div>\
           </div> \
           <label class="col-sm-2 control-label"></label> \
           <div class="col-sm-10"> \
@@ -62,7 +61,6 @@ angular.module('dashboard.directives.ModelField', [
         template = '<label class="col-sm-2 control-label">{{ display.label || key }}:</label> \
           <div class="col-sm-10"> \
             <model-field-reference-sort-edit key="key" property="property" options="display.options" model-data="data" ng-model="data[key]" class="field" ng-required="{{ model.properties[key].required }}" ng-disabled="display.readonly"  /> \
-            <div class="model-field-description" ng-if="display.description">{{ display.description }}</div>\
           </div> \
           <label class="col-sm-2 control-label"></label> \
           <div class="col-sm-10"> \
@@ -74,7 +72,6 @@ angular.module('dashboard.directives.ModelField', [
         template = '<label class="col-sm-2 control-label">{{ display.label || key }}:</label> \
           <div class="col-sm-10"> \
             <model-field-list-edit key="key" property="property" options="display.options" model-data="data" ng-model="data[key]" class="field" ng-required="{{ model.properties[key].required }}" ng-disabled="display.readonly"  /> \
-            <div class="model-field-description" ng-if="display.description">{{ display.description }}</div>\
           </div> \
           <label class="col-sm-2 control-label"></label> \
           <div class="col-sm-10"> \
@@ -121,6 +118,7 @@ angular.module('dashboard.directives.ModelField', [
               ng-model="data[key]" \
               default-date="{{data[key]}}" \
               ng-format="display.options.format" \
+              ng-time-zone="display.options.timeZone" \
               ng-view-mode="display.options.viewMode" \
               ng-required="{{ model.properties[key].required }}" ng-disabled="display.readonly" \
               data-date-time-picker \
