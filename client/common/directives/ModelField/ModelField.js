@@ -157,13 +157,13 @@ angular.module('dashboard.directives.ModelField', [
         break;
       case 'radio':
         template = '<label class="col-sm-2 control-label">{{ display.label || key }}:</label>\
-        <div class="col-sm-10 multi-select">\
-          <div class="select-item checkbox-container" ng-repeat="(itemKey, itemValue) in display.options">\
-            <input type="checkbox" class="field" ng-attr-id="{{key+\'-\'+itemKey}}" ng-model="singleSelectOptions[itemKey]" ng-disabled="{{ display.readonly }}" ng-click="updateSingleSelectCheckbox(itemKey, itemValue)">\
-            <label class="checkbox-label" ng-attr-for="{{key+\'-\'+itemKey}}">{{ itemValue }}</label>\
-          </div>\
-          <div class="model-field-description" ng-if="display.description">{{ display.description }}</div>\
-        </div>';
+          <div class="col-sm-10 multi-select">\
+            <div class="select-item checkbox-container" ng-repeat="(itemKey, itemValue) in display.options">\
+              <input type="checkbox" class="field" ng-attr-id="{{key+\'-\'+itemKey}}" ng-model="singleSelectOptions[itemKey]" ng-disabled="{{ display.readonly }}" ng-click="updateSingleSelectCheckbox(itemKey, itemValue)">\
+              <label class="checkbox-label" ng-attr-for="{{key+\'-\'+itemKey}}">{{ itemValue }}</label>\
+            </div>\
+            <div class="model-field-description" ng-if="display.description">{{ display.description }}</div>\
+          </div>';
         break;
       case 'slider':
         template = '<label class="col-sm-2 control-label">{{ display.label || key }}:</label>\
