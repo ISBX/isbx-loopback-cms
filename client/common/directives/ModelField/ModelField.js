@@ -154,7 +154,6 @@ angular.module('dashboard.directives.ModelField', [
             ngOptions = 'value as value for value in display.options';
           }
         }
-        console.log(scope.property.display.options, ngOptions)
         //NOTE: need to add empty <option> element to prevent weird AngularJS select issue when handling first selection
         template = '<label class="col-sm-2 control-label">{{ display.label || key }}:</label>\
           <div class="col-sm-10">\
