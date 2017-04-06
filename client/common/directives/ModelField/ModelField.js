@@ -146,9 +146,15 @@ angular.module('dashboard.directives.ModelField', [
       case 'select':
         var ngOptions = 'key as value for (key, value) in display.options';
         if (scope.property.display.options instanceof Array) {
-          //Handle when options is a an array vs key/value pair
-          ngOptions = 'value as value for value in display.options';
+          //Handle when options is array of objects - enabling orderBy and sorting - could refactor as option to pass in
+          if (typeof scope.property.display.options[0] === 'object') {
+            ngOptions = 'item.typeKey as item.typeVal for item in display.options | orderBy: \'typeVal\''
+          } else {
+            //Handle when options is a an array vs key/value pair
+            ngOptions = 'value as value for value in display.options';
+          }
         }
+        console.log(scope.property.display.options, ngOptions)
         //NOTE: need to add empty <option> element to prevent weird AngularJS select issue when handling first selection
         template = '<label class="col-sm-2 control-label">{{ display.label || key }}:</label>\
           <div class="col-sm-10">\
