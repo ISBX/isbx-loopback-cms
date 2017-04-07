@@ -27,6 +27,9 @@ angular.module('dashboard.directive.DateTimePicker', [
           if (!value) return;
           return moment(value).format(scope.format);
         });
+
+        // always force the model value = defaultDate to fix timezone issues
+        if (scope.defaultDate) ngModel.$setViewValue(moment(scope.defaultDate, scope.format));
           
         //Bind the Element
         elem.datetimepicker({
