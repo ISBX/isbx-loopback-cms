@@ -116,7 +116,9 @@ angular.module('dashboard.directives.ModelField', [
           <div class="col-sm-10"> \
             <p class="date-picker input-group"> \
               <input type="text" class="form-control" \
-              control="dateControl"\
+              control="dateControl" \
+              min="{{ display.options.minDatetime }}" \
+              max="{{ display.options.maxDatetime }}" \
               ng-model="data[key]" \
               default-date="{{data[key]}}" \
               ng-format="display.options.format" \
