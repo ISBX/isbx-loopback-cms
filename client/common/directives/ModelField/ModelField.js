@@ -8,6 +8,7 @@ angular.module('dashboard.directives.ModelField', [
   'dashboard.directives.ModelFieldWYSIWYG',
   'dashboard.directives.ModelFieldCanvas',
   'dashboard.directives.ModelFieldLocation',
+  'dashboard.directives.ModelFieldNumber',
   'dashboard.directives.ModelFieldPointsOfInterest',
   'dashboard.directive.DateTimePicker',
   'ngCookies',
@@ -234,6 +235,13 @@ angular.module('dashboard.directives.ModelField', [
             <input type="number" min="{{ display.minValue }}" ng-model="data[key]" ng-pattern="display.pattern" ng-disabled="{{ display.readonly }}" ng-required="{{ model.properties[key].required }}" class="field form-control">\
             <div class="model-field-description" ng-if="display.description">{{ display.description }}</div>\
           </div>';
+        break;
+      case 'number-decimal':
+          template = '<label class="col-sm-2 control-label">{{ display.label || key }}:</label>\
+        <div class="col-sm-10">\
+          <input type="number" min="{{ display.minValue }}" max="{{ display.maxValue }}" decimal-scale="{{ display.scaleValue }}" ng-model="data[key]" step="any" ng-disabled="{{ display.readonly }}" ng-value="display.defaultValue" ng-required="{{ model.properties[key].required }}" class="field form-control">\
+          <div class="model-field-description" ng-if="display.description">{{ display.description }}</div>\
+        </div>';
         break;
       case 'phoneNumber':
         template = '<label class="col-sm-2 control-label">{{ display.label || key }}:</label>\
