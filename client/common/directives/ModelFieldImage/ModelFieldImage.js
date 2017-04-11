@@ -17,10 +17,10 @@ angular.module('dashboard.directives.ModelFieldImage', [
   };
 })
 
-.directive('modelFieldImageEdit', function($compile, $document, GeneralModelService, ImageService, SessionService) {
+.directive('modelFieldImageEdit', function($compile, $document, GeneralModelService, ImageService, SessionService, $timeout) {
   return {
     restrict: 'E',
-    template: '<div class="image-container" style="background: no-repeat center center url(\'{{ imageUrl }}\'); background-size: contain;" ng-click="imageClick()"></div> \
+    template: '<div class="image-container" style="background: no-repeat center center url(\'{{ thumbnailUrl }}\'); background-size: contain;" ng-click="imageClick()"></div> \
       <div class="button-menu show-menu">\
       <button class="btn btn-default upload-button" ng-hide="disabled">Select File</button> \
       <button class="btn btn-default clear-button" ng-show="imageUrl && !disabled" ng-click="clear()">Clear</button> \
@@ -39,18 +39,35 @@ angular.module('dashboard.directives.ModelFieldImage', [
     link: function(scope, element, attrs) {
         var selectedFile = null;
 
+        console.log("1")
+
         scope.uploadStatus = "Upload File";
 
         /**
          * scope.data updates async from controller so need to watch for the first change only
          */
         var unwatch = scope.$watch('data', function(data) {
-          if (data) { 
+          if (data) {
             unwatch(); //Remove the watch
             if (!scope.options || !scope.options.model) {
               //Not a Table reference (the field contains the image URL)
               if (typeof data === "string") {
                 scope.imageUrl = data;
+                scope.thumbnailUrl = data.replace('images', 'thumbnails');
+                // create a new image against possible thumbnail url
+                var image = new Image();
+                image.onload = function() {
+                  // thumbnail image is found, nothing need to be done in regards to image loading
+                };
+                // no thumbnail found so default back to data
+                image.onerror = function() {
+                  $timeout(function() {
+                    scope.thumbnailUrl = scope.imageUrl
+                  }, 0)
+                  // scope.thumbnailUrl = data /* <- this doesn't work without $timeout??? */
+                };
+                // set the src which will trigger onload/onerror events
+                image.src = scope.thumbnailUrl;
               } else if (typeof data === "object") {
                 if (data.fileUrl) scope.imageUrl = data.fileUrl;
                 if (data.imageUrl) scope.imageUrl = data.imageUrl;
