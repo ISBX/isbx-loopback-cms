@@ -39,8 +39,6 @@ angular.module('dashboard.directives.ModelFieldImage', [
     link: function(scope, element, attrs) {
         var selectedFile = null;
 
-        console.log("1")
-
         scope.uploadStatus = "Upload File";
 
         /**
