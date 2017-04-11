@@ -339,6 +339,11 @@ angular.module('dashboard.directives.ModelField', [
         if (property.display.type == "slider") {
           if (!scope.data[scope.key]) scope.data[scope.key] = property.display.options.from + ";" + property.display.options.to;
         }
+        if (property.display.type == "textarea") {
+          if(property.display.selectone) {
+            scope.data[scope.key] = property.display.options.join("\n");
+          }
+        }
 
         //See if there is a default value
         if (!scope.data[scope.key] && (property["default"] || typeof property["default"] === 'number')) {
@@ -376,8 +381,8 @@ angular.module('dashboard.directives.ModelField', [
               break;
           }
         }
-        
-        if(property.display.type == "radio") {
+
+        if(property.display.type == "radio" || property.display.type == "multi-yes-no" || property.display.type == "multi-true-false") {
           if (!scope.data[scope.key]) scope.data[scope.key] = "";
           scope.singleSelectOptions = {};
 
