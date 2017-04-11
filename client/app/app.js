@@ -15,10 +15,11 @@ angular.module('dashboard', [
   'oc.lazyLoad'
 ])
 
-.config(function myAppConfig($locationProvider, $stateProvider, $urlRouterProvider, $compileProvider) {
+.config(function myAppConfig($locationProvider, $stateProvider, $urlRouterProvider, $compileProvider, $qProvider) {
   $compileProvider.aHrefSanitizationWhitelist(/^\s*(http|https|ftp|mailto|tel|file|blo‌​b|data):/);
   $urlRouterProvider.otherwise('/login');
   $locationProvider.html5Mode(true);
+  // $qProvider.errorOnUnhandledRejections(false); //angular 1.6.1 'Possibly unhandled rejection:' issues
 
   $stateProvider
     .state('public', {

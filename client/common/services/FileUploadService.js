@@ -5,13 +5,13 @@ angular.module('dashboard.services.FileUpload', [
   "angularFileUpload"
 ])
 
-.service('FileUploadService', function($cookies, $http, $q, $upload, Config, Utils) {
+.service('FileUploadService', function($cookies, $q, $upload, Config, Utils) {
 
   var self = this;
   
   this.getS3Credentials = function(path, fileType) {
     var params = {
-        access_token: $cookies.accessToken,
+        access_token: $cookies.get('accessToken'),
         path: path,
         fileType: fileType,
         r: new Date().getTime() //IE caches results so passing timestamp helps with cache prevention

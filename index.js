@@ -37,6 +37,7 @@ var express = require('express')
   , settingsEditor = require('./server/settings-editor')
   , customSort = require('./server/sort')
   , aws = require('./server/aws.js')
+  , package = require('./package.json');
   ;
 
 
@@ -81,7 +82,7 @@ function loadLoopbackModels(loopbackModelsPath) {
   };
 
   readDirRecursive(loopbackModelsPath);
-  
+
   //Add Base User, Role and RoleMappings
   var roleField = {
     "property": "role",
@@ -194,7 +195,7 @@ function renderIndex(req, res) {
       }
     }).concat(files.javascript);
     files.javascript.unshift(app.mountpath + '/config.js');
-    res.render(__dirname + srcDir + '/index.jade', { files: files, config: config });
+    res.render(__dirname + srcDir + '/index.jade', { version: package.version, files: files, config: config });
   });
 }
 
@@ -205,11 +206,11 @@ function renderIndex(req, res) {
  * @param config
  */
 function setupAuthModelRoleRelationship(loopbackApplication, config) {
-  
+
   var authModelName = config["public"].authModel;
   if (!authModelName) authModelName = "User"; //if no authModel specified, use default "User" model
   authModelName = inflection.singularize(authModelName);
-  
+
   //create relationships in built-in models
   var RoleMapping = loopbackApplication.models.RoleMapping; //built-in loopback Model
   var Role = loopbackApplication.models.Role; //built-in loopback Model
@@ -242,7 +243,7 @@ function setupAuthModelRoleRelationship(loopbackApplication, config) {
     through: "RoleMapping",
     foreignKey: "principalId"
   };
-  
+
 }
 
 /**
@@ -260,6 +261,19 @@ function cms(loopbackApplication, options) {
     //Perform this after application starts so that all models are loaded
     setup.setupDefaultAdmin(loopbackApplication, config);
   });
+
+  //force browser cache refresh on custom UI modules after deployment (when service restarts)
+  if (config.public.customModules) {
+    var version = Math.ceil((new Date).getTime()/300000)*300000; //unique code within 5min window (for multi-web server instances)
+    for (var i in config.public.customModules) {
+      var customModule = config.public.customModules[i];
+      if (!customModule.files) continue;
+      for (var k in customModule.files) {
+        var file = customModule.files[k];
+        customModule.files[k] = file + '?v=' + version; //force browser to refresh local cache after deploying updates
+      }
+    }
+  }
 
   //for CMS custom services provide context to loopbackApplication
   relationalUpsert.setLoopBack(loopbackApplication);
@@ -290,19 +304,12 @@ function cms(loopbackApplication, options) {
   var appDir = path.dirname(require.main.filename); //Get the application root path
   if (config.private && config.private.src) {
     //Allows for custom static files outside the node module /client folder
-    app.use(express.static(appDir + "/.." + config.private.src)); 
+    app.use(express.static(appDir + "/.." + config.private.src));
   }
 
   app.get('/config.js', function(req, res) {
     var localConfig = config;
     var stringsPath = path.dirname(configPath) + '/strings.json';
-    if (environment != "production") {
-      //reload the config JS each refresh
-      delete require.cache[configPath];
-      delete require.cache[stringsPath];
-      localConfig = require(configPath);
-      localConfig.public.models = loadLoopbackModels(options.modelPath);
-    }
     fs.exists(stringsPath, function(exists) {
       if (exists) localConfig.public.strings = require(stringsPath);
       localConfig.public.apiBaseUrl = options.basePath;
@@ -312,18 +319,32 @@ function cms(loopbackApplication, options) {
   });
 
 
+  function validateToken(request, callback) {
+    var AccessToken = loopbackApplication.models.AccessToken;
+    var tokenString = request.body.__accessToken || request.query.access_token;
+    AccessToken.findById(tokenString, function(err, token) {
+      if (err || !token) { return callback(err); }
+      return token.validate(callback);
+    });
+  }
+
   /**
-   * Save a model hierarchy; req.body contains a model and its relationship data 
+   * Save a model hierarchy; req.body contains a model and its relationship data
    */
   app.put('/model/save', function(req, res) {
-    //TODO: validate access token and ACL
-    var data = req.body;
-    relationalUpsert.upsert(data, function(error, response) {
-      if (error) {
-        res.status(500).send(error);
-      } else {
-        res.send(response);
-      }
+    //TODO: validate ACL
+    validateToken(req, function(err, isValid) {
+      if (err) { return res.status(500).send(err); }
+      if (!isValid) { return res.status(403).send('Forbidden'); }
+
+      var data = req.body;
+      relationalUpsert.upsert(data, function(error, response) {
+        if (error) {
+          res.status(500).send(error);
+        } else {
+          res.send(response);
+        }
+      });
     });
   });
 
@@ -338,31 +359,40 @@ function cms(loopbackApplication, options) {
    * }
    */
   app.post('/model/sort', function(req, res) {
-    //TODO: validate access token
-    var model = req.body["model"];
-    var key = req.body["key"];
-    var sortField = req.body["sortField"];
-    var sortData = req.body["sortData"];
-    customSort.sort(model, key, sortField, sortData, function(error, response) {
-      if (error) {
-        res.status(500).send(error);
-      } else {
-        res.send(response);
-      }
-    });
+    //TODO: validate ACL
+    validateToken(req, function(err, isValid) {
+      if (err) { return res.status(500).send(err); }
+      if (!isValid) { return res.status(403).send('Forbidden'); }
 
+      var model = req.body["model"];
+      var key = req.body["key"];
+      var sortField = req.body["sortField"];
+      var sortData = req.body["sortData"];
+      customSort.sort(model, key, sortField, sortData, function(error, response) {
+        if (error) {
+          res.status(500).send(error);
+        } else {
+          res.send(response);
+        }
+      });
+    });
   });
-  
+
   /**
-   * Generate AWS S3 Policy and Credentials 
+   * Generate AWS S3 Policy and Credentials
    */
   app.get('/aws/s3/credentials', function(req, res) {
-    //TODO: validate access token
-    aws.getS3Credentials(req.query["path"], req.query["fileType"], function(error, credentials) {
-      if (error) {
-        res.status(500).send(error);
-      }
-      res.send(credentials);
+    //TODO: validate ACL
+    validateToken(req, function(err, isValid) {
+      if (err) { return res.status(500).send(err); }
+      if (!isValid) { return res.status(403).send('Forbidden'); }
+
+      aws.getS3Credentials(req.query["path"], req.query["fileType"], function(error, credentials) {
+        if (error) {
+          res.status(500).send(error);
+        }
+        res.send(credentials);
+      });
     });
   });
 
@@ -370,10 +400,15 @@ function cms(loopbackApplication, options) {
    * API to save config.json navigation
    */
   app.post('/settings/config/nav', function(req, res) {
-    //TODO: validate access token
-    var nav = req.body;
-    settingsEditor.setNav(configPath, nav);
-    res.send(true);
+    //TODO: validate ACL
+    validateToken(req, function(err, isValid) {
+      if (err) { return res.status(500).send(err); }
+      if (!isValid) { return res.status(403).send('Forbidden'); }
+
+      var nav = req.body;
+      settingsEditor.setNav(configPath, nav);
+      res.send(true);
+    });
   });
 
   app.get('*', renderIndex);

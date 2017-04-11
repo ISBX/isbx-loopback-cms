@@ -25,7 +25,7 @@ angular.module('dashboard.Dashboard.Model.Edit', [
     ;
 })
 
-.controller('ModelEditCtrl', function ModelEditCtrl($rootScope, $scope, $cookies, $location, $stateParams, $http, $state, $window, $modal, Config, GeneralModelService, FileUploadService, CacheService) {
+.controller('ModelEditCtrl', function ModelEditCtrl($rootScope, $scope, $cookies, $location, $stateParams, $state, $window, $modal, Config, GeneralModelService, FileUploadService, CacheService) {
 
   var modalInstance = null;
   function init() {
@@ -43,6 +43,16 @@ angular.module('dashboard.Dashboard.Model.Edit', [
       var key = $scope.action.options.key;
       if (!$scope.model.properties[key].display) $scope.model.properties[key].display = {};
       $scope.model.properties[key].display.readonly = true;
+    }
+
+    //Check if readonly view
+    if ($scope.action.options.readonly) {
+      var keys = Object.keys($scope.model.properties);
+      for (var i in keys) {
+        var key = keys[i];
+        if (!$scope.model.properties[key].display) $scope.model.properties[key].display = {};
+        $scope.model.properties[key].display.readonly = true;
+      }
     }
 
     $scope.isLoading = true;
@@ -89,8 +99,9 @@ angular.module('dashboard.Dashboard.Model.Edit', [
     $scope.deleteDialogText = Config.serverParams.strings.deleteDiaglog ? Config.serverParams.strings.deleteDiaglog : "Are you sure you want to delete?";
 
     $scope.$on('saveModel', function() { $scope.clickSaveModel($scope.data); });
-    $scope.$on('deleteModel', function() { $scope.clickDeleteModel($scope.data); });
-
+    $scope.$on('deleteModel', function(event, formParams) {
+      $scope.clickDeleteModel($scope.data, formParams);
+    });
   }
 
   function layoutModelDisplay() {
@@ -171,7 +182,8 @@ angular.module('dashboard.Dashboard.Model.Edit', [
     });
   };
   
-  $scope.clickDeleteModel = function(data) {
+  $scope.clickDeleteModel = function(data, formParams) {
+    $scope.deleteDialogText = (formParams && formParams.deleteDialogText) ? formParams.deleteDialogText : $scope.deleteDialogText;
     if (!confirm($scope.deleteDialogText)) return;
     var id = data[$scope.action.options.key];
     if ($scope.model.options && $scope.model.options.softDeleteProperty) {
@@ -185,6 +197,7 @@ angular.module('dashboard.Dashboard.Model.Edit', [
       //Hard Delete
       GeneralModelService.remove($scope.model.plural, id)
       .then(function(response) {
+        $rootScope.$broadcast('modelDeleted');
         CacheService.clear($scope.action.options.model);
         $window.history.back();
       }, function(error) {
@@ -231,11 +244,11 @@ angular.module('dashboard.Dashboard.Model.Edit', [
       return true; //no roles specified so grant permission
     }
 
-    if (!$cookies.roles) {
+    if (!$cookies.get('roles')) {
       return false; //user has no role access
     }
     
-    var userRoles = JSON.parse($cookies.roles);
+    var userRoles = JSON.parse($cookies.get('roles'));
     for (var i in userRoles) {
       var role = userRoles[i];
       if (displayInfo.roles.indexOf(role.name) > -1) {

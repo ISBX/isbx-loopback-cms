@@ -12,7 +12,7 @@ angular.module('dashboard.services.Dashboard', [
    */
   this.getNavigation = function() {
     //make a copy of the nav as not to modify the original object
-    _roles =  JSON.parse($cookies.roles);
+    _roles =  JSON.parse($cookies.get('roles'));
     var nav = angular.copy(Config.serverParams.nav);
     return self.restrictMenuItems(nav);
   };

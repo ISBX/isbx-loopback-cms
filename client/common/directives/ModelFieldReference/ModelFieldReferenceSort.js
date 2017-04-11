@@ -65,7 +65,7 @@ angular.module('dashboard.directives.ModelFieldReferenceSort', [
           if (typeof string !== 'string') return string;
           try {
             //Look for session variables in string
-            var session = JSON.parse($cookies.session); //needed for eval() below
+            var session = JSON.parse($cookies.get('session')); //needed for eval() below
             var searchString = "{session.";
             var startPos = string.indexOf(searchString);
             while (startPos > -1) {
@@ -161,7 +161,7 @@ angular.module('dashboard.directives.ModelFieldReferenceSort', [
             item[scope.options.searchField] = value;
           }
           var selectedItem = _.find(scope.selectedList, function(i) {
-            return i[scope.options.key] === item[scope.options.key] || i.name.toLowerCase() === item.name.toLowerCase();
+            return i[scope.options.key] === item[scope.options.key] || (i.name && item.name && i.name.toLowerCase() === item.name.toLowerCase());
           });
           if (!selectedItem) {
             scope.selectedList.push(item);

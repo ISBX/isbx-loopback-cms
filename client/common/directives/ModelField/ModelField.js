@@ -120,6 +120,7 @@ angular.module('dashboard.directives.ModelField', [
               ng-model="data[key]" \
               default-date="{{data[key]}}" \
               ng-format="display.options.format" \
+              ng-time-zone="display.options.timeZone" \
               ng-view-mode="display.options.viewMode" \
               ng-required="{{ model.properties[key].required }}" ng-disabled="{{ display.readonly }}" \
               data-date-time-picker \
@@ -183,7 +184,7 @@ angular.module('dashboard.directives.ModelField', [
       case 'password':
         template = '<label class="col-sm-2 control-label">{{ display.label || key }}:</label>\
           <div class="col-sm-10">\
-            <input type="password" ng-model="data[key]" ng-pattern="{{ display.pattern }}" ng-disabled="{{ display.readonly }}" ng-required="{{ model.properties[key].required }}" class="field form-control">\
+            <input type="password" ng-model="data[key]" ng-pattern="display.pattern" ng-disabled="{{ display.readonly }}" ng-required="{{ model.properties[key].required }}" class="field form-control">\
             <div class="model-field-description" ng-if="display.description">{{ display.description }}</div>\
           </div>';
         break;
@@ -228,7 +229,7 @@ angular.module('dashboard.directives.ModelField', [
       case 'number':
         template = '<label class="col-sm-2 control-label">{{ display.label || key }}:</label>\
           <div class="col-sm-10">\
-            <input type="number" ng-model="data[key]" ng-pattern="{{ display.pattern }}" ng-disabled="{{ display.readonly }}" ng-required="{{ model.properties[key].required }}" class="field form-control">\
+            <input type="number" min="{{ display.minValue }}" ng-model="data[key]" ng-pattern="display.pattern" ng-disabled="{{ display.readonly }}" ng-required="{{ model.properties[key].required }}" class="field form-control">\
             <div class="model-field-description" ng-if="display.description">{{ display.description }}</div>\
           </div>';
         break;
@@ -236,7 +237,7 @@ angular.module('dashboard.directives.ModelField', [
         template = '<label class="col-sm-2 control-label">{{ display.label || key }}:</label>\
           <div class="col-sm-10">\
             <input type="hidden" ng-model="countrycode" value="{{ display.region }}" />\
-            <input type="text" ng-model="data[key]" phone-number country-code="countrycode" ng-pattern="{{ display.pattern }}" ng-disabled="{{ display.readonly }}" ng-required="{{ model.properties[key].required }}" class="field form-control">\
+            <input type="text" ng-model="data[key]" phone-number country-code="countrycode" ng-pattern="display.pattern" ng-disabled="{{ display.readonly }}" ng-required="{{ model.properties[key].required }}" class="field form-control">\
             <div class="model-field-description" ng-if="display.description">{{ display.description }}</div>\
           </div>';
         break;
@@ -244,7 +245,7 @@ angular.module('dashboard.directives.ModelField', [
       default:
         template = '<label class="col-sm-2 control-label">{{ display.label || key }}:</label>\
           <div class="col-sm-10">\
-            <input type="text" ng-model="data[key]" ng-pattern="{{ display.pattern }}" ng-disabled="{{ display.readonly }}" ng-required="{{ model.properties[key].required }}" class="field form-control">\
+            <input type="text" ng-model="data[key]" ng-pattern="display.pattern" ng-disabled="{{ display.readonly }}" ng-required="{{ model.properties[key].required }}" class="field form-control">\
             <div class="model-field-description" ng-if="display.description">{{ display.description }}</div>\
           </div>';
     }
@@ -337,7 +338,9 @@ angular.module('dashboard.directives.ModelField', [
         }
         
         if (property.display.type == "slider") {
-          if (!scope.data[scope.key]) scope.data[scope.key] = property.display.options.from + ";" + property.display.options.to;
+          if (typeof scope.data[scope.key] === 'undefined' || scope.data[scope.key] == null) {
+            scope.data[scope.key] = property.display.options.from + ";" + property.display.options.to;
+          }
         }
         if (property.display.type == "textarea") {
           if(property.display.selectone) {
@@ -449,6 +452,11 @@ angular.module('dashboard.directives.ModelField', [
         }
         // add input attributes if specified in schema
         addInputAttributes(element, scope.property.display.inputAttr);
+
+        if (scope.display.pattern && scope.display.pattern[0] == '/' && scope.display.pattern[scope.display.pattern.length-1] == '/') {
+          //As of Angular 1.6 upgrade ng-pattern does not accept leading and trailing / in string regex; angular uses new RegExp() which does not accept / characters
+          scope.display.pattern = scope.display.pattern.slice(1, scope.display.pattern.length-2);
+        }
 
         $compile(element.contents())(scope);
 
