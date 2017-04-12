@@ -8,7 +8,6 @@ angular.module('dashboard.directives.ModelField', [
   'dashboard.directives.ModelFieldWYSIWYG',
   'dashboard.directives.ModelFieldCanvas',
   'dashboard.directives.ModelFieldLocation',
-  'dashboard.directives.ModelFieldNumber',
   'dashboard.directives.ModelFieldPointsOfInterest',
   'dashboard.directive.DateTimePicker',
   'ngCookies',
