@@ -25,12 +25,11 @@ angular.module('dashboard.directives.ModelFieldWYSIWYG', [
   function getTemplate() {
     var template = '\
       <div class="wysiwyg-toolbar" data-role="editor-toolbar" data-target=".wysiwyg-editor" ng-hide="disabled">\
-        <div class="btn-group">\
+        <div class="btn-group" ng-show="options.fonts">\
           <span class="dropdown">\
           <a class="btn btn-default" title="Font" ng-click="toggleDropdown($event)" ng-disabled="isEditingCode"><i class="fa fa-font"></i>&nbsp;<b class="caret"></b></a>\
           <ul class="menu" ng-click="toggleDropdown($event)">\
-            <li><a data-edit="fontName Arial" style="font-family:\'Arial\'">Arial</a></li>\
-            <li><a data-edit="fontName Lato" style="font-family:\'Lato\'">Lato</a></li>\
+            <li ng-repeat="font in options.fonts"><a data-edit="fontName {{ font }}" style="font-family: \'{{ font }}\';">{{ font }}</a></li>\
           </ul></span>\
         </div>\
         <div class="btn-group">\
