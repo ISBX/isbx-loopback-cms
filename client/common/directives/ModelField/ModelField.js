@@ -41,7 +41,7 @@ angular.module('dashboard.directives.ModelField', [
   };
 })
 
-.directive('modelFieldEdit', function($compile, $cookies) {
+.directive('modelFieldEdit', function($compile, $cookies, $timeout) {
   function getTemplate(type, scope) {
     var template = '';
     switch(type) {
@@ -230,18 +230,31 @@ angular.module('dashboard.directives.ModelField', [
           </div>';
         break;
       case 'number':
+        scope.parseDecimal = function(value, scale) {console.log('value, scale', value, scale);
+          var decimalScale = parseInt(scale) || 2;
+          var value = parseFloat(value.replace(",", "."));
+          if (!isNaN(value) && typeof decimalScale === "number") {
+            value = decimalScale === 0 ? parseInt(value): value.toFixed(decimalScale);
+          }
+          return value;
+        }
+        var promise = '';
+        scope.parseFunc = function(e) {
+          if(promise) $timeout.cancel(promise);
+          promise = $timeout(function() {
+            if (scope.display.allowDecimals) e.target.value = scope.parseDecimal(e.target.value, scope.display.scaleValue);
+            else e.target.value = parseInt(e.target.value);
+            if (e.target.value < scope.display.minValue) e.target.value = scope.display.minValue;
+            if (e.target.value > scope.display.maxValue) e.target.value = scope.display.maxValue;
+            if (e.target.value === 'NaN') e.target.value = scope.display.default || '';
+          }, 1000);
+        }
+        // var parseFuncString = "value = parseInt(value.replace(/[A-z.,]/, \'\'))"
         template = '<label class="col-sm-2 control-label">{{ display.label || key }}:</label>\
           <div class="col-sm-10">\
-            <input type="number" min="{{ display.minValue }}" ng-model="data[key]" ng-pattern="display.pattern" ng-disabled="{{ display.readonly }}" ng-required="{{ model.properties[key].required }}" class="field form-control">\
-            <div class="model-field-description" ng-if="display.description">{{ display.description }}</div>\
+            <input type="text" ng-keyup="parseFunc($event)" ng-model="data[key]" ng-disabled="{{ display.readonly }}" ng-required="{{ model.properties[key].required }}" class="field form-control">\
+            <div class="model-field-description" ng-if="display.description">{{ display.description }} {{ count }}</div>\
           </div>';
-        break;
-      case 'number-decimal':
-          template = '<label class="col-sm-2 control-label">{{ display.label || key }}:</label>\
-        <div class="col-sm-10">\
-          <input type="number" min="{{ display.minValue }}" max="{{ display.maxValue }}" decimal-scale="{{ display.scaleValue }}" ng-model="data[key]" step="any" ng-disabled="{{ display.readonly }}" ng-value="display.defaultValue" ng-required="{{ model.properties[key].required }}" class="field form-control">\
-          <div class="model-field-description" ng-if="display.description">{{ display.description }}</div>\
-        </div>';
         break;
       case 'phoneNumber':
         template = '<label class="col-sm-2 control-label">{{ display.label || key }}:</label>\
