@@ -236,11 +236,11 @@ angular.module('dashboard.directives.ModelField', [
           if (e.target.value < scope.display.minValue) {e.target.value = scope.display.minValue};
           if (e.target.value > scope.display.maxValue) {e.target.value = scope.display.maxValue};
           if (e.target.value === 'NaN') {e.target.value = scope.display.default || ''}
-        }
+        };
         // var parseFuncString = "value = parseInt(value.replace(/[A-z.,]/, \'\'))"
         template = '<label class="col-sm-2 control-label">{{ display.label || key }}:</label>\
           <div class="col-sm-10">\
-            <input type="text" ng-keyup="parseFunc($event)" max="{{ display.maxValue }}" min="{{ display.minValue }}" ng-model="data[key]" ng-disabled="{{ display.readonly }}" ng-required="{{ model.properties[key].required }}" class="field form-control">\
+            <input type="number" ng-keyup="parseFunc($event)" max="{{ display.maxValue }}" min="{{ display.minValue }}" ng-model="data[key]" ng-disabled="{{ display.readonly }}" ng-required="{{ model.properties[key].required }}" class="field form-control">\
             <div class="model-field-description" ng-if="display.description">{{ display.description }} {{count}}</div>\
           </div>';
         break;
