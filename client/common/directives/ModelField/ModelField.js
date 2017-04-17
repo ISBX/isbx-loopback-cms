@@ -389,7 +389,7 @@ angular.module('dashboard.directives.ModelField', [
           if (!scope.data[scope.key]) scope.data[scope.key] = "";
           scope.singleSelectOptions = {};
 
-          var selected = scope.data[scope.key][0];
+          var selected = scope.data[scope.key];
           angular.forEach(property.display.options, function(value, key) {
             if(value == selected) {
               scope.singleSelectOptions[key] = true;
