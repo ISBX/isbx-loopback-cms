@@ -230,6 +230,10 @@ angular.module('dashboard.directives.ModelFieldReference', [
               }
 
           });
+        } else {
+          if (!scope.options.multiple) {
+            scope.selected.item = null;
+          }
         }
      });
 
