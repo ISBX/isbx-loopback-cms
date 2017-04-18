@@ -423,7 +423,7 @@ angular.module('dashboard.directives.ModelField', [
               if (!scope.data[scope.key]) scope.data[scope.key] = {};
               scope.multiSelectOptions = angular.copy(scope.data[scope.key]);
               try {
-                scope.multiSelectOptions = JSON.parse(scope.multiSelectOptions);
+                scope.multiSelectOptions = angular.fromJson(scope.multiSelectOptions);
                 if (typeof scope.multiSelectOptions === 'object' && !Array.isArray(scope.multiSelectOptions)) {
                   for (var key in scope.multiSelectOptions) {
                     scope.multiSelectOptions[key] = true;
