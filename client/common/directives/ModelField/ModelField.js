@@ -40,7 +40,7 @@ angular.module('dashboard.directives.ModelField', [
   };
 })
 
-.directive('modelFieldEdit', function($compile, $cookies) {
+.directive('modelFieldEdit', function($compile, $cookies, $timeout) {
   function getTemplate(type, scope) {
     var template = '';
     switch(type) {
@@ -270,11 +270,24 @@ angular.module('dashboard.directives.ModelField', [
         break;
       case 'number-integer':
       case 'number':
+        scope.parseDecimal = function(value, scale) {console.log('value, scale', value, scale);
+          var decimalScale = parseInt(scale) || 2;
+          var value = parseFloat(value.replace(",", "."));
+          if (!isNaN(value) && typeof decimalScale === "number") {
+            value = decimalScale === 0 ? parseInt(value): value.toFixed(decimalScale);
+          }
+          return value;
+        }
+        var promise = '';
         scope.parseFunc = function(e) {
-          if (scope.display.allowDecimals === false) {e.target.value = parseInt(e.target.value)}
-          if (e.target.value < scope.display.minValue) {e.target.value = scope.display.minValue};
-          if (e.target.value > scope.display.maxValue) {e.target.value = scope.display.maxValue};
-          if (e.target.value === 'NaN') {e.target.value = scope.display.default || ''}
+          if(promise) $timeout.cancel(promise);
+          promise = $timeout(function() {
+            if (scope.display.allowDecimals) e.target.value = scope.parseDecimal(e.target.value, scope.display.scaleValue);
+            else e.target.value = parseInt(e.target.value);
+            if (e.target.value < scope.display.minValue) e.target.value = scope.display.minValue;
+            if (e.target.value > scope.display.maxValue) e.target.value = scope.display.maxValue;
+            if (e.target.value === 'NaN') e.target.value = scope.display.default || '';
+          }, 1000);
         };
         // var parseFuncString = "value = parseInt(value.replace(/[A-z.,]/, \'\'))"
         template = '<label class="col-sm-2 control-label">{{ display.label || key }}:</label>\
