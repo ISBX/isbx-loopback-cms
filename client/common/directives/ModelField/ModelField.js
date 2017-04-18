@@ -211,7 +211,8 @@ angular.module('dashboard.directives.ModelField', [
       case 'textarea':
         template = '<label class="col-sm-2 control-label">{{ display.label || key }}:</label>\
           <div class="col-sm-10">\
-            <textarea msd-elastic ng-model="data[key]" ng-disabled="{{ display.readonly }}" ng-required="{{ model.properties[key].required }}" class="field form-control"></textarea>\
+            <textarea msd-elastic ng-model="data[key]" ng-keyup="lengthCheck($event)"  ng-disabled="{{ display.readonly }}" ng-required="{{ model.properties[key].required }}" class="field form-control" ng-maxlength="{{ display.maxLength }}"></textarea>\
+            <div class="model-field-tool-tip" ng-if="display.maxLength">{{ charsLeft }} characters left</div>\
             <div class="model-field-description" ng-if="display.description">{{ display.description }}</div>\
           </div>';
         break;
@@ -265,7 +266,8 @@ angular.module('dashboard.directives.ModelField', [
       default:
         template = '<label class="col-sm-2 control-label">{{ display.label || key }}:</label>\
           <div class="col-sm-10">\
-            <input type="text" ng-model="data[key]" ng-pattern="display.pattern" ng-disabled="{{ display.readonly }}" ng-required="{{ model.properties[key].required }}" class="field form-control">\
+            <input type="text" ng-model="data[key]" ng-keyup="lengthCheck($event)" ng-pattern="display.pattern" ng-disabled="{{ display.readonly }}" ng-required="{{ model.properties[key].required }}" class="field form-control" ng-maxlength="{{ display.maxLength }}">\
+            <div class="model-field-tool-tip" ng-if="display.maxLength">{{ charsLeft }} characters left</div>\
             <div class="model-field-description" ng-if="display.description">{{ display.description }}</div>\
           </div>';
     }
@@ -296,7 +298,7 @@ angular.module('dashboard.directives.ModelField', [
             scope.model.properties[scope.key.property].display = scope.key;
           }
           scope.key = scope.key.property;
-        } 
+        }
         
         var property = { display: {type: "text"} };
         if (scope.model.properties && scope.model.properties[scope.key]) property = scope.model.properties[scope.key];
@@ -313,6 +315,16 @@ angular.module('dashboard.directives.ModelField', [
                 property.display.type = "datetime";
             break;
             default: property.display.type = "text"; break;
+          }
+        }
+
+        scope.charsLeft = property.display.maxLength
+        if (property.display.type === 'text' || property.display.type === 'textarea') {
+          scope.lengthCheck = function(e) {
+            if (property.display.maxLength && e.target.value.length > property.display.maxLength) {
+              e.target.value = e.target.value.substring(0, property.display.maxLength);
+            }
+            scope.charsLeft = property.display.maxLength - e.target.value.length;
           }
         }
 
