@@ -268,6 +268,7 @@ angular.module('dashboard.directives.ModelField', [
             <div class="model-field-description" ng-if="display.description">{{ display.description }}</div>\
           </div>';
         break;
+      case 'number-decimal':
       case 'number-integer':
       case 'number':
         scope.parseDecimal = function(value, scale) {console.log('value, scale', value, scale);
@@ -282,12 +283,15 @@ angular.module('dashboard.directives.ModelField', [
         scope.parseFunc = function(e) {
           if(promise) $timeout.cancel(promise);
           promise = $timeout(function() {
-            if (scope.display.allowDecimals) e.target.value = scope.parseDecimal(e.target.value, scope.display.scaleValue);
-            else e.target.value = parseInt(e.target.value);
+            if (scope.display.allowDecimals) {
+              e.target.value = scope.parseDecimal(e.target.value, scope.display.scaleValue);
+            } else {
+              e.target.value = parseInt(e.target.value);
+            }
             if (e.target.value < scope.display.minValue) e.target.value = scope.display.minValue;
             if (e.target.value > scope.display.maxValue) e.target.value = scope.display.maxValue;
             if (e.target.value === 'NaN') e.target.value = scope.display.default || '';
-          }, 1000);
+          }, 500);
         };
         // var parseFuncString = "value = parseInt(value.replace(/[A-z.,]/, \'\'))"
         template = '<label class="col-sm-2 control-label">{{ display.label || key }}:</label>\
