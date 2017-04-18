@@ -134,6 +134,24 @@ angular.module('dashboard.directives.ModelField', [
         //<model-field-datetime-edit options="field.options" ng-model="data[field.name]" class="field" /> \
         break;
       case 'multi-select':
+        // means array of results - answers stored as values and not keys - need to extra keys
+        if (Array.isArray(scope.multiSelectOptions)) {
+          var newMultiSelectOptions = scope.multiSelectOptions.slice();
+          scope.multiSelectOptions = {}
+          for (var i = 0; i < newMultiSelectOptions.length; i++) {
+            var option = newMultiSelectOptions[i];
+            for (var key in scope.display.options) {
+              if (key === option) {
+                scope.multiSelectOptions[key] = true;
+              }
+            }
+          }
+        }
+        var ngOptions = '(value, text) in display.options';
+        if (scope.property.display.options instanceof Array) {
+            //Handle when options is a an array vs key/value pair
+            ngOptions = 'text in display.options';
+        }
         template = '<label class="col-sm-2 control-label">{{ display.label || key }}:</label>\
           <div class="col-sm-10 multi-select">\
             <div class="select-item checkbox-container" ng-repeat="(itemKey, itemValue) in display.options"> \
@@ -406,8 +424,10 @@ angular.module('dashboard.directives.ModelField', [
               scope.multiSelectOptions = angular.copy(scope.data[scope.key]);
               try {
                 scope.multiSelectOptions = JSON.parse(scope.multiSelectOptions);
-                for (var key in scope.multiSelectOptions) {
-                  scope.multiSelectOptions[key] = true;
+                if (typeof scope.multiSelectOptions === 'object' && !Array.isArray(scope.multiSelectOptions)) {
+                  for (var key in scope.multiSelectOptions) {
+                    scope.multiSelectOptions[key] = true;
+                  }
                 }
               } catch(e) {
               }
