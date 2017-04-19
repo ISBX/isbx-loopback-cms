@@ -176,7 +176,7 @@ angular.module('dashboard.directives.ModelField', [
         var ngOptions = 'key as value for (key, value) in display.options';
         if (scope.property.display.options instanceof Array) {
           //Handle when options is array of objects - enabling orderBy and sorting - could refactor as option to pass in
-          if (typeof scope.property.display.options[0] === 'object') {
+          if (typeof scope.property.display.options[0] === 'object' && !Array.isArray(scope.property.display.options[0])) {
             ngOptions = 'item.typeKey as item.typeVal for item in display.options | orderBy: \'typeVal\''
           } else {
             //Handle when options is a an array vs key/value pair
