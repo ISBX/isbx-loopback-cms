@@ -289,7 +289,7 @@ angular.module('dashboard.directives.ModelField', [
           }
           scope.key = scope.key.property;
         }
-
+        
         var property = { display: {type: "text"} };
         if (scope.model.properties && scope.model.properties[scope.key]) property = scope.model.properties[scope.key];
         if (!property) {
