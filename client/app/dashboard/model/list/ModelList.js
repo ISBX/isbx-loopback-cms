@@ -14,7 +14,6 @@ angular.module('dashboard.Dashboard.Model.List', [
   $stateProvider
     .state('dashboard.model.action.list', {
       url: '/list',
-      //controller: 'ModelListCtrl', /* causes controller to init twice */
       templateUrl: 'app/dashboard/model/list/ModelList.html',
       data: {
         pageTitle: 'List'
@@ -24,61 +23,60 @@ angular.module('dashboard.Dashboard.Model.List', [
 })
 
 .controller('ModelListCtrl', function ModelListCtrl($scope, $cookies, $timeout, $state, $location, $window, $modal, Config, GeneralModelService, CacheService) {
-
   var isFirstLoad = true;
   var modalInstance = null;
-  $scope.isLoading = true;
-  $scope.moment = moment;
-  $scope.columnCount = 0;
-  $scope.list = [];
-  $scope.selected = [];
-  $scope.columns = [];
-  $scope.listTemplateUrl = '';
-  $scope.totalServerItems = 0;
-  $scope.isEditing = false;
-  $scope.searchFields = $scope.action.options.searchFields;
-  if ($scope.action.options.sort) {
-	  //Custom Sort Override
-	  $scope.sortInfo = $scope.action.options.sort;
-  } else {
-	  //Use default sort by key
-	  $scope.sortInfo = { fields: [$scope.action.options.key], directions: ["ASC"] };
-  }
-  $scope.filterOptions = {
-      filterText: "",
-      useExternalFilter: false
-  };
-  $scope.pagingOptions = {
-      //Follow ng-grid pagination model
-      pageSizes: ['25', '50', '100', '250', '500'],
-      pageSize: $scope.action.options.pageSize ? $scope.action.options.pageSize : '25',
-      currentPage: 1 //1-based index
-  };
 
-  if (!$scope.sortInfo) $scope.sortInfo = {};
-  if (!$scope.sortInfo.columns) $scope.sortInfo.columns = [];
-  
-  $scope.gridOptions = { 
-      data: "list",
-      enableColumnResize: true,
-      enableRowSelection: typeof $scope.action.options.enableRowSelection === "boolean" ? $scope.action.options.enableRowSelection : true,
-      multiSelect: false,
-      enablePaging: true,
-      useExternalSorting: true,
-      showSelectionCheckbox: false,
-      sortInfo: $scope.sortInfo,
-      showFooter: true,
-      showFilter: $scope.action.options.showFilter,
-      headerRowHeight: 44,
-      footerRowHeight: 44,
-      totalServerItems: "totalServerItems",
-      pagingOptions: $scope.pagingOptions,
-      filterOptions: $scope.filterOptions,
-      selectedItems: $scope.selected,
-      rowHeight: $scope.action.options.rowHeight ? $scope.action.options.rowHeight : 44
-  };
-  
   function init() {
+    $scope.isLoading = true;
+    $scope.moment = moment;
+    $scope.columnCount = 0;
+    $scope.list = [];
+    $scope.selected = [];
+    $scope.columns = [];
+    $scope.listTemplateUrl = '';
+    $scope.totalServerItems = 0;
+    $scope.isEditing = false;
+    $scope.searchFields = $scope.action.options.searchFields;
+    if ($scope.action.options.sort) {
+        //Custom Sort Override
+        $scope.sortInfo = $scope.action.options.sort;
+    } else {
+        //Use default sort by key
+        $scope.sortInfo = { fields: [$scope.action.options.key], directions: ["ASC"] };
+    }
+    $scope.filterOptions = {
+        filterText: "",
+        useExternalFilter: (typeof $scope.action.options.useExternalFilter === "boolean") ? $scope.action.options.useExternalFilter:false
+    };
+    $scope.pagingOptions = {
+        //Follow ng-grid pagination model
+        pageSizes: ['25', '50', '100', '250', '500'],
+        pageSize: $scope.action.options.pageSize ? $scope.action.options.pageSize : '25',
+        currentPage: 1 //1-based index
+    };
+
+    if (!$scope.sortInfo) $scope.sortInfo = {};
+    if (!$scope.sortInfo.columns) $scope.sortInfo.columns = [];
+
+    $scope.gridOptions = {
+        data: "list",
+        enableColumnResize: true,
+        enableRowSelection: typeof $scope.action.options.enableRowSelection === "boolean" ? $scope.action.options.enableRowSelection : true,
+        multiSelect: false,
+        enablePaging: true,
+        useExternalSorting: true,
+        showSelectionCheckbox: false,
+        sortInfo: $scope.sortInfo,
+        showFooter: true,
+        showFilter: $scope.action.options.showFilter,
+        headerRowHeight: 44,
+        footerRowHeight: 44,
+        totalServerItems: "totalServerItems",
+        pagingOptions: $scope.pagingOptions,
+        filterOptions: $scope.filterOptions,
+        selectedItems: $scope.selected,
+        rowHeight: $scope.action.options.rowHeight ? $scope.action.options.rowHeight : 44
+    };
     //For Mobile
     $scope.hideSideMenu();
     if ($window.ga) $window.ga('send', 'pageview', { page: $location.path() });
@@ -101,10 +99,10 @@ angular.module('dashboard.Dashboard.Model.List', [
     //Check if Editable
     //NOTE: $scope.action.options.disableAdd determines if you can add a record or not
     if ($scope.action.options.editable) {
-    	$scope.gridOptions.enableCellEdit = true;
-    	$scope.gridOptions.enableCellEditOnFocus = false;
-    	$scope.gridOptions.enableCellSelection = true;
-    	$scope.gridOptions.enableRowSelection = false;
+      $scope.gridOptions.enableCellEdit = true;
+      $scope.gridOptions.enableCellEditOnFocus = false;
+      $scope.gridOptions.enableCellSelection = true;
+      $scope.gridOptions.enableRowSelection = false;
     }
 
     //Setup Data Query
@@ -290,6 +288,7 @@ angular.module('dashboard.Dashboard.Model.List', [
   function setupPagination() {
     //make a copy of config params
     var params = angular.copy($scope.action.options.params);
+
     if (params && params.filter && params.filter.length > 0) {
       //use of filter JSON string
       try {
@@ -332,13 +331,32 @@ angular.module('dashboard.Dashboard.Model.List', [
           'filter[order]': sortOrder
         });
       }
-
-      if ($scope.searchFields && $scope.gridOptions.filterOptions.filterText && $scope.totalServerItems > $scope.pagingOptions.pageSize) {
+      //TODO: this needs to be improved at it does not properly work with an and operator in where clause
+      if ($scope.searchFields && $scope.gridOptions.filterOptions.filterText) {
+        // convert to json to work around query string limitation
+        params = GeneralModelService.queryStringParamsToJSON(params);
         var filterText = $scope.gridOptions.filterOptions.filterText;
-        angular.forEach($scope.searchFields, function(field, idx) {
-          var key = 'filter[where][or]['+idx+']['+field+'][like]';
-          params[key] = '%'+filterText+'%';
-        });
+        if(typeof params.filter.where == "object") {
+          var where = angular.copy(params.filter.where);
+          params.filter.where = {and:[]};
+          _.forEach(where, function(v,k) {
+            var item = {};
+            item[k] = v;
+            params.filter.where.and.push(item);
+          });
+          var orFilter = {or:[]};
+          angular.forEach($scope.searchFields, function(field, idx) {
+              var key = '['+field+'][like]';
+              var searchFilter = _.set({}, key, '%'+filterText+'%');
+              orFilter.or.push(searchFilter);
+          });
+          params.filter.where.and.push(orFilter);
+        } else {
+          angular.forEach($scope.searchFields, function (field, idx) {
+            var key = 'filter[where][or][' + idx + '][' + field + '][like]';
+            params = _.set(params, key, '%' + filterText + '%');
+          });
+        }
       }
     }
     
@@ -369,27 +387,36 @@ angular.module('dashboard.Dashboard.Model.List', [
         }
         $scope.totalServerItems = response.count;
       }
-      $scope.loadItems();
-    });  
+      $scope.loadItems(params);
+    },
+    function(error) {
+        $scope.errorMessage = 'There was an error while loading...';
+        console.error(error);
+    });
   };
 
-  $scope.loadItems = function() {
+  $scope.loadItems = function(params) {
     $scope.$emit("ModelListLoadItemsLoading");
-    var params = setupPagination();
-    //Rudimentary Caching (could use something more robust here)
-    var cacheKey = CacheService.getKeyForAction($scope.action,params);
-    if(CacheService.get(cacheKey)) {
-      //Instantly load from previous cached results for immediate response
-      try {
-        $scope.list = CacheService.get(cacheKey); //load from cache
-        $scope.columnCount = $scope.list.length > 0 ? Object.keys($scope.list[0]).length : 0;
-        processWindowSize(); //on first load check window size to determine if optional columns should be displayed
-      } catch(e) {
-        console.warn("ModelList Cache is corupt for key = " + cacheKey);
+    if(!params) params = setupPagination();
+      //Rudimentary Caching (could use something more robust here)
+      var cacheKey = CacheService.getKeyForAction($scope.action,params);
+      if(!$scope.filterOptions.useExternalFilter) {
+        if(CacheService.get(cacheKey)) {
+          //Instantly load from previous cached results for immediate response
+          try {
+            $scope.list = CacheService.get(cacheKey); //load from cache
+            $scope.columnCount = $scope.list.length > 0 ? Object.keys($scope.list[0]).length : 0;
+            processWindowSize(); //on first load check window size to determine if optional columns should be displayed
+          } catch(e) {
+            console.warn("ModelList Cache is corupt for key = " + cacheKey);
+          }
+        }
       }
-    }
+
     //Always query for the latest list even if the cache has previously cached results so that any updates
     //from the data source is refreshed
+
+    $scope.isLoading = true;
     GeneralModelService.list($scope.apiPath, params).then(
       function(response) {
         if (!response) return; //in case http request was cancelled
@@ -399,7 +426,7 @@ angular.module('dashboard.Dashboard.Model.List', [
         else
           $scope.list = response;
         $scope.columnCount = $scope.list.length > 0 ? Object.keys($scope.list[0]).length : 0;
-        CacheService.set(cacheKey, $scope.list);
+        if(!$scope.filterOptions.useExternalFilter) CacheService.set(cacheKey, $scope.list);
         processWindowSize(); //on first load check window size to determine if optional columns should be displayed
         $scope.$emit("ModelListLoadItemsLoaded");
         isFirstLoad = false;
@@ -693,16 +720,15 @@ angular.module('dashboard.Dashboard.Model.List', [
     }
   }, true);
 
-  //debounce instant search
-  var filterTextTimeout = $timeout(function(){});
-  $scope.$watch('gridOptions.$gridScope.filterText', function (value) {
-    if (value === undefined) return;
-    if (filterTextTimeout) $timeout.cancel(filterTextTimeout);
-    filterTextTimeout = $timeout(function() {
-      $scope.filterOptions.filterText = value;
-      $scope.loadItems();
-    }, 1000);
-  }, true);
+  $scope.$watch('gridOptions.$gridScope.filterText', _.debounce(function (newVal, oldVal) {
+    if(newVal != oldVal) {
+      $scope.$apply(function () {
+        $scope.pagingOptions.currentPage = 1;
+        $scope.filterOptions.filterText = newVal;
+        $scope.getTotalServerItems();
+      });
+    }
+  },250), true);
 
   $scope.$watch('sortInfo', function (newVal, oldVal) {
     //Check isFirstLoad so that this watch statement does not get called when the page loads for the first time
@@ -845,16 +871,6 @@ angular.module('dashboard.Dashboard.Model.List', [
     }
     
   }
-
-  // reset grid when clicking all users
-  $scope.$on('$locationChangeSuccess', function() {
-    if (Object.keys($location.search()).length === 0) {
-      $scope.filterOptions.filterText = '';
-      $scope.pagingOptions.currentPage = 1;
-      $scope.pagingOptions.pageSize = $scope.action.options.pageSize;
-      init();
-    }
-  });
   
   init();
 
