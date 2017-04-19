@@ -230,12 +230,6 @@ angular.module('dashboard.directives.ModelField', [
         break;
       case 'number-integer':
       case 'number':
-        scope.parseFunc = function(e) {
-          if (scope.display.allowDecimals === false) {e.target.value = parseInt(e.target.value)}
-          if (e.target.value < scope.display.minValue) {e.target.value = scope.display.minValue};
-          if (e.target.value > scope.display.maxValue) {e.target.value = scope.display.maxValue};
-          if (e.target.value === 'NaN') {e.target.value = scope.display.default || ''}
-        };
         // var parseFuncString = "value = parseInt(value.replace(/[A-z.,]/, \'\'))"
         template = '<label class="col-sm-2 control-label">{{ display.label || key }}:</label>\
           <div class="col-sm-10">\
@@ -280,6 +274,13 @@ angular.module('dashboard.directives.ModelField', [
     },
     link: function(scope, element, attrs) {
 
+        scope.parseFunc = function(e) {
+          if (scope.display.allowDecimals === false) {e.target.value = parseInt(e.target.value)}
+          if (e.target.value < scope.display.minValue) {e.target.value = scope.display.minValue};
+          if (e.target.value > scope.display.maxValue) {e.target.value = scope.display.maxValue};
+          if (e.target.value === 'NaN') {e.target.value = scope.display.default || ''}
+        };
+
         //In situations where edit form has fields not in the model json properties object (i.e. ModelFieldReference multi-select)
         if(scope.key !== null && typeof scope.key === 'object') {
           if (!scope.model.properties[scope.key.property]) {
@@ -288,7 +289,7 @@ angular.module('dashboard.directives.ModelField', [
           }
           scope.key = scope.key.property;
         }
-        
+
         var property = { display: {type: "text"} };
         if (scope.model.properties && scope.model.properties[scope.key]) property = scope.model.properties[scope.key];
         if (!property) {
