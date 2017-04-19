@@ -112,11 +112,14 @@ angular.module('dashboard.directives.ModelField', [
           </div>';
         break;
       case 'datetime':
+      case 'dateonly':
         template = '<label class="col-sm-2 control-label">{{ display.label || key }}:</label> \
           <div class="col-sm-10"> \
             <p class="date-picker input-group"> \
               <input type="text" class="form-control" \
-              control="dateControl"\
+              control="dateControl" \
+              min="{{ display.min }}" \
+              max="{{ display.max }}" \
               ng-model="data[key]" \
               default-date="{{data[key]}}" \
               ng-format="display.options.format" \
