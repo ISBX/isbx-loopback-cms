@@ -247,11 +247,13 @@ angular.module('dashboard.directives.ModelField', [
             <div class="model-field-description" ng-if="display.description">{{ display.description }}</div>\
           </div>';
         break;
+      case 'number-integer':
       case 'number':
+        // var parseFuncString = "value = parseInt(value.replace(/[A-z.,]/, \'\'))"
         template = '<label class="col-sm-2 control-label">{{ display.label || key }}:</label>\
           <div class="col-sm-10">\
-            <input type="number" min="{{ display.minValue }}" ng-model="data[key]" ng-pattern="display.pattern" ng-disabled="{{ display.readonly }}" ng-required="{{ model.properties[key].required }}" class="field form-control">\
-            <div class="model-field-description" ng-if="display.description">{{ display.description }}</div>\
+            <input type="number" ng-keyup="parseFunc($event)" max="{{ display.maxValue }}" min="{{ display.minValue }}" ng-model="data[key]" ng-disabled="{{ display.readonly }}" ng-required="{{ model.properties[key].required }}" class="field form-control">\
+            <div class="model-field-description" ng-if="display.description">{{ display.description }} {{count}}</div>\
           </div>';
         break;
       case 'phoneNumber':
@@ -291,6 +293,14 @@ angular.module('dashboard.directives.ModelField', [
       data: '=ngModel'
     },
     link: function(scope, element, attrs) {
+
+        scope.parseFunc = function(e) {
+          if (scope.display.allowDecimals === false) {e.target.value = parseInt(e.target.value)}
+          if (e.target.value < scope.display.minValue) {e.target.value = scope.display.minValue};
+          if (e.target.value > scope.display.maxValue) {e.target.value = scope.display.maxValue};
+          if (e.target.value === 'NaN') {e.target.value = scope.display.default || ''}
+        };
+
         //In situations where edit form has fields not in the model json properties object (i.e. ModelFieldReference multi-select)
         if(scope.key !== null && typeof scope.key === 'object') {
           if (!scope.model.properties[scope.key.property]) {
