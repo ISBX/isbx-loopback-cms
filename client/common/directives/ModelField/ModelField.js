@@ -228,8 +228,9 @@ angular.module('dashboard.directives.ModelField', [
             <div class="model-field-description" ng-if="display.description">{{ display.description }}</div>\
           </div>';
         break;
+      case 'number-decimal':
       case 'number':
-        scope.parseDecimal = function(value, scale) {console.log('value, scale', value, scale);
+        scope.parseDecimal = function(value, scale) {
           var decimalScale = parseInt(scale) || 2;
           var value = parseFloat(value.replace(",", "."));
           if (!isNaN(value) && typeof decimalScale === "number") {
@@ -241,8 +242,15 @@ angular.module('dashboard.directives.ModelField', [
         scope.parseFunc = function(e) {
           if(promise) $timeout.cancel(promise);
           promise = $timeout(function() {
-            if (scope.display.allowDecimals) e.target.value = scope.parseDecimal(e.target.value, scope.display.scaleValue);
-            else e.target.value = parseInt(e.target.value);
+            if (scope.display.allowDecimals) {
+              e.target.value = scope.parseDecimal(e.target.value, scope.display.scaleValue);
+              scope.display.minValue = parseFloat(scope.display.minValue);
+              scope.display.maxValue = parseFloat(scope.display.maxValue);
+            } else {
+              e.target.value = parseInt(e.target.value);
+              scope.display.minValue = parseInt(scope.display.minValue);
+              scope.display.maxValue = parseInt(scope.display.maxValue);
+            }
             if (e.target.value < scope.display.minValue) e.target.value = scope.display.minValue;
             if (e.target.value > scope.display.maxValue) e.target.value = scope.display.maxValue;
             if (e.target.value === 'NaN') e.target.value = scope.display.default || '';
