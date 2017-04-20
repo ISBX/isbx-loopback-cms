@@ -8,6 +8,7 @@ angular.module('dashboard', [
 
   'dashboard.services.Cache',
   'dashboard.services.Session',
+  'dashboard.services.Authorization',
 
   'templates-app',
   'templates-common',
@@ -24,6 +25,13 @@ angular.module('dashboard', [
     .state('public', {
       abstract: true,
       template: '<ui-view />'
+    })
+    .state('public.accessDenied', {
+      url: '/access-denied',
+      template: '<div class="no-script-warning"><h1>Access Denied</h1><p>You are not authorized to access this page.</p></div>',
+      data: {
+        pageTitle: 'Access Denied'
+      }
     });
 
   $urlRouterProvider.deferIntercept(); // defer routing until custom modules are loaded
@@ -55,8 +63,10 @@ angular.module('dashboard', [
 
 })
 
-.controller('AppCtrl', function AppCtrl ($scope, $location, $state, $rootScope, $timeout, $document, SessionService, CacheService, Config) {
+.controller('AppCtrl', function AppCtrl ($scope, $location, $state, $rootScope, $timeout, $document, SessionService, CacheService, AuthorizationService, Config) {
   $rootScope.$state = $state;
+  console.log($state.get());
+  window.states = $state.get();
   if (Config.serverParams.gaTrackingId) ga('create', Config.serverParams.gaTrackingId, 'auto');
 
   $rootScope.$on('$stateChangeStart', function(event, toState, toParams, fromState, fromParams) {
@@ -73,7 +83,14 @@ angular.module('dashboard', [
         $state.go('public.login');
       }
       event.preventDefault();
+      return;
     }
+
+    if(!AuthorizationService.isAuthorized(toState, toParams)) {
+      $state.go('public.accessDenied');
+      event.preventDefault();
+    }
+    
   });
 
   $scope.$on('$stateChangeSuccess', function(event, toState, toParams, fromState, fromParams){
