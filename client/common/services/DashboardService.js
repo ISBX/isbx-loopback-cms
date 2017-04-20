@@ -12,7 +12,7 @@ angular.module('dashboard.services.Dashboard', [
    * Filters the Config.serverParams.nav for accessible navigation sections based on the users role
    */
   this.getNavigation = function() {
-    var roles = angular.fromJson($cookies.roles);
+    var roles = angular.fromJson($cookies.get('roles'));
     if(_.isEmpty(_nav) || !_.isEqual(_roles, roles)) {
       //make a copy of the nav as not to modify the original object
       _roles = roles;

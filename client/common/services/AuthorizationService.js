@@ -14,7 +14,7 @@ angular.module('dashboard.services.Authorization', [
     //dashboard.model.action.route
     var path = toParams.model; // model = config.nav[].path
     var label = toParams.action;// action = config.nav[].label
-    var roles = angular.fromJson($cookies.roles);
+    var roles = angular.fromJson($cookies.get('roles'));
     
     if(!_.isEmpty(path) && !_.isEmpty(label)) { //check subnavs
       var found = _.find(nav, { path: path });
