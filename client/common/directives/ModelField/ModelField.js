@@ -193,9 +193,12 @@ angular.module('dashboard.directives.ModelField', [
         break;
       case 'radio':
         template = '<label class="col-sm-2 control-label">{{ display.label || key }}:</label>\
-          <div class="col-sm-10">\
+          <div class="col-sm-10 multi-select">\
             <div class="error-message" >{{ display.error }}</div>\
-            <label ng-repeat="'+ngOptions+'" class="radio"><input type="radio" ng-model="data[key]" ng-value="value || text" ng-disabled="{{ display.readonly }}" name="{{key}}"> {{text}}</label>\
+            <div class="select-item checkbox-container" ng-repeat="(itemKey, itemValue) in display.options">\
+              <input type="checkbox" class="field" ng-attr-id="{{key+\'-\'+itemKey}}" ng-model="singleSelectOptions[itemKey]" ng-disabled="{{ display.readonly }}" ng-click="updateSingleSelectCheckbox(itemKey, itemValue)">\
+              <label class="checkbox-label" ng-attr-for="{{key+\'-\'+itemKey}}">{{ itemValue }}</label>\
+            </div>\
             <div class="model-field-description" ng-if="display.description">{{ display.description }}</div>\
           </div>';
         break;
@@ -335,8 +338,8 @@ angular.module('dashboard.directives.ModelField', [
             } else {
               e.target.value = parseInt(e.target.value);
             }
-            if (e.target.value < scope.display.minValue) e.target.value = scope.display.minValue;
-            if (e.target.value > scope.display.maxValue) e.target.value = scope.display.maxValue;
+            // if (e.target.value < scope.display.minValue) e.target.value = scope.display.minValue;
+            // if (e.target.value > scope.display.maxValue) e.target.value = scope.display.maxValue;
             if (e.target.value === 'NaN') e.target.value = scope.display.default || '';
           }, 500);
         };
