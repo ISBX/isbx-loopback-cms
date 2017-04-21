@@ -29,7 +29,12 @@ angular.module('dashboard.services.Authorization', [
       var found = _.find(nav, { state: state });
       if(found) return DashboardService.hasAccess(roles, found);
     }
-    // TODO:check permission defined in state at controller level
-    return true;//allow for now
+
+    var ctrlRoles = toState.data['roles'];
+    if(!_.isEmpty(ctrlRoles) && _.isArray(ctrlRoles)) {
+      return DashboardService.hasAccess(roles, { roles: ctrlRoles });
+    }
+
+    return true;//no restrictions found, allow access for backwards compatibility
   };
 });
