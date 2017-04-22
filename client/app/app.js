@@ -8,7 +8,6 @@ angular.module('dashboard', [
 
   'dashboard.services.Cache',
   'dashboard.services.Session',
-  'dashboard.services.Authorization',
 
   'templates-app',
   'templates-common',
@@ -105,6 +104,7 @@ angular.module('dashboard', [
   });
 
   $rootScope.logOut = function(){
+    if(!SessionService.getAuthToken()) return;
     CacheService.reset(); //clear out caching
     SessionService.logOut()
       .then(function(result){
