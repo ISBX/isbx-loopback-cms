@@ -15,7 +15,7 @@ angular.module('dashboard', [
   'oc.lazyLoad'
 ])
 
-.config(function myAppConfig($locationProvider, $stateProvider, $urlRouterProvider, $compileProvider, $qProvider) {
+.config(function myAppConfig($locationProvider, $stateProvider, $urlRouterProvider, $compileProvider, $qProvider, Config) {
   $compileProvider.aHrefSanitizationWhitelist(/^\s*(http|https|ftp|mailto|tel|file|blo‌​b|data):/);
   $urlRouterProvider.otherwise('/login');
   if(Config.serverParams.disableRegistration) $urlRouterProvider.when('/register','/login');
