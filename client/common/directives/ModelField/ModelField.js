@@ -287,6 +287,7 @@ angular.module('dashboard.directives.ModelField', [
       scope.parseFunc = function(e) {
         if (promise) $timeout.cancel(promise);
         promise = $timeout(function() {
+          scope.display.minValue = scope.display.minValue ? scope.display.minValue : 0;
           if (scope.display.allowDecimals) {
             e.target.value = scope.parseDecimal(e.target.value, scope.display.scaleValue);
             scope.display.minValue = parseFloat(scope.display.minValue);
