@@ -4,7 +4,7 @@ angular.module('dashboard.services.Session', [
   'ngCookies'
 ])
 
-.service('SessionService', function($cookies, $cookieStore, $q, UserService, Config, Utils) {
+.service('SessionService', function($cookies, $cookieStore, $q, UserService, Config, Utils, DashboardService) {
   var self = this;
   
   var session = null;
@@ -16,16 +16,17 @@ angular.module('dashboard.services.Session', [
   }
 
   this.logIn = function(email, password, options) {
-	  var authModel = "Users";
-	  if (config.authModel) authModel = config.authModel; 
-       return Utils.apiHelper('POST', authModel + '/login?include=user', { email: email, password: password,  options: options})
-	      .then(function(userInfo) {
-	      	return self.setSession(userInfo);
-				})
-	      ["catch"](function() {
-	          $cookies.put('session', null);
-	          return $q.reject(arguments);
-        });
+    var authModel = "Users";
+    if (config.authModel) authModel = config.authModel;
+    return Utils.apiHelper('POST', authModel + '/login?include=user', { email: email, password: password,  options: options})
+    .then(function(userInfo) {
+      localStorage['lastActive'] = new Date();//initiallize after successful login
+      return self.setSession(userInfo);
+    })
+    ["catch"](function() {
+      $cookies.put('session', null);
+      return $q.reject(arguments);
+    });
   };
 
   this.logOut = function() {
@@ -92,6 +93,37 @@ angular.module('dashboard.services.Session', [
     var session = JSON.parse($cookies.get('session'));
     return session[key];
 	};
+
+  this.isAuthorized = function(toState, toParams) {
+    if(_.startsWith(toState.name, 'public')) return true;//always allow public routes
+    var nav = DashboardService.getNavigation();
+    var state = toState.name;
+    //dashboard.model.action.route
+    var path = toParams.model; // model = config.nav[].path
+    var label = toParams.action;// action = config.nav[].label
+    var roles = angular.fromJson($cookies.get('roles'));
+
+    if(!_.isEmpty(path) && !_.isEmpty(label)) { //check subnavs
+      var found = _.find(nav, { path: path });
+      if(found) {
+        if(!DashboardService.hasAccess(roles, found)) return false;
+        if(_.isArray(found.subnav)) {
+          var subnav = _.find(found.subnav, { label: label });
+          if(subnav) return DashboardService.hasAccess(roles, subnav);
+        }
+      }
+    } else { // check top nav using state
+      var found = _.find(nav, { state: state });
+      if(found) return DashboardService.hasAccess(roles, found);
+    }
+
+    var ctrlRoles = toState.data['roles'];
+    if(!_.isEmpty(ctrlRoles) && _.isArray(ctrlRoles)) {
+      return DashboardService.hasAccess(roles, { roles: ctrlRoles });
+    }
+
+    return true;//no restrictions found, allow access for backwards compatibility
+  };
 
   init();
 })
