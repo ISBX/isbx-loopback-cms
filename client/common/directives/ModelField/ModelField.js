@@ -484,18 +484,19 @@ angular.module('dashboard.directives.ModelField', [
           scope.singleSelectOptions = {};
 
           var selected = scope.data[scope.key];
-          angular.forEach(property.display.options, function(value, key) {
-            if(value == selected) {
-              scope.singleSelectOptions[key] = true;
+          angular.forEach(property.display.options, function(key, value) {
+            var choice = property.display.type == "radio" ? value : key;
+            if(choice == selected) {
+              scope.singleSelectOptions[choice] = true;
             } else {
-              scope.singleSelectOptions[key] = false;
+              scope.singleSelectOptions[choice] = false;
             }
           });
         }
 
         scope.updateSingleSelectCheckbox = function(itemKey, itemValue) {
           scope.singleSelectOptions[itemKey] = true;
-          scope.data[scope.key] = itemValue;
+          scope.data[scope.key] = itemKey;
           angular.forEach(scope.singleSelectOptions, function(value, index) {
             if (itemKey != index)
               scope.singleSelectOptions[index] = false;
