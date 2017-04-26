@@ -134,10 +134,28 @@ angular.module('dashboard.directives.ModelField', [
         //<model-field-datetime-edit options="field.options" ng-model="data[field.name]" class="field" /> \
         break;
       case 'multi-select':
+        // means array of results - answers stored as values and not keys - need to extra keys
+        if (Array.isArray(scope.multiSelectOptions)) {
+          var newMultiSelectOptions = scope.multiSelectOptions.slice();
+          scope.multiSelectOptions = {}
+          for (var i = 0; i < newMultiSelectOptions.length; i++) {
+            var option = newMultiSelectOptions[i];
+            for (var key in scope.display.options) {
+              if (key === option) {
+                scope.multiSelectOptions[key] = true;
+              }
+            }
+          }
+        }
+        var ngOptions = '(value, text) in display.options';
+        if (scope.property.display.options instanceof Array) {
+            //Handle when options is a an array vs key/value pair
+            ngOptions = 'text in display.options';
+        }
         template = '<label class="col-sm-2 control-label">{{ display.label || key }}:</label>\
           <div class="col-sm-10 multi-select">\
-            <div class="select-item checkbox-container" ng-repeat="(itemKey, itemValue) in display.options">\
-              <input type="checkbox" class="field" ng-attr-id="{{key+\'-\'+itemKey}}" ng-model="multiSelectOptions[itemKey]" ng-checked="multiSelectOptions[itemKey]" ng-disabled="{{ display.readonly }}" ng-change="clickMultiSelectCheckbox(key, itemKey, itemValue, multiSelectOptions)">\
+            <div class="select-item checkbox-container" ng-repeat="(itemKey, itemValue) in display.options"> \
+              <input type="checkbox" class="field" ng-attr-id="{{key+\'-\'+itemKey}}" ng-model="multiSelectOptions[itemKey]" ng-checked="multiSelectOptions[itemKey]" ng-disabled="{{ display.readonly }}" ng-click="clickMultiSelectCheckbox(key, itemKey, itemValue, multiSelectOptions)">\
               <label class="checkbox-label" ng-attr-for="{{key+\'-\'+itemKey}}">{{ itemValue }}</label>\
             </div>\
             <div class="model-field-description" ng-if="display.description">{{ display.description }}</div>\
@@ -378,6 +396,15 @@ angular.module('dashboard.directives.ModelField', [
             case "object":
               if (!scope.data[scope.key]) scope.data[scope.key] = {};
               scope.multiSelectOptions = angular.copy(scope.data[scope.key]);
+              try {
+                scope.multiSelectOptions = angular.fromJson(scope.multiSelectOptions);
+                if (typeof scope.multiSelectOptions === 'object' && !Array.isArray(scope.multiSelectOptions)) {
+                  for (var key in scope.multiSelectOptions) {
+                    scope.multiSelectOptions[key] = true;
+                  }
+                }
+              } catch(e) {
+              }
               break;
           }
         }
@@ -392,8 +419,12 @@ angular.module('dashboard.directives.ModelField', [
               var key = keys[i];
               var value = property.display.options[key];
               var selected = scope.multiSelectOptions[key];
-              if (selected) output[key] = value; //return object
-
+              // if currently selected
+              if (selected) {
+                output[key] = value
+              } else {
+                delete output[key]
+              } ; //return object
             }
           } else {
             //Results are always in order of property.display.options
