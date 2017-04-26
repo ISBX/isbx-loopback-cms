@@ -338,9 +338,8 @@ angular.module('dashboard.directives.ModelField', [
             } else {
               e.target.value = parseInt(e.target.value);
             }
-            // if (e.target.value < scope.display.minValue) e.target.value = scope.display.minValue;
-            // if (e.target.value > scope.display.maxValue) e.target.value = scope.display.maxValue;
             if (e.target.value === 'NaN') e.target.value = scope.display.default || '';
+            scope.data[scope.key] = e.target.value;
           }, 500);
         };
 
