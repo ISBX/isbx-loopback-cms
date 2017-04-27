@@ -340,7 +340,7 @@ angular.module('dashboard.directives.ModelField', [
               e.target.value = parseInt(e.target.value);
             }
             if (e.target.value === 'NaN') e.target.value = scope.display.default || '';
-            scope.data[scope.key] = e.target.value;
+            // scope.data[scope.key] = e.target.value;
           }, 500);
         };
 
