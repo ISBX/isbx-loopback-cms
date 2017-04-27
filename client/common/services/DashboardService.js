@@ -6,15 +6,20 @@ angular.module('dashboard.services.Dashboard', [
 .service('DashboardService', function($cookies, Config) {
   var self = this;
   var _roles = [];
+  var _nav = [];
 
   /**
    * Filters the Config.serverParams.nav for accessible navigation sections based on the users role
    */
   this.getNavigation = function() {
-    //make a copy of the nav as not to modify the original object
-    _roles =  JSON.parse($cookies.get('roles'));
-    var nav = angular.copy(Config.serverParams.nav);
-    return self.restrictMenuItems(nav);
+    var roles = angular.fromJson($cookies.get('roles'));
+    if(_.isEmpty(_nav) || !_.isEqual(_roles, roles)) {
+      //make a copy of the nav as not to modify the original object
+      _roles = roles;
+      var nav = angular.copy(Config.serverParams.nav);
+      _nav = self.restrictMenuItems(nav);
+    }
+    return _nav;
   };
 
   /**
