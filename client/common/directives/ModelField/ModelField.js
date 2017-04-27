@@ -164,7 +164,7 @@ angular.module('dashboard.directives.ModelField', [
         }
         template = '<label class="col-sm-2 control-label">{{ display.label || key }}:</label>\
           <div class="col-sm-10">\
-            <label ng-repeat="'+ngOptions+'" class="radio"><input type="radio" ng-model="data[key]" ng-value="value || text" ng-disabled="{{ display.readonly }}" name="{{key}}"> {{text}}</label>\
+            <label ng-repeat="'+ngOptions+'" class="radio"><input type="radio" class="field" ng-model="data[key]" ng-value="value || text" ng-disabled="{{ display.readonly }}" name="{{key}}"> {{text}}</label>\
             <div class="model-field-description" ng-if="display.description">{{ display.description }}</div>\
           </div>';
         break;
@@ -380,6 +380,29 @@ angular.module('dashboard.directives.ModelField', [
               scope.multiSelectOptions = angular.copy(scope.data[scope.key]);
               break;
           }
+        }
+
+        if(property.display.type == "radio") {
+          if (!scope.data[scope.key]) scope.data[scope.key] = "";
+          scope.singleSelectOptions = {};
+
+          var selected = scope.data[scope.key];
+          angular.forEach(property.display.options, function(value, key) {
+            if(value == selected) {
+              scope.singleSelectOptions[key] = true;
+            } else {
+              scope.singleSelectOptions[key] = false;
+            }
+          });
+        }
+
+        scope.updateSingleSelectCheckbox = function(itemKey, itemValue) {
+          scope.singleSelectOptions[itemKey] = true;
+          scope.data[scope.key] = itemValue;
+          angular.forEach(scope.singleSelectOptions, function(value, index) {
+            if (itemKey != index)
+              scope.singleSelectOptions[index] = false;
+          });
         }
         
         //Handle translating multi-select checks to scope.data[scope.key] output format
