@@ -278,7 +278,7 @@ angular.module('dashboard.directives.ModelField', [
         template = '<label class="col-sm-2 control-label">{{ display.label || key }}:</label>\
           <div class="col-sm-10">\
             <div class="error-message" >{{ display.error }}</div>\
-            <input type="number" ng-keyup="parseFunc($event)" max="{{ display.maxValue }}" min="{{ display.minValue }}" ng-model="data[key]" ng-disabled="{{ display.readonly }}" ng-required="{{ model.properties[key].required }}" class="field form-control">\
+            <input type="text" ng-keyup="parseFunc($event)" max="{{ display.maxValue }}" min="{{ display.minValue }}" ng-model="data[key]" ng-disabled="{{ display.readonly }}" ng-required="{{ model.properties[key].required }}" class="field form-control">\
             <div class="model-field-description" ng-if="display.description">{{ display.description }} {{count}}</div>\
           </div>';
         break;
@@ -321,7 +321,7 @@ angular.module('dashboard.directives.ModelField', [
     },
     link: function(scope, element, attrs) {
 
-        scope.parseDecimal = function(value, scale) {console.log('value, scale', value, scale);
+        scope.parseDecimal = function(value, scale) {
           var decimalScale = parseInt(scale) || 2;
           var value = parseFloat(value.replace(",", "."));
           if (!isNaN(value) && typeof decimalScale === "number") {
@@ -341,7 +341,7 @@ angular.module('dashboard.directives.ModelField', [
             }
             if (e.target.value === 'NaN') e.target.value = scope.display.default || '';
             // scope.data[scope.key] = e.target.value;
-          }, 500);
+          }, 1000);
         };
 
         //In situations where edit form has fields not in the model json properties object (i.e. ModelFieldReference multi-select)
@@ -369,6 +369,10 @@ angular.module('dashboard.directives.ModelField', [
             break;
             default: property.display.type = "text"; break;
           }
+        }
+
+        if (property.display.type === 'number-decimal') {
+          scope.data[scope.key] = scope.parseDecimal(scope.data[scope.key], property.display.scaleValue); //Parse value on load
         }
 
         scope.charsLeft = property.display.maxLength
