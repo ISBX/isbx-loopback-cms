@@ -271,7 +271,6 @@ angular.module('dashboard.directives.ModelField', [
             <div class="model-field-description" ng-if="display.description">{{ display.description }}</div>\
           </div>';
         break;
-      case 'number-integer':
       case 'number':
       case 'number-decimal':
         // var parseFuncString = "value = parseInt(value.replace(/[A-z.,]/, \'\'))"
