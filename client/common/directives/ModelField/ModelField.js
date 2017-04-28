@@ -323,12 +323,14 @@ angular.module('dashboard.directives.ModelField', [
     link: function(scope, element, attrs) {
 
         scope.parseDecimal = function(value, scale) {
-          var decimalScale = parseInt(scale) || 2;
-          var value = parseFloat(value.replace(",", "."));
-          if (!isNaN(value) && typeof decimalScale === "number") {
-            value = decimalScale === 0 ? parseInt(value): value.toFixed(decimalScale);
+          if (value) {
+            var decimalScale = parseInt(scale) || 2;
+            var value = parseFloat(value.replace(",", "."));
+            if (!isNaN(value) && typeof decimalScale === "number") {
+              value = decimalScale === 0 ? parseInt(value): value.toFixed(decimalScale);
+            }
+            return value;
           }
-          return value;
         };
 
         var promise = '';
