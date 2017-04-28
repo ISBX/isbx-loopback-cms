@@ -325,7 +325,7 @@ angular.module('dashboard.directives.ModelField', [
         scope.parseDecimal = function(value, scale) {
           if (value) {
             var decimalScale = parseInt(scale) || 2;
-            var value = parseFloat(value.replace(",", "."));
+            var value = parseFloat(value.toString().replace(",", "."));
             if (!isNaN(value) && typeof decimalScale === "number") {
               value = decimalScale === 0 ? parseInt(value): value.toFixed(decimalScale);
             }
