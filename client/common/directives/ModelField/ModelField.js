@@ -118,7 +118,6 @@ angular.module('dashboard.directives.ModelField', [
           </div>';
         break;
       case 'datetime':
-      case 'dateonly':
         template = '<label class="col-sm-2 control-label">{{ display.label || key }}:</label> \
           <div class="col-sm-10"> \
             <div class="error-message" >{{ display.error }}</div>\
