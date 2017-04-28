@@ -275,10 +275,11 @@ angular.module('dashboard.directives.ModelField', [
       case 'number':
       case 'number-decimal':
         // var parseFuncString = "value = parseInt(value.replace(/[A-z.,]/, \'\'))"
+        var inputType = type=='number-decimal' ? 'text' : 'number';
         template = '<label class="col-sm-2 control-label">{{ display.label || key }}:</label>\
           <div class="col-sm-10">\
             <div class="error-message" >{{ display.error }}</div>\
-            <input type="number" ng-keyup="parseFunc($event)" max="{{ display.maxValue }}" min="{{ display.minValue }}" ng-model="data[key]" ng-disabled="{{ display.readonly }}" ng-required="{{ model.properties[key].required }}" class="field form-control">\
+            <input type="'+inputType+'" ng-keyup="parseFunc($event)" max="{{ display.maxValue }}" min="{{ display.minValue }}" ng-model="data[key]" ng-disabled="{{ display.readonly }}" ng-required="{{ model.properties[key].required }}" class="field form-control">\
             <div class="model-field-description" ng-if="display.description">{{ display.description }} {{count}}</div>\
           </div>';
         break;
@@ -321,27 +322,33 @@ angular.module('dashboard.directives.ModelField', [
     },
     link: function(scope, element, attrs) {
 
-        scope.parseDecimal = function(value, scale) {console.log('value, scale', value, scale);
+        scope.parseDecimal = function(value, scale) {
           var decimalScale = parseInt(scale) || 2;
           var value = parseFloat(value.replace(",", "."));
           if (!isNaN(value) && typeof decimalScale === "number") {
             value = decimalScale === 0 ? parseInt(value): value.toFixed(decimalScale);
           }
           return value;
-        }
+        };
+
         var promise = '';
         scope.parseFunc = function(e) {
-          if(promise) $timeout.cancel(promise);
+          if (promise) $timeout.cancel(promise);
           promise = $timeout(function() {
             scope.display.minValue = scope.display.minValue ? scope.display.minValue : 0;
             if (scope.display.allowDecimals) {
-              e.target.value = scope.parseDecimal(e.target.value, scope.display.scaleValue);
+              if(scope.display.scaleValue!='none') e.target.value = scope.parseDecimal(e.target.value, scope.display.scaleValue);
+              scope.display.minValue = parseFloat(scope.display.minValue);
+              scope.display.maxValue = parseFloat(scope.display.maxValue);
             } else {
               e.target.value = parseInt(e.target.value);
+              scope.display.minValue = parseInt(scope.display.minValue);
+              scope.display.maxValue = parseInt(scope.display.maxValue);
             }
+            if (e.target.value < scope.display.minValue) e.target.value = scope.display.minValue;
+            if (e.target.value > scope.display.maxValue) e.target.value = scope.display.maxValue;
             if (e.target.value === 'NaN') e.target.value = scope.display.default || '';
-            // scope.data[scope.key] = e.target.value;
-          }, 500);
+          }, 1000);
         };
 
         //In situations where edit form has fields not in the model json properties object (i.e. ModelFieldReference multi-select)
@@ -369,6 +376,10 @@ angular.module('dashboard.directives.ModelField', [
             break;
             default: property.display.type = "text"; break;
           }
+        }
+
+        if (property.display.type === 'number-decimal') {
+          scope.data[scope.key] = scope.parseDecimal(scope.data[scope.key], property.display.scaleValue); //Parse value on load
         }
 
         scope.charsLeft = property.display.maxLength
@@ -484,18 +495,19 @@ angular.module('dashboard.directives.ModelField', [
           scope.singleSelectOptions = {};
 
           var selected = scope.data[scope.key];
-          angular.forEach(property.display.options, function(value, key) {
-            if(value == selected) {
-              scope.singleSelectOptions[key] = true;
+          angular.forEach(property.display.options, function(key, value) {
+            var choice = property.display.type == "radio" ? value : key;
+            if(choice == selected) {
+              scope.singleSelectOptions[choice] = true;
             } else {
-              scope.singleSelectOptions[key] = false;
+              scope.singleSelectOptions[choice] = false;
             }
           });
         }
 
         scope.updateSingleSelectCheckbox = function(itemKey, itemValue) {
           scope.singleSelectOptions[itemKey] = true;
-          scope.data[scope.key] = itemValue;
+          scope.data[scope.key] = itemKey;
           angular.forEach(scope.singleSelectOptions, function(value, index) {
             if (itemKey != index)
               scope.singleSelectOptions[index] = false;
