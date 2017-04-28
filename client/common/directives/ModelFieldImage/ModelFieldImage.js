@@ -80,6 +80,7 @@ angular.module('dashboard.directives.ModelFieldImage', [
                 //scope.options.urlKey defines the column field name for where the URL of the image is stored
                 scope.imageUrl = response[scope.options.urlKey];
                 if (!scope.imageUrl) scope.imageUrl = response["mediumUrl"]; //HACK FOR SMS PROJECT (PROB SHOULD REMOVE)
+                scope.thumbnailUrl = scope.imageUrl;
               });
             }
           }
