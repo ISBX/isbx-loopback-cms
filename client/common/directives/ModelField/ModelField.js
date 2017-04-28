@@ -337,7 +337,7 @@ angular.module('dashboard.directives.ModelField', [
           promise = $timeout(function() {
             scope.display.minValue = scope.display.minValue ? scope.display.minValue : 0;
             if (scope.display.allowDecimals) {
-              e.target.value = scope.parseDecimal(e.target.value, scope.display.scaleValue);
+              if(scope.display.scaleValue!='none') e.target.value = scope.parseDecimal(e.target.value, scope.display.scaleValue);
               scope.display.minValue = parseFloat(scope.display.minValue);
               scope.display.maxValue = parseFloat(scope.display.maxValue);
             } else {
