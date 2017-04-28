@@ -175,7 +175,7 @@ angular.module('dashboard.directives.ModelField', [
         var ngOptions = 'key as value for (key, value) in display.options';
         if (scope.property.display.options instanceof Array) {
           //Handle when options is array of objects - enabling orderBy and sorting - could refactor as option to pass in
-          if (typeof scope.property.display.options[0] === 'object') {
+          if (typeof scope.property.display.options[0] === 'object' && !Array.isArray(scope.property.display.options[0])) {
             ngOptions = 'item.typeKey as item.typeVal for item in display.options | orderBy: \'typeVal\''
           } else {
             //Handle when options is a an array vs key/value pair
@@ -192,9 +192,12 @@ angular.module('dashboard.directives.ModelField', [
         break;
       case 'radio':
         template = '<label class="col-sm-2 control-label">{{ display.label || key }}:</label>\
-          <div class="col-sm-10">\
+          <div class="col-sm-10 multi-select">\
             <div class="error-message" >{{ display.error }}</div>\
-            <label ng-repeat="'+ngOptions+'" class="radio"><input type="radio" ng-model="data[key]" ng-value="value || text" ng-disabled="{{ display.readonly }}" name="{{key}}"> {{text}}</label>\
+            <div class="select-item checkbox-container" ng-repeat="(itemKey, itemValue) in display.options">\
+              <input type="checkbox" class="field" ng-attr-id="{{key+\'-\'+itemKey}}" ng-model="singleSelectOptions[itemKey]" ng-disabled="{{ display.readonly }}" ng-click="updateSingleSelectCheckbox(itemKey, itemValue)">\
+              <label class="checkbox-label" ng-attr-for="{{key+\'-\'+itemKey}}">{{ itemValue }}</label>\
+            </div>\
             <div class="model-field-description" ng-if="display.description">{{ display.description }}</div>\
           </div>';
         break;
@@ -267,37 +270,15 @@ angular.module('dashboard.directives.ModelField', [
             <div class="model-field-description" ng-if="display.description">{{ display.description }}</div>\
           </div>';
         break;
-      case 'number-decimal':
-      case 'number-integer':
       case 'number':
-        scope.parseDecimal = function(value, scale) {console.log('value, scale', value, scale);
-          var decimalScale = parseInt(scale) || 2;
-          var value = parseFloat(value.replace(",", "."));
-          if (!isNaN(value) && typeof decimalScale === "number") {
-            value = decimalScale === 0 ? parseInt(value): value.toFixed(decimalScale);
-          }
-          return value;
-        }
-        var promise = '';
-        scope.parseFunc = function(e) {
-          if(promise) $timeout.cancel(promise);
-          promise = $timeout(function() {
-            if (scope.display.allowDecimals) {
-              e.target.value = scope.parseDecimal(e.target.value, scope.display.scaleValue);
-            } else {
-              e.target.value = parseInt(e.target.value);
-            }
-            if (e.target.value < scope.display.minValue) e.target.value = scope.display.minValue;
-            if (e.target.value > scope.display.maxValue) e.target.value = scope.display.maxValue;
-            if (e.target.value === 'NaN') e.target.value = scope.display.default || '';
-          }, 500);
-        };
+      case 'number-decimal':
         // var parseFuncString = "value = parseInt(value.replace(/[A-z.,]/, \'\'))"
+        var inputType = type=='number-decimal' ? 'text' : 'number';
         template = '<label class="col-sm-2 control-label">{{ display.label || key }}:</label>\
           <div class="col-sm-10">\
             <div class="error-message" >{{ display.error }}</div>\
-            <input type="number" ng-keyup="parseFunc($event)" max="{{ display.maxValue }}" min="{{ display.minValue }}" ng-model="data[key]" ng-pattern="display.pattern" ng-disabled="{{ display.readonly }}" ng-required="{{ model.properties[key].required }}" class="field form-control">\
-            <div class="model-field-description" ng-if="display.description">{{ display.description }}</div>\
+            <input type="'+inputType+'" ng-keyup="parseFunc($event)" max="{{ display.maxValue }}" min="{{ display.minValue }}" ng-model="data[key]" ng-disabled="{{ display.readonly }}" ng-required="{{ model.properties[key].required }}" class="field form-control">\
+            <div class="model-field-description" ng-if="display.description">{{ display.description }} {{count}}</div>\
           </div>';
         break;
       case 'phoneNumber':
@@ -339,6 +320,38 @@ angular.module('dashboard.directives.ModelField', [
     },
     link: function(scope, element, attrs) {
 
+        scope.parseDecimal = function(value, scale) {
+          if (value) {
+            var decimalScale = parseInt(scale) || 2;
+            var value = parseFloat(value.toString().replace(",", "."));
+            if (!isNaN(value) && typeof decimalScale === "number") {
+              value = decimalScale === 0 ? parseInt(value): value.toFixed(decimalScale);
+            }
+            return value;
+          }
+        };
+
+        var promise = '';
+        scope.parseFunc = function(e) {
+          if (promise) $timeout.cancel(promise);
+          promise = $timeout(function() {
+            scope.display.minValue = scope.display.minValue ? scope.display.minValue : 0;
+            if (scope.display.allowDecimals) {
+              if(scope.display.scaleValue!='none') e.target.value = scope.parseDecimal(e.target.value, scope.display.scaleValue);
+              scope.display.minValue = parseFloat(scope.display.minValue);
+              scope.display.maxValue = parseFloat(scope.display.maxValue);
+            } else {
+              e.target.value = parseInt(e.target.value);
+              scope.display.minValue = parseInt(scope.display.minValue);
+              scope.display.maxValue = parseInt(scope.display.maxValue);
+            }
+            if (e.target.value === 'NaN') e.target.value = scope.display.default || '';
+            scope.data[scope.key] = (scope.display.allowDecimals && (scope.display.scaleValue!='none')) ?
+              scope.parseDecimal(e.target.value, scope.display.scaleValue) :
+              parseInt(e.target.value);
+          }, 1000);
+        };
+
         //In situations where edit form has fields not in the model json properties object (i.e. ModelFieldReference multi-select)
         if(scope.key !== null && typeof scope.key === 'object') {
           if (!scope.model.properties[scope.key.property]) {
@@ -364,6 +377,10 @@ angular.module('dashboard.directives.ModelField', [
             break;
             default: property.display.type = "text"; break;
           }
+        }
+
+        if (property.display.type === 'number-decimal') {
+          scope.data[scope.key] = scope.parseDecimal(scope.data[scope.key], property.display.scaleValue); //Parse value on load
         }
 
         scope.charsLeft = property.display.maxLength
@@ -479,18 +496,19 @@ angular.module('dashboard.directives.ModelField', [
           scope.singleSelectOptions = {};
 
           var selected = scope.data[scope.key];
-          angular.forEach(property.display.options, function(value, key) {
-            if(value == selected) {
-              scope.singleSelectOptions[key] = true;
+          angular.forEach(property.display.options, function(key, value) {
+            var choice = property.display.type == "radio" ? value : key;
+            if(choice == selected) {
+              scope.singleSelectOptions[choice] = true;
             } else {
-              scope.singleSelectOptions[key] = false;
+              scope.singleSelectOptions[choice] = false;
             }
           });
         }
 
         scope.updateSingleSelectCheckbox = function(itemKey, itemValue) {
           scope.singleSelectOptions[itemKey] = true;
-          scope.data[scope.key] = itemValue;
+          scope.data[scope.key] = itemKey;
           angular.forEach(scope.singleSelectOptions, function(value, index) {
             if (itemKey != index)
               scope.singleSelectOptions[index] = false;
