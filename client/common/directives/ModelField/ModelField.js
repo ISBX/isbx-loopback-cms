@@ -346,9 +346,10 @@ angular.module('dashboard.directives.ModelField', [
               scope.display.minValue = parseInt(scope.display.minValue);
               scope.display.maxValue = parseInt(scope.display.maxValue);
             }
-            if (e.target.value < scope.display.minValue) e.target.value = scope.display.minValue;
-            if (e.target.value > scope.display.maxValue) e.target.value = scope.display.maxValue;
             if (e.target.value === 'NaN') e.target.value = scope.display.default || '';
+            scope.data[scope.key] = (scope.display.allowDecimals && (scope.display.scaleValue!='none')) ?
+              scope.parseDecimal(e.target.value, scope.display.scaleValue) :
+              parseInt(e.target.value);
           }, 1000);
         };
 
