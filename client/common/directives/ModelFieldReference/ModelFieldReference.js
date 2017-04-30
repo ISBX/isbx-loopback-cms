@@ -5,6 +5,8 @@ angular.module('dashboard.directives.ModelFieldReference', [
 ])
 
 .directive('modelFieldReferenceView', function($compile) {
+  "ngInject";
+
   return {
     restrict: 'E',
     template: '<b>{{ options.model }}</b>: {{ data[options.key] }}',
@@ -20,6 +22,8 @@ angular.module('dashboard.directives.ModelFieldReference', [
 })
 
 .directive('modelFieldReferenceEdit', function($compile, $cookies, Config, GeneralModelService) {
+  "ngInject";
+
   function getTemplate(multiple, matchTemplate, choiceTemplate) {
     var template = '';
     if (multiple) {

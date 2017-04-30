@@ -6,6 +6,8 @@ angular.module('dashboard.Register', [
 ])
 
 .config(function config($stateProvider) {
+  "ngInject";
+
   $stateProvider
     .state('public.register', {
       url: '/register',
@@ -18,6 +20,8 @@ angular.module('dashboard.Register', [
 })
 
 .controller('RegisterCtrl', function RegisterCtrl($scope, Config, SessionService, UserService) {
+  "ngInject";
+
   $scope.login = {};
 
   function init() {

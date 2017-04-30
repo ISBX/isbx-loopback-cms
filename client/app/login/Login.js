@@ -6,6 +6,8 @@ angular.module('dashboard.Login', [
 ])
 
 .config(function config($stateProvider) {
+  "ngInject";
+
   $stateProvider
     .state('public.login', {
       url: '/login',
@@ -18,6 +20,7 @@ angular.module('dashboard.Login', [
 })
 
 .controller('LoginCtrl', function LoginCtrl($scope, $state, $window, Config, SessionService, CacheService) {
+  "ngInject";
 
   var self = this;
 

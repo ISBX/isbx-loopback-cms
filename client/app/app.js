@@ -16,6 +16,8 @@ angular.module('dashboard', [
 ])
 
 .config(function myAppConfig($locationProvider, $stateProvider, $urlRouterProvider, $compileProvider, $qProvider, Config) {
+  "ngInject";
+
   $compileProvider.aHrefSanitizationWhitelist(/^\s*(http|https|ftp|mailto|tel|file|blo‌​b|data):/);
   $urlRouterProvider.otherwise('/login');
   if(Config.serverParams.disableRegistration) $urlRouterProvider.when('/register','/login');
@@ -39,6 +41,8 @@ angular.module('dashboard', [
 })
 
 .run(function run($ocLazyLoad, $rootScope, $urlRouter, Config, SessionService) {
+  "ngInject";
+
   //  SessionService.tryGetCurrentUser();
   var modulesLoaded = false;
   if (Config.serverParams.customModules) {
@@ -71,6 +75,8 @@ angular.module('dashboard', [
 })
 
 .controller('AppCtrl', function AppCtrl ($scope, $location, $state, $rootScope, $timeout, $document, SessionService, CacheService, Config, constants) {
+  "ngInject";
+
   $rootScope.$state = $state;
   if (Config.serverParams.gaTrackingId) ga('create', Config.serverParams.gaTrackingId, 'auto');
 

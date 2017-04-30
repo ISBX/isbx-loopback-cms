@@ -62,9 +62,6 @@ module.exports = {
       'vendor/lodash/dist/lodash.min.js',
       'vendor/jquery/dist/jquery.min.js',
       'vendor/jquery-ui/jquery-ui.min.js',
-      'vendor/ace-builds/src-min-noconflict/ace.js',
-      'vendor/ace-builds/src-min-noconflict/mode-json.js',
-      'vendor/ace-builds/src-min-noconflict/mode-html.js',
       'vendor/json-editor/dist/jsoneditor.js',
       "vendor/danialfarid-angular-file-upload/dist/angular-file-upload-shim.min.js", //Note: shim.js MUST BE PLACED BEFORE angular.js and angular-file-upload.js AFTER angular.js
       'vendor/angular/angular.js',

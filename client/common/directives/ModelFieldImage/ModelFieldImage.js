@@ -4,6 +4,8 @@ angular.module('dashboard.directives.ModelFieldImage', [
 ])
 
 .directive('modelFieldImageView', function($compile) {
+  "ngInject";
+
   return {
     restrict: 'E',
     template: '<b>{{ field.label }}</b>: {{ data[field.name] }}',
@@ -18,6 +20,8 @@ angular.module('dashboard.directives.ModelFieldImage', [
 })
 
 .directive('modelFieldImageEdit', function($compile, $document, GeneralModelService, ImageService, SessionService, $timeout) {
+  "ngInject";
+
   return {
     restrict: 'E',
     template: '<div class="image-container" style="background: no-repeat center center url(\'{{ thumbnailUrl }}\'); background-size: contain;" ng-click="imageClick()"></div> \

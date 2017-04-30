@@ -5,6 +5,7 @@ angular.module('dashboard.services.Cache', [
 ])
 
 .service('CacheService', function() {
+  "ngInject";
 
   this.KEY_DELIMITER = '-';
 

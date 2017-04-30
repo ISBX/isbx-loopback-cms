@@ -7,6 +7,8 @@ angular.module('dashboard.directives.ModelFieldWYSIWYG', [
 ])
 
 .directive('modelFieldWysiwygView', function($compile) {
+  "ngInject";
+
   return {
     restrict: 'E',
     template: '<b>{{ options.model }}</b>: {{ data[options.key] }}',
@@ -22,6 +24,8 @@ angular.module('dashboard.directives.ModelFieldWYSIWYG', [
 })
 
 .directive('modelFieldWysiwygEdit', function($compile, $cookies, $timeout, $modal, Config, FileUploadService) {
+  "ngInject";
+
   function getTemplate(scope) {
     var fontsList = '';
     if(scope.options && scope.options.fonts) {

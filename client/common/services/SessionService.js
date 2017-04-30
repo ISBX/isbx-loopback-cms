@@ -5,6 +5,8 @@ angular.module('dashboard.services.Session', [
 ])
 
 .service('SessionService', function($cookies, $cookieStore, $q, UserService, Config, Utils, DashboardService) {
+  "ngInject";
+
   var self = this;
   
   var session = null;

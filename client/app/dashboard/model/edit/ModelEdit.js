@@ -13,6 +13,8 @@ angular.module('dashboard.Dashboard.Model.Edit', [
 ])
 
 .config(function config($stateProvider) {
+  "ngInject";
+
   $stateProvider
     .state('dashboard.model.action.edit', {
       url: '/edit/:id',
@@ -26,6 +28,7 @@ angular.module('dashboard.Dashboard.Model.Edit', [
 })
 
 .controller('ModelEditCtrl', function ModelEditCtrl($rootScope, $scope, $cookies, $location, $stateParams, $state, $window, $modal, Config, GeneralModelService, FileUploadService, CacheService) {
+  "ngInject";
 
   var modalInstance = null;
   function init() {
