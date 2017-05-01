@@ -491,7 +491,7 @@ angular.module('dashboard.directives.ModelField', [
           }
         }
 
-        if(property.display.type == "radio" || property.display.type == "multi-yes-no" || property.display.type == "multi-true-false") {
+        if(property.display.type == "radio") {
           if (!scope.data[scope.key]) scope.data[scope.key] = "";
           scope.singleSelectOptions = {};
 
