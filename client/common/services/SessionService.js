@@ -22,7 +22,6 @@ angular.module('dashboard.services.Session', [
     if (config.authModel) authModel = config.authModel;
     return Utils.apiHelper('POST', authModel + '/login?include=user', { email: email, password: password,  options: options})
     .then(function(userInfo) {
-      localStorage['lastActive'] = new Date();//initiallize after successful login
       return self.setSession(userInfo);
     })
     ["catch"](function() {
@@ -48,6 +47,7 @@ angular.module('dashboard.services.Session', [
     if (config.authModel) authModel = config.authModel;
     return Utils.apiHelper('GET', authModel + '/' + userInfo.userId + '/Roles?access_token=' + userInfo.id)
       .then(function(roles) {
+        localStorage['lastActive'] = new Date();//initiallize after successful login
         session = userInfo;
         $cookies.put('username', userInfo.user.username);
         $cookies.put('userId', userInfo.userId);
