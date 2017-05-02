@@ -12,7 +12,8 @@ angular.module('dashboard', [
   'templates-app',
   'templates-common',
   'ui.router',
-  'oc.lazyLoad'
+  'oc.lazyLoad',
+  'ngCookies'
 ])
 
 .config(function myAppConfig($locationProvider, $stateProvider, $urlRouterProvider, $compileProvider, $qProvider, Config) {
@@ -74,7 +75,7 @@ angular.module('dashboard', [
   LOGIN_STATE: 'public.login'
 })
 
-.controller('AppCtrl', function AppCtrl ($scope, $location, $state, $rootScope, $timeout, $document, SessionService, CacheService, Config, constants) {
+.controller('AppCtrl', function AppCtrl ($scope, $location, $state, $rootScope, $timeout, $document, $cookies, SessionService, CacheService, Config, constants) {
   "ngInject";
 
   $rootScope.$state = $state;
@@ -136,12 +137,12 @@ angular.module('dashboard', [
     //limit the amount of time localStorage is written to
     if (new Date() - lastPersistDate > constants.TIMEOUT_INTERVAL) {
       if ($rootScope.checkTimeout()) {
-        localStorage['lastActive'] = new Date();
+        $cookies.put('lastActive', new Date());
       }
     } else {
       $rootScope.persistId = $timeout(function() {
         if ($rootScope.checkTimeout()) {
-          localStorage['lastActive'] = new Date();
+          $cookies.put('lastActive', new Date());
         }
       }, constants.TIMEOUT_INTERVAL);
     }
@@ -149,12 +150,12 @@ angular.module('dashboard', [
 
   $rootScope.checkTimeout = function() {
     $timeout.cancel($rootScope.timeoutId);
-    if (!localStorage['lastActive']) {
+    if (!$cookies.get('lastActive')) {
       console.error('Session Timedout on another window/tab');
       $state.go(constants.LOGIN_STATE);
       return false;
     }
-    var lastActiveDate = new Date(localStorage['lastActive']);
+    var lastActiveDate = new Date($cookies.get('lastActive'));
     var interval = new Date() - lastActiveDate;
     if (interval > Config.serverParams.sessionTimeout) {
       $rootScope.logOut();
