@@ -231,8 +231,10 @@ angular.module('dashboard.directives.ModelField', [
           <div class="col-sm-10">\
             <div class="error-message" >{{ display.error }}</div>\
             <textarea msd-elastic ng-model="data[key]" ng-keyup="lengthCheck($event)" ng-disabled="{{ display.readonly }}" ng-required="{{ model.properties[key].required }}" class="field form-control" ng-maxlength="{{ display.maxLength }}"></textarea>\
-            <div class="model-field-tool-tip" ng-if="display.maxLength">{{ charsLeft }} characters left</div>\
-            <div class="model-field-description" ng-if="display.description">{{ display.description }}</div>\
+            <div class="model-field-description">\
+              <span ng-if="display.description"> {{ display.description }} </span> \
+              <span ng-if="display.maxLength"> &nbsp{{ charsLeft }} characters left </span>\
+            </div>\
           </div>';
         break;
       case 'wysiwyg':
@@ -296,7 +298,10 @@ angular.module('dashboard.directives.ModelField', [
           <div class="col-sm-10">\
             <div class="error-message" >{{ display.error }}</div>\
             <input type="text" ng-model="data[key]" ng-keyup="lengthCheck($event)" ng-pattern="display.pattern" ng-disabled="{{ display.readonly }}" ng-required="{{ model.properties[key].required }}" class="field form-control" ng-maxlength="{{ display.maxLength }}">\
-            <div class="model-field-description" ng-if="display.description">{{ display.description }}</div>\
+            <div class="model-field-description">\
+              <span ng-if="display.description"> {{ display.description }} </span> \
+              <span ng-if="display.maxLength"> &nbsp{{ charsLeft }} characters left </span>\
+            </div>\
           </div>';
     }
     return template;
