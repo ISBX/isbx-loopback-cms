@@ -325,7 +325,7 @@ angular.module('dashboard.directives.ModelField', [
           var decimalScale = parseInt(scale) || 2;
           var value = parseFloat(value.toString().replace(",", "."));
           if (!isNaN(value) && typeof decimalScale === "number") {
-            value = decimalScale === 0 ? parseInt(value): +(value.toFixed(decimalScale));
+            value = decimalScale === 0 ? parseInt(value): _.round(value, decimalScale);
           }
           return value;
         };
