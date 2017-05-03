@@ -22,9 +22,21 @@ angular.module('dashboard.directives.ModelFieldWYSIWYG', [
 })
 
 .directive('modelFieldWysiwygEdit', function($compile, $cookies, $timeout, $modal, Config, FileUploadService) {
-  function getTemplate() {
+  function getTemplate(scope) {
+    var fontsList = '';
+    if(scope.options && scope.options.fonts) {
+      var fonts = scope.options.fonts;
+      for (var i = 0; i < fonts.length; i++) {
+        fontsList += '<li><a data-edit="fontName ' + fonts[i] + '" style="font-family: \'' + fonts[i] + '\';">' + fonts[i] + '</a></li>';
+      }
+    }
     var template = '\
       <div class="wysiwyg-toolbar" data-role="editor-toolbar" data-target=".wysiwyg-editor" ng-hide="disabled">\
+        <div class="btn-group" ng-show="options && options.fonts">\
+          <span class="dropdown">\
+          <a class="btn btn-default" title="Font" ng-click="toggleDropdown($event)" ng-disabled="isEditingCode"><i class="fa fa-font"></i>&nbsp;<b class="caret"></b></a>\
+          <ul class="menu" ng-click="toggleDropdown($event)">'+fontsList+'</ul></span>\
+        </div>\
         <div class="btn-group">\
           <span class="dropdown">\
           <a class="btn btn-default" title="Font Size" ng-click="toggleDropdown($event)" ng-disabled="isEditingCode"><i class="fa fa-text-height"></i>&nbsp;<b class="caret"></b></a>\
@@ -107,7 +119,7 @@ angular.module('dashboard.directives.ModelFieldWYSIWYG', [
         scope.onFileSelect = onFileSelect;
         scope.toggleCodeEdit = toggleCodeEdit;
 
-        element.html(getTemplate()).show();
+        element.html(getTemplate(scope)).show();
         $compile(element.contents())(scope);
 
         initWysiwygEditor();

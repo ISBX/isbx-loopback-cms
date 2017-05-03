@@ -118,7 +118,6 @@ angular.module('dashboard.directives.ModelField', [
           </div>';
         break;
       case 'datetime':
-      case 'dateonly':
         template = '<label class="col-sm-2 control-label">{{ display.label || key }}:</label> \
           <div class="col-sm-10"> \
             <div class="error-message" >{{ display.error }}</div>\
@@ -192,13 +191,15 @@ angular.module('dashboard.directives.ModelField', [
           </div>';
         break;
       case 'radio':
+        var ngOptions = '(value, text) in display.options';
+        if (scope.property.display.options instanceof Array) {
+          //Handle when options is a an array vs key/value pair
+          ngOptions = 'text in display.options';
+        }
         template = '<label class="col-sm-2 control-label">{{ display.label || key }}:</label>\
-          <div class="col-sm-10 multi-select">\
+          <div class="col-sm-10">\
             <div class="error-message" >{{ display.error }}</div>\
-            <div class="select-item checkbox-container" ng-repeat="(itemKey, itemValue) in display.options">\
-              <input type="checkbox" class="field" ng-attr-id="{{key+\'-\'+itemKey}}" ng-model="singleSelectOptions[itemKey]" ng-disabled="{{ display.readonly }}" ng-click="updateSingleSelectCheckbox(itemKey, itemValue)">\
-              <label class="checkbox-label" ng-attr-for="{{key+\'-\'+itemKey}}">{{ itemValue }}</label>\
-            </div>\
+            <label ng-repeat="'+ngOptions+'" class="radio"><input type="radio" ng-model="data[key]" ng-value="value || text" ng-disabled="{{ display.readonly }}" name="{{key}}"> {{text}}</label>\
             <div class="model-field-description" ng-if="display.description">{{ display.description }}</div>\
           </div>';
         break;
@@ -232,8 +233,10 @@ angular.module('dashboard.directives.ModelField', [
           <div class="col-sm-10">\
             <div class="error-message" >{{ display.error }}</div>\
             <textarea msd-elastic ng-model="data[key]" ng-keyup="lengthCheck($event)" ng-disabled="{{ display.readonly }}" ng-required="{{ model.properties[key].required }}" class="field form-control" ng-maxlength="{{ display.maxLength }}"></textarea>\
-            <div class="model-field-tool-tip" ng-if="display.maxLength">{{ charsLeft }} characters left</div>\
-            <div class="model-field-description" ng-if="display.description">{{ display.description }}</div>\
+            <div class="model-field-description">\
+              <span ng-if="display.description"> {{ display.description }} </span> \
+              <span ng-if="display.maxLength"> &nbsp{{ charsLeft }} characters left </span>\
+            </div>\
           </div>';
         break;
       case 'wysiwyg':
@@ -297,7 +300,10 @@ angular.module('dashboard.directives.ModelField', [
           <div class="col-sm-10">\
             <div class="error-message" >{{ display.error }}</div>\
             <input type="text" ng-model="data[key]" ng-keyup="lengthCheck($event)" ng-pattern="display.pattern" ng-disabled="{{ display.readonly }}" ng-required="{{ model.properties[key].required }}" class="field form-control" ng-maxlength="{{ display.maxLength }}">\
-            <div class="model-field-description" ng-if="display.description">{{ display.description }}</div>\
+            <div class="model-field-description">\
+              <span ng-if="display.description"> {{ display.description }} </span> \
+              <span ng-if="display.maxLength"> &nbsp{{ charsLeft }} characters left </span>\
+            </div>\
           </div>';
     }
     return template;
@@ -327,7 +333,6 @@ angular.module('dashboard.directives.ModelField', [
           if (!isNaN(value) && typeof decimalScale === "number") {
             value = decimalScale === 0 ? parseInt(value): _.round(value, decimalScale);
           }
-          return value;
         };
 
         var promise = '';
@@ -344,9 +349,10 @@ angular.module('dashboard.directives.ModelField', [
               scope.display.minValue = parseInt(scope.display.minValue);
               scope.display.maxValue = parseInt(scope.display.maxValue);
             }
-            if (e.target.value < scope.display.minValue) e.target.value = scope.display.minValue;
-            if (e.target.value > scope.display.maxValue) e.target.value = scope.display.maxValue;
             if (e.target.value === 'NaN') e.target.value = scope.display.default || '';
+            scope.data[scope.key] = (scope.display.allowDecimals && (scope.display.scaleValue!='none')) ?
+              scope.parseDecimal(e.target.value, scope.display.scaleValue) :
+              parseInt(e.target.value);
           }, 1000);
         };
 
@@ -489,7 +495,7 @@ angular.module('dashboard.directives.ModelField', [
           }
         }
 
-        if(property.display.type == "radio" || property.display.type == "multi-yes-no" || property.display.type == "multi-true-false") {
+        if(property.display.type == "radio") {
           if (!scope.data[scope.key]) scope.data[scope.key] = "";
           scope.singleSelectOptions = {};
 
@@ -505,7 +511,8 @@ angular.module('dashboard.directives.ModelField', [
 
         scope.updateSingleSelectCheckbox = function(itemKey, itemValue) {
           scope.singleSelectOptions[itemKey] = true;
-          scope.data[scope.key] = itemValue;
+
+          scope.data[scope.key] = itemKey;
           angular.forEach(scope.singleSelectOptions, function(value, index) {
             if (itemKey != index)
               scope.singleSelectOptions[index] = false;
