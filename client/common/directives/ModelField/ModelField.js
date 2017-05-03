@@ -191,13 +191,15 @@ angular.module('dashboard.directives.ModelField', [
           </div>';
         break;
       case 'radio':
+        var ngOptions = '(value, text) in display.options';
+        if (scope.property.display.options instanceof Array) {
+          //Handle when options is a an array vs key/value pair
+          ngOptions = 'text in display.options';
+        }
         template = '<label class="col-sm-2 control-label">{{ display.label || key }}:</label>\
-          <div class="col-sm-10 multi-select">\
+          <div class="col-sm-10">\
             <div class="error-message" >{{ display.error }}</div>\
-            <div class="select-item checkbox-container" ng-repeat="(itemKey, itemValue) in display.options">\
-              <input type="checkbox" class="field" ng-attr-id="{{key+\'-\'+itemKey}}" ng-model="singleSelectOptions[itemKey]" ng-disabled="{{ display.readonly }}" ng-click="updateSingleSelectCheckbox(itemKey, itemValue)">\
-              <label class="checkbox-label" ng-attr-for="{{key+\'-\'+itemKey}}">{{ itemValue }}</label>\
-            </div>\
+            <label ng-repeat="'+ngOptions+'" class="radio"><input type="radio" ng-model="data[key]" ng-value="value || text" ng-disabled="{{ display.readonly }}" name="{{key}}"> {{text}}</label>\
             <div class="model-field-description" ng-if="display.description">{{ display.description }}</div>\
           </div>';
         break;
@@ -501,18 +503,18 @@ angular.module('dashboard.directives.ModelField', [
           scope.singleSelectOptions = {};
 
           var selected = scope.data[scope.key];
-          angular.forEach(property.display.options, function(key, value) {
-            var choice = property.display.type == "radio" ? value : key;
-            if(choice == selected) {
-              scope.singleSelectOptions[choice] = true;
+          angular.forEach(property.display.options, function(value, key) {
+            if(value == selected) {
+              scope.singleSelectOptions[key] = true;
             } else {
-              scope.singleSelectOptions[choice] = false;
+              scope.singleSelectOptions[key] = false;
             }
           });
         }
 
         scope.updateSingleSelectCheckbox = function(itemKey, itemValue) {
           scope.singleSelectOptions[itemKey] = true;
+
           scope.data[scope.key] = itemKey;
           angular.forEach(scope.singleSelectOptions, function(value, index) {
             if (itemKey != index)
