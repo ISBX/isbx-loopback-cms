@@ -66,6 +66,8 @@ angular.module('dashboard.directives.ModelFieldImage', [
                   };
                   // set the src which will trigger onload/onerror events
                   image.src = scope.thumbnailUrl;
+                } else {
+                  scope.thumbnailUrl = scope.imageUrl;
                 }
 
               } else if (typeof data === "object") {
