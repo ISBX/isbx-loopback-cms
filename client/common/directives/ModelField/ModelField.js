@@ -271,15 +271,14 @@ angular.module('dashboard.directives.ModelField', [
             <div class="model-field-description" ng-if="display.description">{{ display.description }}</div>\
           </div>';
         break;
-      case 'number-integer':
       case 'number':
+      case 'number-integer':
       case 'number-decimal':
         // var parseFuncString = "value = parseInt(value.replace(/[A-z.,]/, \'\'))"
-        var inputType = type=='number-decimal' ? 'text' : 'number';
         template = '<label class="col-sm-2 control-label">{{ display.label || key }}:</label>\
           <div class="col-sm-10">\
             <div class="error-message" >{{ display.error }}</div>\
-            <input type="'+inputType+'" ng-keyup="parseFunc($event)" max="{{ display.maxValue }}" min="{{ display.minValue }}" ng-model="data[key]" ng-disabled="{{ display.readonly }}" ng-required="{{ model.properties[key].required }}" class="field form-control">\
+            <input type="number" ng-keyup="parseFunc($event)" min="{{ display.minValue }}" max="{{ display.maxValue }}" ng-model="data[key]" ng-disabled="{{ display.readonly }}" ng-required="{{ model.properties[key].required }}" class="field form-control">\
             <div class="model-field-description" ng-if="display.description">{{ display.description }} {{count}}</div>\
           </div>';
         break;
@@ -324,9 +323,9 @@ angular.module('dashboard.directives.ModelField', [
 
         scope.parseDecimal = function(value, scale) {
           var decimalScale = parseInt(scale) || 2;
-          var value = parseFloat(value.replace(",", "."));
+          var value = parseFloat(value.toString().replace(",", "."));
           if (!isNaN(value) && typeof decimalScale === "number") {
-            value = decimalScale === 0 ? parseInt(value): value.toFixed(decimalScale);
+            value = decimalScale === 0 ? parseInt(value): +(value.toFixed(decimalScale));
           }
           return value;
         };
@@ -337,7 +336,7 @@ angular.module('dashboard.directives.ModelField', [
           promise = $timeout(function() {
             scope.display.minValue = scope.display.minValue ? scope.display.minValue : 0;
             if (scope.display.allowDecimals) {
-              if(scope.display.scaleValue!='none') e.target.value = scope.parseDecimal(e.target.value, scope.display.scaleValue);
+              if(e.target.value && scope.display.scaleValue!='none') e.target.value = scope.parseDecimal(e.target.value, scope.display.scaleValue);
               scope.display.minValue = parseFloat(scope.display.minValue);
               scope.display.maxValue = parseFloat(scope.display.maxValue);
             } else {
@@ -378,7 +377,7 @@ angular.module('dashboard.directives.ModelField', [
           }
         }
 
-        if (property.display.type === 'number-decimal') {
+        if (property.display.type === 'number-decimal' && property.display.scaleValue!='none') {
           scope.data[scope.key] = scope.parseDecimal(scope.data[scope.key], property.display.scaleValue); //Parse value on load
         }
 
