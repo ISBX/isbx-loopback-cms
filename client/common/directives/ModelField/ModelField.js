@@ -276,12 +276,20 @@ angular.module('dashboard.directives.ModelField', [
         break;
       case 'number':
       case 'number-integer':
-      case 'number-decimal':
         // var parseFuncString = "value = parseInt(value.replace(/[A-z.,]/, \'\'))"
         template = '<label class="col-sm-2 control-label">{{ display.label || key }}:</label>\
           <div class="col-sm-10">\
             <div class="error-message" >{{ display.error }}</div>\
             <input type="number" ng-keyup="parseFunc($event)" min="{{ display.minValue }}" max="{{ display.maxValue }}" ng-model="data[key]" ng-disabled="{{ display.readonly }}" ng-required="{{ model.properties[key].required }}" class="field form-control">\
+            <div class="model-field-description" ng-if="display.description">{{ display.description }} {{count}}</div>\
+          </div>';
+        break;
+      case 'number-decimal':
+        // var parseFuncString = "value = parseInt(value.replace(/[A-z.,]/, \'\'))"
+        template = '<label class="col-sm-2 control-label">{{ display.label || key }}:</label>\
+          <div class="col-sm-10">\
+            <div class="error-message" >{{ display.error }}</div>\
+            <input type="text" ng-keyup="parseFunc($event)" min="{{ display.minValue }}" max="{{ display.maxValue }}" ng-model="data[key]" ng-disabled="{{ display.readonly }}" ng-required="{{ model.properties[key].required }}" class="field form-control">\
             <div class="model-field-description" ng-if="display.description">{{ display.description }} {{count}}</div>\
           </div>';
         break;
@@ -327,32 +335,29 @@ angular.module('dashboard.directives.ModelField', [
     },
     link: function(scope, element, attrs) {
 
-        scope.parseDecimal = function(value, scale) {
-          var decimalScale = parseInt(scale) || 2;
-          var value = parseFloat(value.toString().replace(",", "."));
-          if (!isNaN(value) && typeof decimalScale === "number") {
-            value = decimalScale === 0 ? parseInt(value): _.round(value, decimalScale);
+        scope.parseDecimalToText = function(value, scale) { /*takes a string and converts it to proper string */
+            console.log('parseDecimalToText', value, scale)
+          var decimalScale = parseInt(scale) ? parseInt(scale) :  10; /* this is max decimal NORA can handle */
+          if (value) {
+            value = parseFloat(value.toString().replace(",", "."));
           }
+          if (value && !isNaN(value) && typeof decimalScale === "number") {
+            value = value.toFixed(decimalScale)
+          }
+          return value
         };
 
         var promise = '';
         scope.parseFunc = function(e) {
+          console.log(scope)
           if (promise) $timeout.cancel(promise);
           promise = $timeout(function() {
-            scope.display.minValue = scope.display.minValue ? scope.display.minValue : 0;
-            if (scope.display.allowDecimals) {
-              if(e.target.value && scope.display.scaleValue!='none') e.target.value = scope.parseDecimal(e.target.value, scope.display.scaleValue);
-              scope.display.minValue = parseFloat(scope.display.minValue);
-              scope.display.maxValue = parseFloat(scope.display.maxValue);
+            if (scope.display.type === "number-decimal") {
+              e.target.value = scope.parseDecimalToText(e.target.value, scope.data.scale || scope.property.display.scaleValue)
             } else {
-              e.target.value = parseInt(e.target.value);
-              scope.display.minValue = parseInt(scope.display.minValue);
-              scope.display.maxValue = parseInt(scope.display.maxValue);
+              scope.display.minValue = scope.display.minValue ? scope.display.minValue : 0;
+              e.target.value = _.round(e.target.value, 0);
             }
-            if (e.target.value === 'NaN') e.target.value = scope.display.default || '';
-            scope.data[scope.key] = (scope.display.allowDecimals && (scope.display.scaleValue!='none')) ?
-              scope.parseDecimal(e.target.value, scope.display.scaleValue) :
-              parseInt(e.target.value);
           }, 1000);
         };
 
@@ -383,8 +388,9 @@ angular.module('dashboard.directives.ModelField', [
           }
         }
 
-        if (property.display.type === 'number-decimal' && property.display.scaleValue!='none') {
-          scope.data[scope.key] = scope.parseDecimal(scope.data[scope.key], property.display.scaleValue); //Parse value on load
+        if (property.display.type === 'number-decimal') {
+          console.log('scope.data', JSON.stringify(scope.display))
+          scope.data[scope.key] = scope.parseDecimalToText(scope.data[scope.key], scope.data.scale); //Parse value on load
         }
 
         scope.charsLeft = property.display.maxLength
