@@ -351,11 +351,13 @@ angular.module('dashboard.directives.ModelField', [
           if (promise) $timeout.cancel(promise);
           promise = $timeout(function() {
             if (scope.display.type === "number-decimal") {
-              e.target.value = scope.parseDecimalToString(e.target.value, scope.data.scale || scope.property.display.scaleValue)
+              scope.data[scope.key] = scope.parseDecimalToString(e.target.value, scope.data.scale || scope.property.display.scaleValue)
             } else {
               scope.display.minValue = scope.display.minValue ? scope.display.minValue : 0;
-              e.target.value = _.round(e.target.value, 0);
+              scope.data[scope.key] = _.round(e.target.value, 0);
             }
+            if (e.target.value === 'NaN') e.target.value = scope.display.default || '';
+            // scope.data[scope.key] = e.target.value;
           }, 1000);
         };
 
