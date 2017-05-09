@@ -33,8 +33,8 @@ angular.module('dashboard.directive.DateTimePicker', [
           return date.format(scope.format);
         });
         
-        scope.defaultDate = scope.defaultDate ? scope.defaultDate.replace(/"/g, '') : scope.defaultDate; //remove quotes
-        
+        scope.defaultDate = (scope.defaultDate && typeof scope.defaultDate === 'string') ? scope.defaultDate.replace(/"/g, '') : scope.defaultDate; //remove quotes
+
         //Bind the Element
         elem.datetimepicker({
           format: scope.format,
