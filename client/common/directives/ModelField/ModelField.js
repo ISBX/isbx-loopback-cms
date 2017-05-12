@@ -336,7 +336,8 @@ angular.module('dashboard.directives.ModelField', [
     link: function(scope, element, attrs) {
 
         scope.parseDecimalToString = function(value, scale) { /*takes a string and converts it to proper string */
-          var decimalScale = parseInt(scale) ? parseInt(scale) :  10; /* this is max decimal NORA can handle */
+          var decimalScale = parseInt(scale) ? parseInt(scale) :  20; /* this is max decimal toFixed can handle */
+          decimalScale = Math.min(Math.max(decimalScale, 0), 20) /*since decimalScale is passed to toFixed, must be between 0 and 20 */
           if (value) {
             value = parseFloat(value.toString().replace(",", "."));
           }
