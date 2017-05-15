@@ -330,6 +330,14 @@ angular.module('dashboard.directives.ModelFieldReference', [
          }
          if (scope.modelData[scope.options.relationship]) {
            //Remove object if relationship object exists; this is needed if more than one reference field for same relationship
+           if (scope.options.key && item[scope.options.key]) {
+             //Remove item previously loaded using object key
+             var where = {};
+             where[scope.options.key] = item[scope.options.key];
+             var index = _.findIndex(scope.modelData[scope.options.relationship], where);
+             if (index > -1) scope.modelData[scope.options.relationship].splice(index, 1);
+           }
+           //Look for direct reference match
            var index = scope.modelData[scope.options.relationship].indexOf(item);
            if (index > -1) scope.modelData[scope.options.relationship].splice(index, 1);
            mergeArray(scope.selected.items, scope.modelData[scope.options.relationship]); //make sure to merge in any items previously selected
