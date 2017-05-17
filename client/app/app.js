@@ -41,7 +41,7 @@ angular.module('dashboard', [
   $urlRouterProvider.deferIntercept(); // defer routing until custom modules are loaded
 })
 
-.run(function run($ocLazyLoad, $rootScope, $urlRouter, Config, SessionService) {
+.run(function run($ocLazyLoad, $rootScope, $urlRouter, $injector, Config, SessionService) {
   "ngInject";
 
   //  SessionService.tryGetCurrentUser();
@@ -51,6 +51,9 @@ angular.module('dashboard', [
       .then(function() {
         modulesLoaded = true;
         $rootScope.$broadcast('modulesLoaded');
+        if (Config.serverParams.injectOnStart) {
+          $injector.get(Config.serverParams.injectOnStart);
+        }
       }, function(error){console.log(error)});
   } else {
     modulesLoaded = true;
