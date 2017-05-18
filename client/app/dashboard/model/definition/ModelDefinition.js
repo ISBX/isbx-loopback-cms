@@ -6,6 +6,8 @@ angular.module('dashboard.Dashboard.Model.Definition', [
 ])
 
 .config(function config($stateProvider) {
+  "ngInject";
+
   $stateProvider
     .state('dashboard.model.action.definition', {
       url: '/definition',
@@ -19,6 +21,7 @@ angular.module('dashboard.Dashboard.Model.Definition', [
 })
 
 .controller('ModelDefinitionCtrl', function ModelDefinitionCtrl($scope, $timeout, $state, $location, $modal, Config, SettingsService) {
+  "ngInject";
 
   var jsonEditor = null;
   var modifiedModels = [];

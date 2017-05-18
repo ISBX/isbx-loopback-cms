@@ -4,6 +4,8 @@ angular.module('dashboard.directives.ModelFieldImage', [
 ])
 
 .directive('modelFieldImageView', function($compile) {
+  "ngInject";
+
   return {
     restrict: 'E',
     template: '<b>{{ field.label }}</b>: {{ data[field.name] }}',
@@ -18,6 +20,8 @@ angular.module('dashboard.directives.ModelFieldImage', [
 })
 
 .directive('modelFieldImageEdit', function($compile, $document, GeneralModelService, ImageService, SessionService, $timeout) {
+  "ngInject";
+
   return {
     restrict: 'E',
     template: '<div class="image-container" style="background: no-repeat center center url(\'{{ thumbnailUrl }}\'); background-size: contain;" ng-click="imageClick()"></div> \
@@ -62,6 +66,8 @@ angular.module('dashboard.directives.ModelFieldImage', [
                   };
                   // set the src which will trigger onload/onerror events
                   image.src = scope.thumbnailUrl;
+                } else {
+                  scope.thumbnailUrl = scope.imageUrl;
                 }
 
               } else if (typeof data === "object") {
@@ -80,6 +86,7 @@ angular.module('dashboard.directives.ModelFieldImage', [
                 //scope.options.urlKey defines the column field name for where the URL of the image is stored
                 scope.imageUrl = response[scope.options.urlKey];
                 if (!scope.imageUrl) scope.imageUrl = response["mediumUrl"]; //HACK FOR SMS PROJECT (PROB SHOULD REMOVE)
+                scope.thumbnailUrl = scope.imageUrl;
               });
             }
           }

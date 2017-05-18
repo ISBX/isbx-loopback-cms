@@ -7,6 +7,8 @@ angular.module('dashboard.directives.ModelFieldCanvas', [
   ])
 
 .directive('modelFieldCanvasView', function($compile) {
+  "ngInject";
+
   return {
     restrict: 'E',
     template: '<b>{{ options.model }}</b>: {{ data[options.key] }}',
@@ -22,6 +24,8 @@ angular.module('dashboard.directives.ModelFieldCanvas', [
 })
 
 .directive('modelFieldCanvasEdit', function($compile, $cookies, $timeout, $modal, Config, FileUploadService) {
+  "ngInject";
+
   function getTemplate() {
     var template = '\
     <canvas ng-signature-pad="signature" width="300" height="150"></canvas>\

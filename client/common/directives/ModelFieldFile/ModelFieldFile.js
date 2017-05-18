@@ -3,6 +3,8 @@ angular.module('dashboard.directives.ModelFieldFile', [
 ])
 
 .directive('modelFieldFileView', function($compile) {
+  "ngInject";
+
   return {
     restrict: 'E',
     template: '<b>{{ field.label }}</b>: {{ data[field.name] }}',
@@ -17,6 +19,8 @@ angular.module('dashboard.directives.ModelFieldFile', [
 })
 
 .directive('modelFieldFileEdit', function($compile, $document, $window, GeneralModelService, SessionService) {
+  "ngInject";
+
   return {
     restrict: 'E',
     template: '<button class="btn btn-default select-file" ng-hide="disabled">Select File</button> \

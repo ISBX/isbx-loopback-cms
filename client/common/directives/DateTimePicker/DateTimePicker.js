@@ -2,7 +2,8 @@ angular.module('dashboard.directive.DateTimePicker', [
 ])
 
 .directive('dateTimePicker', function ($rootScope) {
-  
+  "ngInject";
+
   return {
       require: '?ngModel',
       restrict: 'AE',

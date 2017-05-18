@@ -18,6 +18,8 @@ angular.module('dashboard.directives.ModelField', [
 ])
 
 .directive('modelFieldView', function($compile) {
+  "ngInject";
+
   function getTemplate(type) {
     var template = '';
     switch(type) {
@@ -41,6 +43,8 @@ angular.module('dashboard.directives.ModelField', [
 })
 
 .directive('modelFieldEdit', function($compile, $cookies, $timeout) {
+  "ngInject";
+
   function getTemplate(type, scope) {
     var template = '';
     switch(type) {

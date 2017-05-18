@@ -5,6 +5,8 @@ angular.module('dashboard.services.Session', [
 ])
 
 .service('SessionService', function($cookies, $cookieStore, $q, UserService, Config, Utils, DashboardService) {
+  "ngInject";
+
   var self = this;
   
   var session = null;
@@ -20,7 +22,6 @@ angular.module('dashboard.services.Session', [
     if (config.authModel) authModel = config.authModel;
     return Utils.apiHelper('POST', authModel + '/login?include=user', { email: email, password: password,  options: options})
     .then(function(userInfo) {
-      localStorage['lastActive'] = new Date();//initiallize after successful login
       return self.setSession(userInfo);
     })
     ["catch"](function() {
@@ -38,6 +39,7 @@ angular.module('dashboard.services.Session', [
 		$cookieStore.remove('accessToken');
 		$cookieStore.remove('roles');
 		$cookieStore.remove('session');
+    $cookieStore.remove('lastActive');
 	  return Utils.apiHelper('POST', authModel + '/logout?access_token=' + accessToken);
   };
 
@@ -46,6 +48,7 @@ angular.module('dashboard.services.Session', [
     if (config.authModel) authModel = config.authModel;
     return Utils.apiHelper('GET', authModel + '/' + userInfo.userId + '/Roles?access_token=' + userInfo.id)
       .then(function(roles) {
+        $cookies.put('lastActive', new Date());//initiallize after successful login
         session = userInfo;
         $cookies.put('username', userInfo.user.username);
         $cookies.put('userId', userInfo.userId);

@@ -4,6 +4,8 @@ angular.module('dashboard.services.Dashboard', [
 ])
 
 .service('DashboardService', function($cookies, Config) {
+  "ngInject";
+
   var self = this;
   var _roles = [];
   var _nav = [];
