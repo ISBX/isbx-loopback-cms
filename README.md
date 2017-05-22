@@ -37,6 +37,16 @@ npm link /projects/nodejs/npm-isbx-loopback-cms
 
 Now any changes made in the `npm-isbx-loopback-cms` source folder will be applied to your `my_cms` project.
 
+### Deployment ###
+
+Non-development environments use minified versions of the client side libraries. To deploy custom changes you make to the CMS make sure to run before using in non-development environments:
+
+```
+grunt compile-prod
+```
+
+Published JS files are located in the `/dist` folder.
+
 ### Note ###
 
 When contributing to the ISBX CMS please create a feature branch and issue a pull request from your fork.
