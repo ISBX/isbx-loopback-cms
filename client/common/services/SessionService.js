@@ -60,7 +60,7 @@ angular.module('dashboard.services.Session', [
       $cookies.put('session', null);
       return $q.reject(arguments);
     });
-	};
+  };
 
   this.getAuthToken = function() {
     return session && session.id;
@@ -75,12 +75,12 @@ angular.module('dashboard.services.Session', [
     var session = JSON.parse($cookies.get('session'));
     session[key] = value;
     $cookies.put('session', JSON.stringify(session));
-	};
+  };
 
   this.get = function(key) {
     var session = JSON.parse($cookies.get('session'));
     return session[key];
-	};
+  };
 
   this.isAuthorized = function(toState, toParams) {
     if(_.startsWith(toState.name, 'public')) return true;//always allow public routes
@@ -88,21 +88,11 @@ angular.module('dashboard.services.Session', [
     var state = toState.name;
     //dashboard.model.action.route
     var path = toParams.model; // model = config.nav[].path
-    var label = toParams.action;// action = config.nav[].label
     var roles = angular.fromJson($cookies.get('roles'));
 
-    if(!_.isEmpty(path) && !_.isEmpty(label)) { //check subnavs
-      var found = _.find(nav, { path: path });
-      if(found) {
-        if(!DashboardService.hasAccess(roles, found)) return false;
-        if(_.isArray(found.subnav)) {
-          var subnav = _.find(found.subnav, { label: label });
-          if(subnav) return DashboardService.hasAccess(roles, subnav);
-        }
-      }
-    } else { // check top nav using state
-      var found = _.find(nav, { state: state });
-      if(found) return DashboardService.hasAccess(roles, found);
+    var found = !_.isEmpty(path) ? _.find(nav, { path: path }) : _.find(nav, { state: state });
+    if(found) {
+      return DashboardService.hasAccess(roles, found);
     }
 
     var ctrlRoles = toState.data['roles'];
