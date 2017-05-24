@@ -32,7 +32,7 @@ angular.module('dashboard', [
     })
     .state('public.accessDenied', {
       url: '/access-denied',
-      template: '<div class="no-script-warning"><h1>Access Denied</h1><p>You are not authorized to access this page.</p></div>',
+      template: '<div class="no-script-warning"><h1>Access Denied</h1><p>You are not authorized to access this page.</p><p><button onclick="window.history.go(-2)">Back</button></p></div>',
       data: {
         pageTitle: 'Access Denied'
       }
