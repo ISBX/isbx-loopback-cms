@@ -716,6 +716,9 @@ angular.module('dashboard.Dashboard.Model.List', [
       $scope.pagingOptions.pageSize = $scope.pagingOptions.pageSize.toString();
       $scope.loadItems();
     }
+    if (newVal && oldVal && newVal.pageSize != oldVal.pageSize) {
+      $scope.pagingOptions.currentPage = 1;
+    }
   }, true);
 
   $scope.$watch('gridOptions.$gridScope.filterText', _.debounce(function (newVal, oldVal) {
