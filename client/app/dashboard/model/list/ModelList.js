@@ -713,11 +713,10 @@ angular.module('dashboard.Dashboard.Model.List', [
   
   $scope.$watch('pagingOptions', function (newVal, oldVal) {
     if (newVal.currentPage != oldVal.currentPage || newVal.pageSize != oldVal.pageSize) {
-      $scope.pagingOptions.pageSize = $scope.pagingOptions.pageSize.toString();
+      if (newVal && oldVal && newVal.pageSize != oldVal.pageSize) {
+        $scope.pagingOptions.currentPage = 1;
+      }
       $scope.loadItems();
-    }
-    if (newVal && oldVal && newVal.pageSize != oldVal.pageSize) {
-      $scope.pagingOptions.currentPage = 1;
     }
   }, true);
 
