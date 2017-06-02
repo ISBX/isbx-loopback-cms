@@ -318,12 +318,20 @@ function cms(loopbackApplication, options) {
     });
   });
 
+  if (config.allowUnsafeUpsert) {
+    console.warn('Warning (isbx-loopback-cms): /model/save end point is running in compatibility mode, please update your ACL rules asap then remove config.allowUnsafeUpsert or set it to false');
+  } else {
+    console.warn('Warning (isbx-loopback-cms): /model/save end point is running in secure mode. This can potentially break your application if have not updated your ACL rules. For backwards compatibility, you may set config.allowUnsafeUpsert to true in your CMS Config if you are not ready to update your ACL rules yet.');
+  }
+
   function validateToken(request, callback) {
     var AccessToken = loopbackApplication.models.AccessToken;
     var tokenString = request.body.__accessToken || request.query.access_token;
     AccessToken.findById(tokenString, function(err, token) {
       if (err || !token) { return callback(err); }
-      return token.validate(callback);
+      token.validate(function(err, isValid) {
+        return callback(err, isValid, token);
+      });
     });
   }
 
@@ -332,18 +340,38 @@ function cms(loopbackApplication, options) {
    */
   app.put('/model/save', function(req, res) {
     var ACL = loopbackApplication.models.ACL;
+
     validateToken(req, function(err, isValid, token) {
       if (err) { return res.status(500).send(err); }
       if (!isValid) { return res.status(403).send('Forbidden'); }
 
       var data = req.body;
-      relationalUpsert.upsert(data, function(error, response) {
-        if (error) {
-          res.status(500).send(error);
-        } else {
-          res.send(response);
-        }
-      });
+      var context = {
+        accessToken: token,
+        model: data.__model,
+        property: data.__id ? 'updateAttributes' : 'create',
+        modelId: data.__id || null
+      };
+
+      function upsertData() {
+        relationalUpsert.upsert(data, function(error, response) {
+          if (error) {
+            res.status(500).send(error);
+          } else {
+            res.send(response);
+          }
+        });
+      }
+
+      if (config.public.isUnsafeUpsert) {
+        upsertData();
+      } else {
+        ACL.checkAccessForContext(context, function(err, acl) {
+          if (err) { return res.status(500).send(err); }
+          if (acl.permission === 'DENY') { return res.status(403).send('Forbidden'); }
+          upsertData();
+        });
+      }
     });
   });
 
