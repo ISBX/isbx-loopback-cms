@@ -356,7 +356,7 @@ angular.module('dashboard.directives.ModelField', [
           if (promise) $timeout.cancel(promise);
           promise = $timeout(function() {
             if (scope.display.type === "number-decimal") {
-              scope.data[scope.key] = scope.parseDecimalToString(e.target.value, scope.data.scale || scope.property.display.scaleValue)
+              scope.data[scope.key] = scope.parseDecimalToString(e.target.value, scope.property.display.scaleValue)
             } else {
               scope.display.minValue = scope.display.minValue ? scope.display.minValue : 0;
               scope.data[scope.key] = _.round(e.target.value, 0);
@@ -394,7 +394,9 @@ angular.module('dashboard.directives.ModelField', [
         }
 
         if (property.display.type === 'number-decimal') {
-          scope.data[scope.key] = scope.parseDecimalToString(scope.data[scope.key], scope.data.scale); //Parse value on load
+          $timeout(function() {
+            scope.data[scope.key] = scope.parseDecimalToString(scope.data[scope.key], scope.property.display.scaleValue); //Parse value on load - async behavior
+          }, 0)
         }
 
         scope.charsLeft = property.display.maxLength
