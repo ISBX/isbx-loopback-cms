@@ -284,7 +284,7 @@ angular.module('dashboard.directives.ModelField', [
         template = '<label class="col-sm-2 control-label">{{ display.label || key }}:</label>\
           <div class="col-sm-10">\
             <div class="error-message" >{{ display.error }}</div>\
-            <input type="number" ng-keyup="parseFunc($event)" min="{{ display.minValue }}" max="{{ display.maxValue }}" ng-model="data[key]" ng-disabled="{{ display.readonly }}" ng-required="{{ model.properties[key].required }}" class="field form-control">\
+            <input type="number" ng-blur="parseFunc($event)" min="{{ display.minValue }}" max="{{ display.maxValue }}" ng-model="data[key]" ng-disabled="{{ display.readonly }}" ng-required="{{ model.properties[key].required }}" class="field form-control">\
             <div class="model-field-description" ng-if="display.description">{{ display.description }} {{count}}</div>\
           </div>';
         break;
@@ -293,7 +293,7 @@ angular.module('dashboard.directives.ModelField', [
         template = '<label class="col-sm-2 control-label">{{ display.label || key }}:</label>\
           <div class="col-sm-10">\
             <div class="error-message" >{{ display.error }}</div>\
-            <input type="text" ng-keyup="parseFunc($event)" min="{{ display.minValue }}" max="{{ display.maxValue }}" ng-model="data[key]" ng-disabled="{{ display.readonly }}" ng-required="{{ model.properties[key].required }}" class="field form-control">\
+            <input type="text" ng-blur="parseFunc($event)" min="{{ display.minValue }}" max="{{ display.maxValue }}" ng-model="data[key]" ng-disabled="{{ display.readonly }}" ng-required="{{ model.properties[key].required }}" class="field form-control">\
             <div class="model-field-description" ng-if="display.description">{{ display.description }} {{count}}</div>\
           </div>';
         break;
@@ -356,14 +356,14 @@ angular.module('dashboard.directives.ModelField', [
           if (promise) $timeout.cancel(promise);
           promise = $timeout(function() {
             if (scope.display.type === "number-decimal") {
-              scope.data[scope.key] = scope.parseDecimalToString(e.target.value, scope.property.display.scaleValue)
+              scope.data[scope.key] = scope.parseDecimalToString(e.target.value, scope.data.scale || scope.property.display.scaleValue) /*scope.data.scale is to handle parsing the field while scale data is being entered - formEdit */
             } else {
               scope.display.minValue = scope.display.minValue ? scope.display.minValue : 0;
               scope.data[scope.key] = _.round(e.target.value, 0);
             }
             if (e.target.value === 'NaN') e.target.value = scope.display.default || '';
             // scope.data[scope.key] = e.target.value;
-          }, 1000);
+          }, 0);
         };
 
         //In situations where edit form has fields not in the model json properties object (i.e. ModelFieldReference multi-select)
