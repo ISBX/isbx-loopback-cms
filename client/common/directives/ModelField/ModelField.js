@@ -346,7 +346,7 @@ angular.module('dashboard.directives.ModelField', [
             value = parseFloat(value.toString().replace(",", "."));
           }
           if (value && !isNaN(value) && typeof decimalScale === "number") {
-            value = value.toFixed(decimalScale)
+            value = (Math.round(value * Math.pow(10, decimalScale))/Math.pow(10, decimalScale)).toFixed(decimalScale) /* because Javascript rounding is not solid */
           }
           return value
         };
