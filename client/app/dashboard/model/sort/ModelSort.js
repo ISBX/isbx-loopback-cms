@@ -8,6 +8,8 @@ angular.module('dashboard.Dashboard.Model.Sort', [
 ])
 
 .config(function config($stateProvider) {
+  "ngInject";
+
   $stateProvider
     .state('dashboard.model.action.sort', {
       url: '/sort',
@@ -21,6 +23,8 @@ angular.module('dashboard.Dashboard.Model.Sort', [
 })
 
 .controller('ModelSortCtrl', function ModelListCtrl($scope, $timeout, $state, $modal, $window, Config, GeneralModelService, $location) {
+  "ngInject";
+
   $scope.list = [];
   var modalInstance = null;
   

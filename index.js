@@ -173,11 +173,16 @@ function renderIndex(req, res) {
         return app.mountpath + '/' + file;
       }
     }).concat(files.javascript);
-    files.javascript = _.map(_.filter(scripts, function(file) {
-      return !file.match(/\.spec\.js$/);
-    }), function(file) {
-      return file.replace(__dirname + srcDir, app.mountpath);
-    }).concat(files.javascript);
+
+    if (environment.indexOf('development') > -1) {
+      files.javascript = _.map(_.filter(scripts, function(file) {
+        return !file.match(/\.spec\.js$/);
+      }), function(file) {
+        return file.replace(__dirname + srcDir, app.mountpath);
+      }).concat(files.javascript);
+    } else {
+      files.javascript.unshift(app.mountpath + '/dist/app.js');
+    }
 
     var buildConfig = require('./build.config.js');
     files.css = _.map(buildConfig.vendor_files.css.concat(files.css), function(file) {
@@ -187,13 +192,17 @@ function renderIndex(req, res) {
          return app.mountpath + '/' + file;
       }
     });
-    files.javascript = _.map(buildConfig.vendor_files.js, function(file) {
-      if (file.charAt(0) == '/') {
-        return app.mountpath + file;
-      } else {
-         return app.mountpath + '/' + file;
-      }
-    }).concat(files.javascript);
+    if (environment.indexOf('development') > -1) {
+      files.javascript = _.map(buildConfig.vendor_files.js, function(file) {
+        if (file.charAt(0) == '/') {
+          return app.mountpath + file;
+        } else {
+          return app.mountpath + '/' + file;
+        }
+      }).concat(files.javascript);
+    } else {
+      files.javascript.unshift(app.mountpath + '/dist/vendor.js');
+    }
     files.javascript.unshift(app.mountpath + '/config.js');
     res.render(__dirname + srcDir + '/index.jade', { version: package.version, files: files, config: config });
   });
@@ -294,6 +303,7 @@ function cms(loopbackApplication, options) {
   app.use(overlayJade());
   app.locals.pretty = true;
 
+  app.use('/dist', express.static(__dirname + '/dist'));
   app.use('/vendor', express.static(__dirname + '/vendor'));
 
   app.get('/dev-templates.js', function(req, res) {
@@ -318,13 +328,20 @@ function cms(loopbackApplication, options) {
     });
   });
 
+  if (config.allowUnsafeUpsert) {
+    console.warn('Warning (isbx-loopback-cms): /model/save end point is running in compatibility mode, please update your ACL rules asap then remove config.allowUnsafeUpsert or set it to false');
+  } else {
+    console.warn('Warning (isbx-loopback-cms): /model/save end point is running in secure mode. This can potentially break your application if have not updated your ACL rules. For backwards compatibility, you may set config.allowUnsafeUpsert to true in your CMS Config if you are not ready to update your ACL rules yet.');
+  }
 
   function validateToken(request, callback) {
     var AccessToken = loopbackApplication.models.AccessToken;
     var tokenString = request.body.__accessToken || request.query.access_token;
     AccessToken.findById(tokenString, function(err, token) {
       if (err || !token) { return callback(err); }
-      return token.validate(callback);
+      token.validate(function(err, isValid) {
+        return callback(err, isValid, token);
+      });
     });
   }
 
@@ -332,19 +349,39 @@ function cms(loopbackApplication, options) {
    * Save a model hierarchy; req.body contains a model and its relationship data
    */
   app.put('/model/save', function(req, res) {
-    //TODO: validate ACL
-    validateToken(req, function(err, isValid) {
+    var ACL = loopbackApplication.models.ACL;
+
+    validateToken(req, function(err, isValid, token) {
       if (err) { return res.status(500).send(err); }
       if (!isValid) { return res.status(403).send('Forbidden'); }
 
       var data = req.body;
-      relationalUpsert.upsert(data, function(error, response) {
-        if (error) {
-          res.status(500).send(error);
-        } else {
-          res.send(response);
-        }
-      });
+      var context = {
+        accessToken: token,
+        model: data.__model,
+        property: data.__id ? 'updateAttributes' : 'create',
+        modelId: data.__id || null
+      };
+
+      function upsertData() {
+        relationalUpsert.upsert(data, function(error, response) {
+          if (error) {
+            res.status(500).send(error);
+          } else {
+            res.send(response);
+          }
+        });
+      }
+
+      if (config.public.isUnsafeUpsert) {
+        upsertData();
+      } else {
+        ACL.checkAccessForContext(context, function(err, acl) {
+          if (err) { return res.status(500).send(err); }
+          if (acl.permission === 'DENY') { return res.status(403).send('Forbidden'); }
+          upsertData();
+        });
+      }
     });
   });
 

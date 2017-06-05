@@ -6,6 +6,7 @@ angular.module('dashboard.services.GeneralModel', [
 ])
 
 .service('GeneralModelService', function($cookies, $q, Config, Utils, FileUploadService) {
+  "ngInject";
 
   var self = this;
 

@@ -20,7 +20,7 @@ module.exports = function(grunt) {
   grunt.loadNpmTasks('grunt-contrib-stylus');
   grunt.loadNpmTasks('grunt-contrib-uglify');
   grunt.loadNpmTasks('grunt-karma');
-  grunt.loadNpmTasks('grunt-ngmin');
+  grunt.loadNpmTasks('grunt-ng-annotate');
   grunt.loadNpmTasks('grunt-html2js');
   grunt.loadNpmTasks("grunt-jscs-checker");
 
@@ -150,33 +150,44 @@ module.exports = function(grunt) {
        * The `compile_js` target is the concatenation of our application source
        * code and all specified vendor source code into a single file.
        */
-      compile_js: {
+      compile_vendor_js: {
         options: {
           banner: '<%= meta.banner %>'
         },
-        src: [ 
-          '<%= vendor_files.js %>', 
-          'module.prefix', 
-          '<%= build_dir %>/src/**/*.js', 
-          '<%= html2js.app.dest %>', 
-          '<%= html2js.common.dest %>', 
-          'module.suffix' 
+        src: [
+          '<%= vendor_files.js %>',
+          'module.prefix',
+          'module.suffix'
         ],
-        dest: '<%= compile_dir %>/assets/<%= pkg.name %>.js'
+        dest: '<%= compile_dir %>/vendor.js'
+      },
+      compile_app_js: {
+        options: {
+          banner: '<%= meta.banner %>'
+        },
+        src: [
+          '<%= build_dir %>/**/*.js',
+          'module.prefix',
+          'module.suffix'
+        ],
+        dest: '<%= compile_dir %>/app.js'
       }
     },
 
     /**
-     * `ng-min` annotates the sources before minifying. That is, it allows us
+     * `ng-annotate` annotates the sources before minifying. That is, it allows us
      * to code without the array syntax.
      */
-    ngmin: {
-      compile: {
+    ngAnnotate: {
+      options: {
+        singleQuotes: true
+      },
+      dist: {
         files: [
           {
             src: [ '<%= app_files.js %>' ],
-            cwd: '<%= build_dir %>',
             dest: '<%= build_dir %>',
+            ext: '.annotated.js',
             expand: true
           }
         ]
@@ -193,7 +204,8 @@ module.exports = function(grunt) {
           sourceMap: true
         },
         files: {
-          '<%= concat.compile_js.dest %>': '<%= concat.compile_js.dest %>'
+          '<%= concat.compile_vendor_js.dest %>': '<%= concat.compile_vendor_js.dest %>',
+          '<%= concat.compile_app_js.dest %>': '<%= concat.compile_app_js.dest %>'
         }
       }
     },
@@ -337,7 +349,8 @@ module.exports = function(grunt) {
       compile: {
         dir: '<%= compile_dir %>',
         src: [
-          '<%= concat.compile_js.dest %>',
+          '<%= concat.compile_vendor_js.dest %>',
+          '<%= concat.compile_app_js.dest %>',
           '<%= vendor_files.css %>',
           '<%= build_dir %>/assets/<%= pkg.name %>.css'
         ]
@@ -393,7 +406,8 @@ module.exports = function(grunt) {
    * minifying your code.
    */
   grunt.registerTask( 'compile-prod', [
-    'stylus:compile', 'copy:compile_assets', 'ngmin', 'concat:compile_js', 'uglify', 'index:compile'
+    //'stylus:compile', 'copy:compile_assets', 'ngAnnotate', 'concat:compile_js', 'uglify', 'index:compile'
+    'stylus:compile', 'copy:compile_assets', 'ngAnnotate', 'concat:compile_vendor_js', 'concat:compile_app_js', 'uglify'
   ]);
 
 

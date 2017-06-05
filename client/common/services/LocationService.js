@@ -4,6 +4,8 @@ angular.module('dashboard.services.Location', [
 ])
 
 .service('LocationService', function(Config, Utils, $q, $rootScope) {
+  "ngInject";
+
   var d = $q.defer();
   this.currentLocation = function() {
     // HTML5 geolocator

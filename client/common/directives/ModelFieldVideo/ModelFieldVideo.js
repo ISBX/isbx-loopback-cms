@@ -3,6 +3,8 @@ angular.module('dashboard.directives.ModelFieldVideo', [
 ])
 
 .directive('modelFieldVideoView', function($compile) {
+  "ngInject";
+
   return {
     restrict: 'E',
     template: '<b>{{ field.label }}</b>: {{ data[field.name] }}',
@@ -17,6 +19,8 @@ angular.module('dashboard.directives.ModelFieldVideo', [
 })
 
 .directive('modelFieldVideoEdit', function($sce, $compile, $document, GeneralModelService, SessionService) {
+  "ngInject";
+
   return {
     restrict: 'E',
     template: '<div class="video-container"><video ng-if="videoUrl" src="{{videoUrl}}" controls></video><div class="placeholder" ng-hide="videoUrl">Upload a Video File</div></div> \
