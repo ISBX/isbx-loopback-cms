@@ -395,7 +395,7 @@ angular.module('dashboard.directives.ModelField', [
 
         if (property.display.type === 'number-decimal') {
           $timeout(function() {
-            scope.data[scope.key] = scope.parseDecimalToString(scope.data[scope.key], scope.property.display.scaleValue); //Parse value on load - async behavior
+            scope.data[scope.key] = scope.parseDecimalToString(scope.data[scope.key], scope.data.scale || scope.property.display.scaleValue); //Parse value on load - async behavior
           }, 0)
         }
 
