@@ -4,6 +4,8 @@ angular.module('dashboard.services.User', [
 ])
 
 .service('UserService', function(Config, Utils, $q, $rootScope) {
+  "ngInject";
+
   this.register = function(email, password) {
 	  var authModel = "Users";
 	  if (config.authModel) authModel = config.authModel; 

@@ -7,6 +7,8 @@ angular.module('dashboard.Dashboard', [
 ])
 
 .config(function config($stateProvider) {
+  "ngInject";
+
   $stateProvider
     .state('dashboard', {
       url: '/dashboard',
@@ -26,6 +28,8 @@ angular.module('dashboard.Dashboard', [
 })
 
 .controller('DashboardCtrl', function DashboardCtrl($scope, $rootScope, $state, $stateParams, $location, $cookies, $modal, Config, DashboardService) {
+  "ngInject";
+
   var self = this;
 
   this.init = function() {

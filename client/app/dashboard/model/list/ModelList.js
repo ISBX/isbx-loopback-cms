@@ -11,6 +11,8 @@ angular.module('dashboard.Dashboard.Model.List', [
 ])
 
 .config(function config($stateProvider) {
+  "ngInject";
+
   $stateProvider
     .state('dashboard.model.action.list', {
       url: '/list',
@@ -23,6 +25,8 @@ angular.module('dashboard.Dashboard.Model.List', [
 })
 
 .controller('ModelListCtrl', function ModelListCtrl($scope, $cookies, $timeout, $state, $location, $window, $modal, Config, GeneralModelService, CacheService) {
+  "ngInject";
+
   var isFirstLoad = true;
   var modalInstance = null;
 

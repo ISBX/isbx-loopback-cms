@@ -3,7 +3,8 @@ angular.module('dashboard.Utils', [
 ])
 
 .service('Utils', function(Config, $http, $q) {
-  
+  "ngInject";
+
   var apiRequests = {}; //stores active http requests using method+path as key
   
   /**

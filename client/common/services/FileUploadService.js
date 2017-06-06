@@ -6,6 +6,7 @@ angular.module('dashboard.services.FileUpload', [
 ])
 
 .service('FileUploadService', function($cookies, $q, $upload, Config, Utils) {
+  "ngInject";
 
   var self = this;
   
