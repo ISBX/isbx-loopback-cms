@@ -307,6 +307,7 @@ function cms(loopbackApplication, options) {
   app.use('/vendor', express.static(__dirname + '/vendor'));
 
   app.get('/dev-templates.js', function(req, res) {
+    res.setHeader('content-type', 'text/javascript');
     res.send('angular.module(\'templates-app\', []);angular.module(\'templates-common\', []);');
   });
 
@@ -324,6 +325,7 @@ function cms(loopbackApplication, options) {
       if (exists) localConfig.public.strings = require(stringsPath);
       localConfig.public.apiBaseUrl = options.basePath;
       localConfig.public.cmsBaseUrl = app.mountpath;
+      res.setHeader('content-type', 'text/javascript');
       res.send('window.config = ' + JSON.stringify(localConfig.public) + ';');
     });
   });
