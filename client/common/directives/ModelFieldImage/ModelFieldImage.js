@@ -155,8 +155,9 @@ angular.module('dashboard.directives.ModelFieldImage', [
           selectedFile = $files[0];
 
           var isAllowed = false;
-          if(scope.options.allowedExtensions.length > 1) {
-            scope.options.allowedExtensions.forEach(function(extension) {
+          var extensions = scope.options.allowedPhotoExtensions;
+          if(extensions) {
+            extensions.forEach(function(extension) {
               if (selectedFile.type.match('image/'+extension)) {
                 isAllowed = true;
               }
@@ -166,7 +167,7 @@ angular.module('dashboard.directives.ModelFieldImage', [
           }
 
           if(!isAllowed) {
-            alert('File must be of the following file types (' + scope.options.allowedExtensions + ').');
+            alert('File must be of the following file types (' + extensions.join(', ') + ').');
           } else {
             //Load the Preview before uploading
             fileReader.readAsDataURL(selectedFile);
