@@ -301,7 +301,7 @@ angular.module('dashboard.directives.ModelFieldPointsOfInterest', [
 								markerLocation = marker.getPosition();
 								infowindow.setContent(text);
 								infowindow.open(map, marker);
-								scope.getClickedMarker(markerLocation);
+								if(!scope.disabled) scope.getClickedMarker(markerLocation);
 							}
 						})(marker, text));
 						scope.markers.push(marker);
@@ -437,6 +437,7 @@ angular.module('dashboard.directives.ModelFieldPointsOfInterest', [
 				};
 				// Prevents more than one checkbox at a time
 				scope.updateSelection = function (selectedIdx, displayedSearchResults) {
+					if(scope.disabled) return;
 					angular.forEach(displayedSearchResults, function (item, index) {
 						if (selectedIdx != index) {
 							item.checked = false;
