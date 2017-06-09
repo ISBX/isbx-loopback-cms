@@ -279,21 +279,15 @@ angular.module('dashboard.directives.ModelField', [
           </div>';
         break;
       case 'number':
-      case 'number-integer':
-        // var parseFuncString = "value = parseInt(value.replace(/[A-z.,]/, \'\'))"
+        if (scope.display.allowDecimal) {
+          var numberType = "text"
+        } else {
+          var numberType = "number"
+        };
         template = '<label class="col-sm-2 control-label">{{ display.label || key }}:</label>\
           <div class="col-sm-10">\
             <div class="error-message" >{{ display.error }}</div>\
-            <input type="number" ng-blur="parseFunc($event)" min="{{ display.minValue }}" max="{{ display.maxValue }}" ng-model="data[key]" ng-disabled="{{ display.readonly }}" ng-required="{{ model.properties[key].required }}" class="field form-control">\
-            <div class="model-field-description" ng-if="display.description">{{ display.description }} {{count}}</div>\
-          </div>';
-        break;
-      case 'number-decimal':
-        // Needed to create a new directive because trailing zero need to be handled as string
-        template = '<label class="col-sm-2 control-label">{{ display.label || key }}:</label>\
-          <div class="col-sm-10">\
-            <div class="error-message" >{{ display.error }}</div>\
-            <input type="text" ng-blur="parseFunc($event)" min="{{ display.minValue }}" max="{{ display.maxValue }}" ng-model="data[key]" ng-disabled="{{ display.readonly }}" ng-required="{{ model.properties[key].required }}" class="field form-control">\
+            <input type=numberType ng-blur="parseFunc($event)" min="{{ display.minValue }}" max="{{ display.maxValue }}" ng-model="data[key]" ng-disabled="{{ display.readonly }}" ng-required="{{ model.properties[key].required }}" class="field form-control">\
             <div class="model-field-description" ng-if="display.description">{{ display.description }} {{count}}</div>\
           </div>';
         break;
@@ -355,7 +349,7 @@ angular.module('dashboard.directives.ModelField', [
         scope.parseFunc = function(e) {
           if (promise) $timeout.cancel(promise);
           promise = $timeout(function() {
-            if (scope.display.type === "number-decimal") {
+            if (scope.display.allowDecimal) {
               scope.data[scope.key] = scope.parseDecimalToString(e.target.value, scope.data.scale || scope.property.display.scaleValue) /*scope.data.scale is to handle parsing the field while scale data is being entered - formEdit */
             } else {
               scope.display.minValue = scope.display.minValue ? scope.display.minValue : 0;
@@ -393,7 +387,7 @@ angular.module('dashboard.directives.ModelField', [
           }
         }
 
-        if (property.display.type === 'number-decimal') {
+        if (property.display.allowDecimal) {
           $timeout(function() {
             scope.data[scope.key] = scope.parseDecimalToString(scope.data[scope.key], scope.data.scale || scope.property.display.scaleValue); //Parse value on load - async behavior
           }, 0)
