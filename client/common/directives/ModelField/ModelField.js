@@ -279,8 +279,9 @@ angular.module('dashboard.directives.ModelField', [
         if(scope.key !== null && typeof scope.key === 'object') {
           if (!scope.model.properties[scope.key.property]) {
             scope.model.properties[scope.key.property] = {};
-            scope.model.properties[scope.key.property].display = scope.key;
           }
+          //override default display logic
+          scope.model.properties[scope.key.property].display = scope.key;
           scope.key = scope.key.property;
         } 
         
