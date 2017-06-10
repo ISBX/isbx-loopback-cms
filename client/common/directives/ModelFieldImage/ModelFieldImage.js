@@ -154,8 +154,23 @@ angular.module('dashboard.directives.ModelFieldImage', [
           if ($files.length < 1) return;
           selectedFile = $files[0];
 
-          //Load the Preview before uploading
-          fileReader.readAsDataURL(selectedFile);
+          var isAllowed = false;
+          if (scope.options.extensions) {
+            scope.options.extensions.forEach(function(extension) {
+              if (selectedFile.type.match('image/'+extension)) {
+                isAllowed = true;
+              }
+            });
+          } else {
+            isAllowed = true;
+          }
+
+          if (!isAllowed) {
+            alert('File must be of the following file types (' + scope.options.extensions.join(', ') + ').');
+          } else {
+            //Load the Preview before uploading
+            fileReader.readAsDataURL(selectedFile);
+          }
         };
 
         scope.exportImages = function(callback) {
