@@ -16,8 +16,8 @@ angular.module('dashboard.directive.DateTimePicker', [
           viewMode: '@',
           ngViewMode: '=ngViewMode',
           horizontal: '@',
-          max: '@',
-          min: '@'
+          maxDate: '@',
+          minDate: '@'
       },
       link: function (scope, elem, attrs, ngModel) {
 
@@ -37,15 +37,16 @@ angular.module('dashboard.directive.DateTimePicker', [
         scope.defaultDate = (scope.defaultDate && typeof scope.defaultDate === 'string') ? scope.defaultDate.replace(/"/g, '') : scope.defaultDate; //remove quotes
 
         //Bind the Element
-        elem.datetimepicker({
+        var options = {
           format: scope.format,
           useCurrent: false,
           defaultDate: scope.defaultDate ? moment(scope.defaultDate).toDate() : undefined,
           viewMode: scope.viewMode,
-          widgetPositioning: { horizontal: scope.horizontal ? scope.horizontal : 'auto' },
-          minDate: scope.min || 0,
-          maxDate: scope.max || '2099-12-31'
-        });
+          widgetPositioning: { horizontal: scope.horizontal ? scope.horizontal : 'auto' }
+        }
+        if (scope.minDate) options.minDate = scope.minDate;
+        if (scope.maxDate) options.maxDate = scope.maxDate;
+        elem.datetimepicker(options);
 
         //For companion button to launch the popup
         if (!scope.control) scope.control = {};
