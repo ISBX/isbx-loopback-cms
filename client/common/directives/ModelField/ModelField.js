@@ -352,10 +352,16 @@ angular.module('dashboard.directives.ModelField', [
             if (scope.display.allowDecimal) {
               scope.data[scope.key] = scope.parseDecimalToString(e.target.value, scope.data.scale || scope.property.display.scaleValue) /*scope.data.scale is to handle parsing the field while scale data is being entered - formEdit */
             } else {
-              scope.display.minValue = scope.display.minValue ? scope.display.minValue : 0;
-              scope.data[scope.key] = _.round(e.target.value, 0);
+              // scope.display.minValue = scope.display.minValue ? scope.display.minValue : 0;
+              if (e.target.value !== undefined && e.target.value !== '') {
+                scope.data[scope.key] = _.round(e.target.value, 0)
+              } else (
+                scope.data[scope.key] = ''
+              );
             }
-            if (e.target.value === 'NaN') e.target.value = scope.display.default || '';
+            if (e.target.value === 'NaN') {
+              e.target.value = scope.display.default || '';
+            }
             // scope.data[scope.key] = e.target.value;
           }, 0);
         };
