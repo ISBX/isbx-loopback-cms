@@ -354,7 +354,11 @@ angular.module('dashboard.directives.ModelField', [
             } else {
               // scope.display.minValue = scope.display.minValue ? scope.display.minValue : 0;
               if (e.target.value !== undefined && e.target.value !== '') {
-                scope.data[scope.key] = _.round(e.target.value, 0)
+                var newValue = _.round(e.target.value, 0);
+                // validate within range
+                if (scope.display.minValue !== undefined && scope.display.minValue > newValue) {newValue = scope.display.minValue}
+                if (scope.display.maxValue !== undefined && scope.display.maxValue < newValue) {newValue = scope.display.maxValue}
+                scope.data[scope.key] = newValue
               } else (
                 scope.data[scope.key] = ''
               );
