@@ -13,14 +13,14 @@ html(ng-app="dashboard", ng-controller="AppCtrl")
       link(rel="stylesheet", href="#{file}?v=#{version}")
     //loop through javascript files
     each file in files.javascript
-      script(src="#{file}?v=#{version}")
+      script(type="text/javascript", src="#{file}?v=#{version}")
     //The following scripts error when run through grunt build minification
-    script(src="vendor/ace-builds/src-min-noconflict/ace.js")
-    script(src="vendor/ace-builds/src-min-noconflict/mode-json.js")
-    script(src="vendor/ace-builds/src-min-noconflict/mode-html.js")
+    script(type="text/javascript", src="vendor/ace-builds/src-min-noconflict/ace.js")
+    script(type="text/javascript", src="vendor/ace-builds/src-min-noconflict/mode-json.js")
+    script(type="text/javascript", src="vendor/ace-builds/src-min-noconflict/mode-html.js")
 
     - if (config.public.gaTrackingId)
-      script.
+      script(type="text/javascript").
         (function(i,s,o,g,r,a,m){i['GoogleAnalyticsObject']=r;i[r]=i[r]||function(){
         (i[r].q=i[r].q||[]).push(arguments)},i[r].l=1*new Date();a=s.createElement(o),
         m=s.getElementsByTagName(o)[0];a.async=1;a.src=g;m.parentNode.insertBefore(a,m)
