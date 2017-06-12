@@ -102,13 +102,11 @@ module.exports = {
       'vendor/exif-js/exif.js'
     ],
     css: [
-      'vendor/jquery-resizable-columns/dist/jquery.resizableColumns.css',
       'vendor/bootstrap/dist/css/bootstrap.css',
       'vendor/bootstrap/dist/css/bootstrap-theme.css',
       'vendor/angular-grid/ng-grid.min.css',
       'vendor/angular-ui-select/dist/select.min.css',
       'vendor/fullcalendar/dist/fullcalendar.css',
-      'vendor/bootstrap3-datetimepicker/build/css/bootstrap-datetimepicker.min.css',
       'vendor/eonasdan-bootstrap-datetimepicker/build/css/bootstrap-datetimepicker.min.css',
       'vendor/ng-slider/dist/css/ng-slider.min.css',
       'vendor/spectrum/spectrum.css',
