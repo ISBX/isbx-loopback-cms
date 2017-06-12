@@ -6,11 +6,11 @@ html(ng-app="dashboard", ng-controller="AppCtrl")
     - if (config.public.isSEOBlock)
       meta(name="robots", content="noindex, nofollow")
     meta(name='viewport', content='width=device-width, initial-scale=0.8, maximum-scale=0.8')
-    link(href="//fonts.googleapis.com/css?family=Open+Sans:400,300,600,700" rel="stylesheet" type="text/css")
-    link(href="//maxcdn.bootstrapcdn.com/font-awesome/4.4.0/css/font-awesome.min.css", rel="stylesheet")
+    link(rel="stylsheet", type="text/css", href="//fonts.googleapis.com/css?family=Open+Sans:400,300,600,700")
+    link(rel="stylsheet", type="text/css", href="//maxcdn.bootstrapcdn.com/font-awesome/4.4.0/css/font-awesome.min.css")
     //loop through stylesheets
     each file in files.css
-      link(rel="stylesheet", href="#{file}?v=#{version}")
+      link(rel="stylesheet", type="text/css", href="#{file}?v=#{version}")
     //loop through javascript files
     each file in files.javascript
       script(type="text/javascript", src="#{file}?v=#{version}")
