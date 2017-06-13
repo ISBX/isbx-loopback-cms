@@ -511,11 +511,16 @@ angular.module('dashboard.directives.ModelField', [
           }
         }
 
+        // this is might be a bit too custom for CMS, but it is needed to property support current implementation
         if(property.display.type == "radio") {
           if (!scope.data[scope.key]) scope.data[scope.key] = "";
           scope.singleSelectOptions = {};
-
           var selected = scope.data[scope.key];
+          // if options is array we are actually looking for the index
+          if (Array.isArray(property.display.options)) {
+            var selectedIdx = property.display.options.indexOf(selected)
+            selected = selectedIdx
+          }
           angular.forEach(property.display.options, function(value, key) {
             if(key == selected) {
               scope.singleSelectOptions[key] = true;
@@ -527,7 +532,6 @@ angular.module('dashboard.directives.ModelField', [
 
         scope.updateSingleSelectCheckbox = function(itemKey, itemValue) {
           scope.singleSelectOptions[itemKey] = true;
-
           scope.data[scope.key] = itemKey;
           angular.forEach(scope.singleSelectOptions, function(value, index) {
             if (itemKey != index)
