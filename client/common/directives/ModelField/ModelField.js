@@ -374,8 +374,9 @@ angular.module('dashboard.directives.ModelField', [
         if(scope.key !== null && typeof scope.key === 'object') {
           if (!scope.model.properties[scope.key.property]) {
             scope.model.properties[scope.key.property] = {};
-            scope.model.properties[scope.key.property].display = scope.key;
           }
+          //override default display logic
+          scope.model.properties[scope.key.property].display = scope.key;
           scope.key = scope.key.property;
         }
         
@@ -457,11 +458,6 @@ angular.module('dashboard.directives.ModelField', [
         if (property.display.type == "slider") {
           if (typeof scope.data[scope.key] === 'undefined' || scope.data[scope.key] == null) {
             scope.data[scope.key] = property.display.options.from + ";" + property.display.options.to;
-          }
-        }
-        if (property.display.type == "textarea") {
-          if(property.display.selectone) {
-            scope.data[scope.key] = property.display.options.join("\n");
           }
         }
 
