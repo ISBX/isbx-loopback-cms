@@ -55,11 +55,7 @@ angular.module('dashboard.directives.ModelField', [
             <div class="error-message" >{{ display.error }}</div>\
             <model-field-reference-edit key="key" property="property" options="display.options" model-data="data" ng-model="data[key]" class="field" ng-required="{{ model.properties[key].required }}" ng-disabled="display.readonly"  /> \
             <div class="model-field-description" ng-if="display.description">{{ display.description }}</div>\
-          </div> \
-          <label class="col-sm-2 control-label"></label> \
-          <div class="col-sm-10"> \
-            <div class="model-field-description" ng-if="display.description">{{ display.description }}</div>\
-          </div>';
+          </div>' ;
         break;
       case 'reference-sort':
         // depends on directive modelFieldReferenceSortEdit
