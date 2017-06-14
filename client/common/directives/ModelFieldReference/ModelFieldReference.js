@@ -238,6 +238,13 @@ angular.module('dashboard.directives.ModelFieldReference', [
          if (item && item[scope.options.searchField] == "[Add New Item]") {
            var value = element.find("input.ui-select-search").val();
            item[scope.key] = value;
+         }         
+         if (_.find(scope.selected.items, { name: item.name })) {
+           // due to late binding - used $timeout to digest the changes after next cycle 
+           // remove it by $$hashKey to avoid removing duplicates
+           $timeout(function() {
+            _.remove(scope.selected.items, { $$hashKey: item.$$hashKey });
+           });
          }
          //For multi-select add as relationship array objects to modelData (when saving, the CMS relational-upsert.js will handle it)
          scope.selected.items.push(item);
