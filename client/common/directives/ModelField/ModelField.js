@@ -287,7 +287,7 @@ angular.module('dashboard.directives.ModelField', [
         template = '<label class="col-sm-2 control-label">{{ display.label || key }}:</label>\
           <div class="col-sm-10">\
             <div class="error-message" >{{ display.error }}</div>\
-            <input type=numberType ng-blur="parseFunc($event)" min="{{ display.minValue }}" max="{{ display.maxValue }}" ng-model="data[key]" ng-disabled="{{ display.readonly }}" ng-required="{{ model.properties[key].required }}" class="field form-control">\
+            <input type=numberType ng-blur="validateAndParseNumbers($event)" min="{{ display.minValue }}" max="{{ display.maxValue }}" ng-model="data[key]" ng-disabled="{{ display.readonly }}" ng-required="{{ model.properties[key].required }}" class="field form-control">\
             <div class="model-field-description" ng-if="display.description">{{ display.description }} {{count}}</div>\
           </div>';
         break;
@@ -333,70 +333,38 @@ angular.module('dashboard.directives.ModelField', [
     },
     link: function(scope, element, attrs) {
 
-        scope.parseDecimalToString = function(value, scale) { /*takes a string and converts it to proper string */
-          var decimalScale = parseInt(scale) ? parseInt(scale) :  20; /* this is max decimal toFixed can handle */
-          decimalScale = Math.min(Math.max(decimalScale, 0), 20) /*since decimalScale is passed to toFixed, must be between 0 and 20 */
-          if (value) {
-            value = parseFloat(value.toString().replace(",", "."));
-          }
-          if (value && !isNaN(value) && typeof decimalScale === "number") {
-            value = (Math.round(value * Math.pow(10, decimalScale))/Math.pow(10, decimalScale)).toFixed(decimalScale) /* because Javascript rounding is not solid */
-          }
-          return value
-        };
+      // force values that can be parsed to numbers, validate for range and errors
 
-        var promise = '';
-        scope.parseFunc = function(e) {
-          if (promise) $timeout.cancel(promise);
-          promise = $timeout(function() {
-            if (scope.display.allowDecimal) {
-              scope.data[scope.key] = scope.parseDecimalToString(e.target.value, scope.data.scale || scope.property.display.scaleValue) /*scope.data.scale is to handle parsing the field while scale data is being entered - formEdit */
-            } else {
-              // scope.display.minValue = scope.display.minValue ? scope.display.minValue : 0;
-              if (e.target.value !== undefined && e.target.value !== '') {
-                var newValue = _.round(e.target.value, 0);
-                // validate within range
-                if (scope.display.minValue !== undefined && scope.display.minValue > newValue) {newValue = scope.display.minValue}
-                if (scope.display.maxValue !== undefined && scope.display.maxValue < newValue) {newValue = scope.display.maxValue}
-                scope.data[scope.key] = newValue
-              } else (
-                scope.data[scope.key] = ''
-              );
-            }
-            if (e.target.value === 'NaN') {
-              e.target.value = scope.display.default || '';
-            }
-            // scope.data[scope.key] = e.target.value;
-          }, 0);
-        };
+      //In situations where edit form has fields not in the model json properties object (i.e. ModelFieldReference multi-select)
+      if(scope.key !== null && typeof scope.key === 'object') {
+        if (!scope.model.properties[scope.key.property]) {
+          scope.model.properties[scope.key.property] = {};
+        }
+        //override default display logic
+        scope.model.properties[scope.key.property].display = scope.key;
+        scope.key = scope.key.property;
+      }
 
-        //In situations where edit form has fields not in the model json properties object (i.e. ModelFieldReference multi-select)
-        if(scope.key !== null && typeof scope.key === 'object') {
-          if (!scope.model.properties[scope.key.property]) {
-            scope.model.properties[scope.key.property] = {};
-          }
-          //override default display logic
-          scope.model.properties[scope.key.property].display = scope.key;
-          scope.key = scope.key.property;
+      var property = { display: {type: "text"} };
+      if (scope.model.properties && scope.model.properties[scope.key]) property = scope.model.properties[scope.key];
+      if (!property) {
+        console.log("ModelField link error: no property for model '" + scope.model.name + "'; property key = '" + scope.key + "' found!");
+        return; //ABORT if no property definition
+      }
+      if (!property.display || !property.display.type) {
+        if (!property.display) property.display = {};
+        //TODO: check the property definition in the loopback model and pick a better default "type"
+        switch (property.type) {
+          case "date":
+          case "Date":
+              property.display.type = "datetime";
+          break;
+          default: property.display.type = "text"; break;
         }
-        
-        var property = { display: {type: "text"} };
-        if (scope.model.properties && scope.model.properties[scope.key]) property = scope.model.properties[scope.key];
-        if (!property) {
-          console.log("ModelField link error: no property for model '" + scope.model.name + "'; property key = '" + scope.key + "' found!");
-          return; //ABORT if no property definition
-        }
-        if (!property.display || !property.display.type) {
-          if (!property.display) property.display = {};
-          //TODO: check the property definition in the loopback model and pick a better default "type"
-          switch (property.type) {
-            case "date": 
-            case "Date":
-                property.display.type = "datetime";
-            break;
-            default: property.display.type = "text"; break;
-          }
-        }
+      }
+
+      // force numbers into int or float is possible, validate against max/min
+      if (property.display.type === 'number' || property.display.type === 'number-decimal') {
 
         if (property.display.allowDecimal) {
           $timeout(function() {
@@ -404,192 +372,251 @@ angular.module('dashboard.directives.ModelField', [
           }, 0)
         }
 
-        scope.charsLeft = property.display.maxLength
-        if (property.display.type === 'text' || property.display.type === 'textarea') {
-          scope.lengthCheck = function(e) {
-            if (property.display.maxLength && e.target.value.length > property.display.maxLength) {
-              e.target.value = e.target.value.substring(0, property.display.maxLength);
+        scope.parseDecimalToString = function(value, scale) { /*takes a string and converts it to proper string */
+          var parsedValue;
+          var decimalScale = parseInt(scale) ? parseInt(scale) :  20; /* this is max decimal toFixed can handle */
+          decimalScale = Math.min(Math.max(decimalScale, 0), 20) /*since decimalScale is passed to toFixed, must be between 0 and 20 */
+          if (value) {
+            parsedValue = parseFloat(value.toString().replace(",", "."))
+            if (isNaN(parsedValue)) {
+              scope.display.error = "Please enter a valid number.";
+              return value
             }
-            scope.charsLeft = property.display.maxLength - e.target.value.length;
-          }
-        }
-
-        if (property.display.type == 'file' && scope.data[scope.key]) {
-          //Check if image file is uploaded and convert schema property display type to image
-          var filename = scope.data[scope.key];
-          if (typeof filename === 'object' && filename.filename) filename = filename.filename;
-          else if (typeof filename === 'object' && filename.file) filename = filename.file.name;
-          if (filename) {
-            var extension = filename.toLowerCase().substring(filename.length-4);
-            if (extension == '.png' || extension == '.jpg' || extension == 'jpeg' || extension == '.bmp') {
-              property = angular.copy(property); //we don't want changes the schema property to persist outside of this directive
-              property.display.type = 'image';
+            value = parsedValue;
+            if (typeof decimalScale === "number") {
+              value = (Math.round(value * Math.pow(10, decimalScale)) / Math.pow(10, decimalScale)).toFixed(decimalScale)
             }
           }
-        }
-
-        //Set default date format
-        if (property.display.type == "datetime") {
-          if (!property.display.options) property.display.options = {};
-          if (!property.display.options.format) property.display.options.format = "YYYY-MM-DD  h:mm A";
-        }
-
-        if (!scope.data[scope.key] && property.display.defaultValueUsingModelKey) {
-          scope.data[scope.key] = scope.data[property.display.defaultValueUsingModelKey];
-        }
-
-        if (scope.data[scope.key] && property.display.convertToLocalTime === false) {
-          //remove the 'Z' from the end of the timestamp so that it is not converted to local time
-          scope.data[scope.key] = scope.data[scope.key].substring(0, scope.data[scope.key].length-1);
-        }
-
-        if (property.display.type == "boolean") {
-          scope.check = function(data, key) {
-            //This function is needed to accept string '1' and numeric 1 values when state changes
-            var value = data[key];
-            if (value == undefined || value == null) return property.display.default;
-            data[key] = value == '1' || value == 1; //Fixes a bug where data[key] changes from bool to string can cause checkbox to get unchecked
-            return data[key];
-          }
-          //Make sure boolean (checkbox) values are numeric (below only gets called on init and not when state changes)
-          if (typeof scope.data[scope.key] === "string") scope.data[scope.key] = parseInt(scope.data[scope.key]);
-        }
-        
-        if (property.display.type == "slider") {
-          if (typeof scope.data[scope.key] === 'undefined' || scope.data[scope.key] == null) {
-            scope.data[scope.key] = property.display.options.from + ";" + property.display.options.to;
-          }
-        }
-
-        //See if there is a default value
-        if (!scope.data[scope.key] && (property["default"] || typeof property["default"] === 'number')) {
-          scope.data[scope.key] = property["default"];
-        }
-
-        //Set multi-select output type
-        if (property.display.type == "multi-select") {
-          if (typeof property.display.output === 'undefined') {
-            property.display.output = property.display.options instanceof Array ? "comma" : "object";
-          }
-          switch (property.display.output) {
-            case "comma":
-              if (!scope.data[scope.key]) scope.data[scope.key] = "";
-              var items = scope.data[scope.key].split('","');
-              scope.multiSelectOptions = {};
-              for (var i in items) {
-                var item = items[i];
-                if (item[0] == '"') item = item.substring(1, item.length);
-                if (item[item.length-1] == '"') item = item.substring(0, item.length-1);
-                var index = property.display.options.indexOf(item);
-                scope.multiSelectOptions[index] = true;
-              }
-              break;
-            case "array":
-              if (!scope.data[scope.key]) scope.data[scope.key] = [];
-              for (var i in scope.data[scope.key]) {
-                var index = scope.data[scope.key][i];
-                scope.multiSelectOptions[index] = true;
-              }
-              break;
-            case "object":
-              if (!scope.data[scope.key]) scope.data[scope.key] = {};
-              scope.multiSelectOptions = angular.copy(scope.data[scope.key]);
-              try {
-                scope.multiSelectOptions = angular.fromJson(scope.multiSelectOptions);
-                if (typeof scope.multiSelectOptions === 'object' && !Array.isArray(scope.multiSelectOptions)) {
-                  for (var key in scope.multiSelectOptions) {
-                    scope.multiSelectOptions[key] = true;
-                  }
-                }
-              } catch(e) {
-              }
-              break;
-          }
-        }
-
-        // this is might be a bit too custom for CMS, but it is needed to property support current implementation
-        if(property.display.type == "radio") {
-          if (!scope.data[scope.key]) scope.data[scope.key] = "";
-          scope.singleSelectOptions = {};
-          var selected = scope.data[scope.key];
-          // if options is array we are actually looking for the index
-          if (Array.isArray(property.display.options)) {
-            var selectedIdx = property.display.options.indexOf(selected)
-            selected = selectedIdx
-          }
-          angular.forEach(property.display.options, function(value, key) {
-            if(key == selected) {
-              scope.singleSelectOptions[key] = true;
-            } else {
-              scope.singleSelectOptions[key] = false;
-            }
-          });
-        }
-
-        scope.updateSingleSelectCheckbox = function(itemKey, itemValue) {
-          scope.singleSelectOptions[itemKey] = true;
-          scope.data[scope.key] = itemKey;
-          angular.forEach(scope.singleSelectOptions, function(value, index) {
-            if (itemKey != index)
-              scope.singleSelectOptions[index] = false;
-          });
-        }
-
-        //Handle translating multi-select checks to scope.data[scope.key] output format
-        scope.clickMultiSelectCheckbox = function(questionKey, itemKey, itemValue, multiSelectOptions) {
-          var output = property.display.output == "array" ? [] : property.display.output == "object" ? {} : "";
-          if (property.display.output == "object") {
-            //Return Key/Value Pair
-            var keys = Object.keys(property.display.options);
-            for (var i in keys) {
-              var key = keys[i];
-              var value = property.display.options[key];
-              var selected = scope.multiSelectOptions[key];
-              // if currently selected
-              if (selected) {
-                output[key] = value
-              } else {
-                delete output[key]
-              } ; //return object
-            }
-          } else {
-            //Results are always in order of property.display.options
-            for (var i = 0; i < property.display.options.length; i++) {
-              var value = property.display.options[i];
-              var selected = scope.multiSelectOptions[i];
-              switch (property.display.output) {
-                case "comma":
-                  if (selected) output += "\"" + value + "\","; //quote qualified
-                  break;
-                case "array":
-                  if (selected) output.push(i); // return array of selected indexes in order
-                  break;
-              }
-            }
-            if (property.display.output == "comma" && output.length > 0) output = output.substring(0, output.length-1); //remove last comma
-          }
-          scope.data[scope.key] = output;
-          scope.$emit('onModelFieldMultiSelectCheckboxClick', questionKey, itemKey, itemValue, multiSelectOptions);
+          return value
         };
 
-        //scope variables needed for the HTML Template
-        scope.property = property;
-        scope.display = property.display;
+        var promise = '';
+        scope.validateAndParseNumbers = function(e) {
+          if (e.target.value === '') {
+            delete scope.display.error
+            return
+          }
+          if (promise) $timeout.cancel(promise);
+          promise = $timeout(function() {
+            if (scope.display.allowDecimal) {
+              scope.data[scope.key] = scope.parseDecimalToString(e.target.value, scope.data.scale || scope.property.display.scaleValue) /*scope.data.scale is to handle parsing the field while scale data is being entered - formEdit */
+            } else { /*handle when don't allow decimals*/
+              if (_.round(e.target.value) === 'NaN') {
+                property.display.error = "Please enter a valid integer"
+                return
+              }
+              var roundedValue = _.round(e.target.value, 0);
+              scope.data[scope.key] = roundedValue
+            }
+            if (!isNaN(parseFloat(scope.data[scope.key]))) { /*if data can be coerced into a number)*/
 
-        if (property.display.editTemplate) {
-          element.html(property.display.editTemplate).show();
+              if (scope.display.minValue !== undefined && scope.display.minValue > parseFloat(scope.data[scope.key])) {
+                scope.display.error = "Value is less than the minimum allowed value " + scope.display.minValue + ".";
+                return
+              }
+              if (scope.display.maxValue !== undefined && scope.display.maxValue < parseFloat(scope.data[scope.key])) {
+                property.display.error = "Value is greater than the maximum allowed value " + scope.display.maxValue + ".";
+                return
+              }
+            }
+            delete scope.display.error
+            return
+          }, 0);
+        };
+      }
+
+
+      // validate text length
+      if (property.display.type === 'text' || property.display.type === 'textarea') {
+        scope.charsLeft = property.display.maxLength /*calculate outside of function so we have a starting value */
+        scope.lengthCheck = function(e) {
+          scope.charsLeft = Math.max(0, property.display.maxLength - e.target.value.length);
+          if (property.display.maxLength && e.target.value.length > property.display.maxLength) {
+            scope.display.error = "Text is longer than the maximum allowed length of " + scope.display.maxLength + " charaters."
+            return
+          } else {
+            delete scope.display.error
+            return
+          }
+        }
+      }
+
+      if (property.display.type == 'file' && scope.data[scope.key]) {
+        //Check if image file is uploaded and convert schema property display type to image
+        var filename = scope.data[scope.key];
+        if (typeof filename === 'object' && filename.filename) filename = filename.filename;
+        else if (typeof filename === 'object' && filename.file) filename = filename.file.name;
+        if (filename) {
+          var extension = filename.toLowerCase().substring(filename.length-4);
+          if (extension == '.png' || extension == '.jpg' || extension == 'jpeg' || extension == '.bmp') {
+            property = angular.copy(property); //we don't want changes the schema property to persist outside of this directive
+            property.display.type = 'image';
+          }
+        }
+      }
+
+      //Set default date format
+      if (property.display.type == "datetime") {
+        if (!property.display.options) property.display.options = {};
+        if (!property.display.options.format) property.display.options.format = "YYYY-MM-DD  h:mm A";
+      }
+
+      if (!scope.data[scope.key] && property.display.defaultValueUsingModelKey) {
+        scope.data[scope.key] = scope.data[property.display.defaultValueUsingModelKey];
+      }
+
+      if (scope.data[scope.key] && property.display.convertToLocalTime === false) {
+        //remove the 'Z' from the end of the timestamp so that it is not converted to local time
+        scope.data[scope.key] = scope.data[scope.key].substring(0, scope.data[scope.key].length-1);
+      }
+
+      if (property.display.type == "boolean") {
+        scope.check = function(data, key) {
+          //This function is needed to accept string '1' and numeric 1 values when state changes
+          var value = data[key];
+          if (value == undefined || value == null) return property.display.default;
+          data[key] = value == '1' || value == 1; //Fixes a bug where data[key] changes from bool to string can cause checkbox to get unchecked
+          return data[key];
+        }
+        //Make sure boolean (checkbox) values are numeric (below only gets called on init and not when state changes)
+        if (typeof scope.data[scope.key] === "string") scope.data[scope.key] = parseInt(scope.data[scope.key]);
+      }
+
+      if (property.display.type == "slider") {
+        if (typeof scope.data[scope.key] === 'undefined' || scope.data[scope.key] == null) {
+          scope.data[scope.key] = property.display.options.from + ";" + property.display.options.to;
+        }
+      }
+
+      //See if there is a default value
+      if (!scope.data[scope.key] && (property["default"] || typeof property["default"] === 'number')) {
+        scope.data[scope.key] = property["default"];
+      }
+
+      //Set multi-select output type
+      if (property.display.type == "multi-select") {
+        if (typeof property.display.output === 'undefined') {
+          property.display.output = property.display.options instanceof Array ? "comma" : "object";
+        }
+        switch (property.display.output) {
+          case "comma":
+            if (!scope.data[scope.key]) scope.data[scope.key] = "";
+            var items = scope.data[scope.key].split('","');
+            scope.multiSelectOptions = {};
+            for (var i in items) {
+              var item = items[i];
+              if (item[0] == '"') item = item.substring(1, item.length);
+              if (item[item.length-1] == '"') item = item.substring(0, item.length-1);
+              var index = property.display.options.indexOf(item);
+              scope.multiSelectOptions[index] = true;
+            }
+            break;
+          case "array":
+            if (!scope.data[scope.key]) scope.data[scope.key] = [];
+            for (var i in scope.data[scope.key]) {
+              var index = scope.data[scope.key][i];
+              scope.multiSelectOptions[index] = true;
+            }
+            break;
+          case "object":
+            if (!scope.data[scope.key]) scope.data[scope.key] = {};
+            scope.multiSelectOptions = angular.copy(scope.data[scope.key]);
+            try {
+              scope.multiSelectOptions = angular.fromJson(scope.multiSelectOptions);
+              if (typeof scope.multiSelectOptions === 'object' && !Array.isArray(scope.multiSelectOptions)) {
+                for (var key in scope.multiSelectOptions) {
+                  scope.multiSelectOptions[key] = true;
+                }
+              }
+            } catch(e) {
+            }
+            break;
+        }
+      }
+
+      // this is might be a bit too custom for CMS, but it is needed to property support current implementation
+      if(property.display.type == "radio") {
+        if (!scope.data[scope.key]) scope.data[scope.key] = "";
+        scope.singleSelectOptions = {};
+        var selected = scope.data[scope.key];
+        // if options is array we are actually looking for the index
+        if (Array.isArray(property.display.options)) {
+          var selectedIdx = property.display.options.indexOf(selected)
+          selected = selectedIdx
+        }
+        angular.forEach(property.display.options, function(value, key) {
+          if(key == selected) {
+            scope.singleSelectOptions[key] = true;
+          } else {
+            scope.singleSelectOptions[key] = false;
+          }
+        });
+      }
+
+      scope.updateSingleSelectCheckbox = function(itemKey, itemValue) {
+        scope.singleSelectOptions[itemKey] = true;
+        scope.data[scope.key] = itemKey;
+        angular.forEach(scope.singleSelectOptions, function(value, index) {
+          if (itemKey != index)
+            scope.singleSelectOptions[index] = false;
+        });
+      }
+
+      //Handle translating multi-select checks to scope.data[scope.key] output format
+      scope.clickMultiSelectCheckbox = function(questionKey, itemKey, itemValue, multiSelectOptions) {
+        var output = property.display.output == "array" ? [] : property.display.output == "object" ? {} : "";
+        if (property.display.output == "object") {
+          //Return Key/Value Pair
+          var keys = Object.keys(property.display.options);
+          for (var i in keys) {
+            var key = keys[i];
+            var value = property.display.options[key];
+            var selected = scope.multiSelectOptions[key];
+            // if currently selected
+            if (selected) {
+              output[key] = value
+            } else {
+              delete output[key]
+            } ; //return object
+          }
         } else {
-          element.html(getTemplate(property.display.type, scope)).show();
+          //Results are always in order of property.display.options
+          for (var i = 0; i < property.display.options.length; i++) {
+            var value = property.display.options[i];
+            var selected = scope.multiSelectOptions[i];
+            switch (property.display.output) {
+              case "comma":
+                if (selected) output += "\"" + value + "\","; //quote qualified
+                break;
+              case "array":
+                if (selected) output.push(i); // return array of selected indexes in order
+                break;
+            }
+          }
+          if (property.display.output == "comma" && output.length > 0) output = output.substring(0, output.length-1); //remove last comma
         }
-        // add input attributes if specified in schema
-        addInputAttributes(element, scope.property.display.inputAttr);
+        scope.data[scope.key] = output;
+        scope.$emit('onModelFieldMultiSelectCheckboxClick', questionKey, itemKey, itemValue, multiSelectOptions);
+      };
 
-        if (scope.display.pattern && scope.display.pattern[0] == '/' && scope.display.pattern[scope.display.pattern.length-1] == '/') {
-          //As of Angular 1.6 upgrade ng-pattern does not accept leading and trailing / in string regex; angular uses new RegExp() which does not accept / characters
-          scope.display.pattern = scope.display.pattern.slice(1, scope.display.pattern.length-2);
-        }
+      //scope variables needed for the HTML Template
+      scope.property = property;
+      scope.display = property.display;
 
-        $compile(element.contents())(scope);
+      if (property.display.editTemplate) {
+        element.html(property.display.editTemplate).show();
+      } else {
+        element.html(getTemplate(property.display.type, scope)).show();
+      }
+      // add input attributes if specified in schema
+      addInputAttributes(element, scope.property.display.inputAttr);
+
+      if (scope.display.pattern && scope.display.pattern[0] == '/' && scope.display.pattern[scope.display.pattern.length-1] == '/') {
+        //As of Angular 1.6 upgrade ng-pattern does not accept leading and trailing / in string regex; angular uses new RegExp() which does not accept / characters
+        scope.display.pattern = scope.display.pattern.slice(1, scope.display.pattern.length-2);
+      }
+
+      $compile(element.contents())(scope);
 
     }
   };
