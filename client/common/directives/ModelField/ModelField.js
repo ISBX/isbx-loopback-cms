@@ -325,7 +325,8 @@ angular.module('dashboard.directives.ModelField', [
     scope: {
       key: '=key',
       model: '=model',
-      data: '=ngModel'
+      data: '=ngModel',
+      questionsWithErrors: '=questionsWithErrors'
     },
     link: function(scope, element, attrs) {
 
@@ -375,6 +376,7 @@ angular.module('dashboard.directives.ModelField', [
           if (value) {
             parsedValue = parseFloat(value.toString().replace(",", "."))
             if (isNaN(parsedValue)) {
+              scope.questionsWithErrors[scope.key] = true;
               scope.display.error = "Please enter a valid number.";
               return value
             }
@@ -389,7 +391,8 @@ angular.module('dashboard.directives.ModelField', [
         var promise = '';
         scope.validateAndParseNumbers = function(e) {
           if (e.target.value === '') {
-            delete scope.display.error
+            if (scope.questionsWithErrors) scope.questionsWithErrors[scope.key] = false;
+            delete scope.display.error;
             return
           }
           if (promise) $timeout.cancel(promise);
@@ -397,8 +400,9 @@ angular.module('dashboard.directives.ModelField', [
             if (scope.display.allowDecimal) {
               scope.data[scope.key] = scope.parseDecimalToString(e.target.value, scope.data.scale || scope.property.display.scaleValue) /*scope.data.scale is to handle parsing the field while scale data is being entered - formEdit */
             } else { /*handle when don't allow decimals*/
-              if (_.round(e.target.value) === 'NaN') {
-                property.display.error = "Please enter a valid integer"
+              if (isNaN(_.round(e.target.value))) {
+                if (scope.questionsWithErrors) scope.questionsWithErrors[scope.key] = true;
+                property.display.error = "Please enter a valid integer";
                 return
               }
               var roundedValue = _.round(e.target.value, 0);
@@ -407,16 +411,19 @@ angular.module('dashboard.directives.ModelField', [
             if (!isNaN(parseFloat(scope.data[scope.key]))) { /*if data can be coerced into a number)*/
 
               if (scope.display.minValue !== undefined && scope.display.minValue > parseFloat(scope.data[scope.key])) {
+                if (scope.questionsWithErrors) scope.questionsWithErrors[scope.key] = true
                 scope.display.error = "Value is less than the minimum allowed value " + scope.display.minValue + ".";
                 return
               }
               if (scope.display.maxValue !== undefined && scope.display.maxValue < parseFloat(scope.data[scope.key])) {
+                if (scope.questionsWithErrors) scope.questionsWithErrors[scope.key] = true
                 property.display.error = "Value is greater than the maximum allowed value " + scope.display.maxValue + ".";
                 return
               }
+              if (scope.questionsWithErrors) scope.questionsWithErrors[scope.key] = false
+              delete scope.display.error
+              return
             }
-            delete scope.display.error
-            return
           }, 0);
         };
       }
@@ -428,9 +435,11 @@ angular.module('dashboard.directives.ModelField', [
         scope.lengthCheck = function(e) {
           scope.charsLeft = Math.max(0, property.display.maxLength - e.target.value.length);
           if (property.display.maxLength && e.target.value.length > property.display.maxLength) {
+            if (scope.questionsWithErrors) scope.questionsWithErrors[scope.key] = true
             scope.display.error = "Text is longer than the maximum allowed length of " + scope.display.maxLength + " charaters."
             return
           } else {
+            if (scope.questionsWithErrors) scope.questionsWithErrors[scope.key] = false
             delete scope.display.error
             return
           }
