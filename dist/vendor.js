@@ -1,5 +1,9 @@
 /**
+<<<<<<< HEAD
  * isbx-loopback-cms - v0.1.1 - 2017-06-13
+=======
+ * isbx-loopback-cms - v0.1.1 - 2017-06-14
+>>>>>>> f3c74f6f26ea6689bda54b441c52ef264d371e4d
  * 
  *
  * Copyright (c) 2017 ISBX
