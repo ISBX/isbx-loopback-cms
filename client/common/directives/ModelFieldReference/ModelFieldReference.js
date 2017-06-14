@@ -239,7 +239,7 @@ angular.module('dashboard.directives.ModelFieldReference', [
            var value = element.find("input.ui-select-search").val();
            item[scope.key] = value;
          }         
-         if (!scope.options.allowDuplicate) {
+         if (_.find(scope.selected.items, { name: item.name })) {
            // due to late binding - used $timeout to digest the changes after next cycle 
            // remove it by $$hashKey to avoid removing duplicates
            $timeout(function() {
