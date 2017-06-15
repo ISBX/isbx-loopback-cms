@@ -1,5 +1,5 @@
 angular.module('dashboard.Dashboard.Model.List', [
-  'dashboard.Dashboard.Model.Edit.SaveDialog',                                                
+  'dashboard.Dashboard.Model.Edit.SaveDialog',
   'dashboard.Config',
   'dashboard.services.Cache',
   'dashboard.services.GeneralModel',
@@ -84,18 +84,18 @@ angular.module('dashboard.Dashboard.Model.List', [
     //Check if Chart needs to be displayed
     $scope.gridContainerTopMargin = 0;
     if ($scope.action.options.chart) {
-      $scope.gridContainerTopMarginMax = $scope.action.options.chart.height + 60; //used for scrolling effect 
+      $scope.gridContainerTopMarginMax = $scope.action.options.chart.height + 60; //used for scrolling effect
       $scope.gridContainerTopMargin = $scope.gridContainerTopMarginMax;
       processChart();
     }
-    
+
     window.ngGrid.i18n['en'].ngTotalItemsLabel = "Total Records: ";
     window.ngGrid.i18n['en'].ngPageSizeLabel = "Show: ";
-    
+
     //Load Column Definition
     $scope.columns = getColumnDefinition();
     $scope.gridOptions.columnDefs = "columns"; //tells ng-grid to watch $scope.columns for changes
-    
+
     //Check if Editable
     //NOTE: $scope.action.options.disableAdd determines if you can add a record or not
     if ($scope.action.options.editable) {
@@ -118,7 +118,7 @@ angular.module('dashboard.Dashboard.Model.List', [
     $scope.origApiPath = $scope.apiPath;
     addQueryStringParams();
     $scope.getTotalServerItems();
-    
+
     $timeout(function() {
       //Custom styling override for ng-grid
       $(".ngFooterPanel select").addClass("form-control");
@@ -130,12 +130,12 @@ angular.module('dashboard.Dashboard.Model.List', [
     angular.element($window).bind("resize", function() {
     	processWindowSize();
     });
-    
+
     //Check if editing then show Save/Cancel buttons
     $scope.$on('ngGridEventStartCellEdit', function () {
       startEdit();
     });
-    
+
     $scope.$on('ModelListLoadItems', function($event, options) {
       if (options && options.resetPaging) $scope.pagingOptions.currentPage = 1;
       $scope.getTotalServerItems(); //make sure to get the total server items and then reload data
@@ -172,7 +172,7 @@ angular.module('dashboard.Dashboard.Model.List', [
 		//reference to another subnav's columns in the same section
 		var subnav = _.find($scope.section.subnav, { label: columnRef.label });
 		columns = subnav.options.columns;
-	        
+
 	  }
 	}
 	//Check column role access
@@ -196,14 +196,14 @@ angular.module('dashboard.Dashboard.Model.List', [
               columns.splice(i, 1);
               i--;
             }
-            
+
           }
         }
       }
 	}
 	return columns; //assign the column definitions
   }
-  
+
   /**
    * Handles hiding optional columns identified in the config.json colunn definition
    */
@@ -222,7 +222,7 @@ angular.module('dashboard.Dashboard.Model.List', [
 		//Display All Columns
 		$scope.columns = $scope.columns = getColumnDefinition();
 	}
-	  
+
   }
 
   /**
@@ -236,16 +236,16 @@ angular.module('dashboard.Dashboard.Model.List', [
     var keys = Object.keys(queryStringParams);
     for (var i in keys) {
       var key = keys[i];
-      
+
       //Add filter params from querystring
       $scope.action.options.params[key] = queryStringParams[key];
-      
+
       if ($scope.apiPath) {
         //Swap out any variables needed in API Path
         $scope.apiPath = $scope.apiPath.replace("{"+key+"}", queryStringParams[key]);
       }
     }
-    
+
     //Look for session variables in $scope.apiPath
     try {
       var session = JSON.parse($cookies.session); //needed for eval() below
@@ -264,10 +264,10 @@ angular.module('dashboard.Dashboard.Model.List', [
     } catch(e) {
       console.error(e);
     }
-    
+
     //Gets the filter description if available for display
     var filterDescription = queryStringParams["filterDescription"];
-    $scope.filterDescription = filterDescription ? filterDescription : $scope.action.label; 
+    $scope.filterDescription = filterDescription ? filterDescription : $scope.action.label;
 
     //Check if paging and sorting exists in querystring
     if (queryStringParams.pageSize) $scope.pagingOptions.pageSize = parseInt(queryStringParams.pageSize);
@@ -282,9 +282,9 @@ angular.module('dashboard.Dashboard.Model.List', [
     }
 
     //Check if search is in querystring
-    if (queryStringParams.search) $scope.filterOptions.filterText = queryStringParams.search; 
+    if (queryStringParams.search) $scope.filterOptions.filterText = queryStringParams.search;
   }
-  
+
   function setupPagination() {
     //make a copy of config params
     var params = angular.copy($scope.action.options.params);
@@ -327,7 +327,7 @@ angular.module('dashboard.Dashboard.Model.List', [
           sortOrder += field + " " + direction;
         }
 
-        params = _.extend(params, { 
+        params = _.extend(params, {
           'filter[order]': sortOrder
         });
       }
@@ -359,7 +359,7 @@ angular.module('dashboard.Dashboard.Model.List', [
         }
       }
     }
-    
+
     //TODO: Figure out a better way to preserve state; the following
     $location.search("pageSize", $scope.pagingOptions.pageSize);
     $location.search("currentPage", $scope.pagingOptions.currentPage);
@@ -370,7 +370,7 @@ angular.module('dashboard.Dashboard.Model.List', [
     addQueryStringParams();
     return params;
   }
-  
+
   $scope.getTotalServerItems = function() {
     var params = setupPagination();
     GeneralModelService.count($scope.apiPath, params)
@@ -436,7 +436,7 @@ angular.module('dashboard.Dashboard.Model.List', [
         $scope.loadAttempted = true;
       });
   };
-  
+
   /**
    * Return if the dynamic button should be displayed
    */
@@ -452,7 +452,7 @@ angular.module('dashboard.Dashboard.Model.List', [
     }
     return false;
   };
-  
+
   /**
    * Dynamic buttons from config.json
    */
@@ -477,7 +477,7 @@ angular.module('dashboard.Dashboard.Model.List', [
               value = value.substring(value.lastIndexOf("{")+1,value.lastIndexOf("}"));
               value = $scope.queryStringParams[value];
             }
-            if (!$scope.action.options.data) $scope.action.options.data = {}; 
+            if (!$scope.action.options.data) $scope.action.options.data = {};
             $scope.action.options.data[key] = value;
           }
         }
@@ -490,7 +490,7 @@ angular.module('dashboard.Dashboard.Model.List', [
       $state.go("dashboard.model.action." + action.route, { model: section.path, action: action.label });
     }
   };
- 
+
   /**
    * When config.json specifies editable = true
    */
@@ -504,7 +504,7 @@ angular.module('dashboard.Dashboard.Model.List', [
 	  $scope.list.push({});
 	  startEdit();
   };
-  
+
   $scope.clickSaveEdit = function() {
     //Make sure there's an oldList to compare with $scope.list
     if ($scope.oldList) {
@@ -517,13 +517,13 @@ angular.module('dashboard.Dashboard.Model.List', [
         if (!newRow || (typeof newRow == 'object' && Object.keys(newRow).length == 0) || newRow.length == 0) {
           continue;
         }
-               
+
         if (!oldRow || JSON.stringify(newRow) != JSON.stringify(oldRow)) {
 
           /*
            * We decided to remove any ability to upsert from model list
            * due to issues with model reference field not being able propagate
-           * up the information needed. 
+           * up the information needed.
            */
           /*
           if ($scope.model && $scope.model.options.relations) {
@@ -549,7 +549,7 @@ angular.module('dashboard.Dashboard.Model.List', [
             }
           }
           */
-          
+
           //Remove all relationships to prevent upserting on the server side
           var rowKeys = Object.keys(newRow);
           for (var i in rowKeys) {
@@ -558,7 +558,7 @@ angular.module('dashboard.Dashboard.Model.List', [
               delete newRow[key];
             }
           }
-          
+
           //insert defaults as specified in config.json
           if ($scope.action.options.defaults) {
             var keys = Object.keys($scope.action.options.defaults);
@@ -575,7 +575,7 @@ angular.module('dashboard.Dashboard.Model.List', [
               }
             }
           }
-          
+
           //check if all required fields are filled in
           if ($scope.action.options.columns) {
             for (var i in $scope.action.options.columns) {
@@ -585,17 +585,17 @@ angular.module('dashboard.Dashboard.Model.List', [
                 return;
               }
             }
-            
+
           }
-          
+
           deltaList.push(newRow);
         }
       }
-      
+
       //console.log(JSON.stringify(deltaList, null, '  '));
       //return;
 
-      
+
       //Save deltaList
       var recordIndex = 0;
       $scope.status = "Saving...";
@@ -605,7 +605,7 @@ angular.module('dashboard.Dashboard.Model.List', [
         controller: 'ModelEditSaveDialogCtrl',
         scope: $scope
       });
-      
+
       var saveRecord = function(record, callback) {
         var id = record[$scope.action.options.key];
         GeneralModelService.save($scope.action.options.model, id, record)
@@ -618,7 +618,7 @@ angular.module('dashboard.Dashboard.Model.List', [
               alert(error.error.message);
           } else if (typeof error === 'object' && error.code) {
             switch (error.code) {
-              case "ER_DUP_ENTRY": alert("There was a duplicate entry found. Please make sure the entry is unique."); break; 
+              case "ER_DUP_ENTRY": alert("There was a duplicate entry found. Please make sure the entry is unique."); break;
             }
           } else if (typeof error === 'object') {
             alert(JSON.stringify(error));
@@ -626,9 +626,9 @@ angular.module('dashboard.Dashboard.Model.List', [
             alert(error);
           }
           callback();
-        });            
+        });
       };
-      
+
       var saveNextRecord = function() {
         if (recordIndex >= deltaList.length) {
           //finished saving all data
@@ -650,7 +650,7 @@ angular.module('dashboard.Dashboard.Model.List', [
 
     }
   };
-  
+
   $scope.clickCancelEdit = function() {
     if (confirm("Are you sure you want can cancel all changes?")) {
       endEdit();
@@ -664,7 +664,7 @@ angular.module('dashboard.Dashboard.Model.List', [
     }
     $scope.deleteRow(row);
   };
-  
+
   $scope.deleteRow = function(row, bypassPrompt) {
     if (!$scope.model || !$scope.model.plural) {
       console.error("$scope.model or $scope.model.plural not found!");
@@ -695,12 +695,12 @@ angular.module('dashboard.Dashboard.Model.List', [
               alert(error);
             }
           });
-          
+
         }
       }
     }
   };
-  
+
   $scope.$watch("selected", function(newVal, oldVal) {
     if (newVal !== oldVal && newVal.length > 0 && !$scope.action.options.editable) {
       if ($scope.action.options.selectedState) {
@@ -708,14 +708,16 @@ angular.module('dashboard.Dashboard.Model.List', [
       } else {
         $state.go("dashboard.model.action.edit", { model: $scope.section.path, key: $scope.action.options.key, action: $scope.action.label, id: newVal[0][$scope.action.options.key] });
       }
-    }    
+    }
   }, true);
-  
+
   $scope.$watch('pagingOptions', function (newVal, oldVal) {
     if (newVal.currentPage != oldVal.currentPage || newVal.pageSize != oldVal.pageSize) {
       if (newVal && oldVal && newVal.pageSize != oldVal.pageSize) {
         $scope.pagingOptions.currentPage = 1;
       }
+      var maxPageNumber = Math.ceil($scope.totalServerItems / newVal.pageSize);
+      if (newVal.currentPage > maxPageNumber) newVal.currentPage = maxPageNumber;
       $scope.loadItems();
     }
   }, true);
@@ -744,20 +746,20 @@ angular.module('dashboard.Dashboard.Model.List', [
     ngGridUnWatch(); //remove watch on ngGrid
     $footerPanel = $(".ngFooterPanel");
     $listContainer = $(".grid-container.list");
-    
+
     var rebuildTimeout = null;
     var rebuildGrid = function() {
       //Used in a timer to speed up refresh
       $scope.gridOptions.$gridServices.DomUtilityService.RebuildGrid(
-          $scope.gridOptions.$gridScope, 
+          $scope.gridOptions.$gridScope,
           $scope.gridOptions.ngGrid);
-      
+
     };
-    
+
     var handleScrollEvent = function(event) {
       var direction = event.originalEvent.detail ? -event.originalEvent.detail : event.originalEvent.wheelDelta/4;
       var scrollY = $viewport.scrollTop();
-      
+
       if (direction < 0) {
         //scrolling down
         var scrollY = $viewport.scrollTop();
@@ -784,11 +786,11 @@ angular.module('dashboard.Dashboard.Model.List', [
         } else if (scrollY == 0) {
           $scope.gridContainerTopMargin = $scope.gridContainerTopMarginMax;
           $viewport.height($footerPanel.offset().top-$viewport.offset().top);
-          
+
         }
       }
       $scope.$digest(); //Make sure to refresh UI
-      
+
     }
 
     //For Mobile let entire page scroll
@@ -805,7 +807,7 @@ angular.module('dashboard.Dashboard.Model.List', [
       angular.element($window).bind("mousewheel", handleScrollEvent);
       angular.element($window).bind("DOMMouseScroll", handleScrollEvent); //Firefox
     }
-    
+
     //Bind search filter input box if exists to maintain state when back button pressed
     $(".search .ngColMenu input").on("keyup", function() {
       //console.log("filter text change: " + $(this).val());
@@ -813,15 +815,15 @@ angular.module('dashboard.Dashboard.Model.List', [
       $location.replace(); //replaces current history state rather then create new one when changing querystring
     });
   });
- 
-  
+
+
   function processChart() {
     if ($scope.action.options.chart.api) {
       //Load chart data from API Call
       GeneralModelService.list($scope.action.options.chart.api, {})
       .then(function(response) {
         //console.log("chart data: " + JSON.stringify(response, null,'  '));
-         
+
         $scope.chart = $scope.action.options.chart; //make to sure make this assignment only after data is fetched (otherwise angular-google-chart can error)
 
         //Assign the data
@@ -846,7 +848,7 @@ angular.module('dashboard.Dashboard.Model.List', [
       });
     }
   }
-  
+
   /**
    * When the user clicks to add a row or edits a cell
    * turn list into edit mode allowing to save or cancel changes
@@ -854,11 +856,11 @@ angular.module('dashboard.Dashboard.Model.List', [
   function startEdit() {
     if (!$scope.isEditing) {
       //track existing data so that when saving can get deltas
-      $scope.oldList = angular.copy($scope.list); 
+      $scope.oldList = angular.copy($scope.list);
       $scope.isEditing = true;
     }
   }
-  
+
   /**
    * User either saved or cancelled edit mode so reload data
    * and hide save/cancel buttons
@@ -869,9 +871,9 @@ angular.module('dashboard.Dashboard.Model.List', [
       $scope.oldList = undefined; //clear out any old data
       $scope.loadItems();
     }
-    
+
   }
-  
+
   init();
 
 })
