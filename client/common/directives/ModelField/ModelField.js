@@ -174,11 +174,11 @@ angular.module('dashboard.directives.ModelField', [
       case 'select':
         var ngOptions = 'key as value for (key, value) in display.options';
         if (scope.property.display.options instanceof Array) {
-          //Handle when options is array of objects - enabling orderBy and sorting - could refactor as option to pass in
+          //Handle when options is array of objects containing key/value pair
           if (typeof scope.property.display.options[0] === 'object' && !Array.isArray(scope.property.display.options[0])) {
-            ngOptions = 'item.typeKey as item.typeVal for item in display.options | orderBy: \'typeVal\''
+            ngOptions = 'item.key as item.value disable when item.disabled for item in display.options'
           } else {
-            //Handle when options is a an array vs key/value pair
+            //Handle when options is a an array vs key/value pair object
             ngOptions = 'value as value for value in display.options';
           }
         }
