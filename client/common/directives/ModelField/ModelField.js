@@ -546,8 +546,12 @@ angular.module('dashboard.directives.ModelField', [
         var selected = scope.data[scope.key];
         // if options is array we are actually looking for the index
         if (Array.isArray(property.display.options)) {
-          var selectedIdx = property.display.options.indexOf(selected)
-          selected = selectedIdx
+          if (typeof property.display.options[0] === 'object' && !Array.isArray(property.display.options[0])) {
+            // actually do nothing, angular forEach will match with 'key' in the options
+          } else {
+            var selectedIdx = property.display.options.indexOf(selected)
+            selected = selectedIdx;
+          }
         }
         angular.forEach(property.display.options, function(value, key) {
           if(key == selected) {
