@@ -275,7 +275,7 @@ angular.module('dashboard.directives.ModelField', [
           </div>';
         break;
       case 'number':
-        if (scope.display.allowDecimal) {
+        if (scope.display.allowDecimal === true) {
           var numberType = "text"
         } else {
           var numberType = "number"
@@ -397,9 +397,9 @@ angular.module('dashboard.directives.ModelField', [
           }
           if (promise) $timeout.cancel(promise);
           promise = $timeout(function() {
-            if (scope.display.allowDecimal) {
+            if (scope.display.allowDecimal === true ) {
               scope.data[scope.key] = scope.parseDecimalToString(e.target.value, scope.data.scale || scope.property.display.scaleValue) /*scope.data.scale is to handle parsing the field while scale data is being entered - formEdit */
-            } else { /*handle when don't allow decimals*/
+            } else if (scope.display.allowDecimal === false) { /*handle when don't allow decimals - needs to be explicitly implied*/
               if (isNaN(_.round(e.target.value))) {
                 if (scope.questionsWithErrors) scope.questionsWithErrors[scope.key] = true;
                 property.display.error = "Please enter a valid integer";
@@ -407,6 +407,8 @@ angular.module('dashboard.directives.ModelField', [
               }
               var roundedValue = _.round(e.target.value, 0);
               scope.data[scope.key] = roundedValue
+            } else { /* hanlde like before to ensure backwards compatibility */
+              scope.data[scope.key] = e.target.value
             }
             if (!isNaN(parseFloat(scope.data[scope.key]))) { /*if data can be coerced into a number)*/
 
@@ -431,7 +433,8 @@ angular.module('dashboard.directives.ModelField', [
 
       // validate text length
       if (property.display.type === 'text' || property.display.type === 'textarea') {
-        scope.charsLeft = property.display.maxLength /*calculate outside of function so we have a starting value */
+        scope.charsLeft = property.display.maxLength - scope.data[scope.key].length /*calculate outside of function so we have a starting value */
+
         scope.lengthCheck = function(e) {
           scope.charsLeft = property.display.maxLength - e.target.value.length;
           if (property.display.maxLength && e.target.value.length > property.display.maxLength) {
