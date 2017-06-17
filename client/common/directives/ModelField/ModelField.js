@@ -433,7 +433,8 @@ angular.module('dashboard.directives.ModelField', [
 
       // validate text length
       if (property.display.type === 'text' || property.display.type === 'textarea') {
-        scope.charsLeft = property.display.maxLength /*calculate outside of function so we have a starting value */
+        scope.charsLeft = property.display.maxLength - scope.data[scope.key].length /*calculate outside of function so we have a starting value */
+
         scope.lengthCheck = function(e) {
           scope.charsLeft = property.display.maxLength - e.target.value.length;
           if (property.display.maxLength && e.target.value.length > property.display.maxLength) {
