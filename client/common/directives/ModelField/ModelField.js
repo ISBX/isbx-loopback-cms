@@ -9,6 +9,8 @@ angular.module('dashboard.directives.ModelField', [
   'dashboard.directives.ModelFieldCanvas',
   'dashboard.directives.ModelFieldLocation',
   'dashboard.directives.ModelFieldPointsOfInterest',
+  'dashboard.directives.ModelFieldMultiSelect',
+  'dashboard.directives.ModelFieldNumber',
   'dashboard.directive.DateTimePicker',
   'ngCookies',
   'ngSlider',
@@ -42,7 +44,7 @@ angular.module('dashboard.directives.ModelField', [
   };
 })
 
-.directive('modelFieldEdit', function($compile, $cookies, $timeout) {
+.directive('modelFieldEdit', function($compile) {
   "ngInject";
 
   function getTemplate(type, scope) {
@@ -52,7 +54,7 @@ angular.module('dashboard.directives.ModelField', [
         // depends on directive modelFieldReferenceEdit
         template = '<label class="col-sm-2 control-label">{{ display.label || key }}:</label> \
           <div class="col-sm-10"> \
-            <div class="error-message" >{{ display.error }}</div>\
+            <div class="error-message" ng-if="display.error.length > 0">{{ display.error }}</div>\
             <model-field-reference-edit key="key" property="property" options="display.options" model-data="data" ng-model="data[key]" class="field" ng-required="{{ model.properties[key].required }}" ng-disabled="display.readonly"  /> \
             <div class="model-field-description" ng-if="display.description">{{ display.description }}</div>\
           </div>' ;
@@ -61,7 +63,7 @@ angular.module('dashboard.directives.ModelField', [
         // depends on directive modelFieldReferenceSortEdit
         template = '<label class="col-sm-2 control-label">{{ display.label || key }}:</label> \
           <div class="col-sm-10"> \
-            <div class="error-message" >{{ display.error }}</div>\
+            <div class="error-message" ng-if="display.error.length > 0">{{ display.error }}</div>\
             <model-field-reference-sort-edit key="key" property="property" options="display.options" model-data="data" ng-model="data[key]" class="field" ng-required="{{ model.properties[key].required }}" ng-disabled="display.readonly"  /> \
             <div class="model-field-description" ng-if="display.description">{{ display.description }}</div>\
           </div> \
@@ -74,7 +76,7 @@ angular.module('dashboard.directives.ModelField', [
         // depends on directive modelFieldListEdit
         template = '<label class="col-sm-2 control-label">{{ display.label || key }}:</label> \
           <div class="col-sm-10"> \
-            <div class="error-message" >{{ display.error }}</div>\
+            <div class="error-message" ng-if="display.error.length > 0">{{ display.error }}</div>\
             <model-field-list-edit key="key" property="property" options="display.options" model-data="data" ng-model="data[key]" class="field" ng-required="{{ model.properties[key].required }}" ng-disabled="display.readonly"  /> \
             <div class="model-field-description" ng-if="display.description">{{ display.description }}</div>\
           </div> \
@@ -87,7 +89,7 @@ angular.module('dashboard.directives.ModelField', [
         // depends on directive modelFieldFileEdit
         template = '<label class="col-sm-2 control-label">{{ display.label || key }}:</label> \
           <div class="col-sm-10"> \
-            <div class="error-message" >{{ display.error }}</div>\
+            <div class="error-message" ng-if="display.error.length > 0">{{ display.error }}</div>\
             <model-field-file-edit key="key" options="display.options" ng-disabled="display.readonly" model-data="data" ng-model="data[key]" class="field" /> \
           </div> \
           <br /> \
@@ -100,7 +102,7 @@ angular.module('dashboard.directives.ModelField', [
         // depends on directive modelFieldImageEdit
         template = '<label class="col-sm-2 control-label">{{ display.label || key }}:</label> \
           <div class="col-sm-10"> \
-            <div class="error-message" >{{ display.error }}</div>\
+            <div class="error-message" ng-if="display.error.length > 0">{{ display.error }}</div>\
             <model-field-image-edit key="key" options="display.options" ng-disabled="display.readonly" model-data="data" ng-model="data[key]" class="field" /> \
           </div>\
           <label class="col-sm-2 control-label"></label> \
@@ -112,7 +114,7 @@ angular.module('dashboard.directives.ModelField', [
         // depends on directive modelFieldImageEdit
         template = '<label class="col-sm-2 control-label">{{ display.label || key }}:</label> \
           <div class="col-sm-10"> \
-            <div class="error-message" >{{ display.error }}</div>\
+            <div class="error-message" ng-if="display.error.length > 0">{{ display.error }}</div>\
             <model-field-video-edit key="key" options="display.options" ng-disabled="display.readonly" model-data="data" ng-model="data[key]" class="field" /> \
             <div class="model-field-description" ng-if="display.description">{{ display.description }}</div>\
           </div>';
@@ -120,7 +122,7 @@ angular.module('dashboard.directives.ModelField', [
       case 'datetime':
         template = '<label class="col-sm-2 control-label">{{ display.label || key }}:</label> \
           <div class="col-sm-10"> \
-            <div class="error-message" >{{ display.error }}</div>\
+            <div class="error-message" ng-if="display.error.length > 0">{{ display.error }}</div>\
             <p class="date-picker input-group"> \
               <input type="text" class="form-control" \
               control="dateControl" \
@@ -140,34 +142,12 @@ angular.module('dashboard.directives.ModelField', [
             </p> \
             <div class="model-field-description" ng-if="display.description">{{ display.description }}</div>\
           </div>';
-        //<model-field-datetime-edit options="field.options" ng-model="data[field.name]" class="field" /> \
         break;
       case 'multi-select':
-        // means array of results - answers stored as values and not keys - need to extra keys
-        if (Array.isArray(scope.multiSelectOptions)) {
-          var newMultiSelectOptions = scope.multiSelectOptions.slice();
-          scope.multiSelectOptions = {}
-          for (var i = 0; i < newMultiSelectOptions.length; i++) {
-            var option = newMultiSelectOptions[i];
-            for (var key in scope.display.options) {
-              if (key === option) {
-                scope.multiSelectOptions[key] = true;
-              }
-            }
-          }
-        }
-        var ngOptions = '(value, text) in display.options';
-        if (scope.property.display.options instanceof Array) {
-            //Handle when options is a an array vs key/value pair
-            ngOptions = 'text in display.options';
-        }
         template = '<label class="col-sm-2 control-label">{{ display.label || key }}:</label>\
           <div class="col-sm-10 multi-select">\
-            <div class="error-message" >{{ display.error }}</div>\
-            <div class="select-item checkbox-container" ng-repeat="(itemKey, itemValue) in display.options">\
-              <input type="checkbox" class="field" ng-attr-id="{{key+\'-\'+itemKey}}" ng-model="multiSelectOptions[itemKey]" ng-checked="multiSelectOptions[itemKey]" ng-disabled="{{ display.readonly }}" ng-change="clickMultiSelectCheckbox(key, itemKey, itemValue, multiSelectOptions)">\
-              <label class="checkbox-label" ng-attr-for="{{key+\'-\'+itemKey}}">{{ itemValue }}</label>\
-            </div>\
+            <div class="error-message" ng-if="display.error.length > 0">{{ display.error }}</div>\
+            <model-field-multi-select key="key" property="property" options="display.options" ng-disabled="display.readonly" model-data="data" ng-model="data[key]" class="field" />\
             <div class="model-field-description" ng-if="display.description">{{ display.description }}</div>\
           </div>';
         break;
@@ -185,28 +165,36 @@ angular.module('dashboard.directives.ModelField', [
         //NOTE: need to add empty <option> element to prevent weird AngularJS select issue when handling first selection
         template = '<label class="col-sm-2 control-label">{{ display.label || key }}:</label>\
           <div class="col-sm-10">\
-            <div class="error-message">{{ display.error }}</div>\
+            <div class="error-message" ng-if="display.error.length > 0">{{ display.error }}</div>\
             <select ng-model="data[key]" ng-options="'+ngOptions+'" ng-required="{{ model.properties[key].required }}" class="field form-control" ng-disabled="{{ display.readonly }}"><option value=""></option></select>\
             <div class="model-field-description" ng-if="display.description">{{ display.description }}</div>\
           </div>';
         break;
       case 'radio':
-        var ngOptions = '(value, text) in display.options';
+        var ngRepeat = '(value, text) in display.options';
         if (scope.property.display.options instanceof Array) {
-          //Handle when options is a an array vs key/value pair
-          ngOptions = 'text in display.options';
+          //Handle when options is array of objects containing key/value pair
+          if (typeof scope.property.display.options[0] === 'object' && !Array.isArray(scope.property.display.options[0])) {
+            ngRepeat = 'item in display.options'
+          } else {
+            //Handle when options is a an array vs key/value pair
+            ngRepeat = 'text in display.options';
+          }
         }
         template = '<label class="col-sm-2 control-label">{{ display.label || key }}:</label>\
-          <div class="col-sm-10">\
-            <div class="error-message">{{ display.error }}</div>\
-            <label ng-repeat="'+ngOptions+'" class="radio"><input type="radio" ng-model="data[key]" ng-value="value || text" ng-disabled="{{ display.readonly }}" name="{{key}}"> {{text}}</label>\
+          <div class="col-sm-10 multi-select">\
+            <div class="error-message" ng-if="display.error.length > 0">{{ display.error }}</div>\
+            <div class="select-item checkbox-container" ng-repeat="'+ngRepeat+'" >\
+              <input type="radio" ng-attr-id="{{key+\'-\'+$index}}" ng-model="data[key]" ng-value="value || text || item.key" ng-disabled="{{ display.readonly }}" name="{{key}}">\
+              <label ng-attr-for="{{key+\'-\'+$index}}" class="radio">{{text || item.value}}</label>\
+            </div>\
             <div class="model-field-description" ng-if="display.description">{{ display.description }}</div>\
           </div>';
         break;
       case 'slider':
         template = '<label class="col-sm-2 control-label">{{ display.label || key }}:</label>\
           <div class="col-sm-10">\
-            <div class="error-message">{{ display.error }}</div>\
+            <div class="error-message" ng-if="display.error.length > 0">{{ display.error }}</div>\
             <input slider ng-model="data[key]" options="display.options" class="slider ng-isolate-scope ng-valid ng-hide ng-dirty"> \
             <div class="model-field-description" ng-if="display.description">{{ display.description }}</div>\
           </div>';
@@ -214,7 +202,7 @@ angular.module('dashboard.directives.ModelField', [
       case 'boolean':
         template = '<div class="col-sm-2"></div> \
           <div class="col-sm-10 checkbox-container">\
-            <div class="error-message">{{ display.error }}</div>\
+            <div class="error-message" ng-if="display.error.length > 0">{{ display.error }}</div>\
             <input type="checkbox" ng-attr-id="{{key}}" ng-model="data[key]" ng-checked="check(data, key)" class="field" ng-disabled="{{ display.readonly }}">\
             <label class="checkbox-label" ng-attr-for="{{key}}">{{ display.label || key }}</label>\
             <div class="model-field-description" ng-if="display.description">{{ display.description }}</div>\
@@ -223,7 +211,7 @@ angular.module('dashboard.directives.ModelField', [
       case 'password':
         template = '<label class="col-sm-2 control-label">{{ display.label || key }}:</label>\
           <div class="col-sm-10">\
-            <div class="error-message">{{ display.error }}</div>\
+            <div class="error-message" ng-if="display.error.length > 0">{{ display.error }}</div>\
             <input type="password" ng-model="data[key]" ng-pattern="display.pattern" ng-disabled="{{ display.readonly }}" ng-required="{{ model.properties[key].required }}" class="field form-control">\
             <div class="model-field-description" ng-if="display.description">{{ display.description }}</div>\
           </div>';
@@ -231,7 +219,7 @@ angular.module('dashboard.directives.ModelField', [
       case 'textarea':
         template = '<label class="col-sm-2 control-label">{{ display.label || key }}:</label>\
           <div class="col-sm-10">\
-            <div class="error-message">{{ display.error }}</div>\
+            <div class="error-message" ng-if="display.error.length > 0">{{ display.error }}</div>\
             <textarea msd-elastic ng-model="data[key]" ng-keyup="lengthCheck($event)" ng-disabled="{{ display.readonly }}" ng-required="{{ model.properties[key].required }}" class="field form-control" ng-maxlength="{{ display.maxLength }}"></textarea>\
             <div class="model-field-description">\
               <span ng-if="display.description"> {{ display.description }} </span> \
@@ -243,7 +231,7 @@ angular.module('dashboard.directives.ModelField', [
       case 'WYSIWYG':
         template = '<label class="col-sm-2 control-label">{{ display.label || key }}:</label>\
           <div class="col-sm-10">\
-            <div class="error-message">{{ display.error }}</div>\
+            <div class="error-message" ng-if="display.error.length > 0">{{ display.error }}</div>\
             <model-field-wysiwyg-edit key="key" property="property" options="display.options" model-data="data" ng-model="data[key]" class="field" ng-required="{{ model.properties[key].required }}" ng-disabled="display.readonly"  /> \
             <div class="model-field-description" ng-if="display.description">{{ display.description }}</div>\
           </div>';
@@ -252,7 +240,7 @@ angular.module('dashboard.directives.ModelField', [
       case 'signature':
         template = '<label class="col-sm-2 control-label">{{ display.label || key }}:</label>\
           <div class="col-sm-10">\
-            <div class="error-message">{{ display.error }}</div>\
+            <div class="error-message" ng-if="display.error.length > 0">{{ display.error }}</div>\
             <model-field-canvas-edit key="key" property="property" options="display.options" ng-model="data[key]" class="field" ng-required="{{ model.properties[key].required }}" ng-disabled="display.readonly"></model-field-canvas-edit>\
             <div class="model-field-description" ng-if="display.description">{{ display.description }}</div>\
           </div>';
@@ -260,7 +248,7 @@ angular.module('dashboard.directives.ModelField', [
       case 'location':
         template = '<label class="col-sm-2 control-label">{{ display.label || key }}:</label>\
           <div class="col-sm-10">\
-            <div class="error-message">{{ display.error }}</div>\
+            <div class="error-message" ng-if="display.error.length > 0">{{ display.error }}</div>\
             <model-field-location-edit key="key" property="property" options="display.options" ng-model="data[key]" class="field" ng-required="{{ model.properties[key].required }}" ng-disabled="display.readonly"></model-field-location-edit>\
             <div class="model-field-description" ng-if="display.description">{{ display.description }}</div>\
           </div>';
@@ -269,28 +257,23 @@ angular.module('dashboard.directives.ModelField', [
       case 'POI':
         template = '<label class="col-sm-2 control-label">{{ display.label || key }}:</label>\
           <div class="col-sm-10">\
-            <div class="error-message">{{ display.error }}</div>\
+            <div class="error-message" ng-if="display.error.length > 0">{{ display.error }}</div>\
             <model-field-points-of-interest-edit key="key" property="property" options="display.options" ng-model="data[key]" class="field" ng-required="{{ model.properties[key].required }}" ng-disabled="display.readonly"></model-field-points-of-interest-edit>\
             <div class="model-field-description" ng-if="display.description">{{ display.description }}</div>\
           </div>';
         break;
       case 'number':
-        if (scope.display.allowDecimal === true) {
-          var numberType = "text"
-        } else {
-          var numberType = "number"
-        };
         template = '<label class="col-sm-2 control-label">{{ display.label || key }}:</label>\
           <div class="col-sm-10">\
-            <div class="error-message">{{ display.error }}</div>\
-            <input type=numberType ng-blur="validateAndParseNumbers($event)" min="{{ display.minValue }}" max="{{ display.maxValue }}" ng-model="data[key]" ng-disabled="{{ display.readonly }}" ng-required="{{ model.properties[key].required }}" class="field form-control">\
+            <div class="error-message" ng-if="display.error.length > 0">{{ display.error }}</div>\
+            <model-field-number key="key" property="property" options="display.options" ng-required="model.properties[key].required" ng-disabled="display.readonly" model-data="data" ng-model="data[key]" on-error="onFieldError(error)" class="field" />\
             <div class="model-field-description" ng-if="display.description">{{ display.description }} {{count}}</div>\
           </div>';
         break;
       case 'phoneNumber':
         template = '<label class="col-sm-2 control-label">{{ display.label || key }}:</label>\
           <div class="col-sm-10">\
-            <div class="error-message">{{ display.error }}</div>\
+            <div class="error-message" ng-if="display.error.length > 0">{{ display.error }}</div>\
             <input type="hidden" ng-model="countrycode" value="{{ display.region }}" />\
             <input type="text" ng-model="data[key]" phone-number country-code="countrycode" ng-pattern="display.pattern" ng-disabled="{{ display.readonly }}" ng-required="{{ model.properties[key].required }}" class="field form-control">\
             <div class="model-field-description" ng-if="display.description">{{ display.description }}</div>\
@@ -300,7 +283,7 @@ angular.module('dashboard.directives.ModelField', [
       default:
         template = '<label class="col-sm-2 control-label">{{ display.label || key }}:</label>\
           <div class="col-sm-10">\
-            <div class="error-message">{{ display.error }}</div>\
+            <div class="error-message" ng-if="display.error.length > 0">{{ display.error }}</div>\
             <input type="text" ng-model="data[key]" ng-keyup="lengthCheck($event)" ng-pattern="display.pattern" ng-disabled="{{ display.readonly }}" ng-required="{{ model.properties[key].required }}" class="field form-control" ng-maxlength="{{ display.maxLength }}">\
             <div class="model-field-description">\
               <span ng-if="display.description"> {{ display.description }} </span> \
@@ -326,11 +309,9 @@ angular.module('dashboard.directives.ModelField', [
       key: '=key',
       model: '=model',
       data: '=ngModel',
-      questionsWithErrors: '=questionsWithErrors'
+      onError: '&'
     },
     link: function(scope, element, attrs) {
-
-      // force values that can be parsed to numbers, validate for range and errors
 
       //In situations where edit form has fields not in the model json properties object (i.e. ModelFieldReference multi-select)
       if(scope.key !== null && typeof scope.key === 'object') {
@@ -360,76 +341,14 @@ angular.module('dashboard.directives.ModelField', [
         }
       }
 
-      // force numbers into int or float is possible, validate against max/min
-      if (property.display.type === 'number' || property.display.type === 'number-decimal') {
-
-        if (property.display.allowDecimal) {
-          $timeout(function() {
-            scope.data[scope.key] = scope.parseDecimalToString(scope.data[scope.key], scope.data.scale || scope.property.display.scaleValue); //Parse value on load - async behavior
-          }, 0)
+      scope.onFieldError = function(error) {
+        if (error && error.message) {
+          property.display.error = error.message;
+        } else {
+          delete property.display.error;
         }
-
-        scope.parseDecimalToString = function(value, scale) { /*takes a string and converts it to proper string */
-          var parsedValue;
-          var decimalScale = parseInt(scale) ? parseInt(scale) :  20; /* this is max decimal toFixed can handle */
-          decimalScale = Math.min(Math.max(decimalScale, 0), 20) /*since decimalScale is passed to toFixed, must be between 0 and 20 */
-          if (value) {
-            parsedValue = parseFloat(value.toString().replace(",", "."))
-            if (isNaN(parsedValue)) {
-              scope.questionsWithErrors[scope.key] = true;
-              scope.display.error = "Please enter a valid number.";
-              return value
-            }
-            value = parsedValue;
-            if (typeof decimalScale === "number") {
-              value = (Math.round(value * Math.pow(10, decimalScale)) / Math.pow(10, decimalScale)).toFixed(decimalScale)
-            }
-          }
-          return value
-        };
-
-        var promise = '';
-        scope.validateAndParseNumbers = function(e) {
-          if (e.target.value === '') {
-            if (scope.questionsWithErrors) scope.questionsWithErrors[scope.key] = false;
-            delete scope.display.error;
-            return
-          }
-          if (promise) $timeout.cancel(promise);
-          promise = $timeout(function() {
-            if (scope.display.allowDecimal === true ) {
-              scope.data[scope.key] = scope.parseDecimalToString(e.target.value, scope.data.scale || scope.property.display.scaleValue) /*scope.data.scale is to handle parsing the field while scale data is being entered - formEdit */
-            } else if (scope.display.allowDecimal === false) { /*handle when don't allow decimals - needs to be explicitly implied*/
-              if (isNaN(_.round(e.target.value))) {
-                if (scope.questionsWithErrors) scope.questionsWithErrors[scope.key] = true;
-                property.display.error = "Please enter a valid integer";
-                return
-              }
-              var roundedValue = _.round(e.target.value, 0);
-              scope.data[scope.key] = roundedValue
-            } else { /* hanlde like before to ensure backwards compatibility */
-              scope.data[scope.key] = e.target.value
-            }
-            if (!isNaN(parseFloat(scope.data[scope.key]))) { /*if data can be coerced into a number)*/
-
-              if (scope.display.minValue !== undefined && scope.display.minValue > parseFloat(scope.data[scope.key])) {
-                if (scope.questionsWithErrors) scope.questionsWithErrors[scope.key] = true
-                scope.display.error = "Value is less than the minimum allowed value " + scope.display.minValue + ".";
-                return
-              }
-              if (scope.display.maxValue !== undefined && scope.display.maxValue < parseFloat(scope.data[scope.key])) {
-                if (scope.questionsWithErrors) scope.questionsWithErrors[scope.key] = true
-                property.display.error = "Value is greater than the maximum allowed value " + scope.display.maxValue + ".";
-                return
-              }
-              if (scope.questionsWithErrors) scope.questionsWithErrors[scope.key] = false
-              delete scope.display.error
-              return
-            }
-          }, 0);
-        };
-      }
-
+        if (scope.onError) scope.onError({error: error});
+      };
 
       // validate text length
       if (property.display.type === 'text' || property.display.type === 'textarea') {
@@ -440,13 +359,13 @@ angular.module('dashboard.directives.ModelField', [
         scope.lengthCheck = function(e) {
           scope.charsLeft = property.display.maxLength - e.target.value.length;
           if (property.display.maxLength && e.target.value.length > property.display.maxLength) {
-            if (scope.questionsWithErrors) scope.questionsWithErrors[scope.key] = true
-            scope.display.error = "Text is longer than the maximum allowed length of " + scope.display.maxLength + " charaters."
-            return
+            scope.display.error = "Text is longer than the maximum allowed length of " + scope.display.maxLength + " charaters.";
+            if (scope.onError) scope.onError({error: new Error(scope.display.error)});
+            return;
           } else {
-            if (scope.questionsWithErrors) scope.questionsWithErrors[scope.key] = false
-            delete scope.display.error
-            return
+            delete scope.display.error;
+            if (scope.onError) scope.onError({error: null});
+            return;
           }
         }
       }
@@ -502,116 +421,6 @@ angular.module('dashboard.directives.ModelField', [
       if (!scope.data[scope.key] && (property["default"] || typeof property["default"] === 'number')) {
         scope.data[scope.key] = property["default"];
       }
-
-      //Set multi-select output type
-      if (property.display.type == "multi-select") {
-        if (typeof property.display.output === 'undefined') {
-          property.display.output = property.display.options instanceof Array ? "comma" : "object";
-        }
-        switch (property.display.output) {
-          case "comma":
-            if (!scope.data[scope.key]) scope.data[scope.key] = "";
-            var items = scope.data[scope.key].split('","');
-            scope.multiSelectOptions = {};
-            for (var i in items) {
-              var item = items[i];
-              if (item[0] == '"') item = item.substring(1, item.length);
-              if (item[item.length-1] == '"') item = item.substring(0, item.length-1);
-              var index = property.display.options.indexOf(item);
-              scope.multiSelectOptions[index] = true;
-            }
-            break;
-          case "array":
-            if (!scope.data[scope.key]) scope.data[scope.key] = [];
-            for (var i in scope.data[scope.key]) {
-              var index = scope.data[scope.key][i];
-              scope.multiSelectOptions[index] = true;
-            }
-            break;
-          case "object":
-            if (!scope.data[scope.key]) scope.data[scope.key] = {};
-            scope.multiSelectOptions = angular.copy(scope.data[scope.key]);
-            try {
-              scope.multiSelectOptions = angular.fromJson(scope.multiSelectOptions);
-              if (typeof scope.multiSelectOptions === 'object' && !Array.isArray(scope.multiSelectOptions)) {
-                for (var key in scope.multiSelectOptions) {
-                  scope.multiSelectOptions[key] = true;
-                }
-              }
-            } catch(e) {
-            }
-            break;
-        }
-      }
-
-      // this is might be a bit too custom for CMS, but it is needed to property support current implementation
-      if(property.display.type == "radio") {
-        if (!scope.data[scope.key]) scope.data[scope.key] = "";
-        scope.singleSelectOptions = {};
-        var selected = scope.data[scope.key];
-        // if options is array we are actually looking for the index
-        if (Array.isArray(property.display.options)) {
-          if (typeof property.display.options[0] === 'object' && !Array.isArray(property.display.options[0])) {
-            // actually do nothing, angular forEach will match with 'key' in the options
-          } else {
-            var selectedIdx = property.display.options.indexOf(selected)
-            selected = selectedIdx;
-          }
-        }
-        angular.forEach(property.display.options, function(value, key) {
-          if(key == selected) {
-            scope.singleSelectOptions[key] = true;
-          } else {
-            scope.singleSelectOptions[key] = false;
-          }
-        });
-      }
-
-      scope.updateSingleSelectCheckbox = function(itemKey, itemValue) {
-        scope.singleSelectOptions[itemKey] = true;
-        scope.data[scope.key] = itemKey;
-        angular.forEach(scope.singleSelectOptions, function(value, index) {
-          if (itemKey != index)
-            scope.singleSelectOptions[index] = false;
-        });
-      }
-
-      //Handle translating multi-select checks to scope.data[scope.key] output format
-      scope.clickMultiSelectCheckbox = function(questionKey, itemKey, itemValue, multiSelectOptions) {
-        var output = property.display.output == "array" ? [] : property.display.output == "object" ? {} : "";
-        if (property.display.output == "object") {
-          //Return Key/Value Pair
-          var keys = Object.keys(property.display.options);
-          for (var i in keys) {
-            var key = keys[i];
-            var value = property.display.options[key];
-            var selected = scope.multiSelectOptions[key];
-            // if currently selected
-            if (selected) {
-              output[key] = value
-            } else {
-              delete output[key]
-            } ; //return object
-          }
-        } else {
-          //Results are always in order of property.display.options
-          for (var i = 0; i < property.display.options.length; i++) {
-            var value = property.display.options[i];
-            var selected = scope.multiSelectOptions[i];
-            switch (property.display.output) {
-              case "comma":
-                if (selected) output += "\"" + value + "\","; //quote qualified
-                break;
-              case "array":
-                if (selected) output.push(i); // return array of selected indexes in order
-                break;
-            }
-          }
-          if (property.display.output == "comma" && output.length > 0) output = output.substring(0, output.length-1); //remove last comma
-        }
-        scope.data[scope.key] = output;
-        scope.$emit('onModelFieldMultiSelectCheckboxClick', questionKey, itemKey, itemValue, multiSelectOptions);
-      };
 
       //scope variables needed for the HTML Template
       scope.property = property;

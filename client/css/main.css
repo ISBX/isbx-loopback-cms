@@ -228,58 +228,6 @@ model-field-canvas-edit button {
   vertical-align: top;
   margin-left: 10px;
 }
-model-field-edit .checkbox-container input[type=checkbox] {
-  margin: -2px 0 0 10px;
-  transform: scale(1.5);
-  -ms-transform: scale(1.5); /* IE */
-  -moz-transform: scale(1.5); /* FF */
-  -webkit-transform: scale(1.5); /* Safari and Chrome */
-  -o-transform: scale(1.5); /* Opera */
-}
-model-field-edit .checkbox-container .checkbox-label {
-  margin-left: 15px;
-  text-align: left;
-  font-weight: bold;
-  width: auto;
-}
-model-field-edit .ng-invalid {
-  border: solid 1px #f00;
-}
-model-field-edit .jslider {
-  top: 15px;
-}
-model-field-edit .jslider .jslider-bg {
-  height: 8px;
-  border: solid 1px #ccc;
-  border-radius: 4px;
-  overflow: hidden;
-  background: #fff;
-}
-model-field-edit .jslider .jslider-bg i.l,
-model-field-edit .jslider .jslider-bg i.r,
-model-field-edit .jslider .jslider-bg i.v,
-model-field-edit .jslider .jslider-bg i.p,
-model-field-edit .jslider .jslider-bg i.s,
-model-field-edit .jslider .jslider-bg i.f {
-  height: 8px;
-  background: transparent;
-}
-model-field-edit .jslider .jslider-bg i.v {
-  background-color: #eee;
-}
-model-field-edit .jslider .jslider-pointer {
-  top: -6px;
-  width: 20px;
-  height: 20px;
-  border-radius: 10px;
-  background-color: #fff;
-  background: -webkit-linear-gradient(top, #fff 0%, #e0e0e0 100%);
-  background: -webkit-gradient(linear, left top, left bottom, from(#fff), to(#e0e0e0));
-  background: linear-gradient(to bottom, #fff 0%, #e0e0e0 100%);
-  background-repeat: repeat-x;
-  border: solid 1px #ccc;
-  box-shadow: inset 0 1px 0 rgba(255,255,255,0.15), 0 1px 1px rgba(0,0,0,0.075);
-}
 model-field-location-edit {
   min-width: 320px;
 }
@@ -1319,7 +1267,64 @@ model-field-list-edit ul {
   outline: none;
   color: #fff;
 }
-model-field-edit.error .error-message {
+model-field-edit .checkbox-container input[type=checkbox] {
+  margin: -2px 0 0 10px;
+  transform: scale(1.5);
+  -ms-transform: scale(1.5); /* IE */
+  -moz-transform: scale(1.5); /* FF */
+  -webkit-transform: scale(1.5); /* Safari and Chrome */
+  -o-transform: scale(1.5); /* Opera */
+}
+model-field-edit .checkbox-container .checkbox-label {
+  margin-left: 15px;
+  text-align: left;
+  font-weight: bold;
+  width: auto;
+}
+model-field-edit label.radio {
+  display: inline-block;
+  margin-left: 4px;
+}
+model-field-edit input.ng-invalid,
+model-field-edit textarea.ng-invalid {
+  border: solid 1px #f00;
+}
+model-field-edit .jslider {
+  top: 15px;
+}
+model-field-edit .jslider .jslider-bg {
+  height: 8px;
+  border: solid 1px #ccc;
+  border-radius: 4px;
+  overflow: hidden;
+  background: #fff;
+}
+model-field-edit .jslider .jslider-bg i.l,
+model-field-edit .jslider .jslider-bg i.r,
+model-field-edit .jslider .jslider-bg i.v,
+model-field-edit .jslider .jslider-bg i.p,
+model-field-edit .jslider .jslider-bg i.s,
+model-field-edit .jslider .jslider-bg i.f {
+  height: 8px;
+  background: transparent;
+}
+model-field-edit .jslider .jslider-bg i.v {
+  background-color: #eee;
+}
+model-field-edit .jslider .jslider-pointer {
+  top: -6px;
+  width: 20px;
+  height: 20px;
+  border-radius: 10px;
+  background-color: #fff;
+  background: -webkit-linear-gradient(top, #fff 0%, #e0e0e0 100%);
+  background: -webkit-gradient(linear, left top, left bottom, from(#fff), to(#e0e0e0));
+  background: linear-gradient(to bottom, #fff 0%, #e0e0e0 100%);
+  background-repeat: repeat-x;
+  border: solid 1px #ccc;
+  box-shadow: inset 0 1px 0 rgba(255,255,255,0.15), 0 1px 1px rgba(0,0,0,0.075);
+}
+model-field-edit .error-message {
   background-color: #fad3cf;
   border: 1px solid #d63e2f;
   color: #d63e2f;
@@ -1332,7 +1337,7 @@ model-field-edit.error .error-message {
   top: -30px;
   z-index: 2;
 }
-model-field-edit.error .error-message:after {
+model-field-edit .error-message:after {
   display: block;
   width: 8px;
   height: 8px;
