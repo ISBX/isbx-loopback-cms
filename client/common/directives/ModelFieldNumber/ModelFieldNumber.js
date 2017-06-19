@@ -80,7 +80,7 @@ angular.module('dashboard.directives.ModelFieldNumber', [])
         if (promise) $timeout.cancel(promise);
         promise = $timeout(function() {
           if (property.display.allowDecimal === true ) {
-            scope.data = parseDecimalToString(e.target.value, scope.data.scale || scope.property.display.scaleValue) /*scope.data.scale is to handle parsing the field while scale data is being entered - formEdit */
+            scope.data = parseDecimalToString(e.target.value, property.display.scaleValue) /*scope.data.scale is to handle parsing the field while scale data is being entered - formEdit */
           } else if (property.display.allowDecimal === false) { /*handle when don't allow decimals - needs to be explicitly implied*/
             if (isNaN(_.round(e.target.value))) {
               if (scope.onError) scope.onError({error: new Error('Please enter a valid integer')});
@@ -90,12 +90,11 @@ angular.module('dashboard.directives.ModelFieldNumber', [])
             scope.data = roundedValue;
           }
           if (!isNaN(parseFloat(e.target.value))) { /*if data can be coerced into a number)*/
-
-            if (property.display.minValue !== undefined && property.display.minValue > parseFloat(scope.data)) {
+            if (property.display.minValue !== undefined && property.display.minValue > parseFloat(e.target.value)) {
               if (scope.onError) scope.onError({error: new Error('Value is less than the minimum allowed value ' + property.display.minValue + '.')});
               return
             }
-            if (property.display.maxValue !== undefined && property.display.maxValue < parseFloat(scope.data)) {
+            if (property.display.maxValue !== undefined && property.display.maxValue < parseFloat(e.target.value)) {
               if (scope.onError) scope.onError({error: new Error('Value is greater than the maximum allowed value ' + property.display.maxValue + '.')});
               return
             }

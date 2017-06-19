@@ -36,7 +36,7 @@ angular.module('dashboard.directives.ModelFieldMultiSelect', [])
         initOptions();
         initData();
 
-        //Handle translating multi-select checks to scope.data[scope.key] output format
+        //Handle translating multi-select checks to scope.data output format
         scope.clickMultiSelectCheckbox = clickMultiSelectCheckbox;
 
 
@@ -100,35 +100,31 @@ angular.module('dashboard.directives.ModelFieldMultiSelect', [])
           var options = scope.options || property.display.options;
           property.display.output = options instanceof Array ? "comma" : "object";
         }
-        switch (property.display.output) {
-          case "comma":
-            if (!scope.data) scope.data = "";
-            var items = scope.data.split('","');
-            for (var i in items) {
-              var item = items[i];
-              if (item[0] == '"') item = item.substring(1, item.length);
-              if (item[item.length-1] == '"') item = item.substring(0, item.length-1);
-              var index = _.find(scope.multiSelectOptions, {key: item});
-              if (index > -1) scope.selected[index] = true;
-            }
-            break;
-          case "array":
-            if (!scope.data) scope.data = [];
-            for (var i in scope.data) {
-              var value = scope.data[i];
-              var index = _.find(scope.multiSelectOptions, {key: value});
-              if (index > -1) scope.selected[index] = true;
-            }
-            break;
-          case "object":
-            if (!scope.data) scope.data = {};
-            var keys = Object.keys(scope.data);
-            for (var k in keys) {
-              var key = keys[k];
-              var index = _.find(scope.multiSelectOptions, {key: key});
-              if (index > -1) scope.selected[index] = true;
-            }
-            break;
+        if (typeof scope.data === 'string') {
+          if (!scope.data) scope.data = "";
+          var items = scope.data.split('","');
+          for (var i in items) {
+            var item = items[i];
+            if (item[0] == '"') item = item.substring(1, item.length);
+            if (item[item.length-1] == '"') item = item.substring(0, item.length-1);
+            var index = _.findIndex(scope.multiSelectOptions, {key: item});
+            if (index > -1) scope.selected[index] = true;
+          }
+        } else if (Array.isArray(scope.data)) {
+          if (!scope.data) scope.data = [];
+          for (var i in scope.data) {
+            var value = scope.data[i];
+            var index = _.findIndex(scope.multiSelectOptions, {key: value});
+            if (index > -1) scope.selected[index] = true;
+          }
+        } else if (scope.data && typeof scope.data === 'object') {
+          if (!scope.data) scope.data = {};
+          var keys = Object.keys(scope.data);
+          for (var k in keys) {
+            var key = keys[k];
+            var index = _.findIndex(scope.multiSelectOptions, {key: key});
+            if (index > -1) scope.selected[index] = true;
+          }
         }
       }
 
@@ -143,7 +139,7 @@ angular.module('dashboard.directives.ModelFieldMultiSelect', [])
                 output[option.key] = option.value;
                 break;
               case 'comma':
-                output += '"' + option.value + '",'; //quote qualified
+                output += '"' + option.key + '",'; //quote qualified
                 break;
               case 'array':
                 output.push(selectedOption.item || selectedOption.key); // return array
@@ -155,7 +151,7 @@ angular.module('dashboard.directives.ModelFieldMultiSelect', [])
 
         if (property.display.output === 'comma' && output.length > 0) output = output.substring(0, output.length-1); //remove last comma
 
-        scope.data[scope.key] = output;
+        scope.data = output;
 
         // Note: breaking changes on onModelFieldMultiSelectCheckboxClick emit below after Angular 1.6.4 upgrade
         // due to ModelFieldMultiSelect rewrite
