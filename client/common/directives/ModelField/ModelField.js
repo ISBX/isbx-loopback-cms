@@ -383,8 +383,25 @@ angular.module('dashboard.directives.ModelField', [
         }
         if (scope.ngError) scope.ngError({error: error});
       }
-      
+
       function initFieldType() {
+
+        // validation for required fields - does this cause problems if a lot of fields are required?
+        if (property.display.isRequired) {
+          scope.$watch('data', function(newVal, oldVal) {
+            if ((oldVal[scope.key] === '' && newVal[scope.key] === oldVal[scope.key]) ||
+              (newVal[scope.key] !== oldVal[scope.key] && !newVal[scope.key] && newVal[scope.key] !== 0)) {
+              scope.display.error = "This is a required field."
+              if (scope.ngError) scope.ngError({error: new Error(scope.display.error)});
+              return
+            } else {
+              delete scope.display.error;
+              if (scope.ngError) scope.ngError({error: null});
+              return;
+            }
+          }, true);
+        }
+
         if (property.display.type === 'text' || property.display.type === 'textarea') {
           var length = scope.data[scope.key] ? scope.data[scope.key].length : 0;
           scope.charsLeft = property.display.maxLength - length; /*calculate outside of function so we have a starting value */
@@ -397,6 +414,10 @@ angular.module('dashboard.directives.ModelField', [
               if (scope.ngError) scope.ngError({error: new Error(scope.display.error)});
               return;
             } else {
+              if (scope.display.error === "This is a required field.") {
+                // do nothing - kind of a hack
+                return
+              }
               delete scope.display.error;
               if (scope.ngError) scope.ngError({error: null});
               return;
