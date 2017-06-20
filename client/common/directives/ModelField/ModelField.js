@@ -223,7 +223,7 @@ angular.module('dashboard.directives.ModelField', [
             <textarea msd-elastic ng-model="data[key]" ng-keyup="lengthCheck($event)" ng-disabled="{{ display.readonly }}" ng-required="{{ model.properties[key].required }}" class="field form-control" ng-maxlength="{{ display.maxLength }}"></textarea>\
             <div class="model-field-description">\
               <span ng-if="display.description"> {{ display.description }} </span> \
-              <span ng-if="display.maxLength"> &nbsp{{ charsLeft }} characters left </span>\
+              <span ng-if="display.maxLength"> &nbsp({{ charsLeft }} characters left) </span>\
             </div>\
           </div>';
         break;
@@ -266,7 +266,7 @@ angular.module('dashboard.directives.ModelField', [
         template = '<label class="col-sm-2 control-label">{{ display.label || key }}:</label>\
           <div class="col-sm-10">\
             <div class="error-message" ng-if="display.error.length > 0">{{ display.error }}</div>\
-            <model-field-number key="key" property="property" options="display.options" ng-required="model.properties[key].required" ng-disabled="display.readonly" model-data="data" ng-model="data[key]" on-error="onFieldError(error)" class="field" />\
+            <model-field-number key="key" property="property" options="display.options" ng-required="model.properties[key].required" ng-disabled="display.readonly" model-data="data" ng-model="data[key]" ng-error="onFieldError(error)" class="field" />\
             <div class="model-field-description" ng-if="display.description">{{ display.description }} {{count}}</div>\
           </div>';
         break;
@@ -287,7 +287,7 @@ angular.module('dashboard.directives.ModelField', [
             <input type="text" ng-model="data[key]" ng-keyup="lengthCheck($event)" ng-pattern="display.pattern" ng-disabled="{{ display.readonly }}" ng-required="{{ model.properties[key].required }}" class="field form-control" ng-maxlength="{{ display.maxLength }}">\
             <div class="model-field-description">\
               <span ng-if="display.description"> {{ display.description }} </span> \
-              <span ng-if="display.maxLength"> &nbsp{{ charsLeft }} characters left </span>\
+              <span ng-if="display.maxLength"> &nbsp({{ charsLeft }} characters left) </span>\
             </div>\
           </div>';
     }
@@ -309,137 +309,150 @@ angular.module('dashboard.directives.ModelField', [
       key: '=key',
       model: '=model',
       data: '=ngModel',
-      onError: '&'
+      ngError: '&'
     },
     link: function(scope, element, attrs) {
 
-      //In situations where edit form has fields not in the model json properties object (i.e. ModelFieldReference multi-select)
-      if(scope.key !== null && typeof scope.key === 'object') {
-        if (!scope.model.properties[scope.key.property]) {
-          scope.model.properties[scope.key.property] = {};
-        }
-        //override default display logic
-        scope.model.properties[scope.key.property].display = scope.key;
-        scope.key = scope.key.property;
-      }
+      var property;
 
-      var property = { display: {type: "text"} };
-      if (scope.model.properties && scope.model.properties[scope.key]) property = scope.model.properties[scope.key];
-      if (!property) {
-        console.log("ModelField link error: no property for model '" + scope.model.name + "'; property key = '" + scope.key + "' found!");
-        return; //ABORT if no property definition
-      }
-      if (!property.display || !property.display.type) {
-        if (!property.display) property.display = {};
-        //TODO: check the property definition in the loopback model and pick a better default "type"
-        switch (property.type) {
-          case "date":
-          case "Date":
+      function init() {
+
+        scope.onFieldError = onFieldError;
+
+        //In situations where edit form has fields not in the model json properties object (i.e. ModelFieldReference multi-select)
+        if(scope.key !== null && typeof scope.key === 'object') {
+          if (!scope.model.properties[scope.key.property]) {
+            scope.model.properties[scope.key.property] = {};
+          }
+          //override default display logic
+          scope.model.properties[scope.key.property].display = scope.key;
+          scope.key = scope.key.property;
+        }
+
+        property = { display: {type: "text"} };
+        if (scope.model.properties && scope.model.properties[scope.key]) property = scope.model.properties[scope.key];
+        if (!property) {
+          console.log("ModelField link error: no property for model '" + scope.model.name + "'; property key = '" + scope.key + "' found!");
+          return; //ABORT if no property definition
+        }
+        if (!property.display || !property.display.type) {
+          if (!property.display) property.display = {};
+          //TODO: check the property definition in the loopback model and pick a better default "type"
+          switch (property.type) {
+            case "date":
+            case "Date":
               property.display.type = "datetime";
-          break;
-          default: property.display.type = "text"; break;
+              break;
+            default: property.display.type = "text"; break;
+          }
         }
+
+        //Initialize the various Field Type custom logic
+        initFieldType(property);
+
+        //See if there is a default value
+        if (!scope.data[scope.key] && (property["default"] || typeof property["default"] === 'number')) {
+          scope.data[scope.key] = property["default"];
+        }
+
+        //scope variables needed for the HTML Template
+        scope.property = property;
+        scope.display = property.display;
+
+        if (property.display.editTemplate) {
+          element.html(property.display.editTemplate).show();
+        } else {
+          element.html(getTemplate(property.display.type, scope)).show();
+        }
+        // add input attributes if specified in schema
+        addInputAttributes(element, scope.property.display.inputAttr);
+
+        if (scope.display.pattern && scope.display.pattern[0] == '/' && scope.display.pattern[scope.display.pattern.length-1] == '/') {
+          //As of Angular 1.6 upgrade ng-pattern does not accept leading and trailing / in string regex; angular uses new RegExp() which does not accept / characters
+          scope.display.pattern = scope.display.pattern.slice(1, scope.display.pattern.length-2);
+        }
+
+        $compile(element.contents())(scope);
       }
 
-      scope.onFieldError = function(error) {
+      function onFieldError(error) {
         if (error && error.message) {
           property.display.error = error.message;
         } else {
           delete property.display.error;
         }
-        if (scope.onError) scope.onError({error: error});
-      };
+        if (scope.ngError) scope.ngError({error: error});
+      }
+      
+      function initFieldType() {
+        if (property.display.type === 'text' || property.display.type === 'textarea') {
+          var length = scope.data[scope.key] ? scope.data[scope.key].length : 0;
+          scope.charsLeft = property.display.maxLength - length; /*calculate outside of function so we have a starting value */
 
-      // validate text length
-      if (property.display.type === 'text' || property.display.type === 'textarea') {
-        var initialDataLength = 0;
-        if (scope.data[scope.key] && scope.data[scope.key].length) initialDataLength = scope.data[scope.key].length
-        scope.charsLeft = property.display.maxLength - initialDataLength  /*calculate outside of function so we have a starting value */
+          // validate text length
+          scope.lengthCheck = function(e) {
+            scope.charsLeft = property.display.maxLength - e.target.value.length;
+            if (property.display.maxLength && e.target.value.length > property.display.maxLength) {
+              scope.display.error = "Text is longer than the maximum allowed length of " + scope.display.maxLength + " charaters.";
+              if (scope.ngError) scope.ngError({error: new Error(scope.display.error)});
+              return;
+            } else {
+              delete scope.display.error;
+              if (scope.ngError) scope.ngError({error: null});
+              return;
+            }
+          }
+        }
 
-        scope.lengthCheck = function(e) {
-          scope.charsLeft = property.display.maxLength - e.target.value.length;
-          if (property.display.maxLength && e.target.value.length > property.display.maxLength) {
-            scope.display.error = "Text is longer than the maximum allowed length of " + scope.display.maxLength + " characters.";
-            if (scope.onError) scope.onError({error: new Error(scope.display.error)});
-            return;
-          } else {
-            delete scope.display.error;
-            if (scope.onError) scope.onError({error: null});
-            return;
+        if (property.display.type == 'file' && scope.data[scope.key]) {
+          //Check if image file is uploaded and convert schema property display type to image
+          var filename = scope.data[scope.key];
+          if (typeof filename === 'object' && filename.filename) filename = filename.filename;
+          else if (typeof filename === 'object' && filename.file) filename = filename.file.name;
+          if (filename) {
+            var extension = filename.toLowerCase().substring(filename.length-4);
+            if (extension == '.png' || extension == '.jpg' || extension == 'jpeg' || extension == '.bmp') {
+              property = angular.copy(property); //we don't want changes the schema property to persist outside of this directive
+              property.display.type = 'image';
+            }
+          }
+        }
+
+        //Set default date format
+        if (property.display.type == "datetime") {
+          if (!property.display.options) property.display.options = {};
+          if (!property.display.options.format) property.display.options.format = "YYYY-MM-DD  h:mm A";
+        }
+
+        if (!scope.data[scope.key] && property.display.defaultValueUsingModelKey) {
+          scope.data[scope.key] = scope.data[property.display.defaultValueUsingModelKey];
+        }
+
+        if (scope.data[scope.key] && property.display.convertToLocalTime === false) {
+          //remove the 'Z' from the end of the timestamp so that it is not converted to local time
+          scope.data[scope.key] = scope.data[scope.key].substring(0, scope.data[scope.key].length-1);
+        }
+
+        if (property.display.type == "boolean") {
+          scope.check = function(data, key) {
+            //This function is needed to accept string '1' and numeric 1 values when state changes
+            var value = data[key];
+            if (value == undefined || value == null) return property.display.default;
+            data[key] = value == '1' || value == 1; //Fixes a bug where data[key] changes from bool to string can cause checkbox to get unchecked
+            return data[key];
+          }
+          //Make sure boolean (checkbox) values are numeric (below only gets called on init and not when state changes)
+          if (typeof scope.data[scope.key] === "string") scope.data[scope.key] = parseInt(scope.data[scope.key]);
+        }
+
+        if (property.display.type == "slider") {
+          if (typeof scope.data[scope.key] === 'undefined' || scope.data[scope.key] == null) {
+            scope.data[scope.key] = property.display.options.from + ";" + property.display.options.to;
           }
         }
       }
 
-      if (property.display.type == 'file' && scope.data[scope.key]) {
-        //Check if image file is uploaded and convert schema property display type to image
-        var filename = scope.data[scope.key];
-        if (typeof filename === 'object' && filename.filename) filename = filename.filename;
-        else if (typeof filename === 'object' && filename.file) filename = filename.file.name;
-        if (filename) {
-          var extension = filename.toLowerCase().substring(filename.length-4);
-          if (extension == '.png' || extension == '.jpg' || extension == 'jpeg' || extension == '.bmp') {
-            property = angular.copy(property); //we don't want changes the schema property to persist outside of this directive
-            property.display.type = 'image';
-          }
-        }
-      }
-
-      //Set default date format
-      if (property.display.type == "datetime") {
-        if (!property.display.options) property.display.options = {};
-        if (!property.display.options.format) property.display.options.format = "YYYY-MM-DD  h:mm A";
-      }
-
-      if (!scope.data[scope.key] && property.display.defaultValueUsingModelKey) {
-        scope.data[scope.key] = scope.data[property.display.defaultValueUsingModelKey];
-      }
-
-      if (scope.data[scope.key] && property.display.convertToLocalTime === false) {
-        //remove the 'Z' from the end of the timestamp so that it is not converted to local time
-        scope.data[scope.key] = scope.data[scope.key].substring(0, scope.data[scope.key].length-1);
-      }
-
-      if (property.display.type == "boolean") {
-        scope.check = function(data, key) {
-          //This function is needed to accept string '1' and numeric 1 values when state changes
-          var value = data[key];
-          if (value == undefined || value == null) return property.display.default;
-          data[key] = value == '1' || value == 1; //Fixes a bug where data[key] changes from bool to string can cause checkbox to get unchecked
-          return data[key];
-        }
-        //Make sure boolean (checkbox) values are numeric (below only gets called on init and not when state changes)
-        if (typeof scope.data[scope.key] === "string") scope.data[scope.key] = parseInt(scope.data[scope.key]);
-      }
-
-      if (property.display.type == "slider") {
-        if (typeof scope.data[scope.key] === 'undefined' || scope.data[scope.key] == null) {
-          scope.data[scope.key] = property.display.options.from + ";" + property.display.options.to;
-        }
-      }
-
-      //See if there is a default value
-      if (!scope.data[scope.key] && (property["default"] || typeof property["default"] === 'number')) {
-        scope.data[scope.key] = property["default"];
-      }
-
-      //scope variables needed for the HTML Template
-      scope.property = property;
-      scope.display = property.display;
-
-      if (property.display.editTemplate) {
-        element.html(property.display.editTemplate).show();
-      } else {
-        element.html(getTemplate(property.display.type, scope)).show();
-      }
-      // add input attributes if specified in schema
-      addInputAttributes(element, scope.property.display.inputAttr);
-
-      if (scope.display.pattern && scope.display.pattern[0] == '/' && scope.display.pattern[scope.display.pattern.length-1] == '/') {
-        //As of Angular 1.6 upgrade ng-pattern does not accept leading and trailing / in string regex; angular uses new RegExp() which does not accept / characters
-        scope.display.pattern = scope.display.pattern.slice(1, scope.display.pattern.length-2);
-      }
-
-      $compile(element.contents())(scope);
+      init();
 
     }
   };
