@@ -58,7 +58,7 @@ angular.module('dashboard.directives.ModelFieldNumber', [])
         var parsedValue;
         var decimalScale = parseInt(scale) ? parseInt(scale) :  20; /* this is max decimal toFixed can handle */
         decimalScale = Math.min(Math.max(decimalScale, 0), 20); /*since decimalScale is passed to toFixed, must be between 0 and 20 */
-        if (value) {
+        if (value !== undefined) {
           parsedValue = parseFloat(value.toString().replace(",", "."));
           if (isNaN(parsedValue)) {
             if (scope.onError) scope.onError({error: new Error('Please enter a valid number.')});
