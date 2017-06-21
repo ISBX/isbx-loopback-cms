@@ -266,7 +266,7 @@ angular.module('dashboard.directives.ModelField', [
         template = '<label class="col-sm-2 control-label">{{ display.label || key }}:</label>\
           <div class="col-sm-10">\
             <div class="error-message" ng-if="display.error.length > 0">{{ display.error }}</div>\
-            <model-field-number key="key" property="property" options="display.options" ng-required="model.properties[key].required" ng-disabled="display.readonly" model-data="data" ng-model="data[key]" ng-error="onFieldError(error)" class="field" />\
+            <model-field-number key="key" property="property" options="display.options" ng-required="model.properties[key].required" ng-disabled="display.readonly" model-data="data" ng-model="data[key]" ng-error="onFieldError(error)" class="field" ng-class="{error: display.error.length > 0}" />\
             <div class="model-field-description" ng-if="display.description">{{ display.description }} {{count}}</div>\
           </div>';
         break;
@@ -284,7 +284,12 @@ angular.module('dashboard.directives.ModelField', [
         template = '<label class="col-sm-2 control-label">{{ display.label || key }}:</label>\
           <div class="col-sm-10">\
             <div class="error-message" ng-if="display.error.length > 0">{{ display.error }}</div>\
-            <input type="text" ng-model="data[key]" ng-keyup="lengthCheck($event)" ng-pattern="display.pattern" ng-disabled="{{ display.readonly }}" ng-required="{{ model.properties[key].required }}" class="field form-control" ng-maxlength="{{ display.maxLength }}">\
+            <div ng-class="{\'input-status-indicator\': display.showStatusIndicator}">\
+              <input type="text" ng-model="data[key]" ng-keyup="lengthCheck($event)" ng-pattern="display.pattern" ng-disabled="{{ display.readonly }}" ng-required="{{ model.properties[key].required }}" class="field form-control" ng-maxlength="{{ display.maxLength }}">\
+              <div class="field-status-indicator" ng-if="display.showStatusIndicator">\
+                <i class="fa" ng-class="{\'fa-check\': display.isValid && !display.isLoading, \'fa-warning\': !display.isValid && !display.isLoading, \'fa-spinner rotating\': display.isLoading}"></i>\
+              </div>\
+            </div>\
             <div class="model-field-description">\
               <span ng-if="display.description"> {{ display.description }} </span> \
               <span ng-if="display.maxLength"> &nbsp({{ charsLeft }} characters left) </span>\

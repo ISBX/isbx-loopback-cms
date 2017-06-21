@@ -72,7 +72,7 @@ angular.module('dashboard.directives.ModelFieldMultiSelect', [])
             if (typeof item === 'string') {
               //string option
               var option = {key: item, value: item};
-              scope.multiSelectOptions.push(item);
+              scope.multiSelectOptions.push(option);
             } else if (item && typeof item === 'object') {
               //Objects (key/value pair)
               var key = item[keyOverride] || i; //fallback to index if no key
