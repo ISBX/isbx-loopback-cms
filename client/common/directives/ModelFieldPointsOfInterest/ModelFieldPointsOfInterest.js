@@ -54,9 +54,9 @@ angular.module('dashboard.directives.ModelFieldPointsOfInterest', [
         <div ng-show="isLoaded"> \
         <accordion close-others="oneAtATime"> \
         <accordion-group class="accordion-group" heading="Location Search" is-open="true"> \
-        <input id="zipCode" class="field form-control" placeholder="Zip Code" ng-model="data.zipCode">\
-        <input id="searchInput" class="field form-control" placeholder="Search Location" ng-model="request[\'query\']">\
-         <select id="radius" ng-model="data.radius" ng-required="" class="field form-control ng-pristine ng-valid ng-valid-required" ng-disabled=""> \
+        <input id="zipCode" class="field form-control" placeholder="Zip Code" ng-model="data.zipCode" ng-disabled="disabled">\
+        <input id="searchInput" class="field form-control" placeholder="Search Location" ng-model="request[\'query\']" ng-disabled="disabled">\
+         <select id="radius" ng-model="data.radius" ng-required="" class="field form-control ng-pristine ng-valid ng-valid-required" ng-disabled="disabled"> \
            <option value="1" label="1 Mile">1 Mile</option> \
            <option value="2" label="2 Miles">2 Miles</option> \
            <option value="3" label="3 Miles" selected>3 Miles</option> \
@@ -65,7 +65,7 @@ angular.module('dashboard.directives.ModelFieldPointsOfInterest', [
            <option value="20" label="20 Miles">20 Miles</option> \
         	 <option value="30" label="30 Miles">30 Miles</option> \
          </select> \
-        <button class="btn btn-default" ng-click="doSearch()" ng-model="request.query">Search</button><span class="search-error" ng-if="searchError">{{searchError}}</span>\
+        <button class="btn btn-default" ng-click="doSearch()" ng-model="request.query" ng-disabled="disabled">Search</button><span class="search-error" ng-if="searchError">{{searchError}}</span>\
         </accordion-group>\
         </accordion> \
         <div class="map-canvas"id="map_canvas"></div> \
@@ -74,7 +74,7 @@ angular.module('dashboard.directives.ModelFieldPointsOfInterest', [
             <div class="location-title">{{ $index + 1 }}. {{ item.name }}</div> \
               <span class="search-results">{{item.formatted_address}}</span> \
             <div class="col-sm checkbox-container">\
-              <input type="checkbox" ng-attr-id="{{item.place_id}}" ng-model="item.checked" class="field"> \
+              <input type="checkbox" ng-attr-id="{{item.place_id}}" ng-model="item.checked" class="field" ng-disabled="disabled"> \
               <label class="checkbox-label" ng-attr-for="{{item.place_id}}" ></label> \
             </div> \
           </li> \
@@ -301,7 +301,7 @@ angular.module('dashboard.directives.ModelFieldPointsOfInterest', [
 								markerLocation = marker.getPosition();
 								infowindow.setContent(text);
 								infowindow.open(map, marker);
-								scope.getClickedMarker(markerLocation);
+								if(!scope.disabled) scope.getClickedMarker(markerLocation);
 							}
 						})(marker, text));
 						scope.markers.push(marker);
@@ -437,6 +437,7 @@ angular.module('dashboard.directives.ModelFieldPointsOfInterest', [
 				};
 				// Prevents more than one checkbox at a time
 				scope.updateSelection = function (selectedIdx, displayedSearchResults) {
+					if(scope.disabled) return;
 					angular.forEach(displayedSearchResults, function (item, index) {
 						if (selectedIdx != index) {
 							item.checked = false;
