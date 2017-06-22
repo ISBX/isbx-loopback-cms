@@ -2,21 +2,19 @@ angular.module('dashboard', [
   'dashboard.Dashboard',
   'dashboard.Login',
   'dashboard.Register',
-
   'dashboard.directives',
   'dashboard.filters',
-
   'dashboard.services.Cache',
   'dashboard.services.Session',
-
   'templates-app',
   'templates-common',
   'ui.router',
   'oc.lazyLoad',
-  'ngCookies'
+  'ngCookies',
+  'pascalprecht.translate'
 ])
 
-.config(function myAppConfig($locationProvider, $stateProvider, $urlRouterProvider, $compileProvider, $qProvider, Config) {
+.config(function myAppConfig($locationProvider, $stateProvider, $urlRouterProvider, $compileProvider, $qProvider, $translateProvider, Config) {
   "ngInject";
 
   $compileProvider.aHrefSanitizationWhitelist(/^\s*(http|https|ftp|mailto|tel|file|blo‌​b|data):/);
@@ -24,6 +22,12 @@ angular.module('dashboard', [
   if(Config.serverParams.disableRegistration) $urlRouterProvider.when('/register','/login');
   $locationProvider.html5Mode(true);
   // $qProvider.errorOnUnhandledRejections(false); //angular 1.6.1 'Possibly unhandled rejection:' issues
+
+  //Load localized strings if available via angular-translate
+  $translateProvider.useSanitizeValueStrategy('escape');
+  if (Config.serverParams.translateUrl) $translateProvider.useUrlLoader(Config.serverParams.translateUrl);
+  if (Config.serverParams.defaultLanguage) $translateProvider.fallbackLanguage(Config.serverParams.defaultLanguage);
+
 
   $stateProvider
     .state('public', {
@@ -41,10 +45,12 @@ angular.module('dashboard', [
   $urlRouterProvider.deferIntercept(); // defer routing until custom modules are loaded
 })
 
-.run(function run($ocLazyLoad, $rootScope, $urlRouter, $injector, Config, SessionService) {
+.run(function run($ocLazyLoad, $rootScope, $urlRouter, $injector, $translate, Config) {
   "ngInject";
 
-  //  SessionService.tryGetCurrentUser();
+  if (Config.serverParams.defaultLanguage) $translate.use(Config.serverParams.defaultLanguage);
+  if (Config.serverParams.translateUrl) $translate.refresh();
+
   var modulesLoaded = false;
   if (Config.serverParams.customModules) {
     $ocLazyLoad.load(Config.serverParams.customModules)

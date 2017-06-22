@@ -99,6 +99,8 @@ module.exports = {
       'vendor/angular-libphonenumber/dist/libphonenumber.js',
       'vendor/angular-libphonenumber/dist/angular-libphonenumber.js',
       'vendor/angular-elastic/elastic.js',
+      'vendor/angular-translate/angular-translate.js',
+      'vendor/angular-translate-loader-url/angular-translate-loader-url.js',
       'vendor/exif-js/exif.js'
     ],
     css: [
