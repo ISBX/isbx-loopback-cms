@@ -390,6 +390,9 @@ angular.module('dashboard.directives.ModelField', [
       }
 
       function initFieldType() {
+        
+        // TODO: implement a required field validation popup - issue relates to sharing data object, but not same scopes
+
         if (property.display.type === 'text' || property.display.type === 'textarea') {
           var length = scope.data[scope.key] ? scope.data[scope.key].length : 0;
           scope.charsLeft = property.display.maxLength - length; /*calculate outside of function so we have a starting value */
@@ -398,10 +401,14 @@ angular.module('dashboard.directives.ModelField', [
           scope.lengthCheck = function(e) {
             scope.charsLeft = property.display.maxLength - e.target.value.length;
             if (property.display.maxLength && e.target.value.length > property.display.maxLength) {
-              scope.display.error = "Text is longer than the maximum allowed length of " + scope.display.maxLength + " charaters.";
+              scope.display.error = "Text is longer than the maximum allowed length of " + scope.display.maxLength + " characters.";
               if (scope.ngError) scope.ngError({error: new Error(scope.display.error)});
               return;
             } else {
+              if (scope.display.error === "This is a required field.") {
+                // do nothing - kind of a hack
+                return
+              }
               delete scope.display.error;
               if (scope.ngError) scope.ngError({error: null});
               return;

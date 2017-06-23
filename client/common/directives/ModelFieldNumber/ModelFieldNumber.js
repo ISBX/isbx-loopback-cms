@@ -58,7 +58,7 @@ angular.module('dashboard.directives.ModelFieldNumber', [])
         var parsedValue;
         var decimalScale = parseInt(scale) ? parseInt(scale) :  20; /* this is max decimal toFixed can handle */
         decimalScale = Math.min(Math.max(decimalScale, 0), 20); /*since decimalScale is passed to toFixed, must be between 0 and 20 */
-        if (value) {
+        if (value !== undefined) {
           parsedValue = parseFloat(value.toString().replace(",", "."));
           if (isNaN(parsedValue)) {
             if (scope.ngError) scope.ngError({error: new Error('Please enter a valid number.')});
@@ -91,11 +91,11 @@ angular.module('dashboard.directives.ModelFieldNumber', [])
           }
           if (!isNaN(parseFloat(e.target.value))) { /*if data can be coerced into a number)*/
             if (property.display.minValue !== undefined && property.display.minValue > parseFloat(e.target.value)) {
-              if (scope.ngError) scope.ngError({error: new Error('Value is less than the minimum allowed value ' + property.display.minValue + '.')});
+              if (scope.ngError) scope.ngError({error: new Error('Value is less than the minimum allowed value (' + property.display.minValue + ').')});
               return
             }
             if (property.display.maxValue !== undefined && property.display.maxValue < parseFloat(e.target.value)) {
-              if (scope.ngError) scope.ngError({error: new Error('Value is greater than the maximum allowed value ' + property.display.maxValue + '.')});
+              if (scope.ngError) scope.ngError({error: new Error('Value is greater than the maximum allowed value (' + property.display.maxValue + ').')});
               return
             }
             if (scope.ngError) scope.ngError({error: null});
