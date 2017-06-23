@@ -91,11 +91,11 @@ angular.module('dashboard.directives.ModelFieldNumber', [])
           }
           if (!isNaN(parseFloat(e.target.value))) { /*if data can be coerced into a number)*/
             if (property.display.minValue !== undefined && property.display.minValue > parseFloat(e.target.value)) {
-              if (scope.ngError) scope.ngError({error: new Error('Value is less than the minimum allowed value ' + property.display.minValue + '.')});
+              if (scope.ngError) scope.ngError({error: new Error('Value is less than the minimum allowed value (' + property.display.minValue + ').')});
               return
             }
             if (property.display.maxValue !== undefined && property.display.maxValue < parseFloat(e.target.value)) {
-              if (scope.ngError) scope.ngError({error: new Error('Value is greater than the maximum allowed value ' + property.display.maxValue + '.')});
+              if (scope.ngError) scope.ngError({error: new Error('Value is greater than the maximum allowed value (' + property.display.maxValue + ').')});
               return
             }
             if (scope.ngError) scope.ngError({error: null});
