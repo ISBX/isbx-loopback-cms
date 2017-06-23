@@ -385,22 +385,8 @@ angular.module('dashboard.directives.ModelField', [
       }
 
       function initFieldType() {
-
-        // validation for required fields - does this cause problems if a lot of fields are required?
-        if (property.display.isRequired) {
-          scope.$watch('data', function(newVal, oldVal) {
-            if ((oldVal[scope.key] === '' && newVal[scope.key] === oldVal[scope.key]) ||
-              (newVal[scope.key] !== oldVal[scope.key] && !newVal[scope.key] && newVal[scope.key] !== 0)) {
-              scope.display.error = "This is a required field."
-              if (scope.ngError) scope.ngError({error: new Error(scope.display.error)});
-              return
-            } else {
-              delete scope.display.error;
-              if (scope.ngError) scope.ngError({error: null});
-              return;
-            }
-          }, true);
-        }
+        
+        // TODO: implement a required field validation popup - issue relates to sharing data object, but not same scopes
 
         if (property.display.type === 'text' || property.display.type === 'textarea') {
           var length = scope.data[scope.key] ? scope.data[scope.key].length : 0;
