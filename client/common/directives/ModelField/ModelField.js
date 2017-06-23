@@ -396,7 +396,7 @@ angular.module('dashboard.directives.ModelField', [
           scope.lengthCheck = function(e) {
             scope.charsLeft = property.display.maxLength - e.target.value.length;
             if (property.display.maxLength && e.target.value.length > property.display.maxLength) {
-              scope.display.error = "Text is longer than the maximum allowed length of " + scope.display.maxLength + " charaters.";
+              scope.display.error = "Text is longer than the maximum allowed length of " + scope.display.maxLength + " characters.";
               if (scope.ngError) scope.ngError({error: new Error(scope.display.error)});
               return;
             } else {
