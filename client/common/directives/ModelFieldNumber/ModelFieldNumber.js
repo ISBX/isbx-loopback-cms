@@ -4,8 +4,12 @@ angular.module('dashboard.directives.ModelFieldNumber', [])
   "ngInject";
 
   function getTemplate() {
-    var template =
-      '<input type="{{property.display.allowDecimal ? \'text\' : \'number\'}}" ng-blur="validateAndParseNumbers($event)" min="{{ property.display.minValue }}" max="{{ property.display.maxValue }}" ng-model="data" ng-disabled="disabled" ng-required="required" class="field form-control">';
+    var template = '<label class="col-sm-2 control-label">{{ property.display.label || key }}:</label>\
+      <div class="col-sm-10">\
+        <div class="error-message" ng-if="property.display.error.length > 0">{{ property.display.error }}</div>\
+          <input type="{{property.display.allowDecimal ? \'text\' : \'number\'}}" ng-blur="validateAndParseNumbers($event)" min="{{ property.display.minValue }}" max="{{ property.display.maxValue }}" ng-model="data" ng-disabled="disabled" ng-required="required" class="field form-control">\
+       <div class="model-field-description" ng-if="property.display.description">{{ property.display.description }} {{count}}</div>\
+     </div>';
     return template;
   }
 
