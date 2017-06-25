@@ -43,7 +43,7 @@ angular.module('dashboard.directives.ModelFieldNumber', [])
 
         if (typeof scope.data === 'string') scope.data = parseFloat(scope.data); //could be integer or decimal
 
-        if (property.display.allowDecimal) {
+        if (property.display.allowDecimal === true) {
           $timeout(function() {
             scope.data = parseDecimalToString(scope.data, property.display.scaleValue); //Parse value on load - async behavior
           }, 0)
@@ -78,12 +78,12 @@ angular.module('dashboard.directives.ModelFieldNumber', [])
 
       function validateAndParseNumbers(e) {
         if (e.target.value === '') {
-          if (scope.ngError) scope.ngError({error: null});
+          if (scope.ngError && scope.display && scope.display.error !== "This is a required field.") scope.ngError({error: null});
           return
         }
         if (promise) $timeout.cancel(promise);
         promise = $timeout(function() {
-          if (property.display.allowDecimal === true ) {
+          if (property.display.allowDecimal === true) {
             scope.data = parseDecimalToString(e.target.value, property.display.scaleValue) /*scope.data.scale is to handle parsing the field while scale data is being entered - formEdit */
           } else if (property.display.allowDecimal === false) { /*handle when don't allow decimals - needs to be explicitly implied*/
             if (isNaN(_.round(e.target.value))) {

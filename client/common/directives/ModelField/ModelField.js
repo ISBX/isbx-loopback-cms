@@ -391,6 +391,19 @@ angular.module('dashboard.directives.ModelField', [
       }
 
       function initFieldType() {
+
+        if (property.display.isRequired) {
+          scope.$watch('data', function(newVal, oldVal) {
+            if ((oldVal[scope.key] === '' && newVal[scope.key] === oldVal[scope.key]) ||
+              (newVal[scope.key] !== oldVal[scope.key] && !newVal[scope.key] && newVal[scope.key] !== 0)) {
+              scope.display.error = "This is a required field."
+              if (scope.ngError) scope.ngError({error: new Error(scope.display.error)});
+            } else {
+              delete scope.display.error;
+              if (scope.ngError) scope.ngError({error: null});
+            }
+          }, true);
+        }
         
         // TODO: implement a required field validation popup - issue relates to sharing data object, but not same scopes
 
