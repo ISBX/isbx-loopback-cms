@@ -263,13 +263,12 @@ angular.module('dashboard.directives.ModelField', [
           </div>';
         break;
       case 'number':
-        template = '<model-field-number key="key" property="property" options="display.options" ng-required="model.properties[key].required" ng-disabled="display.readonly" model-data="data" ng-model="data[key]" ng-error="onFieldError(error)" class="field" ng-class="{error: display.error.length > 0}" />';
-        // template = '<label class="col-sm-2 control-label">{{ display.label || key }}:</label>\
-        //   <div class="col-sm-10">\
-        //     <div class="error-message" ng-if="display.error.length > 0">{{ display.error }}</div>\
-        //     <model-field-number key="key" property="property" options="display.options" ng-required="model.properties[key].required" ng-disabled="display.readonly" model-data="data" ng-model="data[key]" ng-error="onFieldError(error)" class="field" ng-class="{error: display.error.length > 0}" />\
-        //     <div class="model-field-description" ng-if="display.description">{{ display.description }} {{count}}</div>\
-        //   </div>';
+        template = '<label class="col-sm-2 control-label">{{ display.label || key }}:</label>\
+          <div class="col-sm-10">\
+            <div class="error-message" ng-if="display.error.length > 0">{{ display.error }}</div>\
+            <model-field-number key="key" property="property" options="display.options" ng-required="model.properties[key].required" ng-disabled="display.readonly" model-data="data" ng-model="data[key]" ng-error="onFieldError(error)" class="field" />\
+            <div class="model-field-description" ng-if="display.description">{{ display.description }} {{count}}</div>\
+          </div>';
         break;
       case 'phoneNumber':
         template = '<label class="col-sm-2 control-label">{{ display.label || key }}:</label>\

@@ -4,12 +4,8 @@ angular.module('dashboard.directives.ModelFieldNumber', [])
   "ngInject";
 
   function getTemplate() {
-    var template = '<label class="col-sm-2 control-label">{{ property.display.label || key }}:</label>\
-      <div class="col-sm-10">\
-        <div class="error-message" ng-if="property.display.error.length > 0">{{ property.display.error }}</div>\
-          <input type="{{property.display.allowDecimal ? \'text\' : \'number\'}}" ng-blur="validateAndParseNumbers($event)" min="{{ property.display.minValue }}" max="{{ property.display.maxValue }}" ng-model="data" ng-disabled="disabled" ng-required="required" class="field form-control">\
-       <div class="model-field-description" ng-if="property.display.description">{{ property.display.description }} {{count}}</div>\
-     </div>';
+    var template =
+      '<input type="{{property.display.allowDecimal ? \'text\' : \'number\'}}" ng-class="{error: property.display.error.length > 0}" ng-blur="validateAndParseNumbers($event)" min="{{ property.display.minValue }}" max="{{ property.display.maxValue }}" ng-model="data" ng-disabled="disabled" ng-required="required" class="field form-control">';
     return template;
   }
 
@@ -62,7 +58,7 @@ angular.module('dashboard.directives.ModelFieldNumber', [])
         var parsedValue;
         var decimalScale = parseInt(scale) ? parseInt(scale) :  20; /* this is max decimal toFixed can handle */
         decimalScale = Math.min(Math.max(decimalScale, 0), 20); /*since decimalScale is passed to toFixed, must be between 0 and 20 */
-        if (value !== undefined) {
+        if (value !== undefined && value !== null) {
           parsedValue = parseFloat(value.toString().replace(",", "."));
           if (isNaN(parsedValue)) {
             if (scope.ngError) scope.ngError({error: new Error('Please enter a valid number.')});

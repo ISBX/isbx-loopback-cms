@@ -1194,7 +1194,7 @@ model-field-location-edit ul li {
 model-field-location-edit ul li .location-title {
   font-weight: bold;
 }
-model-field-number.error input {
+model-field-number input.error {
   border: 1px solid #f00;
 }
 model-field-points-of-interest-edit {
