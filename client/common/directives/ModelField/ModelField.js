@@ -429,9 +429,11 @@ angular.module('dashboard.directives.ModelField', [
           $compile(element.contents())(scope);
         }
 
-        scope.$watch('model', function() {
+        scope.$watch('model', function(newValue, oldValue) {
           // if the schema changes, we need to rerender
-          performLink();
+          if (newValue !== oldValue) {
+            performLink();
+          }
         });
 
         performLink();
