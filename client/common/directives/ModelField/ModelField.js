@@ -266,7 +266,7 @@ angular.module('dashboard.directives.ModelField', [
         template = '<label class="col-sm-2 control-label">{{ display.label || key }}:</label>\
           <div class="col-sm-10">\
             <div class="error-message" ng-if="display.error.length > 0">{{ display.error }}</div>\
-            <model-field-number key="key" property="property" options="display.options" ng-required="model.properties[key].required" ng-disabled="display.readonly" model-data="data" ng-model="data[key]" ng-error="onFieldError(error)" class="field" ng-class="{error: display.error.length > 0}" />\
+            <model-field-number key="key" property="property" options="display.options" ng-required="model.properties[key].required" ng-disabled="display.readonly" model-data="data" ng-model="data[key]" ng-error="onFieldError(error)" class="field" />\
             <div class="model-field-description" ng-if="display.description">{{ display.description }} {{count}}</div>\
           </div>';
         break;
@@ -390,6 +390,21 @@ angular.module('dashboard.directives.ModelField', [
       }
 
       function initFieldType() {
+
+        if (property.display.isRequired) {
+          scope.$watch('data', function(newVal, oldVal) {
+            if ((oldVal[scope.key] === '' && newVal[scope.key] === oldVal[scope.key]) || /* if unchanged and it is empty string */
+              (newVal[scope.key] !== oldVal[scope.key] && !newVal[scope.key] && newVal[scope.key] !== 0)) {
+              scope.display.error = "This is a required field."
+              scope.display.errorCode = "IS_REQUIRED"
+              if (scope.ngError) scope.ngError({error: new Error(scope.display.error)});
+            } else if (scope.display.errorCode === "IS_REQUIRED") {
+              delete scope.display.error;
+              delete scope.display.errorCode;
+              if (scope.ngError) scope.ngError({error: null});
+            }
+          }, true);
+        }
         
         // TODO: implement a required field validation popup - issue relates to sharing data object, but not same scopes
 
@@ -405,11 +420,12 @@ angular.module('dashboard.directives.ModelField', [
               if (scope.ngError) scope.ngError({error: new Error(scope.display.error)});
               return;
             } else {
-              if (scope.display.error === "This is a required field.") {
+              if (scope.display.errorCode === "IS_REQUIRED") {
                 // do nothing - kind of a hack
                 return
               }
               delete scope.display.error;
+              delete scope.display.errorCode;
               if (scope.ngError) scope.ngError({error: null});
               return;
             }
