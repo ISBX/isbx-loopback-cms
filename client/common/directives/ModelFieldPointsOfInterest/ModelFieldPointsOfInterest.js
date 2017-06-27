@@ -24,24 +24,28 @@ angular.module('dashboard.directives.ModelFieldPointsOfInterest', [
 
   .directive('modelFieldPointsOfInterestEdit', function($compile, $cookies, $timeout, $modal, $http, $q, $window, Config, GeneralModelService, LocationService) {
 		//  load google maps javascript asynchronously
+	  var deferred = $q.defer();
 		function loadScript(googleApiKey) {
-			var deferred = $q.defer();
-			if(angular.element('#google_maps').length ) {
+			if (google && google.maps && google.maps.Geocoder) {
 				deferred.resolve();
 				return deferred.promise;
-			}
+			} else if (angular.element('#google_maps').length) {
+				return deferred.promise;
+      }
 		 	var googleMapsApiJS = document.createElement('script');
+			document.getElementsByTagName('head')[0].appendChild(googleMapsApiJS);
 			googleMapsApiJS.onload = function() {
-					deferred.resolve();
+        deferred.resolve();
 			};
 			googleMapsApiJS.id = 'google_maps';
 			googleMapsApiJS.type = 'text/javascript';
-			googleMapsApiJS.src = 'https://maps.googleapis.com/maps/api/js?v=3.exp&libraries=geometry,places';
-			if (googleApiKey) googleMapsApiJS.src += '&key=' + googleApiKey;
-			document.getElementsByTagName('head')[0].appendChild(googleMapsApiJS);
+
+			var url = 'https://maps.googleapis.com/maps/api/js?v=3.exp&libraries=geometry,places';
+			if (googleApiKey) url += '&key=' + googleApiKey;
+			googleMapsApiJS.src = url;
 			return deferred.promise;
 		}
-	
+
 		// makes the string lowercase and converts spaces into underscore
 		function convertStringToGoogleTypeFormat(str) {
 			return str.replace(/ /g,"_").toLowerCase();
@@ -189,7 +193,7 @@ angular.module('dashboard.directives.ModelFieldPointsOfInterest', [
 					scope.doSearch();
 
 				}, function () {
-					console.error("Error loading Google Maps")
+					console.error("Error loading Google Maps");
 				});
 
 				function initMap() {
