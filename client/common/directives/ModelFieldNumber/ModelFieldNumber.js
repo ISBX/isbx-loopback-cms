@@ -5,7 +5,7 @@ angular.module('dashboard.directives.ModelFieldNumber', [])
 
   function getTemplate() {
     var template =
-      '<input type="{{property.display.allowDecimal ? \'text\' : \'number\'}}" ng-blur="validateAndParseNumbers($event)" min="{{ property.display.minValue }}" max="{{ property.display.maxValue }}" ng-model="data" ng-disabled="disabled" ng-required="required" class="field form-control">';
+      '<input type="{{property.display.allowDecimal ? \'text\' : \'number\'}}" ng-class="{error: property.display.error.length > 0}" ng-blur="validateAndParseNumbers($event)" min="{{ property.display.minValue }}" max="{{ property.display.maxValue }}" ng-model="data" ng-disabled="disabled" ng-required="required" class="field form-control">';
     return template;
   }
 
@@ -39,7 +39,7 @@ angular.module('dashboard.directives.ModelFieldNumber', [])
 
         if (typeof scope.data === 'string') scope.data = parseFloat(scope.data); //could be integer or decimal
 
-        if (property.display.allowDecimal) {
+        if (property.display.allowDecimal === true) {
           $timeout(function() {
             scope.data = parseDecimalToString(scope.data, property.display.scaleValue); //Parse value on load - async behavior
           }, 0)
@@ -58,7 +58,7 @@ angular.module('dashboard.directives.ModelFieldNumber', [])
         var parsedValue;
         var decimalScale = parseInt(scale) ? parseInt(scale) :  20; /* this is max decimal toFixed can handle */
         decimalScale = Math.min(Math.max(decimalScale, 0), 20); /*since decimalScale is passed to toFixed, must be between 0 and 20 */
-        if (value !== undefined) {
+        if (value !== undefined && value !== null) {
           parsedValue = parseFloat(value.toString().replace(",", "."));
           if (isNaN(parsedValue)) {
             if (scope.ngError) scope.ngError({error: new Error('Please enter a valid number.')});
@@ -74,12 +74,12 @@ angular.module('dashboard.directives.ModelFieldNumber', [])
 
       function validateAndParseNumbers(e) {
         if (e.target.value === '') {
-          if (scope.ngError) scope.ngError({error: null});
+          if (scope.ngError && scope.display && scope.display.errorCode !== "IS_REQUIRED") scope.ngError({error: null});
           return
         }
         if (promise) $timeout.cancel(promise);
         promise = $timeout(function() {
-          if (property.display.allowDecimal === true ) {
+          if (property.display.allowDecimal === true) {
             scope.data = parseDecimalToString(e.target.value, property.display.scaleValue) /*scope.data.scale is to handle parsing the field while scale data is being entered - formEdit */
           } else if (property.display.allowDecimal === false) { /*handle when don't allow decimals - needs to be explicitly implied*/
             if (isNaN(_.round(e.target.value))) {
