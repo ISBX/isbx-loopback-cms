@@ -393,12 +393,14 @@ angular.module('dashboard.directives.ModelField', [
 
         if (property.display.isRequired) {
           scope.$watch('data', function(newVal, oldVal) {
-            if ((oldVal[scope.key] === '' && newVal[scope.key] === oldVal[scope.key]) ||
+            if ((oldVal[scope.key] === '' && newVal[scope.key] === oldVal[scope.key]) || /* if unchanged and it is empty string */
               (newVal[scope.key] !== oldVal[scope.key] && !newVal[scope.key] && newVal[scope.key] !== 0)) {
               scope.display.error = "This is a required field."
+              scope.display.errorCode = "IS_REQUIRED"
               if (scope.ngError) scope.ngError({error: new Error(scope.display.error)});
-            } else {
+            } else if (scope.display.errorCode === "IS_REQUIRED") {
               delete scope.display.error;
+              delete scope.display.errorCode;
               if (scope.ngError) scope.ngError({error: null});
             }
           }, true);
@@ -418,11 +420,12 @@ angular.module('dashboard.directives.ModelField', [
               if (scope.ngError) scope.ngError({error: new Error(scope.display.error)});
               return;
             } else {
-              if (scope.display.error === "This is a required field.") {
+              if (scope.display.errorCode === "IS_REQUIRED") {
                 // do nothing - kind of a hack
                 return
               }
               delete scope.display.error;
+              delete scope.display.errorCode;
               if (scope.ngError) scope.ngError({error: null});
               return;
             }

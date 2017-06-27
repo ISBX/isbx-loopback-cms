@@ -74,7 +74,7 @@ angular.module('dashboard.directives.ModelFieldNumber', [])
 
       function validateAndParseNumbers(e) {
         if (e.target.value === '') {
-          if (scope.ngError && scope.display && scope.display.error !== "This is a required field.") scope.ngError({error: null});
+          if (scope.ngError && scope.display && scope.display.errorCode !== "IS_REQUIRED") scope.ngError({error: null});
           return
         }
         if (promise) $timeout.cancel(promise);
