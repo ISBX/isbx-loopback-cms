@@ -24,12 +24,10 @@ angular.module('dashboard.directives.ModelFieldPointsOfInterest', [
 
   .directive('modelFieldPointsOfInterestEdit', function($compile, $cookies, $timeout, $modal, $http, $q, $window, Config, GeneralModelService, LocationService) {
 		//  load google maps javascript asynchronously
-	  var deferred = $q.defer();
 		function loadScript(googleApiKey) {
-			if (google && google.maps && google.maps.Geocoder) {
+	    var deferred = $q.defer();
+      if (angular.element('#google_maps').length) {
 				deferred.resolve();
-				return deferred.promise;
-			} else if (angular.element('#google_maps').length) {
 				return deferred.promise;
       }
 		 	var googleMapsApiJS = document.createElement('script');
