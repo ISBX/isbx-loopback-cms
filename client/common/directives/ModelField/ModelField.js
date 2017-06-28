@@ -434,7 +434,7 @@ angular.module('dashboard.directives.ModelField', [
           if (newValue !== oldValue) {
             performLink();
           }
-        });
+        }, true);
 
         performLink();
     }
