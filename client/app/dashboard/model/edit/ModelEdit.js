@@ -174,6 +174,7 @@ angular.module('dashboard.Dashboard.Model.Edit', [
    * Check to see if any file upload functionality exist and upload files first then call to save the model data
    */
   $scope.clickSaveModel = function(data) {
+    if ($scope.isLoading || $scope.action.options.hideSave) return /*don't save if button is hidden */
     $scope.status = "Saving...";
     $scope.progress = 0.0;
     modalInstance = $modal.open({
@@ -199,6 +200,7 @@ angular.module('dashboard.Dashboard.Model.Edit', [
   };
   
   $scope.clickDeleteModel = function(data, formParams) {
+    if ($scope.isLoading || $scope.action.options.hideSave || $scope.isEdit) return /*don't delete if button is hidden */
     $scope.deleteDialogText = (formParams && formParams.deleteDialogText) ? formParams.deleteDialogText : $scope.deleteDialogText;
     if (!confirm($scope.deleteDialogText)) return;
     var id = data[$scope.action.options.key];
