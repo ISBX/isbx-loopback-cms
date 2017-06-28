@@ -290,7 +290,7 @@ angular.module('dashboard.directives.ModelField', [
                 <i class="fa" ng-class="{\'fa-check\': display.isValid && !display.isLoading, \'fa-warning\': !display.isValid && !display.isLoading, \'fa-spinner rotating\': display.isLoading}"></i>\
               </div>\
             </div>\
-            <div class="model-field-description">\
+            <div class="model-field-description" ng-if="display.description || display.maxLength">\
               <span ng-if="display.description"> {{ display.description }} </span> \
               <span ng-if="display.maxLength"> &nbsp({{ charsLeft }} characters left) </span>\
             </div>\

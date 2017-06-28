@@ -57,8 +57,8 @@ angular.module('dashboard', [
       .then(function() {
         modulesLoaded = true;
         $rootScope.$broadcast('modulesLoaded');
-        if (Config.serverParams.injectOnStart) {
-          $injector.get(Config.serverParams.injectOnStart);
+        if (Array.isArray(Config.serverParams.injectOnStart)) {
+          Config.serverParams.injectOnStart.forEach($injector.get);
         }
       }, function(error){console.log(error)});
   } else {
