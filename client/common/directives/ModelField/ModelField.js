@@ -391,22 +391,7 @@ angular.module('dashboard.directives.ModelField', [
 
       function initFieldType() {
 
-        if (property.display.isRequired) {
-          scope.$watch('data', function(newVal, oldVal) {
-            if ((oldVal[scope.key] === '' && newVal[scope.key] === oldVal[scope.key]) || /* if unchanged and it is empty string */
-              (newVal[scope.key] !== oldVal[scope.key] && !newVal[scope.key] && newVal[scope.key] !== 0)) {
-              scope.display.error = "This is a required field."
-              scope.display.errorCode = "IS_REQUIRED"
-              if (scope.ngError) scope.ngError({error: new Error(scope.display.error)});
-            } else if (scope.display.errorCode === "IS_REQUIRED") {
-              delete scope.display.error;
-              delete scope.display.errorCode;
-              if (scope.ngError) scope.ngError({error: null});
-            }
-          }, true);
-        }
-        
-        // TODO: implement a required field validation popup - issue relates to sharing data object, but not same scopes
+        // TODO: generalize isRequired validation option
 
         if (property.display.type === 'text' || property.display.type === 'textarea') {
           var length = scope.data[scope.key] ? scope.data[scope.key].length : 0;
@@ -419,15 +404,14 @@ angular.module('dashboard.directives.ModelField', [
               scope.display.error = "Text is longer than the maximum allowed length of " + scope.display.maxLength + " characters.";
               if (scope.ngError) scope.ngError({error: new Error(scope.display.error)});
               return;
-            } else {
-              if (scope.display.errorCode === "IS_REQUIRED") {
-                // do nothing - kind of a hack
-                return
-              }
+            } else if (property.display.maxLength && e.target.value.length <= property.display.maxLength && e.target.value.length > 0) {
               delete scope.display.error;
               delete scope.display.errorCode;
               if (scope.ngError) scope.ngError({error: null});
-              return;
+              return
+            } else if (e.target.value.length === 0 && property.display.isRequired) {
+              scope.display.error = "This is a required field.";
+              if (scope.ngError) scope.ngError({error: new Error(scope.display.error)});
             }
           }
         }
