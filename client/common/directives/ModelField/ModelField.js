@@ -235,7 +235,7 @@ angular.module('dashboard.directives.ModelField', [
       case 'number':
         template = '<label class="col-sm-2 control-label">{{ display.label || key }}:</label>\
           <div class="col-sm-10">\
-            <input type="number" min="{{ display.minValue }}" ng-model="data[key]" ng-pattern="display.pattern" ng-disabled="{{ display.readonly }}" ng-required="{{ model.properties[key].required }}" class="field form-control">\
+            <input type="number" min="{{ display.minValue }}" max="{{ display.maxValue }}" ng-model="data[key]" ng-pattern="display.pattern" ng-disabled="{{ display.readonly }}" ng-required="{{ model.properties[key].required }}" class="field form-control">\
             <div class="model-field-description" ng-if="display.description">{{ display.description }}</div>\
           </div>';
         break;
