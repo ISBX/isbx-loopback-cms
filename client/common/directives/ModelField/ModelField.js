@@ -135,8 +135,8 @@ angular.module('dashboard.directives.ModelField', [
         template = '<label class="col-sm-2 control-label">{{ display.label || key }}:</label>\
           <div class="col-sm-10 multi-select">\
             <div class="select-item checkbox-container" ng-repeat="(itemKey, itemValue) in display.options">\
-              <input type="checkbox" class="field" ng-attr-id="{{key+\'-\'+itemKey}}" ng-model="multiSelectOptions[itemKey]" ng-checked="multiSelectOptions[itemKey]" ng-disabled="display.readonly" ng-change="clickMultiSelectCheckbox(key, itemKey, itemValue, multiSelectOptions)">\
-              <label class="checkbox-label" ng-attr-for="{{key+\'-\'+itemKey}}">{{ itemValue }}</label>\
+              <input type="checkbox" class="field" ng-model="multiSelectOptions[itemKey]" ng-checked="multiSelectOptions[itemKey]" ng-disabled="display.readonly">\
+              <label class="checkbox-label" ng-click="clickMultiSelectCheckbox(key, itemKey, itemValue, multiSelectOptions)">{{ itemValue }}</label>\
             </div>\
             <div class="model-field-description" ng-if="display.description">{{ display.description }}</div>\
           </div>';
@@ -383,6 +383,7 @@ angular.module('dashboard.directives.ModelField', [
 
           //Handle translating multi-select checks to scope.data[scope.key] output format
           scope.clickMultiSelectCheckbox = function(questionKey, itemKey, itemValue, multiSelectOptions) {
+            multiSelectOptions[itemKey] = !multiSelectOptions[itemKey];
             var output = property.display.output == "array" ? [] : property.display.output == "object" ? {} : "";
             if (property.display.output == "object") {
               //Return Key/Value Pair
