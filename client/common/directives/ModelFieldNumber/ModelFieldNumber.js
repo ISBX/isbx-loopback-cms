@@ -77,30 +77,27 @@ angular.module('dashboard.directives.ModelFieldNumber', [])
           if (scope.ngError && scope.display && scope.display.errorCode !== "IS_REQUIRED") scope.ngError({error: null});
           return
         }
-        if (promise) $timeout.cancel(promise);
-        promise = $timeout(function() {
-          if (property.display.allowDecimal === true) {
-            scope.data = parseDecimalToString(e.target.value, property.display.scaleValue) /*scope.data.scale is to handle parsing the field while scale data is being entered - formEdit */
-          } else if (property.display.allowDecimal === false) { /*handle when don't allow decimals - needs to be explicitly implied*/
-            if (isNaN(_.round(e.target.value))) {
-              if (scope.ngError) scope.ngError({error: new Error('Please enter a valid integer')});
-              return
-            }
-            var roundedValue = _.round(e.target.value, 0);
-            scope.data = roundedValue;
+        if (property.display.allowDecimal === true) {
+          scope.data = parseDecimalToString(e.target.value, property.display.scaleValue) /*scope.data.scale is to handle parsing the field while scale data is being entered - formEdit */
+        } else if (property.display.allowDecimal === false) { /*handle when don't allow decimals - needs to be explicitly implied*/
+          if (isNaN(_.round(e.target.value))) {
+            if (scope.ngError) scope.ngError({error: new Error('Please enter a valid integer')});
+            return
           }
-          if (!isNaN(parseFloat(e.target.value))) { /*if data can be coerced into a number)*/
-            if (property.display.minValue !== undefined && property.display.minValue > parseFloat(e.target.value)) {
-              if (scope.ngError) scope.ngError({error: new Error('Value is less than the minimum allowed value (' + property.display.minValue + ').')});
-              return
-            }
-            if (property.display.maxValue !== undefined && property.display.maxValue < parseFloat(e.target.value)) {
-              if (scope.ngError) scope.ngError({error: new Error('Value is greater than the maximum allowed value (' + property.display.maxValue + ').')});
-              return
-            }
-            if (scope.ngError) scope.ngError({error: null});
+          var roundedValue = _.round(e.target.value, 0);
+          scope.data = roundedValue;
+        }
+        if (!isNaN(parseFloat(e.target.value))) { /*if data can be coerced into a number)*/
+          if (property.display.minValue !== undefined && property.display.minValue > parseFloat(e.target.value)) {
+            if (scope.ngError) scope.ngError({error: new Error('Value is less than the minimum allowed value (' + property.display.minValue + ').')});
+            return
           }
-        }, 0);
+          if (property.display.maxValue !== undefined && property.display.maxValue < parseFloat(e.target.value)) {
+            if (scope.ngError) scope.ngError({error: new Error('Value is greater than the maximum allowed value (' + property.display.maxValue + ').')});
+            return
+          }
+          if (scope.ngError) scope.ngError({error: null});
+        }
       }
 
       init();
