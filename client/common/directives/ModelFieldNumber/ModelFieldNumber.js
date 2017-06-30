@@ -73,20 +73,22 @@ angular.module('dashboard.directives.ModelFieldNumber', [])
       }
 
       function validateAndParseNumbers(e) {
-        if (e.target.value === '') {
-          if (scope.ngError && scope.display && scope.display.errorCode !== "IS_REQUIRED") scope.ngError({error: null});
+        if ((e.target.value === '' || e.target.value === null) && property.display.isRequired) {
+          if (scope.ngError) scope.ngError({error: new Error('This is a required field.')});
           return
         }
+
         if (property.display.allowDecimal === true) {
-          scope.data = parseDecimalToString(e.target.value, property.display.scaleValue) /*scope.data.scale is to handle parsing the field while scale data is being entered - formEdit */
+          scope.data = parseDecimalToString(e.target.value, property.display.scaleValue); /*scope.data.scale is to handle parsing the field while scale data is being entered - formEdit */
         } else if (property.display.allowDecimal === false) { /*handle when don't allow decimals - needs to be explicitly implied*/
-          if (isNaN(_.round(e.target.value))) {
+          if (isNaN(_.round(e.target.value)) || isNaN(parseInt(e.target.value))) {
             if (scope.ngError) scope.ngError({error: new Error('Please enter a valid integer')});
             return
           }
           var roundedValue = _.round(e.target.value, 0);
           scope.data = roundedValue;
         }
+
         if (!isNaN(parseFloat(e.target.value))) { /*if data can be coerced into a number)*/
           if (property.display.minValue !== undefined && property.display.minValue > parseFloat(e.target.value)) {
             if (scope.ngError) scope.ngError({error: new Error('Value is less than the minimum allowed value (' + property.display.minValue + ').')});
@@ -98,6 +100,7 @@ angular.module('dashboard.directives.ModelFieldNumber', [])
           }
           if (scope.ngError) scope.ngError({error: null});
         }
+
       }
 
       init();
