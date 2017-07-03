@@ -430,7 +430,7 @@ angular.module('dashboard.directives.ModelField', [
           $compile(element.contents())(scope);
         }
 
-        scope.$watch('model', function(newValue, oldValue) {
+        scope.$watch('model[key]', function(newValue, oldValue) {
           // if the schema changes, we need to rerender
           if (newValue !== oldValue) {
             performLink();
