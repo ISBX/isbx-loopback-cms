@@ -11,7 +11,7 @@
     "angular-ui-select": "~0.19.6",
     "angular-ui-sortable": "~0.13.0",
     "angular-ui-calendar": "~1.0.2",
-    "angular-ui-grid": "~4.0.2",
+    "angular-ui-grid": "~4.0.6",
     "angular-grid": "~2.0.13",
     "ui-grid-draggable-rows": "~0.3.2",
     "angular-sanitize": "1.6.4",

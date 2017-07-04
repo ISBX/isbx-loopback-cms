@@ -1,3 +1,88 @@
+<a name="v4.0.6"></a>
+### v4.0.6 (2017-06-14)
+
+
+#### Bug Fixes
+
+* **5007:**
+  * Reduced the amount of digest cycles initiated by the grid. ([d0bc03d9](http://github.com/angular-ui/ng-grid/commit/d0bc03d960cf06a85f8819a1d227b47d1cedc527))
+  * Reduced the amount of digest cycles initiated by the grid. ([bd51855f](http://github.com/angular-ui/ng-grid/commit/bd51855fe00dac4e932f854c1d3d5116beef5678))
+  * Reduced the amount of digest cycles initiated by the grid. ([75f98c3e](http://github.com/angular-ui/ng-grid/commit/75f98c3eda3e46f14f9d924e6f5a6d6e35bcc2b5))
+* **6160:** Select childrens of row group (#6167) ([21819c57](http://github.com/angular-ui/ng-grid/commit/21819c57474bf4451f3126985cfccf294c4c01e2))
+* **build:**
+  * Fixing test expectations since removal of close button. ([5bf9400a](http://github.com/angular-ui/ng-grid/commit/5bf9400aed4520010cfc04b3bbe91b6183092884))
+  * Removing performance improvements from ui-grid-util.js and comma separated vars. ([738df91f](http://github.com/angular-ui/ng-grid/commit/738df91fd61642e2d31cec8a7381f0083dbfb338))
+  * Updating protractor and selenium dependencies. (#6034) ([ca0c0368](http://github.com/angular-ui/ng-grid/commit/ca0c03683878889a5d9c40b4f2cac7ff32ee5b64))
+* **protractor:** Fixing npm so protractor can be installed and run locally. ([724df352](http://github.com/angular-ui/ng-grid/commit/724df3520ccc1d5f585fcc42508a537935875da2))
+* **shell.js:** Adding windows support. ([5e438643](http://github.com/angular-ui/ng-grid/commit/5e438643ea06e06455e91f9d0368f0021b8ef9c8))
+* **sort:** Fixing sorting priority aria-label ([a364886f](http://github.com/angular-ui/ng-grid/commit/a364886f37a2685500643d5df05b4c936dcd42a5))
+
+
+#### Features
+
+* **saveState:** change restore() to return Promise created by refresh() (#6178) ([f380055b](http://github.com/angular-ui/ng-grid/commit/f380055b58e3a42ee922c36812aa316cfef34174))
+* **sorting:** Default sorting ([e629bc69](http://github.com/angular-ui/ng-grid/commit/e629bc695d4e98a04710478310729aabf53853a1))
+
+<a name="v4.0.5"></a>
+### v4.0.5 (2017-06-14)
+
+
+#### Bug Fixes
+
+* **5007:**
+  * Reduced the amount of digest cycles initiated by the grid. ([d0bc03d9](http://github.com/angular-ui/ng-grid/commit/d0bc03d960cf06a85f8819a1d227b47d1cedc527))
+  * Reduced the amount of digest cycles initiated by the grid. ([bd51855f](http://github.com/angular-ui/ng-grid/commit/bd51855fe00dac4e932f854c1d3d5116beef5678))
+  * Reduced the amount of digest cycles initiated by the grid. ([75f98c3e](http://github.com/angular-ui/ng-grid/commit/75f98c3eda3e46f14f9d924e6f5a6d6e35bcc2b5))
+* **6160:** Select childrens of row group (#6167) ([21819c57](http://github.com/angular-ui/ng-grid/commit/21819c57474bf4451f3126985cfccf294c4c01e2))
+* **build:**
+  * Fixing test expectations since removal of close button. ([5bf9400a](http://github.com/angular-ui/ng-grid/commit/5bf9400aed4520010cfc04b3bbe91b6183092884))
+  * Removing performance improvements from ui-grid-util.js and comma separated vars. ([738df91f](http://github.com/angular-ui/ng-grid/commit/738df91fd61642e2d31cec8a7381f0083dbfb338))
+  * Updating protractor and selenium dependencies. (#6034) ([ca0c0368](http://github.com/angular-ui/ng-grid/commit/ca0c03683878889a5d9c40b4f2cac7ff32ee5b64))
+* **protractor:** Fixing npm so protractor can be installed and run locally. ([724df352](http://github.com/angular-ui/ng-grid/commit/724df3520ccc1d5f585fcc42508a537935875da2))
+* **shell.js:** Adding windows support. ([5e438643](http://github.com/angular-ui/ng-grid/commit/5e438643ea06e06455e91f9d0368f0021b8ef9c8))
+* **sort:** Fixing sorting priority aria-label ([a364886f](http://github.com/angular-ui/ng-grid/commit/a364886f37a2685500643d5df05b4c936dcd42a5))
+
+
+#### Features
+
+* **saveState:** change restore() to return Promise created by refresh() (#6178) ([f380055b](http://github.com/angular-ui/ng-grid/commit/f380055b58e3a42ee922c36812aa316cfef34174))
+* **sorting:** Default sorting ([e629bc69](http://github.com/angular-ui/ng-grid/commit/e629bc695d4e98a04710478310729aabf53853a1))
+
+<a name="v4.0.4"></a>
+### v4.0.4 (2017-04-04)
+
+
+#### Bug Fixes
+
+* **6123:** Allowing selection and tree-base to build columns. ([2ea9a06e](http://github.com/angular-ui/ng-grid/commit/2ea9a06e594601cc44947a997f08bce628e813f4))
+* **flatEntityAccess:**  getCellDisplayValue now returns the correct value. ([ba77c875](http://github.com/angular-ui/ng-grid/commit/ba77c8750431236ff4f729fe8a77eb44cbbfc9b7))
+
+
+#### Features
+
+* **japanese:** Update japanese translation. ([47e78d1](https://github.com/angular-ui/ui-grid/commit/47e78d16710a96033c692f800c5bb4874f694fc8))
+
+<a name="v4.0.3"></a>
+### v4.0.3 (2017-03-24)
+
+
+#### Bug Fixes
+
+* **6061:** Translated missing resources to Norwegian in no.js ([c6b0592d](http://github.com/angular-ui/ng-grid/commit/c6b0592dc1223b412985b6a3f41fbcb55038a25e))
+* **Grid:** Add missing promise wait in refresh(). (#5934) ([e23a2af3](http://github.com/angular-ui/ng-grid/commit/e23a2af3bd796d5ed3e247bbc67d53cf24e91963))
+* **Grid.js:** Reducing amount of digests cycles triggered. ([205a2151](http://github.com/angular-ui/ng-grid/commit/205a2151e7d1d31dd6a78866d0413d97487769bf))
+* **Grid.refresh:** Refreshing canvas after processing. ([e6ab96bb](http://github.com/angular-ui/ng-grid/commit/e6ab96bbae7d1ec5848a65974f5addea8e012589))
+* **SauceLabs:** Updating Sauce Labs scripts per suggestion. ([ccd0bef3](http://github.com/angular-ui/ng-grid/commit/ccd0bef30c748c7dd4eb74e9f951787256c1ec25))
+* **gridMenu:** Fixing gridMenu undefined error. ([2f5ac879](http://github.com/angular-ui/ng-grid/commit/2f5ac879f27c90ff8de6ff873414a59dfc8cd2cd))
+* **enableColumnResizing:** enableColumnResizing accumulates watchers with each table $digest cycle (#5933) ([954bebad](http://github.com/angular-ui/ng-grid/commit/954bebad33f6a4442658db1a100687a9cd4574cb))
+* **ui-grid-util:** Reducing amount of digests triggered by ui-grid-util. ([1f116fe8](http://github.com/angular-ui/ng-grid/commit/1f116fe88094d178af11f9925b822fb9643779d0))
+* **uiGridDirective:** Reducing digest cycles and improving coverage. ([56f0dc11](http://github.com/angular-ui/ng-grid/commit/56f0dc11978b9231373435d9e73da81375b5cda7))
+
+
+#### Features
+
+* **themes:** Adding a new paper theme to the customizer tool and more features to that grid. ([30f64925](http://github.com/angular-ui/ng-grid/commit/30f64925af90cff9c6b3506fb354ee883c41a3f5))
+
 <a name="v4.0.2"></a>
 ### v4.0.2 (2016-12-30)
 
