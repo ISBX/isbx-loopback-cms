@@ -23,7 +23,7 @@ angular.module('dashboard.directives.ModelFieldWYSIWYG', [
   };
 })
 
-.directive('modelFieldWysiwygEdit', function($compile, $cookies, $timeout, $modal, Config, FileUploadService) {
+.directive('modelFieldWysiwygEdit', function($compile, $cookies, $timeout, $uibModal, Config, FileUploadService) {
   "ngInject";
 
   function getTemplate(scope) {
@@ -207,7 +207,7 @@ angular.module('dashboard.directives.ModelFieldWYSIWYG', [
         if (!scope.options.allowImageUpload || $files.length == 0) return;
         scope.status = "Uploading Image";
         scope.progress = 0.0;
-        var modalInstance = $modal.open({
+        var modalInstance = $uibModal.open({
           templateUrl: 'app/dashboard/model/edit/ModelEditSaveDialog.html',
           controller: 'ModelEditSaveDialogCtrl',
           scope: scope

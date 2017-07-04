@@ -24,7 +24,7 @@ angular.module('dashboard.Dashboard.Model.List', [
     ;
 })
 
-.controller('ModelListCtrl', function ModelListCtrl($scope, $cookies, $timeout, $state, $location, $window, $modal, Config, GeneralModelService, CacheService) {
+.controller('ModelListCtrl', function ModelListCtrl($scope, $cookies, $timeout, $state, $location, $window, $uibModal, Config, GeneralModelService, CacheService) {
   "ngInject";
 
   var isFirstLoad = true;
@@ -606,7 +606,7 @@ angular.module('dashboard.Dashboard.Model.List', [
       var recordIndex = 0;
       $scope.status = "Saving...";
       $scope.progress = 0.0;
-      modalInstance = $modal.open({
+      modalInstance = $uibModal.open({
         templateUrl: 'app/dashboard/model/edit/ModelEditSaveDialog.html',
         controller: 'ModelEditSaveDialogCtrl',
         scope: $scope

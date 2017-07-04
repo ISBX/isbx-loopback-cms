@@ -4,7 +4,7 @@ angular.module('dashboard.Profile', [
   'dashboard.Dashboard.Model.Edit'
 ])
 
-.controller('ProfileCtrl', function ProfileCtrl($scope, $modalInstance) {
+.controller('ProfileCtrl', function ProfileCtrl($scope) {
 
   
   function init() {

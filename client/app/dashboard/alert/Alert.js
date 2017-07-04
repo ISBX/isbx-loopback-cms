@@ -3,11 +3,11 @@ angular.module('dashboard.Alert', [
   'ui.bootstrap.modal'
 ])
 
-.controller('AlertCtrl', function AlertCtrl($scope, $modalInstance) {
+.controller('AlertCtrl', function AlertCtrl($scope, $uibModalInstance) {
   "ngInject";
 
   $scope.closeAlert = function() {
-    $modalInstance.close();
+    $uibModalInstance.close();
   };
   
   function init() {
@@ -16,12 +16,12 @@ angular.module('dashboard.Alert', [
 
   $scope.okAlert = function() {
     if(typeof $scope.okHandler == 'function') $scope.okHandler();
-    $modalInstance.close();
+    $uibModalInstance.close();
   };
 
   $scope.cancelAlert = function() {
     if(typeof $scope.cancelHandler == 'function') $scope.cancelHandler();
-    $modalInstance.close();
+    $uibModalInstance.close();
   };
   
   init();

@@ -24,7 +24,7 @@ angular.module('dashboard.directives.ModelFieldPointsOfInterest', [
 	};
 })
 
-.directive('modelFieldPointsOfInterestEdit', function($compile, $cookies, $timeout, $modal, $http, $q, $window, Config, GeneralModelService, LocationService) {
+.directive('modelFieldPointsOfInterestEdit', function($compile, $cookies, $timeout, $http, $q, $window, Config, GeneralModelService, LocationService) {
   "ngInject";
 
 	//  load google maps javascript asynchronously

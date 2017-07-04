@@ -27,7 +27,7 @@ angular.module('dashboard.Dashboard', [
     });
 })
 
-.controller('DashboardCtrl', function DashboardCtrl($scope, $rootScope, $state, $stateParams, $location, $cookies, $modal, Config, DashboardService) {
+.controller('DashboardCtrl', function DashboardCtrl($scope, $rootScope, $state, $stateParams, $location, $cookies, $uibModal, Config, DashboardService) {
   "ngInject";
 
   var self = this;
@@ -112,7 +112,7 @@ angular.module('dashboard.Dashboard', [
           hideDelete: true
         }
     };
-    $scope.modalInstance = $modal.open({
+    $scope.modalInstance = $uibModal.open({
       templateUrl: 'app/dashboard/profile/Profile.html',
       controller: 'ProfileCtrl',
       size: "lg",

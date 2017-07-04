@@ -20,7 +20,7 @@ angular.module('dashboard.Dashboard.Model.Definition', [
     ;
 })
 
-.controller('ModelDefinitionCtrl', function ModelDefinitionCtrl($scope, $timeout, $state, $location, $modal, Config, SettingsService) {
+.controller('ModelDefinitionCtrl', function ModelDefinitionCtrl($scope, $timeout, $state, $location, $uibModal, Config, SettingsService) {
   "ngInject";
 
   var jsonEditor = null;
