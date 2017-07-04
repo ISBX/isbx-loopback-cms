@@ -338,12 +338,12 @@ function cms(loopbackApplication, options) {
 
       var data = req.body;
       relationalUpsert.upsert(data, function(error, response) {
-          if (error) {
-            res.status(500).send(error);
-          } else {
-            res.send(response);
-          }
-        });
+        if (error) {
+          res.status(500).send(error);
+        } else {
+          res.send(response);
+        }
+      });
     });
   });
 
