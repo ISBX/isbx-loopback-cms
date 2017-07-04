@@ -317,6 +317,8 @@ function cms(loopbackApplication, options) {
       res.send('window.config = ' + JSON.stringify(localConfig.public) + ';');
     });
   });
+
+
   function validateToken(request, callback) {
     var AccessToken = loopbackApplication.models.AccessToken;
     var tokenString = request.body.__accessToken || request.query.access_token;
