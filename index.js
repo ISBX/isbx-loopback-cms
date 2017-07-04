@@ -332,7 +332,7 @@ function cms(loopbackApplication, options) {
    */
   app.put('/model/save', function(req, res) {
     //TODO: validate ACL
-    validateToken(req, function(err, isValid, token) {
+    validateToken(req, function(err, isValid) {
       if (err) { return res.status(500).send(err); }
       if (!isValid) { return res.status(403).send('Forbidden'); }
 
