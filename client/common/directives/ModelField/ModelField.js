@@ -220,17 +220,14 @@ angular.module('dashboard.directives.ModelField', [
       case 'textarea':
         template = '<label class="col-sm-2 control-label">{{ display.label || key }}:</label>\
           <div class="col-sm-10">\
-<<<<<<< HEAD
             <textarea auto-size ng-model="data[key]" ng-disabled="{{ display.readonly }}" ng-required="{{ model.properties[key].required }}" class="field form-control"></textarea>\
             <div class="model-field-description" ng-if="display.description">{{ display.description }}</div>\
-=======
             <div class="error-message" ng-if="display.error.length > 0">{{ display.error }}</div>\
             <textarea msd-elastic ng-model="data[key]" ng-keyup="lengthCheck($event)" ng-disabled="{{ display.readonly }}" ng-required="{{ model.properties[key].required }}" class="field form-control" ng-maxlength="{{ display.maxLength }}"></textarea>\
             <div class="model-field-description">\
               <span ng-if="display.description"> {{ display.description }} </span> \
               <span ng-if="display.maxLength"> &nbsp({{ charsLeft }} characters left) </span>\
             </div>\
->>>>>>> a212084947b8faa8a8848b2f449dec113b6f7e43
           </div>';
         break;
       case 'wysiwyg':
