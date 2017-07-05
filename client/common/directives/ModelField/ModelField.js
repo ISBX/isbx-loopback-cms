@@ -267,7 +267,7 @@ angular.module('dashboard.directives.ModelField', [
           <div class="col-sm-10">\
             <div class="error-message" ng-if="display.error.length > 0">{{ display.error }}</div>\
             <model-field-number key="key" property="property" options="display.options" ng-required="model.properties[key].required" ng-disabled="display.readonly" model-data="data" ng-model="data[key]" ng-error="onFieldError(error)" class="field" />\
-            <div class="model-field-description" ng-if="display.description">{{ display.description }} {{count}}</div>\
+            <div class="model-field-description" ng-if="display.description">{{ display.description }}</div>\
           </div>';
         break;
       case 'phoneNumber':
