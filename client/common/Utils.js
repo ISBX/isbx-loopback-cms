@@ -3,7 +3,8 @@ angular.module('dashboard.Utils', [
 ])
 
 .service('Utils', function(Config, $http, $q) {
-  
+  "ngInject";
+
   var apiRequests = {}; //stores active http requests using method+path as key
   
   /**
@@ -42,13 +43,32 @@ angular.module('dashboard.Utils', [
     apiRequests[method+":"+path] = deferred;
     params.timeout = deferred.promise; 
     $http(params)
-      .success(function(response) {
-        deferred.resolve(response);
-      })
-      .error(function(response) {
-        deferred.reject(response);
+      .then(function(response) {
+        deferred.resolve(response.data);
+      }, function(response) {
+        deferred.reject(response.data);
       });
 
     return deferred.promise; 
   };
 });
+
+//JQuery >= 2.2 deprecated this function
+$.swap = function (elem, options, callback, args) {
+  var ret, name, old = {};
+
+  // Remember the old values, and insert the new ones
+  for (name in options) {
+    old[name] = elem.style[name];
+    elem.style[name] = options[name];
+  }
+
+  ret = callback.apply(elem, args || []);
+
+  // Revert the old values
+  for (name in options) {
+    elem.style[name] = old[name];
+  }
+
+  return ret;
+};

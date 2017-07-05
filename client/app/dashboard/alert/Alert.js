@@ -4,6 +4,7 @@ angular.module('dashboard.Alert', [
 ])
 
 .controller('AlertCtrl', function AlertCtrl($scope, $modalInstance) {
+  "ngInject";
 
   $scope.closeAlert = function() {
     $modalInstance.close();

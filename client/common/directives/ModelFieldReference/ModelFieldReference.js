@@ -5,6 +5,8 @@ angular.module('dashboard.directives.ModelFieldReference', [
 ])
 
 .directive('modelFieldReferenceView', function($compile) {
+  "ngInject";
+
   return {
     restrict: 'E',
     template: '<b>{{ options.model }}</b>: {{ data[options.key] }}',
@@ -20,6 +22,8 @@ angular.module('dashboard.directives.ModelFieldReference', [
 })
 
 .directive('modelFieldReferenceEdit', function($compile, $cookies, Config, GeneralModelService) {
+  "ngInject";
+
   function getTemplate(multiple, matchTemplate, choiceTemplate) {
     var template = '';
     if (multiple) {
@@ -32,7 +36,7 @@ angular.module('dashboard.directives.ModelFieldReference', [
     } else {
       //single-select
       template = '\
-      <ui-select ng-model="selected.item" on-select="onSelect($item, $model)" ng-required="ngRequired" ng-disabled="disabled" > \
+      <ui-select ng-model="selected.item" on-select="onSelect($item, $model)" ng-required="ngRequired" ng-disabled="disabled" append-to-body="{{appendToBody}}"> \
       <ui-select-match ng-click="refreshChoices($select.search);" placeholder="{{ options.placeholder }}">'+ matchTemplate +'</ui-select-match> \
       <ui-select-choices repeat="item in list" refresh="refreshChoices($select.search)" refresh-delay="200">' + choiceTemplate + '</ui-select-choices> \
       </ui-select>';
@@ -50,7 +54,8 @@ angular.module('dashboard.directives.ModelFieldReference', [
       disabled: '=ngDisabled',
       rowData: "=ngRowData", //for use in the model list edit mode
       textOutputPath: '=ngTextOutputPath', //output the selected text to this path in the rowData
-      onModelChanged: "&onModelChanged"
+      onModelChanged: "&onModelChanged",
+      appendToBody: "=appendToBody"
     },
     link: function(scope, element, attrs) {
 
@@ -65,7 +70,7 @@ angular.module('dashboard.directives.ModelFieldReference', [
         if (typeof string !== 'string') return string;
         try {
           //Look for session variables in string
-          var session = JSON.parse($cookies.session); //needed for eval() below
+          var session = JSON.parse($cookies.get('session')); //needed for eval() below
           var searchString = "{session.";
           var startPos = string.indexOf(searchString);
           while (startPos > -1) {
@@ -161,6 +166,7 @@ angular.module('dashboard.directives.ModelFieldReference', [
             //No sourceModel so try to populate from modelData for items already selected
             if (scope.modelData[scope.property.display.options.relationship]) {
               scope.selected.items = scope.modelData[scope.property.display.options.relationship];
+              assignJunctionMeta();
               scope.list = scope.selected.items; //make sure list contains item otherwise won't be displayed
             }
             return;
@@ -200,10 +206,12 @@ angular.module('dashboard.directives.ModelFieldReference', [
               GeneralModelService.list(apiPath, params, {preventCancel: true}).then(function(response) {
                 if (!response) return;  //in case http request was cancelled
                 scope.selected.items = response;
+                assignJunctionMeta();
                 scope.list = response;
               });
             } else {
               scope.selected.items = response;
+              assignJunctionMeta();
               scope.list = response;
             }
           });
@@ -217,6 +225,7 @@ angular.module('dashboard.directives.ModelFieldReference', [
             if (!response) return;  //in case http request was cancelled
             //console.log("default select = " + JSON.stringify(response));
             scope.selected.item = response;
+            assignJunctionMeta();
             scope.list = [scope.selected.item]; //make sure list contains item otherwise won't be displayed
             if (scope.onModelChanged) scope.onModelChanged({'$item': scope.selected.item});
           }, function(error) {
@@ -226,12 +235,24 @@ angular.module('dashboard.directives.ModelFieldReference', [
                 newItem[scope.options.key] = scope.data;
                 newItem[scope.options.searchField] = scope.data;
                 scope.selected.item = newItem;
+                assignJunctionMeta();
                 scope.list.push(newItem);
               }
 
           });
         }
      });
+
+     function assignJunctionMeta() {
+       if (scope.options.junctionMeta) {
+         //Make sure to loop through all items for junctionMeta (previously loaded items will not have junctionMeta populated)
+         for (var i in scope.selected.items) {
+           var selectedItem = scope.selected.items[i];
+           //meta data for junction table in a many-to-many situation
+           selectedItem.junctionMeta = scope.options.junctionMeta;
+         }
+       }
+     }
 
      scope.onSelect = function(item, model) {
        if (scope.options.multiple) {
@@ -240,15 +261,10 @@ angular.module('dashboard.directives.ModelFieldReference', [
            item[scope.key] = value;
          }
          //For multi-select add as relationship array objects to modelData (when saving, the CMS relational-upsert.js will handle it)
-         scope.selected.items.push(item);
+         //scope.selected.items.push(item); //NOTE: commenting out this line fixes issue with dulpicate entries for Angular v1.6 update
          //Make sure to loop through all items for junctionMeta (previously loaded items will not have junctionMeta populated)
-         if (scope.options.junctionMeta) {
-           for (var i in scope.selected.items) {
-             var item = scope.selected.items[i];
-             //meta data for junction table in a many-to-many situation
-             item.junctionMeta = scope.options.junctionMeta;
-           }
-         }
+         assignJunctionMeta();
+
          //Assign to model data
          if (scope.modelData[scope.options.relationship]) {
            //Append to object if already exists; this is needed if more than one reference field for same relationship
@@ -259,6 +275,7 @@ angular.module('dashboard.directives.ModelFieldReference', [
        } else {
          //For single record reference just assign the ID back to data
          scope.data = item[scope.options.key];
+         if (scope.rowData) scope.rowData[scope.options.key] = scope.data; //work around for ui-grid not being able to set ng-model for cell edit
          //emit an event when an item is selected
          scope.$emit('onModelFieldReferenceSelect', scope.modelData, scope.key, item);
          var textValue = item[scope.options.searchField];
@@ -309,17 +326,18 @@ angular.module('dashboard.directives.ModelFieldReference', [
          var index = scope.selected.items.indexOf(item);
          if (index > -1) {
            scope.selected.items.splice(index, 1);
-           if (scope.options.junctionMeta) {
-             //Make sure to loop through all items for junctionMeta (previously loaded items will not have junctionMeta populated)
-             for (var i in scope.selected.items) {
-               var selectedItem = scope.selected.items[i];
-               //meta data for junction table in a many-to-many situation
-               selectedItem.junctionMeta = scope.options.junctionMeta;
-             }
-           }
+           assignJunctionMeta();
          }
          if (scope.modelData[scope.options.relationship]) {
            //Remove object if relationship object exists; this is needed if more than one reference field for same relationship
+           if (scope.options.key && item[scope.options.key]) {
+             //Remove item previously loaded using object key
+             var where = {};
+             where[scope.options.key] = item[scope.options.key];
+             var index = _.findIndex(scope.modelData[scope.options.relationship], where);
+             if (index > -1) scope.modelData[scope.options.relationship].splice(index, 1);
+           }
+           //Look for direct reference match
            var index = scope.modelData[scope.options.relationship].indexOf(item);
            if (index > -1) scope.modelData[scope.options.relationship].splice(index, 1);
            mergeArray(scope.selected.items, scope.modelData[scope.options.relationship]); //make sure to merge in any items previously selected

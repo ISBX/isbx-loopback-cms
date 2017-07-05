@@ -9,6 +9,8 @@ angular.module('dashboard.Dashboard.Model.Action', [
 ])
 
 .config(function config($stateProvider) {
+  "ngInject";
+
   $stateProvider
     .state('dashboard.model.action', {
       url: '/:action',
@@ -22,6 +24,7 @@ angular.module('dashboard.Dashboard.Model.Action', [
 })
 
 .controller('DashboardModelActionCtrl', function DasbhoardModelActionCtrl($scope, $stateParams) {
+  "ngInject";
 
   function init() {
     if ($scope.section && $scope.section.subnav) {
