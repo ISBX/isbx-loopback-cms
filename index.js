@@ -173,11 +173,16 @@ function renderIndex(req, res) {
         return app.mountpath + '/' + file;
       }
     }).concat(files.javascript);
-    files.javascript = _.map(_.filter(scripts, function(file) {
-      return !file.match(/\.spec\.js$/);
-    }), function(file) {
-      return file.replace(__dirname + srcDir, app.mountpath);
-    }).concat(files.javascript);
+
+    if (environment.indexOf('development') > -1) {
+      files.javascript = _.map(_.filter(scripts, function(file) {
+        return !file.match(/\.spec\.js$/);
+      }), function(file) {
+        return file.replace(__dirname + srcDir, app.mountpath);
+      }).concat(files.javascript);
+    } else {
+      files.javascript.unshift(app.mountpath + '/dist/app.js');
+    }
 
     var buildConfig = require('./build.config.js');
     files.css = _.map(buildConfig.vendor_files.css.concat(files.css), function(file) {
@@ -187,13 +192,17 @@ function renderIndex(req, res) {
          return app.mountpath + '/' + file;
       }
     });
-    files.javascript = _.map(buildConfig.vendor_files.js, function(file) {
-      if (file.charAt(0) == '/') {
-        return app.mountpath + file;
-      } else {
-         return app.mountpath + '/' + file;
-      }
-    }).concat(files.javascript);
+    if (environment.indexOf('development') > -1) {
+      files.javascript = _.map(buildConfig.vendor_files.js, function(file) {
+        if (file.charAt(0) == '/') {
+          return app.mountpath + file;
+        } else {
+          return app.mountpath + '/' + file;
+        }
+      }).concat(files.javascript);
+    } else {
+      files.javascript.unshift(app.mountpath + '/dist/vendor.js');
+    }
     files.javascript.unshift(app.mountpath + '/config.js');
     res.render(__dirname + srcDir + '/index.jade', { version: package.version, files: files, config: config });
   });
@@ -294,9 +303,11 @@ function cms(loopbackApplication, options) {
   app.use(overlayJade());
   app.locals.pretty = true;
 
+  app.use('/dist', express.static(__dirname + '/dist'));
   app.use('/vendor', express.static(__dirname + '/vendor'));
 
   app.get('/dev-templates.js', function(req, res) {
+    res.setHeader('content-type', 'text/javascript');
     res.send('angular.module(\'templates-app\', []);angular.module(\'templates-common\', []);');
   });
 
@@ -314,6 +325,7 @@ function cms(loopbackApplication, options) {
       if (exists) localConfig.public.strings = require(stringsPath);
       localConfig.public.apiBaseUrl = options.basePath;
       localConfig.public.cmsBaseUrl = app.mountpath;
+      res.setHeader('content-type', 'text/javascript');
       res.send('window.config = ' + JSON.stringify(localConfig.public) + ';');
     });
   });

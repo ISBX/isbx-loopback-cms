@@ -4,6 +4,8 @@ angular.module('dashboard.Dashboard.Model', [
 ])
 
 .config(function config($stateProvider) {
+  "ngInject";
+
   $stateProvider
     .state('dashboard.model', {
       url: '/:model',
@@ -17,6 +19,7 @@ angular.module('dashboard.Dashboard.Model', [
 })
 
 .controller('DashboardModelCtrl', function DashboardModelCtrl($rootScope, $scope, $stateParams, Config) {
+  "ngInject";
 
   function init() {
     $scope.section = angular.copy(_.find($scope.nav, { path: $stateParams.model }));

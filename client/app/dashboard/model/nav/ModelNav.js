@@ -6,6 +6,8 @@ angular.module('dashboard.Dashboard.Model.Nav', [
 ])
 
 .config(function config($stateProvider) {
+  "ngInject";
+
   $stateProvider
     .state('dashboard.model.action.nav', {
       url: '/config',
@@ -19,6 +21,7 @@ angular.module('dashboard.Dashboard.Model.Nav', [
 })
 
 .controller('ModelNavCtrl', function ModelNavCtrl($scope, $timeout, $state, $location, $modal, Config, SettingsService) {
+  "ngInject";
 
   var jsonEditor = null;
   var modifiedNav = null;
