@@ -12,7 +12,6 @@ angular.module('dashboard.directives.ModelField', [
   'dashboard.directives.ModelFieldMultiSelect',
   'dashboard.directives.ModelFieldNumber',
   'dashboard.directive.DateTimePicker',
-  'dashboard.directive.AutoSize',
   'ngCookies',
   'ngSlider',
   'ngSignaturePad',
