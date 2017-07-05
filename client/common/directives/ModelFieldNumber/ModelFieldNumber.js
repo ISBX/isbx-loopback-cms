@@ -73,8 +73,13 @@ angular.module('dashboard.directives.ModelFieldNumber', [])
       }
 
       function validateAndParseNumbers(e) {
-        if ((e.target.value === '' || e.target.value === null) && property.display.isRequired) {
-          if (scope.ngError) scope.ngError({error: new Error('This is a required field.')});
+        // this logic is to to handled required
+        if ((e.target.value === '' || e.target.value === null) && !e.target.validity.badInput) { /*validity states lets us know if it's actually a bad value - target.value also returnes empty string */
+          if (scope.ngError && property.display.isRequired) {
+            scope.ngError({error: new Error('This is a required field.')});
+          } else if (scope.ngError) {
+            scope.ngError({error: null});
+          }
           return
         }
 
