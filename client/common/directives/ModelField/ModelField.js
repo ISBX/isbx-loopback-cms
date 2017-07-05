@@ -52,7 +52,7 @@ angular.module('dashboard.directives.ModelField', [
     switch(type) {
       case 'reference':
         // depends on directive modelFieldReferenceEdit
-        template = '<label class="col-sm-2 control-label">{{ display.label || key }}:</label> \
+        template = '<label class="col-sm-2 control-label">{{ display.label || key | translate }}:</label> \
           <div class="col-sm-10"> \
             <div class="error-message" ng-if="display.error.length > 0">{{ display.error }}</div>\
             <model-field-reference-edit key="key" property="property" options="display.options" model-data="data" ng-model="data[key]" class="field" ng-required="{{ model.properties[key].required }}" ng-disabled="display.readonly"  /> \
@@ -61,7 +61,7 @@ angular.module('dashboard.directives.ModelField', [
         break;
       case 'reference-sort':
         // depends on directive modelFieldReferenceSortEdit
-        template = '<label class="col-sm-2 control-label">{{ display.label || key }}:</label> \
+        template = '<label class="col-sm-2 control-label">{{ display.label || key | translate }}:</label> \
           <div class="col-sm-10"> \
             <div class="error-message" ng-if="display.error.length > 0">{{ display.error }}</div>\
             <model-field-reference-sort-edit key="key" property="property" options="display.options" model-data="data" ng-model="data[key]" class="field" ng-required="{{ model.properties[key].required }}" ng-disabled="display.readonly"  /> \
@@ -74,7 +74,7 @@ angular.module('dashboard.directives.ModelField', [
         break;
       case 'list':
         // depends on directive modelFieldListEdit
-        template = '<label class="col-sm-2 control-label">{{ display.label || key }}:</label> \
+        template = '<label class="col-sm-2 control-label">{{ display.label || key | translate }}:</label> \
           <div class="col-sm-10"> \
             <div class="error-message" ng-if="display.error.length > 0">{{ display.error }}</div>\
             <model-field-list-edit key="key" property="property" options="display.options" model-data="data" ng-model="data[key]" class="field" ng-required="{{ model.properties[key].required }}" ng-disabled="display.readonly"  /> \
@@ -87,7 +87,7 @@ angular.module('dashboard.directives.ModelField', [
         break;
       case 'file':
         // depends on directive modelFieldFileEdit
-        template = '<label class="col-sm-2 control-label">{{ display.label || key }}:</label> \
+        template = '<label class="col-sm-2 control-label">{{ display.label || key | translate }}:</label> \
           <div class="col-sm-10"> \
             <div class="error-message" ng-if="display.error.length > 0">{{ display.error }}</div>\
             <model-field-file-edit key="key" options="display.options" ng-disabled="display.readonly" model-data="data" ng-model="data[key]" class="field" /> \
@@ -100,7 +100,7 @@ angular.module('dashboard.directives.ModelField', [
         break;
       case 'image':
         // depends on directive modelFieldImageEdit
-        template = '<label class="col-sm-2 control-label">{{ display.label || key }}:</label> \
+        template = '<label class="col-sm-2 control-label">{{ display.label || key | translate }}:</label> \
           <div class="col-sm-10"> \
             <div class="error-message" ng-if="display.error.length > 0">{{ display.error }}</div>\
             <model-field-image-edit key="key" options="display.options" ng-disabled="display.readonly" model-data="data" ng-model="data[key]" class="field" /> \
@@ -112,7 +112,7 @@ angular.module('dashboard.directives.ModelField', [
         break;
       case 'video':
         // depends on directive modelFieldImageEdit
-        template = '<label class="col-sm-2 control-label">{{ display.label || key }}:</label> \
+        template = '<label class="col-sm-2 control-label">{{ display.label || key | translate }}:</label> \
           <div class="col-sm-10"> \
             <div class="error-message" ng-if="display.error.length > 0">{{ display.error }}</div>\
             <model-field-video-edit key="key" options="display.options" ng-disabled="display.readonly" model-data="data" ng-model="data[key]" class="field" /> \
@@ -120,7 +120,7 @@ angular.module('dashboard.directives.ModelField', [
           </div>';
         break;
       case 'datetime':
-        template = '<label class="col-sm-2 control-label">{{ display.label || key }}:</label> \
+        template = '<label class="col-sm-2 control-label">{{ display.label || key | translate }}:</label> \
           <div class="col-sm-10"> \
             <div class="error-message" ng-if="display.error.length > 0">{{ display.error }}</div>\
             <p class="date-picker input-group"> \
@@ -144,7 +144,7 @@ angular.module('dashboard.directives.ModelField', [
           </div>';
         break;
       case 'multi-select':
-        template = '<label class="col-sm-2 control-label">{{ display.label || key }}:</label>\
+        template = '<label class="col-sm-2 control-label">{{ display.label || key | translate }}:</label>\
           <div class="col-sm-10 multi-select">\
             <div class="error-message" ng-if="display.error.length > 0">{{ display.error }}</div>\
             <model-field-multi-select key="key" property="property" options="display.options" ng-disabled="display.readonly" model-data="data" ng-model="data[key]" class="field" />\
@@ -163,7 +163,7 @@ angular.module('dashboard.directives.ModelField', [
           }
         }
         //NOTE: need to add empty <option> element to prevent weird AngularJS select issue when handling first selection
-        template = '<label class="col-sm-2 control-label">{{ display.label || key }}:</label>\
+        template = '<label class="col-sm-2 control-label">{{ display.label || key | translate }}:</label>\
           <div class="col-sm-10">\
             <div class="error-message" ng-if="display.error.length > 0">{{ display.error }}</div>\
             <select ng-model="data[key]" ng-options="'+ngOptions+'" ng-required="{{ model.properties[key].required }}" class="field form-control" ng-disabled="{{ display.readonly }}"><option value=""></option></select>\
@@ -181,7 +181,7 @@ angular.module('dashboard.directives.ModelField', [
             ngRepeat = 'text in display.options';
           }
         }
-        template = '<label class="col-sm-2 control-label">{{ display.label || key }}:</label>\
+        template = '<label class="col-sm-2 control-label">{{ display.label || key | translate }}:</label>\
           <div class="col-sm-10 multi-select">\
             <div class="error-message" ng-if="display.error.length > 0">{{ display.error }}</div>\
             <div class="select-item checkbox-container" ng-repeat="'+ngRepeat+'" >\
@@ -192,7 +192,7 @@ angular.module('dashboard.directives.ModelField', [
           </div>';
         break;
       case 'slider':
-        template = '<label class="col-sm-2 control-label">{{ display.label || key }}:</label>\
+        template = '<label class="col-sm-2 control-label">{{ display.label || key | translate }}:</label>\
           <div class="col-sm-10">\
             <div class="error-message" ng-if="display.error.length > 0">{{ display.error }}</div>\
             <input slider ng-model="data[key]" options="display.options" class="slider ng-isolate-scope ng-valid ng-hide ng-dirty"> \
@@ -204,12 +204,12 @@ angular.module('dashboard.directives.ModelField', [
           <div class="col-sm-10 checkbox-container">\
             <div class="error-message" ng-if="display.error.length > 0">{{ display.error }}</div>\
             <input type="checkbox" ng-attr-id="{{key}}" ng-model="data[key]" ng-checked="check(data, key)" class="field" ng-disabled="{{ display.readonly }}">\
-            <label class="checkbox-label" ng-attr-for="{{key}}">{{ display.label || key }}</label>\
+            <label class="checkbox-label" ng-attr-for="{{key}}">{{ display.label || key | translate }}</label>\
             <div class="model-field-description" ng-if="display.description">{{ display.description }}</div>\
           </div>';
         break;
       case 'password':
-        template = '<label class="col-sm-2 control-label">{{ display.label || key }}:</label>\
+        template = '<label class="col-sm-2 control-label">{{ display.label || key | translate }}:</label>\
           <div class="col-sm-10">\
             <div class="error-message" ng-if="display.error.length > 0">{{ display.error }}</div>\
             <input type="password" ng-model="data[key]" ng-pattern="display.pattern" ng-disabled="{{ display.readonly }}" ng-required="{{ model.properties[key].required }}" class="field form-control">\
@@ -217,7 +217,7 @@ angular.module('dashboard.directives.ModelField', [
           </div>';
         break;
       case 'textarea':
-        template = '<label class="col-sm-2 control-label">{{ display.label || key }}:</label>\
+        template = '<label class="col-sm-2 control-label">{{ display.label || key | translate }}:</label>\
           <div class="col-sm-10">\
             <div class="error-message" ng-if="display.error.length > 0">{{ display.error }}</div>\
             <textarea msd-elastic ng-model="data[key]" ng-keyup="lengthCheck($event)" ng-disabled="{{ display.readonly }}" ng-required="{{ model.properties[key].required }}" class="field form-control" ng-maxlength="{{ display.maxLength }}"></textarea>\
@@ -229,7 +229,7 @@ angular.module('dashboard.directives.ModelField', [
         break;
       case 'wysiwyg':
       case 'WYSIWYG':
-        template = '<label class="col-sm-2 control-label">{{ display.label || key }}:</label>\
+        template = '<label class="col-sm-2 control-label">{{ display.label || key | translate }}:</label>\
           <div class="col-sm-10">\
             <div class="error-message" ng-if="display.error.length > 0">{{ display.error }}</div>\
             <model-field-wysiwyg-edit key="key" property="property" options="display.options" model-data="data" ng-model="data[key]" class="field" ng-required="{{ model.properties[key].required }}" ng-disabled="display.readonly"  /> \
@@ -238,7 +238,7 @@ angular.module('dashboard.directives.ModelField', [
         break;
       case 'draw':
       case 'signature':
-        template = '<label class="col-sm-2 control-label">{{ display.label || key }}:</label>\
+        template = '<label class="col-sm-2 control-label">{{ display.label || key | translate }}:</label>\
           <div class="col-sm-10">\
             <div class="error-message" ng-if="display.error.length > 0">{{ display.error }}</div>\
             <model-field-canvas-edit key="key" property="property" options="display.options" ng-model="data[key]" class="field" ng-required="{{ model.properties[key].required }}" ng-disabled="display.readonly"></model-field-canvas-edit>\
@@ -246,7 +246,7 @@ angular.module('dashboard.directives.ModelField', [
           </div>';
         break;
       case 'location':
-        template = '<label class="col-sm-2 control-label">{{ display.label || key }}:</label>\
+        template = '<label class="col-sm-2 control-label">{{ display.label || key | translate }}:</label>\
           <div class="col-sm-10">\
             <div class="error-message" ng-if="display.error.length > 0">{{ display.error }}</div>\
             <model-field-location-edit key="key" property="property" options="display.options" ng-model="data[key]" class="field" ng-required="{{ model.properties[key].required }}" ng-disabled="display.readonly"></model-field-location-edit>\
@@ -255,7 +255,7 @@ angular.module('dashboard.directives.ModelField', [
         break;
       case 'poi':
       case 'POI':
-        template = '<label class="col-sm-2 control-label">{{ display.label || key }}:</label>\
+        template = '<label class="col-sm-2 control-label">{{ display.label || key | translate }}:</label>\
           <div class="col-sm-10">\
             <div class="error-message" ng-if="display.error.length > 0">{{ display.error }}</div>\
             <model-field-points-of-interest-edit key="key" property="property" options="display.options" ng-model="data[key]" class="field" ng-required="{{ model.properties[key].required }}" ng-disabled="display.readonly"></model-field-points-of-interest-edit>\
@@ -263,7 +263,7 @@ angular.module('dashboard.directives.ModelField', [
           </div>';
         break;
       case 'number':
-        template = '<label class="col-sm-2 control-label">{{ display.label || key }}:</label>\
+        template = '<label class="col-sm-2 control-label">{{ display.label || key | translate }}:</label>\
           <div class="col-sm-10">\
             <div class="error-message" ng-if="display.error.length > 0">{{ display.error }}</div>\
             <model-field-number key="key" property="property" options="display.options" ng-required="model.properties[key].required" ng-disabled="display.readonly" model-data="data" ng-model="data[key]" ng-error="onFieldError(error)" class="field" />\
@@ -271,7 +271,7 @@ angular.module('dashboard.directives.ModelField', [
           </div>';
         break;
       case 'phoneNumber':
-        template = '<label class="col-sm-2 control-label">{{ display.label || key }}:</label>\
+        template = '<label class="col-sm-2 control-label">{{ display.label || key | translate }}:</label>\
           <div class="col-sm-10">\
             <div class="error-message" ng-if="display.error.length > 0">{{ display.error }}</div>\
             <input type="hidden" ng-model="countrycode" value="{{ display.region }}" />\
@@ -281,7 +281,7 @@ angular.module('dashboard.directives.ModelField', [
         break;
       case 'text':
       default:
-        template = '<label class="col-sm-2 control-label">{{ display.label || key }}:</label>\
+        template = '<label class="col-sm-2 control-label">{{ display.label || key | translate }}:</label>\
           <div class="col-sm-10">\
             <div class="error-message" ng-if="display.error.length > 0">{{ display.error }}</div>\
             <div ng-class="{\'input-status-indicator\': display.showStatusIndicator}">\

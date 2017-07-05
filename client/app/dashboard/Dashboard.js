@@ -27,9 +27,7 @@ angular.module('dashboard.Dashboard', [
     });
 })
 
-.controller('DashboardCtrl', function DashboardCtrl($scope, $rootScope, $state, $stateParams, $location, $cookies, $modal, Config, DashboardService) {
-  "ngInject";
-
+.controller('DashboardCtrl', function DashboardCtrl($scope, $rootScope, $state, $stateParams, $location, $cookies, $modal, Config, DashboardService, $translate) {
   var self = this;
 
   this.init = function() {
@@ -112,6 +110,7 @@ angular.module('dashboard.Dashboard', [
           hideDelete: true
         }
     };
+    $scope.alertTitle = $translate.instant('user_profile.title');
     $scope.modalInstance = $modal.open({
       templateUrl: 'app/dashboard/profile/Profile.html',
       controller: 'ProfileCtrl',
