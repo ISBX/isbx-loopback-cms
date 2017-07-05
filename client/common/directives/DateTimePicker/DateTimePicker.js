@@ -14,7 +14,8 @@ angular.module('dashboard.directive.DateTimePicker', [
           defaultDate: '@',
           viewMode: '@',
           ngViewMode: '=ngViewMode',
-          horizontal: '@'
+          horizontal: '@',
+          language: '@'
       },
       link: function (scope, elem, attrs, ngModel) {
 
@@ -37,6 +38,7 @@ angular.module('dashboard.directive.DateTimePicker', [
         elem.datetimepicker({
           format: scope.format,
           useCurrent: false,
+          locale: scope.language,
           defaultDate: scope.defaultDate ? moment(scope.defaultDate).format(scope.format) : undefined,
           viewMode: scope.viewMode,
           widgetPositioning: { horizontal: scope.horizontal ? scope.horizontal : 'auto' }

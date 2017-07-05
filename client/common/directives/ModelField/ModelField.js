@@ -117,6 +117,7 @@ angular.module('dashboard.directives.ModelField', [
             <p class="date-picker input-group"> \
               <input type="text" class="form-control" \
               control="dateControl"\
+              language="{{ display.options.language }}"\
               ng-model="data[key]" \
               default-date="{{data[key]}}" \
               ng-format="display.options.format" \
