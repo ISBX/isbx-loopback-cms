@@ -87,7 +87,13 @@ angular.module('dashboard.directives.ModelFieldNumber', [])
         }
 
         if (property.display.allowDecimal === true) {
-          scope.data = $filter('decimalWithScale')(e.target.value, property.display.scaleValue); /*scope.data.scale is to handle parsing the field while scale data is being entered - formEdit */
+          var decimalString = $filter('decimalWithScale')(e.target.value, property.display.scaleValue);
+          if (isNaN(decimalString) && scope.ngError) {
+            scope.ngError({error: new Error('Please enter a valid integer')});
+            return
+          } else {
+            scope.data = decimalString; /*scope.data.scale is to handle parsing the field while scale data is being entered - formEdit */
+          }
         } else if (property.display.allowDecimal === false) { /*handle when don't allow decimals - needs to be explicitly implied*/
           if (isNaN(_.round(e.target.value)) || isNaN(parseInt(e.target.value))) {
             if (scope.ngError) scope.ngError({error: new Error('Please enter a valid integer')});
