@@ -4,22 +4,27 @@ angular.module('dashboard.directive.AutoSize', [
 ])
 
 .directive('autoSize', function($timeout, $window) {
-    return {
-        restrict: 'A',
-        link: function(scope, element, attrs) {
-            element.css({ 'height': 'auto', 'overflow-y': 'hidden' });
-            $timeout(function() {
-                element.css('height', element[0].scrollHeight + 'px');
-            }, 100);
+  return {
+    restrict: 'A',
+    link: function(scope, element, attrs) {
 
-            function update() {
-                element.css({ 'height': 'auto', 'overflow-y': 'hidden' });
-                element.css('height', element[0].scrollHeight + 'px');
-            }
+      scope.minTextAreaHeight = 150;
 
-            element.on('input', update);
-            element.on('load', update);
-            angular.element($window).bind('resize', update);
-        }
+      element.css({ 'height': 'auto', 'overflow-y': 'hidden' });
+      $timeout(function() {
+        var scrollHeight = element[0].scrollHeight;
+        var height = Math.max(scrollHeight, scope.minTextAreaHeight);
+        element.css('height', height + 'px');
+      }, 100);
+
+      function update() {
+        element.css({ 'height': 'auto', 'overflow-y': 'hidden' });
+        element.css('height', element[0].scrollHeight + 'px');
+      }
+
+      element.on('input', update);
+      element.on('load', update);
+      angular.element($window).bind('resize', update);
     }
+  }
 });
