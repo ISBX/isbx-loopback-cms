@@ -53,6 +53,7 @@ angular.module('dashboard.directives.ModelFieldCanvas', [
       scope.clearCanvas = function() {
         var canvas = scope.signature._canvas;
         canvas.width = canvas.width;
+        scope.data = null;
       };
 
       scope.$watch('signature._mouseButtonDown', function() {
