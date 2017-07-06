@@ -13,13 +13,14 @@ angular.module('dashboard.filters', [
     var indexOfDecimal = value.indexOf('.');
     if (indexOfDecimal === -1) value += '.0'; //no decimal so add it
     else if (indexOfDecimal === 0) value = '0' + value; //no leading zero
-    console.log('value', value);
     var valueComponents = value.split('.');
     if (valueComponents.length > 1) {
       if (!valueComponents[0] || valueComponents[0].length === 0) valueComponents[0] = 0;
-      console.log('valueComponents[0]', valueComponents[0]);
+      if (isNaN(parseInt(valueComponents[0]))) return NaN
       value = parseInt(valueComponents[0]) + '.';
-      if (valueComponents[1].length > scale) {
+      if (valueComponents[1].match(/[\D]/) !== null) {
+        return NaN
+      } else if (valueComponents[1].length > scale) {
         //Truncate value
         value += valueComponents[1].substring(0, scale);
       } else {
