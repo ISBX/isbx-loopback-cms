@@ -11,6 +11,8 @@ angular.module('dashboard.Dashboard.Model.List', [
 ])
 
 .config(function config($stateProvider) {
+  "ngInject";
+
   $stateProvider
     .state('dashboard.model.action.list', {
       url: '/list',
@@ -23,6 +25,8 @@ angular.module('dashboard.Dashboard.Model.List', [
 })
 
 .controller('ModelListCtrl', function ModelListCtrl($scope, $cookies, $timeout, $state, $location, $window, $modal, Config, GeneralModelService, CacheService) {
+  "ngInject";
+
   var isFirstLoad = true;
   var modalInstance = null;
 
@@ -177,8 +181,8 @@ angular.module('dashboard.Dashboard.Model.List', [
 	}
 	//Check column role access
 	columns = angular.copy(columns); //make copy
-	if (columns && $cookies.roles) {
-      var roles = JSON.parse($cookies.roles);
+	if (columns && $cookies.get('roles')) {
+      var roles = JSON.parse($cookies.get('roles'));
       if (roles) {
         for (var i = 0; i < columns.length; i++) {
           var column = columns[i];
@@ -248,7 +252,7 @@ angular.module('dashboard.Dashboard.Model.List', [
     
     //Look for session variables in $scope.apiPath
     try {
-      var session = JSON.parse($cookies.session); //needed for eval() below
+      var session = JSON.parse($cookies.get('session')); //needed for eval() below
       var searchString = "{session.";
       var startPos = $scope.apiPath.indexOf(searchString);
       while (startPos > -1) {
@@ -270,7 +274,7 @@ angular.module('dashboard.Dashboard.Model.List', [
     $scope.filterDescription = filterDescription ? filterDescription : $scope.action.label; 
 
     //Check if paging and sorting exists in querystring
-    if (queryStringParams.pageSize) $scope.pagingOptions.pageSize = parseInt(queryStringParams.pageSize);
+    if (queryStringParams.pageSize) $scope.pagingOptions.pageSize = queryStringParams.pageSize;
     if (queryStringParams.currentPage) $scope.pagingOptions.currentPage = parseInt(queryStringParams.currentPage);
     if (queryStringParams.sortInfo) {
       try {
@@ -430,11 +434,13 @@ angular.module('dashboard.Dashboard.Model.List', [
         processWindowSize(); //on first load check window size to determine if optional columns should be displayed
         $scope.$emit("ModelListLoadItemsLoaded");
         isFirstLoad = false;
-      })
-      .finally(function() {
         $scope.isLoading = false;
         $scope.loadAttempted = true;
-      });
+      },
+      function(error) {
+        $scope.errorMessage = 'There was an error while loading...';
+        console.error(error);
+      })
   };
   
   /**
@@ -442,8 +448,8 @@ angular.module('dashboard.Dashboard.Model.List', [
    */
   $scope.hasButtonPermission = function(button) {
     if (!button.roles) return true;
-    if (!$cookies.roles) return false; //user does not have any roles
-    var roles = JSON.parse($cookies.roles);
+    if (!$cookies.get('roles')) return false; //user does not have any roles
+    var roles = JSON.parse($cookies.get('roles'));
     for (var i in roles) {
       var role = roles[i];
       if (button.roles.indexOf(role.name) > -1) {

@@ -6,6 +6,8 @@ angular.module('dashboard.Dashboard.Model.View', [
 ])
 
 .config(function config($stateProvider) {
+  "ngInject";
+
   $stateProvider
     .state('dashboard.model.action.view', {
       url: '/view/:id',
@@ -19,6 +21,7 @@ angular.module('dashboard.Dashboard.Model.View', [
 })
 
 .controller('ModelViewCtrl', function ModelViewCtrl($scope, $stateParams, Config, GeneralModelService) {
+  "ngInject";
 
   function init() {
     GeneralModelService.get($scope.model.model, $stateParams.id)

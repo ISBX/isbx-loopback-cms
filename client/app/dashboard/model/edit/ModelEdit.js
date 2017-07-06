@@ -13,6 +13,8 @@ angular.module('dashboard.Dashboard.Model.Edit', [
 ])
 
 .config(function config($stateProvider) {
+  "ngInject";
+
   $stateProvider
     .state('dashboard.model.action.edit', {
       url: '/edit/:id',
@@ -25,7 +27,8 @@ angular.module('dashboard.Dashboard.Model.Edit', [
     ;
 })
 
-.controller('ModelEditCtrl', function ModelEditCtrl($rootScope, $scope, $cookies, $location, $stateParams, $http, $state, $window, $modal, Config, GeneralModelService, FileUploadService, CacheService) {
+.controller('ModelEditCtrl', function ModelEditCtrl($rootScope, $scope, $cookies, $location, $stateParams, $state, $window, $modal, Config, GeneralModelService, FileUploadService, CacheService) {
+  "ngInject";
 
   var modalInstance = null;
   function init() {
@@ -36,7 +39,7 @@ angular.module('dashboard.Dashboard.Model.Edit', [
     if (!$scope.action) $scope.action = {};
     if (!$scope.action.options) $scope.action.options = { model: $stateParams.model, key: $stateParams.key };
 
-    $scope.model = Config.serverParams.models[$scope.action.options.model];
+    $scope.model = angular.copy(Config.serverParams.models[$scope.action.options.model]);
 
     //Make Key field readonly
     if ($scope.action.options.key) {
@@ -98,10 +101,21 @@ angular.module('dashboard.Dashboard.Model.Edit', [
     $scope.deleteButtonText = Config.serverParams.strings.deleteButton;
     $scope.deleteDialogText = Config.serverParams.strings.deleteDiaglog ? Config.serverParams.strings.deleteDiaglog : "Are you sure you want to delete?";
 
+    //for deprecation
     $scope.$on('saveModel', function() { $scope.clickSaveModel($scope.data); });
     $scope.$on('deleteModel', function(event, formParams) {
       $scope.clickDeleteModel($scope.data, formParams);
     });
+
+    $scope.$on('onModelSave', function() { $scope.clickSaveModel($scope.data); });
+    $scope.$on('onModelDelete', function(event, formParams) {
+      $scope.clickDeleteModel($scope.data, formParams);
+    });
+    $scope.$watch('data', function(newData, oldData) {
+      if ($scope.isLoading) return;
+      //trigger change event only after model has been loaded and actual change was detected
+      $scope.$emit('onModelChange', { newData: newData, oldData: oldData });
+    }, true);
   }
 
   function layoutModelDisplay() {
@@ -117,6 +131,8 @@ angular.module('dashboard.Dashboard.Model.Edit', [
         if (!$scope.data[key]) $scope.data[key] = null;
       }
     }
+
+    $scope.$emit('onModelLoad', { data: $scope.data });
   }
 
 
@@ -244,11 +260,11 @@ angular.module('dashboard.Dashboard.Model.Edit', [
       return true; //no roles specified so grant permission
     }
 
-    if (!$cookies.roles) {
+    if (!$cookies.get('roles')) {
       return false; //user has no role access
     }
     
-    var userRoles = JSON.parse($cookies.roles);
+    var userRoles = JSON.parse($cookies.get('roles'));
     for (var i in userRoles) {
       var role = userRoles[i];
       if (displayInfo.roles.indexOf(role.name) > -1) {

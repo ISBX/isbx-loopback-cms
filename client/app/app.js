@@ -2,41 +2,64 @@ angular.module('dashboard', [
   'dashboard.Dashboard',
   'dashboard.Login',
   'dashboard.Register',
-
   'dashboard.directives',
   'dashboard.filters',
-
   'dashboard.services.Cache',
   'dashboard.services.Session',
-
   'templates-app',
   'templates-common',
   'ui.router',
-  'oc.lazyLoad'
+  'oc.lazyLoad',
+  'ngCookies',
+  'pascalprecht.translate'
 ])
 
-.config(function myAppConfig($locationProvider, $stateProvider, $urlRouterProvider, $compileProvider) {
+.config(function myAppConfig($locationProvider, $stateProvider, $urlRouterProvider, $compileProvider, $qProvider, $translateProvider, Config) {
+  "ngInject";
+
   $compileProvider.aHrefSanitizationWhitelist(/^\s*(http|https|ftp|mailto|tel|file|blo‌​b|data):/);
   $urlRouterProvider.otherwise('/login');
+  if(Config.serverParams.disableRegistration) $urlRouterProvider.when('/register','/login');
   $locationProvider.html5Mode(true);
+  // $qProvider.errorOnUnhandledRejections(false); //angular 1.6.1 'Possibly unhandled rejection:' issues
+
+  //Load localized strings if available via angular-translate
+  $translateProvider.useSanitizeValueStrategy('escape');
+  if (Config.serverParams.translateUrl) $translateProvider.useUrlLoader(Config.serverParams.translateUrl);
+  if (Config.serverParams.defaultLanguage) $translateProvider.fallbackLanguage(Config.serverParams.defaultLanguage);
+
 
   $stateProvider
     .state('public', {
       abstract: true,
       template: '<ui-view />'
+    })
+    .state('public.accessDenied', {
+      url: '/access-denied',
+      template: '<div class="no-script-warning"><h1>Access Denied</h1><p>You are not authorized to access this page.</p><p><button onclick="window.history.go(-2)">Back</button></p></div>',
+      data: {
+        pageTitle: 'Access Denied'
+      }
     });
 
   $urlRouterProvider.deferIntercept(); // defer routing until custom modules are loaded
 })
 
-.run(function run($ocLazyLoad, $rootScope, $urlRouter, Config, SessionService) {
-  //  SessionService.tryGetCurrentUser();
+.run(function run($ocLazyLoad, $rootScope, $urlRouter, $injector, $translate, Config) {
+  "ngInject";
+
+  if (Config.serverParams.defaultLanguage) $translate.use(Config.serverParams.defaultLanguage);
+  if (Config.serverParams.translateUrl) $translate.refresh();
+
   var modulesLoaded = false;
   if (Config.serverParams.customModules) {
     $ocLazyLoad.load(Config.serverParams.customModules)
       .then(function() {
         modulesLoaded = true;
         $rootScope.$broadcast('modulesLoaded');
+        if (Array.isArray(Config.serverParams.injectOnStart)) {
+          Config.serverParams.injectOnStart.forEach($injector.get);
+        }
       }, function(error){console.log(error)});
   } else {
     modulesLoaded = true;
@@ -55,7 +78,15 @@ angular.module('dashboard', [
 
 })
 
-.controller('AppCtrl', function AppCtrl ($scope, $location, $state, $rootScope, $timeout, $document, SessionService, CacheService, Config) {
+.constant('constants', {
+  TIMEOUT_INTERVAL: 5000,
+  PUBLIC_STATE: 'public',
+  LOGIN_STATE: 'public.login'
+})
+
+.controller('AppCtrl', function AppCtrl ($scope, $location, $state, $rootScope, $timeout, $document, $cookies, SessionService, CacheService, Config, constants) {
+  "ngInject";
+
   $rootScope.$state = $state;
   if (Config.serverParams.gaTrackingId) ga('create', Config.serverParams.gaTrackingId, 'auto');
 
@@ -63,17 +94,24 @@ angular.module('dashboard', [
     var toStateName = toState.name;
     toStateName = toStateName.substr(toStateName, toStateName.indexOf('.'));
 
-    if (!SessionService.getAuthToken() && toStateName != 'public') {
+    if (!SessionService.getAuthToken() && toStateName != constants.PUBLIC_STATE) {
       var desiredState = { state: toState, params: toParams };
       CacheService.set('desiredState', desiredState);
 
       if (Config.serverParams.loginState) {
         $state.go(Config.serverParams.loginState); //custom login controller
-      } else if (toStateName != 'public') {
-        $state.go('public.login');
+      } else if (toStateName != constants.PUBLIC_STATE) {
+        $state.go(constants.LOGIN_STATE);
       }
       event.preventDefault();
+      return;
     }
+
+    if(!SessionService.isAuthorized(toState, toParams)) {
+      $state.go('public.accessDenied');
+      event.preventDefault();
+    }
+    
   });
 
   $scope.$on('$stateChangeSuccess', function(event, toState, toParams, fromState, fromParams){
@@ -83,56 +121,56 @@ angular.module('dashboard', [
   });
 
   $rootScope.logOut = function(){
+    if(!SessionService.getAuthToken()) return;
     CacheService.reset(); //clear out caching
     SessionService.logOut()
       .then(function(result){
         if (Config.serverParams.loginState) {
           $state.go(Config.serverParams.loginState); //custom login controller
         } else {
-          $state.go('public.login');
+          $state.go(constants.LOGIN_STATE);
         }
       })
       .catch(function(error){
-        $state.go('public.login');
+        $state.go(constants.LOGIN_STATE);
       });
   };
 
-  localStorage['lastActive'] = new Date();
   var lastPersistDate = new Date();
-  function persistSession() {
+  $rootScope.persistSession = function() {
     $timeout.cancel($rootScope.persistId);
-    if ($state.current.name.indexOf('public') > -1) {
+    if ($state.current.name.indexOf(constants.PUBLIC_STATE) > -1) {
       return; //don't timeout if on the public website
     }
     lastPersistDate = new Date();
     //limit the amount of time localStorage is written to
-    if (new Date() - lastPersistDate > 5000) {
-      if (checkTimeout()) {
-        localStorage['lastActive'] = new Date();
+    if (new Date() - lastPersistDate > constants.TIMEOUT_INTERVAL) {
+      if ($rootScope.checkTimeout()) {
+        $cookies.put('lastActive', new Date());
       }
     } else {
       $rootScope.persistId = $timeout(function() {
-        if (checkTimeout()) {
-          localStorage['lastActive'] = new Date();
+        if ($rootScope.checkTimeout()) {
+          $cookies.put('lastActive', new Date());
         }
-      }, 5000);
+      }, constants.TIMEOUT_INTERVAL);
     }
   }
 
-  function checkTimeout() {
+  $rootScope.checkTimeout = function() {
     $timeout.cancel($rootScope.timeoutId);
-    if (!localStorage['lastActive']) {
+    if (!$cookies.get('lastActive')) {
       console.error('Session Timedout on another window/tab');
-      $state.go('public.login');
+      $state.go(constants.LOGIN_STATE);
       return false;
     }
-    var lastActiveDate = new Date(localStorage['lastActive']);
+    var lastActiveDate = new Date($cookies.get('lastActive'));
     var interval = new Date() - lastActiveDate;
     if (interval > Config.serverParams.sessionTimeout) {
       $rootScope.logOut();
       return false;
     } else {
-      $rootScope.timeoutId = $timeout(checkTimeout, 5000); //Wait another 5 sec to check again
+      $rootScope.timeoutId = $timeout($rootScope.checkTimeout, constants.TIMEOUT_INTERVAL); //Wait another 5 sec to check again
       return true;
     }
 
@@ -142,14 +180,14 @@ angular.module('dashboard', [
   if (Config.serverParams.sessionTimeout && $location.host() != 'localhost') {
     $document.on("mousemove", function() {
       //For Desktop devices
-      persistSession();
+      $rootScope.persistSession();
     });
     $document.on("touchmove", function() {
       //For Mobile devices
-      persistSession();
+      $rootScope.persistSession();
     });
     $document.on("keydown", function() {
-      persistSession();
+      $rootScope.persistSession();
     });
   }
 

@@ -62,9 +62,6 @@ module.exports = {
       'vendor/lodash/dist/lodash.min.js',
       'vendor/jquery/dist/jquery.min.js',
       'vendor/jquery-ui/jquery-ui.min.js',
-      'vendor/ace-builds/src-min-noconflict/ace.js',
-      'vendor/ace-builds/src-min-noconflict/mode-json.js',
-      'vendor/ace-builds/src-min-noconflict/mode-html.js',
       'vendor/json-editor/dist/jsoneditor.js',
       "vendor/danialfarid-angular-file-upload/dist/angular-file-upload-shim.min.js", //Note: shim.js MUST BE PLACED BEFORE angular.js and angular-file-upload.js AFTER angular.js
       'vendor/angular/angular.js',
@@ -74,6 +71,8 @@ module.exports = {
       'vendor/angular-ui-select/dist/select.min.js',
       'vendor/angular-ui-sortable/sortable.min.js',
       'vendor/angular-ui-calendar/src/calendar.js',
+      'vendor/angular-ui-grid/ui-grid.js',
+      'vendor/ui-grid-draggable-rows/js/draggable-rows.js',
       'vendor/angular-grid/ng-grid-2.0.14.debug.js',
       'vendor/angular-grid/plugins/ng-grid-flexible-height.js',
       'vendor/angular-grid/plugins/ng-grid-csv-export.js',
@@ -88,7 +87,7 @@ module.exports = {
       'vendor/angular-google-chart/ng-google-chart.js',
       'vendor/moment/min/moment.min.js',
       'vendor/moment/min/moment-with-locales.js',
-      'vendor/fullcalendar/dist/fullcalendar.min.js',
+      'vendor/fullcalendar/dist/fullcalendar.js',
       'vendor/fullcalendar/dist/gcal.js',
       'vendor/eonasdan-bootstrap-datetimepicker/build/js/bootstrap-datetimepicker.min.js',
       'vendor/ng-slider/dist/ng-slider.min.js',
@@ -100,20 +99,22 @@ module.exports = {
       'vendor/ng-signature-pad/dist/ng-signature-pad.min.js',
       'vendor/angular-libphonenumber/dist/libphonenumber.js',
       'vendor/angular-libphonenumber/dist/angular-libphonenumber.js',
-      "vendor/angular-elastic/elastic.js",
-      "vendor/exif-js/exif.js"
+      'vendor/angular-elastic/elastic.js',
+      'vendor/angular-translate/angular-translate.js',
+      'vendor/angular-translate-loader-url/angular-translate-loader-url.js',
+      'vendor/exif-js/exif.js'
     ],
     css: [
-      'vendor/jquery-resizable-columns/dist/jquery.resizableColumns.css',
       'vendor/bootstrap/dist/css/bootstrap.css',
       'vendor/bootstrap/dist/css/bootstrap-theme.css',
       'vendor/angular-grid/ng-grid.min.css',
       'vendor/angular-ui-select/dist/select.min.css',
       'vendor/fullcalendar/dist/fullcalendar.css',
-      'vendor/bootstrap3-datetimepicker/build/css/bootstrap-datetimepicker.min.css',
       'vendor/eonasdan-bootstrap-datetimepicker/build/css/bootstrap-datetimepicker.min.css',
       'vendor/ng-slider/dist/css/ng-slider.min.css',
-      'vendor/spectrum/spectrum.css'
+      'vendor/spectrum/spectrum.css',
+      'vendor/angular-ui-grid/ui-grid.css',
+      'vendor/ui-grid-draggable-rows/draggable-rows.css'
     ],
     assets: [
       'vendor/bootstrap/fonts/glyphicons-halflings-regular.eot',
