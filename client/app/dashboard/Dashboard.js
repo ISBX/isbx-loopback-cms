@@ -110,7 +110,12 @@ angular.module('dashboard.Dashboard', [
           hideDelete: true
         }
     };
+    var key = 'user_profile.title';
     $scope.alertTitle = $translate.instant('user_profile.title');
+    if ($scope.alertTitle === key) {
+      // fallback if key has not translated
+      $scope.alertTitle = 'User Profile';
+    }
     $scope.modalInstance = $modal.open({
       templateUrl: 'app/dashboard/profile/Profile.html',
       controller: 'ProfileCtrl',
