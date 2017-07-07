@@ -120,17 +120,15 @@ angular.module('dashboard.directives.ModelFieldNumber', [])
           }
           if (scope.ngError) scope.ngError({error: null});
         }
-
       }
 
       /**
        * Takes two decimals as string and returns true if first is strictly larger than second
        * @param dec1 - string representation of decimal - decimal separated, must have leading 0 if absolute value less than 1
        * @param dec2 - string representation of decimal - decimal separated, must have leading 0 if absolute value less than 1
-       * @return true - if dec1 is strictly larger than dec2
        */
       function isFirstDecLarger(dec1, dec2) {
-        if (dec1 === undefined || dec2 === undefined || dec1 === "" || dec2 === "") return
+        if (dec1 === undefined || dec2 === undefined || dec1 === "" || dec2 === "") return;
         var dec1Components = dec1.split('.');
         var dec2Components = dec2.split('.');
         if (parseInt(dec1Components[0]) > parseInt(dec2Components[0])) {
@@ -139,8 +137,8 @@ angular.module('dashboard.directives.ModelFieldNumber', [])
           return false
         } else { /*equal so look at decimal spots */
           for (var i = 0; i < Math.max(dec1Components[1].length, dec2Components[1].length); i++) {
-            if (dec1Components[1].charAt(i) === undefined) dec1Components[1].charAt(i) = 0
-            if (dec2Components[1].charAt(i) === undefined) dec2Components[1].charAt(i) = 0
+            if (dec1Components[1].charAt(i) === '') dec1Components[1] += '0';
+            if (dec2Components[1].charAt(i) === '') dec2Components[1] += '0';
             if (parseInt(dec1Components[1].charAt(i)) > parseInt(dec2Components[1].charAt(i))) {
               return true
             } else if (parseInt(dec1Components[1].charAt(i)) < parseInt(dec2Components[1].charAt(i))) {
