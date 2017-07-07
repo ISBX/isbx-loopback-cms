@@ -57,7 +57,7 @@ angular.module('dashboard.directives.ModelFieldImage', [
           });
 
         scope.uploadStatus = "Upload File";
-        
+
         /**
          * scope.data updates async from controller so need to watch for the first change only
          */
