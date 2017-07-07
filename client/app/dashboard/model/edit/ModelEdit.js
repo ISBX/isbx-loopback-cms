@@ -27,7 +27,7 @@ angular.module('dashboard.Dashboard.Model.Edit', [
     ;
 })
 
-.controller('ModelEditCtrl', function ModelEditCtrl($rootScope, $scope, $cookies, $location, $stateParams, $state, $window, $modal, Config, GeneralModelService, FileUploadService, CacheService, $translate) {
+.controller('ModelEditCtrl', function ModelEditCtrl($rootScope, $scope, $cookies, $location, $stateParams, $state, $window, $modal, Config, GeneralModelService, FileUploadService, CacheService) {
   "ngInject";
 
   var modalInstance = null;
@@ -97,15 +97,7 @@ angular.module('dashboard.Dashboard.Model.Edit', [
     if (!Config.serverParams.strings) {
       Config.serverParams.strings = {};
     }
-    var translationBtnKeys = ['saveButton', 'deleteButton', 'deleteDiaglog'];
-    $translate(translationBtnKeys)
-      .then(function (translated) {
-        // If one of the key is missing, result will be the specified key inside translationBtnKeys
-        $scope.saveButtonText = translationBtnKeys.indexOf(translated['saveButton']) === -1 ? translated.saveButton : Config.serverParams.strings.saveButton;
-        $scope.deleteButtonText = translationBtnKeys.indexOf(translated['deleteButton']) === -1 ? translated.deleteButton : Config.serverParams.strings.deleteButton;
-        $scope.deleteDialogText = translationBtnKeys.indexOf(translated['deleteDiaglog']) === -1 ? translated.deleteDiaglog :
-          Config.serverParams.strings.deleteDiaglog ? Config.serverParams.strings.deleteDiaglog : "Are you sure you want to delete?";
-      });
+
     //for deprecation
     $scope.$on('saveModel', function() { $scope.clickSaveModel($scope.data); });
     $scope.$on('deleteModel', function(event, formParams) {
