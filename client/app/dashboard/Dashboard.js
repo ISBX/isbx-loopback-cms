@@ -126,7 +126,7 @@ angular.module('dashboard.Dashboard', [
       resolve: {
         formParams: function() {
           return {
-            preferredLanguage: 'es'
+            preferredLanguage: $scope.preferredLanguage
           }
         }
       }
