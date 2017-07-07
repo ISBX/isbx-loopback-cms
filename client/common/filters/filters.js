@@ -8,7 +8,7 @@ angular.module('dashboard.filters', [
 "ngInject";
 
   return function(number, scale) {
-    if (typeof number === 'undefined') return '';
+    if (typeof number === 'undefined' || number === '') return '';
     value = number + ''; //force into a string
     var indexOfDecimal = value.indexOf('.');
     if (indexOfDecimal === -1) value += '.0'; //no decimal so add it
