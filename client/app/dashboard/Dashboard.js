@@ -68,6 +68,10 @@ angular.module('dashboard.Dashboard', [
         }
       }
     }
+    $scope.locales = _.isEmpty(Config.serverParams.locales) ? {"ENG": "en"} : Config.serverParams.locales;
+    $scope.locale = $scope.locales[$scope.userInfo.user.languageCode];
+    if (!$scope.locale) $scope.locale = 'en';
+    self.injectLocaleLanguage($scope.locale);
 
     $scope.$watch(function() {
       return $location.path();
@@ -112,12 +116,6 @@ angular.module('dashboard.Dashboard', [
           hideDelete: true
         }
     };
-    $scope.locales = {
-      "ENG": "en",
-      "SPA": "es"
-    };
-    $scope.preferredLanguage = $scope.locales[$scope.userInfo.user.languageCode];
-    injectLocaleLanguage($scope.preferredLanguage);
     $scope.modalInstance = $modal.open({
       templateUrl: 'app/dashboard/profile/Profile.html',
       controller: 'ProfileCtrl',
@@ -126,7 +124,7 @@ angular.module('dashboard.Dashboard', [
       resolve: {
         formParams: function() {
           return {
-            preferredLanguage: $scope.preferredLanguage
+              locale: $scope.locale
           }
         }
       }
@@ -142,12 +140,13 @@ angular.module('dashboard.Dashboard', [
     if ($event) $event.preventDefault();
   };
 
-  function injectLocaleLanguage(language) {
+  this.injectLocaleLanguage = function(locale) {
     var properties = Config.serverParams.models.Account.properties;
-    _.filter(properties, { type: 'Date' })
-      .map(function(prop) {
+    _.filter(properties, function(prop) {
+      return (typeof prop.type == 'string' && prop.type.toLowerCase() == 'date');
+    }).map(function(prop) {
         if (prop.hasOwnProperty('display') && prop.display.hasOwnProperty('options')) {
-          prop.display.options.language = language;
+          prop.display.options.locale = locale;
         }
       });
   }
