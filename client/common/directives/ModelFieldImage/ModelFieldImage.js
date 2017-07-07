@@ -19,7 +19,7 @@ angular.module('dashboard.directives.ModelFieldImage', [
   };
 })
 
-.directive('modelFieldImageEdit', function($compile, $document, GeneralModelService, ImageService, SessionService, $timeout) {
+.directive('modelFieldImageEdit', function($compile, $document, GeneralModelService, ImageService, SessionService, $timeout, $translate) {
   "ngInject";
 
   return {
@@ -43,8 +43,21 @@ angular.module('dashboard.directives.ModelFieldImage', [
     link: function(scope, element, attrs) {
         var selectedFile = null;
 
-        scope.uploadStatus = "Upload File";
+        /**
+         * Set translation label
+         */
+        var translationBtnKeys = ['button.select_file', 'button.clear'];
+        $translate(translationBtnKeys)
+          .then(function (translated) {
+            // If one of the key is missing, result will be the specified key inside translationBtnKeys
+            var uploadBtnText = translationBtnKeys.indexOf(translated['button.select_file']) === -1 ? translated['button.select_file'] : 'Select File';
+            var clearBtnText = translationBtnKeys.indexOf(translated['button.clear']) === -1 ? translated['button.select_file'] : 'Clear';
+            angular.element(element).find('.upload-button').text(uploadBtnText);
+            angular.element(element).find('.clear-button').text(clearBtnText);
+          });
 
+        scope.uploadStatus = "Upload File";
+        
         /**
          * scope.data updates async from controller so need to watch for the first change only
          */
