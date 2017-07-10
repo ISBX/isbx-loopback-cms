@@ -50,73 +50,73 @@ angular.module('dashboard.directives.ModelField', [
     switch(type) {
       case 'reference':
         // depends on directive modelFieldReferenceEdit
-        template = '<label class="col-sm-2 control-label">{{ display.label || key }}:</label> \
+        template = '<label class="col-sm-2 control-label">{{ display.label || key | translate }}:</label> \
           <div class="col-sm-10"> \
             <model-field-reference-edit key="key" property="property" options="display.options" model-data="data" ng-model="data[key]" class="field" ng-required="{{ model.properties[key].required }}" ng-disabled="display.readonly"  /> \
-            <div class="model-field-description" ng-if="display.description">{{ display.description }}</div>\
+            <div class="model-field-description" ng-if="display.description">{{ display.description | translate }}</div>\
           </div> \
           <label class="col-sm-2 control-label"></label> \
           <div class="col-sm-10"> \
-            <div class="model-field-description" ng-if="display.description">{{ display.description }}</div>\
+            <div class="model-field-description" ng-if="display.description">{{ display.description | translate }}</div>\
           </div>';
         break;
       case 'reference-sort':
         // depends on directive modelFieldReferenceSortEdit
-        template = '<label class="col-sm-2 control-label">{{ display.label || key }}:</label> \
+        template = '<label class="col-sm-2 control-label">{{ display.label || key | translate }}:</label> \
           <div class="col-sm-10"> \
             <model-field-reference-sort-edit key="key" property="property" options="display.options" model-data="data" ng-model="data[key]" class="field" ng-required="{{ model.properties[key].required }}" ng-disabled="display.readonly"  /> \
-            <div class="model-field-description" ng-if="display.description">{{ display.description }}</div>\
+            <div class="model-field-description" ng-if="display.description">{{ display.description | translate }}</div>\
           </div> \
           <label class="col-sm-2 control-label"></label> \
           <div class="col-sm-10"> \
-            <div class="model-field-description" ng-if="display.description">{{ display.description }}</div>\
+            <div class="model-field-description" ng-if="display.description">{{ display.description | translate }}</div>\
           </div>';
         break;
       case 'list':
         // depends on directive modelFieldListEdit
-        template = '<label class="col-sm-2 control-label">{{ display.label || key }}:</label> \
+        template = '<label class="col-sm-2 control-label">{{ display.label || key | translate }}:</label> \
           <div class="col-sm-10"> \
             <model-field-list-edit key="key" property="property" options="display.options" model-data="data" ng-model="data[key]" class="field" ng-required="{{ model.properties[key].required }}" ng-disabled="display.readonly"  /> \
-            <div class="model-field-description" ng-if="display.description">{{ display.description }}</div>\
+            <div class="model-field-description" ng-if="display.description">{{ display.description | translate }}</div>\
           </div> \
           <label class="col-sm-2 control-label"></label> \
           <div class="col-sm-10"> \
-            <div class="model-field-description" ng-if="display.description">{{ display.description }}</div>\
+            <div class="model-field-description" ng-if="display.description">{{ display.description | translate }}</div>\
           </div>';
         break;
       case 'file':
         // depends on directive modelFieldFileEdit
-        template = '<label class="col-sm-2 control-label">{{ display.label || key }}:</label> \
+        template = '<label class="col-sm-2 control-label">{{ display.label || key | translate }}:</label> \
           <div class="col-sm-10"> \
             <model-field-file-edit key="key" options="display.options" ng-disabled="display.readonly" model-data="data" ng-model="data[key]" class="field" /> \
           </div> \
           <br /> \
           <label class="col-sm-2 control-label place-holder-file-label"></label> \
           <div class="col-sm-10"> \
-            <div class="model-field-description" ng-if="display.description">{{ display.description }}</div>\
+            <div class="model-field-description" ng-if="display.description">{{ display.description | translate }}</div>\
           </div>';
         break;
       case 'image':
         // depends on directive modelFieldImageEdit
-        template = '<label class="col-sm-2 control-label">{{ display.label || key }}:</label> \
+        template = '<label class="col-sm-2 control-label">{{ display.label || key | translate }}:</label> \
           <div class="col-sm-10"> \
             <model-field-image-edit key="key" options="display.options" ng-disabled="display.readonly" model-data="data" ng-model="data[key]" class="field" /> \
           </div>\
           <label class="col-sm-2 control-label"></label> \
           <div class="col-sm-10"> \
-            <div class="model-field-description" ng-if="display.description">{{ display.description }}</div>\
+            <div class="model-field-description" ng-if="display.description">{{ display.description | translate }}</div>\
           </div>';
         break;
       case 'video':
         // depends on directive modelFieldImageEdit
-        template = '<label class="col-sm-2 control-label">{{ display.label || key }}:</label> \
+        template = '<label class="col-sm-2 control-label">{{ display.label || key | translate }}:</label> \
           <div class="col-sm-10"> \
             <model-field-video-edit key="key" options="display.options" ng-disabled="display.readonly" model-data="data" ng-model="data[key]" class="field" /> \
-            <div class="model-field-description" ng-if="display.description">{{ display.description }}</div>\
+            <div class="model-field-description" ng-if="display.description">{{ display.description | translate }}</div>\
           </div>';
         break;
       case 'datetime':
-        template = '<label class="col-sm-2 control-label">{{ display.label || key }}:</label> \
+        template = '<label class="col-sm-2 control-label">{{ display.label || key | translate }}:</label> \
           <div class="col-sm-10"> \
             <p class="date-picker input-group"> \
               <input type="text" class="form-control" \
@@ -133,31 +133,31 @@ angular.module('dashboard.directives.ModelField', [
                 <button type="button" class="btn btn-default" ng-click="dateControl.show()" ng-disabled="{{ display.readonly }}"><i class="fa fa-calendar"></i></button> \
               </span>\
             </p> \
-            <div class="model-field-description" ng-if="display.description">{{ display.description }}</div>\
+            <div class="model-field-description" ng-if="display.description">{{ display.description | translate }}</div>\
           </div>';
         //<model-field-datetime-edit options="field.options" ng-model="data[field.name]" class="field" /> \
         break;
       case 'multi-select':
-        template = '<label class="col-sm-2 control-label">{{ display.label || key }}:</label>\
+        template = '<label class="col-sm-2 control-label">{{ display.label || key | translate }}:</label>\
           <div class="col-sm-10 multi-select">\
             <div class="select-item checkbox-container" ng-repeat="(itemKey, itemValue) in display.options">\
               <input type="checkbox" class="field" ng-attr-id="{{key+\'-\'+itemKey}}" ng-model="multiSelectOptions[itemKey]" ng-checked="multiSelectOptions[itemKey]" ng-disabled="{{ display.readonly }}" ng-change="clickMultiSelectCheckbox(key, itemKey, itemValue, multiSelectOptions)">\
               <label class="checkbox-label" ng-attr-for="{{key+\'-\'+itemKey}}">{{ itemValue }}</label>\
             </div>\
-            <div class="model-field-description" ng-if="display.description">{{ display.description }}</div>\
+            <div class="model-field-description" ng-if="display.description">{{ display.description | translate }}</div>\
           </div>';
         break;
       case 'select':
-        var ngOptions = 'key as value for (key, value) in display.options';
+        var ngOptions = 'key as (value | translate) for (key, value) in display.options';
         if (scope.property.display.options instanceof Array) {
           //Handle when options is a an array vs key/value pair
           ngOptions = 'value as value for value in display.options';
         }
         //NOTE: need to add empty <option> element to prevent weird AngularJS select issue when handling first selection
-        template = '<label class="col-sm-2 control-label">{{ display.label || key }}:</label>\
+        template = '<label class="col-sm-2 control-label">{{ display.label || key | translate }}:</label>\
           <div class="col-sm-10">\
             <select ng-model="data[key]" ng-options="'+ngOptions+'" ng-required="{{ model.properties[key].required }}" class="field form-control" ng-disabled="{{ display.readonly }}"><option value=""></option></select>\
-            <div class="model-field-description" ng-if="display.description">{{ display.description }}</div>\
+            <div class="model-field-description" ng-if="display.description">{{ display.description | translate }}</div>\
           </div>';
         break;
       case 'radio':
@@ -166,93 +166,93 @@ angular.module('dashboard.directives.ModelField', [
           //Handle when options is a an array vs key/value pair
           ngOptions = 'text in display.options';
         }
-        template = '<label class="col-sm-2 control-label">{{ display.label || key }}:</label>\
+        template = '<label class="col-sm-2 control-label">{{ display.label || key | translate }}:</label>\
           <div class="col-sm-10">\
             <label ng-repeat="'+ngOptions+'" class="radio"><input type="radio" ng-model="data[key]" ng-value="value || text" ng-disabled="{{ display.readonly }}" name="{{key}}"> {{text}}</label>\
-            <div class="model-field-description" ng-if="display.description">{{ display.description }}</div>\
+            <div class="model-field-description" ng-if="display.description">{{ display.description | translate }}</div>\
           </div>';
         break;
       case 'slider':
-        template = '<label class="col-sm-2 control-label">{{ display.label || key }}:</label>\
+        template = '<label class="col-sm-2 control-label">{{ display.label || key | translate }}:</label>\
           <div class="col-sm-10">\
             <input slider ng-model="data[key]" options="display.options" class="slider ng-isolate-scope ng-valid ng-hide ng-dirty"> \
-            <div class="model-field-description" ng-if="display.description">{{ display.description }}</div>\
+            <div class="model-field-description" ng-if="display.description">{{ display.description | translate }}</div>\
           </div>';
         break;
       case 'boolean':
         template = '<div class="col-sm-2"></div> \
           <div class="col-sm-10 checkbox-container">\
             <input type="checkbox" ng-attr-id="{{key}}" ng-model="data[key]" ng-checked="check(data, key)" class="field" ng-disabled="{{ display.readonly }}">\
-            <label class="checkbox-label" ng-attr-for="{{key}}">{{ display.label || key }}</label>\
-            <div class="model-field-description" ng-if="display.description">{{ display.description }}</div>\
+            <label class="checkbox-label" ng-attr-for="{{key}}">{{ display.label || key | translate }}</label>\
+            <div class="model-field-description" ng-if="display.description">{{ display.description | translate }}</div>\
           </div>';
         break;
       case 'password':
-        template = '<label class="col-sm-2 control-label">{{ display.label || key }}:</label>\
+        template = '<label class="col-sm-2 control-label">{{ display.label || key | translate }}:</label>\
           <div class="col-sm-10">\
             <input type="password" ng-model="data[key]" ng-pattern="display.pattern" ng-disabled="{{ display.readonly }}" ng-required="{{ model.properties[key].required }}" class="field form-control">\
-            <div class="model-field-description" ng-if="display.description">{{ display.description }}</div>\
+            <div class="model-field-description" ng-if="display.description">{{ display.description | translate }}</div>\
           </div>';
         break;
       case 'textarea':
-        template = '<label class="col-sm-2 control-label">{{ display.label || key }}:</label>\
+        template = '<label class="col-sm-2 control-label">{{ display.label || key | translate }}:</label>\
           <div class="col-sm-10">\
             <textarea msd-elastic ng-model="data[key]" ng-disabled="{{ display.readonly }}" ng-required="{{ model.properties[key].required }}" class="field form-control"></textarea>\
-            <div class="model-field-description" ng-if="display.description">{{ display.description }}</div>\
+            <div class="model-field-description" ng-if="display.description">{{ display.description | translate }}</div>\
           </div>';
         break;
       case 'wysiwyg':
       case 'WYSIWYG':
-        template = '<label class="col-sm-2 control-label">{{ display.label || key }}:</label>\
+        template = '<label class="col-sm-2 control-label">{{ display.label || key | translate }}:</label>\
           <div class="col-sm-10">\
             <model-field-wysiwyg-edit key="key" property="property" options="display.options" model-data="data" ng-model="data[key]" class="field" ng-required="{{ model.properties[key].required }}" ng-disabled="display.readonly"  /> \
-            <div class="model-field-description" ng-if="display.description">{{ display.description }}</div>\
+            <div class="model-field-description" ng-if="display.description">{{ display.description | translate }}</div>\
           </div>';
         break;
       case 'draw':
       case 'signature':
-        template = '<label class="col-sm-2 control-label">{{ display.label || key }}:</label>\
+        template = '<label class="col-sm-2 control-label">{{ display.label || key | translate }}:</label>\
           <div class="col-sm-10">\
             <model-field-canvas-edit key="key" property="property" options="display.options" ng-model="data[key]" class="field" ng-required="{{ model.properties[key].required }}" ng-disabled="display.readonly"></model-field-canvas-edit>\
-            <div class="model-field-description" ng-if="display.description">{{ display.description }}</div>\
+            <div class="model-field-description" ng-if="display.description">{{ display.description | translate }}</div>\
           </div>';
         break;
       case 'location':
-        template = '<label class="col-sm-2 control-label">{{ display.label || key }}:</label>\
+        template = '<label class="col-sm-2 control-label">{{ display.label || key | translate }}:</label>\
           <div class="col-sm-10">\
             <model-field-location-edit key="key" property="property" options="display.options" ng-model="data[key]" class="field" ng-required="{{ model.properties[key].required }}" ng-disabled="display.readonly"></model-field-location-edit>\
-            <div class="model-field-description" ng-if="display.description">{{ display.description }}</div>\
+            <div class="model-field-description" ng-if="display.description">{{ display.description | translate }}</div>\
           </div>';
         break;
       case 'poi':
       case 'POI':
-        template = '<label class="col-sm-2 control-label">{{ display.label || key }}:</label>\
+        template = '<label class="col-sm-2 control-label">{{ display.label || key | translate }}:</label>\
           <div class="col-sm-10">\
             <model-field-points-of-interest-edit key="key" property="property" options="display.options" ng-model="data[key]" class="field" ng-required="{{ model.properties[key].required }}" ng-disabled="display.readonly"></model-field-points-of-interest-edit>\
-            <div class="model-field-description" ng-if="display.description">{{ display.description }}</div>\
+            <div class="model-field-description" ng-if="display.description">{{ display.description | translate }}</div>\
           </div>';
         break;
       case 'number':
-        template = '<label class="col-sm-2 control-label">{{ display.label || key }}:</label>\
+        template = '<label class="col-sm-2 control-label">{{ display.label || key | translate }}:</label>\
           <div class="col-sm-10">\
             <input type="number" min="{{ display.minValue }}" max="{{ display.maxValue }}" ng-model="data[key]" ng-pattern="display.pattern" ng-disabled="{{ display.readonly }}" ng-required="{{ model.properties[key].required }}" class="field form-control">\
-            <div class="model-field-description" ng-if="display.description">{{ display.description }}</div>\
+            <div class="model-field-description" ng-if="display.description">{{ display.description | translate }}</div>\
           </div>';
         break;
       case 'phoneNumber':
-        template = '<label class="col-sm-2 control-label">{{ display.label || key }}:</label>\
+        template = '<label class="col-sm-2 control-label">{{ display.label || key | translate }}:</label>\
           <div class="col-sm-10">\
             <input type="hidden" ng-model="countrycode" value="{{ display.region }}" />\
             <input type="text" ng-model="data[key]" phone-number country-code="countrycode" ng-pattern="display.pattern" ng-disabled="{{ display.readonly }}" ng-required="{{ model.properties[key].required }}" class="field form-control">\
-            <div class="model-field-description" ng-if="display.description">{{ display.description }}</div>\
+            <div class="model-field-description" ng-if="display.description">{{ display.description | translate }}</div>\
           </div>';
         break;
       case 'text':
       default:
-        template = '<label class="col-sm-2 control-label">{{ display.label || key }}:</label>\
+        template = '<label class="col-sm-2 control-label">{{ display.label || key | translate }}:</label>\
           <div class="col-sm-10">\
             <input type="text" ng-model="data[key]" ng-pattern="display.pattern" ng-disabled="{{ display.readonly }}" ng-required="{{ model.properties[key].required }}" class="field form-control">\
-            <div class="model-field-description" ng-if="display.description">{{ display.description }}</div>\
+            <div class="model-field-description" ng-if="display.description">{{ display.description | translate }}</div>\
           </div>';
     }
     return template;
