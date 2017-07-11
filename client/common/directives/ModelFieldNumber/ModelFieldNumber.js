@@ -128,8 +128,8 @@ angular.module('dashboard.directives.ModelFieldNumber', [])
        * @param dec2 - string representation of decimal - decimal separated, must have leading 0 if absolute value less than 1
        */
       function isFirstDecLarger(dec1, dec2) {
-        dec1 = $filter('decimalWithScale')(dec1, property.display.scaleValue || 10);
-        dec2 = $filter('decimalWithScale')(dec2, property.display.scaleValue || 10);
+        dec1 = $filter('decimalWithScale')(dec1, property.display.scaleValue);
+        dec2 = $filter('decimalWithScale')(dec2, property.display.scaleValue);
         if (isNaN(dec1)|| isNaN(dec2)) return;
         var dec1Components = dec1.split('.');
         var dec2Components = dec2.split('.');
