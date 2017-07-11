@@ -136,13 +136,14 @@ angular.module('dashboard.directives.ModelFieldNumber', [])
         } else if (parseInt(dec1Components[0]) < parseInt(dec2Components[0])) {
           return false
         } else { /*equal so look at decimal spots */
+          var areBothPositive = (parseInt(dec1Components[0]) >= 0 && parseInt(dec2Components[0]) >= 0)
           for (var i = 0; i < Math.max(dec1Components[1].length, dec2Components[1].length); i++) {
             if (dec1Components[1].charAt(i) === '') dec1Components[1] += '0';
             if (dec2Components[1].charAt(i) === '') dec2Components[1] += '0';
             if (parseInt(dec1Components[1].charAt(i)) > parseInt(dec2Components[1].charAt(i))) {
-              return true
+              return areBothPositive;
             } else if (parseInt(dec1Components[1].charAt(i)) < parseInt(dec2Components[1].charAt(i))) {
-              return false
+              return !areBothPositive;
             }
           }
         }
