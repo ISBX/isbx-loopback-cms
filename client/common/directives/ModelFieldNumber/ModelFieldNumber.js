@@ -99,7 +99,7 @@ angular.module('dashboard.directives.ModelFieldNumber', [])
             return
           }
           if (property.display.maxValue !== undefined && isFirstDecLarger(e.target.value, property.display.maxValue)) {
-            if (scope.ngError) scope.ngError({error: new Error('Value is greater than the maximum allowed value1 (' + property.display.maxValue + ').')});
+            if (scope.ngError) scope.ngError({error: new Error('Value is greater than the maximum allowed value (' + property.display.maxValue + ').')});
             return
           }
           if (scope.ngError) scope.ngError({error: null});
