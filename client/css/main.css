@@ -212,7 +212,7 @@ model-field-video-edit .button-menu.hide-menu {
 }
 model-field-image-edit .upload-button,
 model-field-video-edit .upload-button {
-  width: 120px;
+  min-width: 120px;
 }
 model-field-image-edit .clear-button,
 model-field-video-edit .clear-button {
