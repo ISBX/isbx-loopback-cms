@@ -89,7 +89,7 @@ angular.module('dashboard.directives.ModelFieldNumber', [])
         if (property.display.allowDecimal === true) {
           var decimalString = $filter('decimalWithScale')(e.target.value, property.display.scaleValue);
           if (isNaN(decimalString) && scope.ngError) {
-            scope.ngError({error: new Error('Please enter a valid integer')});
+            scope.ngError({error: new Error('Please enter a valid number')});
             return
           } else {
             scope.data = decimalString; /*scope.data.scale is to handle parsing the field while scale data is being entered - formEdit */
@@ -105,7 +105,7 @@ angular.module('dashboard.directives.ModelFieldNumber', [])
           if (scope.ngError) scope.ngError({error: null});
         } else if (property.display.allowDecimal === false) { /*handle when don't allow decimals - needs to be explicitly implied*/
           if (isNaN(_.round(e.target.value)) || isNaN(parseInt(e.target.value))) {
-            if (scope.ngError) scope.ngError({error: new Error('Please enter a valid integer')});
+            if (scope.ngError) scope.ngError({error: new Error('Please enter a valid number')});
             return
           }
           var roundedValue = _.round(e.target.value, 0);
@@ -128,7 +128,9 @@ angular.module('dashboard.directives.ModelFieldNumber', [])
        * @param dec2 - string representation of decimal - decimal separated, must have leading 0 if absolute value less than 1
        */
       function isFirstDecLarger(dec1, dec2) {
-        if (dec1 === undefined || dec2 === undefined || dec1 === "" || dec2 === "") return;
+        dec1 = $filter('decimalWithScale')(dec1, property.display.scaleValue);
+        dec2 = $filter('decimalWithScale')(dec2, property.display.scaleValue);
+        if (isNaN(dec1)|| isNaN(dec2)) return;
         var dec1Components = dec1.split('.');
         var dec2Components = dec2.split('.');
         if (parseInt(dec1Components[0]) > parseInt(dec2Components[0])) {
