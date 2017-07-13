@@ -350,7 +350,10 @@ function cms(loopbackApplication, options) {
         accessToken: token,
         model: data.__model,
         property: data.__id ? 'updateAttributes' : 'create',
-        modelId: data.__id || null
+        modelId: data.__id || null,
+        remotingContext: {
+          req: req
+        }
       };
 
       function upsertData() {
