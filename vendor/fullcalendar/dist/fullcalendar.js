@@ -11025,6 +11025,7 @@ function EventManager() { // assumed to be a calendar
 		var res;
 
 		for (i=0; i<fetchers.length; i++) {
+			if (!rangeStart || !rangeEnd) continue; //fix clone of undefined error
 			res = fetchers[i].call(
 				t, // this, the Calendar object
 				source,
