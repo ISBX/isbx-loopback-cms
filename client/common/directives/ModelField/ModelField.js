@@ -383,6 +383,9 @@ angular.module('dashboard.directives.ModelField', [
 
           //Handle translating multi-select checks to scope.data[scope.key] output format
           scope.clickMultiSelectCheckbox = function(questionKey, itemKey, itemValue, multiSelectOptions) {
+            if (property.display.readonly) {
+              return;
+            }
             multiSelectOptions[itemKey] = !multiSelectOptions[itemKey];
             var output = property.display.output == "array" ? [] : property.display.output == "object" ? {} : "";
             if (property.display.output == "object") {
