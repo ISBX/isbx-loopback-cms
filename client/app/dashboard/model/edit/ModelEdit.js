@@ -27,7 +27,7 @@ angular.module('dashboard.Dashboard.Model.Edit', [
     ;
 })
 
-.controller('ModelEditCtrl', function ModelEditCtrl($rootScope, $scope, $cookies, $location, $stateParams, $state, $window, $modal, Config, GeneralModelService, FileUploadService, CacheService) {
+.controller('ModelEditCtrl', function ModelEditCtrl($rootScope, $scope, $cookies, $location, $stateParams, $state, $window, $modal, Config, GeneralModelService, FileUploadService, CacheService, $translate) {
   "ngInject";
 
   var modalInstance = null;
@@ -147,26 +147,31 @@ angular.module('dashboard.Dashboard.Model.Edit', [
         $rootScope.$broadcast('modelEditSaved');
         if (callback) callback(response);
       },
-      function(error) {
-        if (typeof error === 'object' && error.message) {
-          alert(error.message);
-        } else if (typeof error === 'object' && error.error && error.error.message) {
-          alert(error.error.message);
-        } else if (typeof error === 'object' && error.code) {
-          switch (error.code) {
-            case "ER_DUP_ENTRY": alert("There was a duplicate entry found. Please make sure the entry is unique."); break;
-          }
-        } else if (typeof error === 'object') {
-          alert(JSON.stringify(error));
-        } else {
-          alert(error);
-        }
-        if (modalInstance) modalInstance.close();
-      },
+      displayError,
       function(status) {
         if (status.message) $scope.status = status.message;
         if (status.progress) $scope.progress = status.progress;
       });
+  }
+
+  function displayError(error) {
+    if (typeof error === 'object') {
+      if (error.code) {
+        if (error.code === 'ER_DUP_ENTRY') error.message = "There was a duplicate entry found. Please make sure the entry is unique.";
+        var msg = $translate.instant(error.code);
+        if (msg === error.code) msg = error.message;
+        alert(msg);
+      } else if (error.message) {
+        alert(error.message);
+      } else if (error.error) {
+        displayError(error.error)
+      } else {
+        alert(angular.toJson(error))
+      }
+    } else {
+      alert(error);
+    }
+    if (modalInstance) modalInstance.close();
   }
 
 
