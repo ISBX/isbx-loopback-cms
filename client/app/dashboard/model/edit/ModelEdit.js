@@ -27,7 +27,20 @@ angular.module('dashboard.Dashboard.Model.Edit', [
     ;
 })
 
-.controller('ModelEditCtrl', function ModelEditCtrl($rootScope, $scope, $cookies, $location, $stateParams, $state, $window, $modal, Config, GeneralModelService, FileUploadService, CacheService, $translate) {
+.constant('modelEditConstants', {
+  'keys': {
+      'save': 'button.save',
+      'delete':'button.delete',
+      'confirmMessage':'button.delete.confirm'
+  },
+  'defaults': {
+      'save': 'Save',
+      'delete': 'Delete',
+      'confirmMessage': 'Are you sure you want to delete this record?'
+  }
+})
+
+.controller('ModelEditCtrl', function ModelEditCtrl($rootScope, $scope, $cookies, $location, $stateParams, $state, $window, $modal, Config, GeneralModelService, FileUploadService, CacheService, modelEditConstants, $translate) {
   "ngInject";
 
   var modalInstance = null;
@@ -93,14 +106,17 @@ angular.module('dashboard.Dashboard.Model.Edit', [
       $scope.isLoading = false;
     }
 
-    //Load Strings
-    if (!Config.serverParams.strings) {
-      Config.serverParams.strings = {};
-    }
-    $scope.saveButtonText = Config.serverParams.strings.saveButton;
-    $scope.deleteButtonText = Config.serverParams.strings.deleteButton;
-    $scope.deleteDialogText = Config.serverParams.strings.deleteDiaglog ? Config.serverParams.strings.deleteDiaglog : "Are you sure you want to delete?";
 
+    $translate([modelEditConstants.keys.save, modelEditConstants.keys.delete, modelEditConstants.keys.confirmMessage])
+      .then(function (translated) { // If translation fails or errors, use default strings
+        $scope.saveButtonText = (translated[modelEditConstants.keys.save]==modelEditConstants.keys.save) ? modelEditConstants.defaults.save:translated[modelEditConstants.keys.save];
+        $scope.deleteButtonText = (translated[modelEditConstants.keys.delete]==modelEditConstants.keys.delete) ? modelEditConstants.defaults.delete:translated[modelEditConstants.keys.delete];
+        $scope.deleteDialogText = (translated[modelEditConstants.keys.confirmMessage]==modelEditConstants.keys.confirmMessage) ? modelEditConstants.defaults.confirmMessage:translated[modelEditConstants.keys.confirmMessage];
+      }, function(transId) {
+        $scope.saveButtonText = modelEditConstants.defaults.save;
+        $scope.deleteButtonText = modelEditConstants.defaults.delete;
+        $scope.deleteDialogText = modelEditConstants.defaults.confirmMessage;
+      });
     //for deprecation
     $scope.$on('saveModel', function() { $scope.clickSaveModel($scope.data); });
     $scope.$on('deleteModel', function(event, formParams) {
