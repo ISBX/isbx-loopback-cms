@@ -65,6 +65,7 @@ module.exports = {
       'vendor/json-editor/dist/jsoneditor.js',
       "vendor/danialfarid-angular-file-upload/dist/angular-file-upload-shim.min.js", //Note: shim.js MUST BE PLACED BEFORE angular.js and angular-file-upload.js AFTER angular.js
       'vendor/angular/angular.js',
+      'vendor/angular-animate/angular-animate.js',
       "vendor/danialfarid-angular-file-upload/dist/angular-file-upload.min.js",
       'vendor/angular-ui-router/release/angular-ui-router.js',
       'vendor/angular-ui-utils/ui-utils.js',
@@ -78,8 +79,8 @@ module.exports = {
       'vendor/angular-grid/plugins/ng-grid-csv-export.js',
       'vendor/angular-sanitize/angular-sanitize.min.js',
       'vendor/angular-cookies/angular-cookies.js',
-      'vendor/angular-bootstrap/ui-bootstrap.min.js',
-      'vendor/angular-bootstrap/ui-bootstrap-tpls.min.js',
+      'vendor/angular-bootstrap/ui-bootstrap.js',
+      'vendor/angular-bootstrap/ui-bootstrap-tpls.js',
       'vendor/bootstrap/js/modal.js',
       'vendor/bootstrap/js/collapse.js',
       'vendor/bootstrap/js/transition.js',

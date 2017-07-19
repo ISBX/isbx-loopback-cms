@@ -11,6 +11,7 @@ angular.module('dashboard', [
   'ui.router',
   'oc.lazyLoad',
   'ngCookies',
+  'ngAnimate',
   'pascalprecht.translate'
 ])
 

@@ -27,7 +27,20 @@ angular.module('dashboard.Dashboard.Model.Edit', [
     ;
 })
 
-.controller('ModelEditCtrl', function ModelEditCtrl($rootScope, $scope, $cookies, $location, $stateParams, $state, $window, $modal, Config, GeneralModelService, FileUploadService, CacheService) {
+.constant('modelEditConstants', {
+  'keys': {
+      'save': 'button.save',
+      'delete':'button.delete',
+      'confirmMessage':'button.delete.confirm'
+  },
+  'defaults': {
+      'save': 'Save',
+      'delete': 'Delete',
+      'confirmMessage': 'Are you sure you want to delete this record?'
+  }
+})
+
+.controller('ModelEditCtrl', function ModelEditCtrl($rootScope, $scope, $cookies, $location, $stateParams, $state, $window, $modal, Config, GeneralModelService, FileUploadService, CacheService, modelEditConstants, $translate) {
   "ngInject";
 
   var modalInstance = null;
@@ -93,14 +106,17 @@ angular.module('dashboard.Dashboard.Model.Edit', [
       $scope.isLoading = false;
     }
 
-    //Load Strings
-    if (!Config.serverParams.strings) {
-      Config.serverParams.strings = {};
-    }
-    $scope.saveButtonText = Config.serverParams.strings.saveButton;
-    $scope.deleteButtonText = Config.serverParams.strings.deleteButton;
-    $scope.deleteDialogText = Config.serverParams.strings.deleteDiaglog ? Config.serverParams.strings.deleteDiaglog : "Are you sure you want to delete?";
 
+    $translate([modelEditConstants.keys.save, modelEditConstants.keys.delete, modelEditConstants.keys.confirmMessage])
+      .then(function (translated) { // If translation fails or errors, use default strings
+        $scope.saveButtonText = (translated[modelEditConstants.keys.save]==modelEditConstants.keys.save) ? modelEditConstants.defaults.save:translated[modelEditConstants.keys.save];
+        $scope.deleteButtonText = (translated[modelEditConstants.keys.delete]==modelEditConstants.keys.delete) ? modelEditConstants.defaults.delete:translated[modelEditConstants.keys.delete];
+        $scope.deleteDialogText = (translated[modelEditConstants.keys.confirmMessage]==modelEditConstants.keys.confirmMessage) ? modelEditConstants.defaults.confirmMessage:translated[modelEditConstants.keys.confirmMessage];
+      }, function(transId) {
+        $scope.saveButtonText = modelEditConstants.defaults.save;
+        $scope.deleteButtonText = modelEditConstants.defaults.delete;
+        $scope.deleteDialogText = modelEditConstants.defaults.confirmMessage;
+      });
     //for deprecation
     $scope.$on('saveModel', function() { $scope.clickSaveModel($scope.data); });
     $scope.$on('deleteModel', function(event, formParams) {
@@ -147,26 +163,32 @@ angular.module('dashboard.Dashboard.Model.Edit', [
         $rootScope.$broadcast('modelEditSaved');
         if (callback) callback(response);
       },
-      function(error) {
-        if (typeof error === 'object' && error.message) {
-          alert(error.message);
-        } else if (typeof error === 'object' && error.error && error.error.message) {
-          alert(error.error.message);
-        } else if (typeof error === 'object' && error.code) {
-          switch (error.code) {
-            case "ER_DUP_ENTRY": alert("There was a duplicate entry found. Please make sure the entry is unique."); break;
-          }
-        } else if (typeof error === 'object') {
-          alert(JSON.stringify(error));
-        } else {
-          alert(error);
-        }
-        if (modalInstance) modalInstance.close();
-      },
+      displayError,
       function(status) {
         if (status.message) $scope.status = status.message;
         if (status.progress) $scope.progress = status.progress;
       });
+  }
+
+  function displayError(error) {
+    if (typeof error === 'object') {
+      if (error.code) {
+        if (error.code === 'ER_DUP_ENTRY') error.message = "There was a duplicate entry found. Please make sure the entry is unique.";
+        var msg = error.message;
+        if (error.translate) msg = $translate.instant(error.translate);
+        if (msg === error.translate) msg = error.message; //if no translation then display english message
+        alert(msg);
+      } else if (error.message) {
+        alert(error.message);
+      } else if (error.error) {
+        displayError(error.error)
+      } else {
+        alert(angular.toJson(error))
+      }
+    } else {
+      alert(error);
+    }
+    if (modalInstance) modalInstance.close();
   }
 
 

@@ -19,15 +19,15 @@ angular.module('dashboard.directives.ModelFieldImage', [
   };
 })
 
-.directive('modelFieldImageEdit', function($compile, $document, GeneralModelService, ImageService, SessionService, $timeout) {
+.directive('modelFieldImageEdit', function($compile, $document, GeneralModelService, ImageService, SessionService, $timeout, $translate) {
   "ngInject";
 
   return {
     restrict: 'E',
     template: '<div class="image-container" style="background: no-repeat center center url(\'{{ thumbnailUrl }}\'); background-size: contain;" ng-click="imageClick()"></div> \
       <div class="button-menu show-menu">\
-      <button class="btn btn-default upload-button" ng-hide="disabled">Select File</button> \
-      <button class="btn btn-default clear-button" ng-show="imageUrl && !disabled" ng-click="clear()">Clear</button> \
+      <button class="btn btn-default upload-button" ng-hide="disabled">{{ selectFileButtonText }}</button> \
+      <button class="btn btn-default clear-button" ng-show="imageUrl && !disabled" ng-click="clear()">{{ clearButtonText }}</button> \
       </div> \
       <div ng-file-drop="onFileSelect($files)" ng-file-drag-over-class="optional-css-class-name-or-function" ng-show="dropSupported && !disabled" class="image-drop">{{ uploadStatus }}</div> \
       <div ng-file-drop-available="dropSupported=true" ng-show="!dropSupported">HTML5 Drop File is not supported!</div> \
@@ -42,6 +42,21 @@ angular.module('dashboard.directives.ModelFieldImage', [
     },
     link: function(scope, element, attrs) {
         var selectedFile = null;
+
+        // Set translation label
+        scope.selectFileButtonText = 'Select File';
+        scope.clearButtonText = 'Clear';
+        var translationBtnKeys = ['button.select_file', 'button.clear'];
+        $translate(translationBtnKeys)
+          .then(function (translated) {
+            // If one of the key is missing, result will be the specified key inside translationBtnKeys
+            if (translationBtnKeys.indexOf(translated['button.select_file']) === -1) {
+              scope.selectFileButtonText = translated['button.select_file'];
+            }
+            if (translationBtnKeys.indexOf(translated['button.clear']) === -1) {
+              scope.clearButtonText = translated['button.clear'];
+            }
+          });
 
         scope.uploadStatus = "Upload File";
 
