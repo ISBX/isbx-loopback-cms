@@ -52,7 +52,7 @@ angular.module('dashboard.Dashboard', [
       //Fail elegantly 
       console.error("Unable to parse $cookies.get(session)", e);
     }
-    console.log('DashboardCtrl: $scope.userInfo', $scope.userInfo);
+    // console.log('DashboardCtrl: $scope.userInfo', $scope.userInfo);
     $scope.title = Config.serverParams.title || 'Content Management System';
     $scope.nav = DashboardService.getNavigation();
 
@@ -68,10 +68,6 @@ angular.module('dashboard.Dashboard', [
         }
       }
     }
-    $scope.locales = _.isEmpty(Config.serverParams.locales) ? {"ENG": "en"} : Config.serverParams.locales;
-    $scope.locale = $scope.locales[$scope.userInfo.user.languageCode];
-    if (!$scope.locale) $scope.locale = 'en';
-    self.injectLocaleLanguage($scope.locale);
 
     $scope.$watch(function() {
       return $location.path();
@@ -120,14 +116,7 @@ angular.module('dashboard.Dashboard', [
       templateUrl: 'app/dashboard/profile/Profile.html',
       controller: 'ProfileCtrl',
       size: "lg",
-      scope: $scope,
-      resolve: {
-        formParams: function() {
-          return {
-              locale: $scope.locale
-          }
-        }
-      }
+      scope: $scope
     });
   };
 
@@ -139,17 +128,6 @@ angular.module('dashboard.Dashboard', [
     $rootScope.logOut();
     if ($event) $event.preventDefault();
   };
-
-  this.injectLocaleLanguage = function(locale) {
-    var properties = Config.serverParams.models.Account.properties;
-    _.filter(properties, function(prop) {
-      return (typeof prop.type == 'string' && prop.type.toLowerCase() == 'date');
-    }).map(function(prop) {
-        if (prop.hasOwnProperty('display') && prop.display.hasOwnProperty('options')) {
-          prop.display.options.locale = locale;
-        }
-      });
-  }
   
   self.init();
 })
