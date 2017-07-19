@@ -38,16 +38,16 @@ var awsConfig;
 function getS3Credentials(path, fileType, callback) {
   var acceptableFileTypes = awsConfig.s3.path[path];
   if (!acceptableFileTypes) {
-    callback({code: 'cms.error.aws.invalid_path', message: "Invalid path value"});
+    callback({translate: 'cms.error.aws.invalid_path', message: "Invalid path value"});
     return;
   }
   if (fileType == undefined || fileType == null) {
-    callback({code: 'cms.error.aws.no_filetype', message: "Please provide a fileType"});
+    callback({translate: 'cms.error.aws.no_filetype', message: "Please provide a fileType"});
     return;
   }
   var fileExtension = acceptableFileTypes[fileType];
   if (!fileExtension) {
-    callback({code: 'cms.error.aws.invalid_filetype', message: "Invalid fileType for path"});
+    callback({translate: 'cms.error.aws.invalid_filetype', message: "Invalid fileType for path"});
     return;
   } 
   var expirationLength = 900; //15min
