@@ -18,7 +18,7 @@ angular.module('dashboard.directives.ModelFieldFile', [
   };
 })
 
-.directive('modelFieldFileEdit', function($compile, $document, $window, GeneralModelService, SessionService) {
+.directive('modelFieldFileEdit', function($compile, $document, $window, GeneralModelService, SessionService, $translate) {
   "ngInject";
 
   return {
