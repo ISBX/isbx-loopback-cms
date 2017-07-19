@@ -222,6 +222,10 @@
 .model-list .grid.search {
   top: 90px;
 }
+model-field-image-edit .upload-button,
+model-field-video-edit .upload-button {
+  min-width: 120px;
+}
 .model-list .grid.search .ngHeaderButton {
   display: none;
 }
