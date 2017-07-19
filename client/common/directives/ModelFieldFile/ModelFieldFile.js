@@ -23,7 +23,7 @@ angular.module('dashboard.directives.ModelFieldFile', [
 
   return {
     restrict: 'E',
-    template: '<button class="btn btn-default select-file" ng-hide="disabled">Select File</button> \
+    template: '<button class="btn btn-default select-file" ng-hide="disabled">{{ selectFileButtonText }}</button> \
       <input type="file" ng-file-select="onFileSelect($files)" ng-hide="disabled"> \
       <button ng-if="filename" class="btn btn-danger fa fa-trash" ng-click="clear($event)" ng-hide="disabled"></button> \
       <span class="file-upload-info" ng-if="filename"><i class="fa {{getFileIcon(filename)}}"></i>&nbsp;&nbsp;{{ filename }}&nbsp;&nbsp;<span ng-if="fileUrl">(<a href="{{fileUrl}}">download</a><span ng-if="previewUrl"> | <a target="_blank" href="{{previewUrl}}">preview</a></span>)</span></span> \
@@ -37,7 +37,19 @@ angular.module('dashboard.directives.ModelFieldFile', [
     },
     link: function(scope, element, attrs) {
 
-        /**
+      scope.selectFileButtonText = 'Select File';
+      scope.clearButtonText = 'Clear';
+      var translationBtnKeys = ['button.select_file'];
+      $translate(translationBtnKeys)
+        .then(function (translated) {
+          // If one of the key is missing, result will be the specified key inside translationBtnKeys
+          if (translationBtnKeys.indexOf(translated['button.select_file']) === -1) {
+            scope.selectFileButtonText = translated['button.select_file'];
+          }
+        });
+
+
+      /**
          * scope.data updates async from controller so need to watch for the first change only
          */
         var unwatch = scope.$watch('data', function(data) {

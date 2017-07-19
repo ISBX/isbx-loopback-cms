@@ -222,10 +222,6 @@
 .model-list .grid.search {
   top: 90px;
 }
-model-field-image-edit .upload-button,
-model-field-video-edit .upload-button {
-  min-width: 120px;
-}
 .model-list .grid.search .ngHeaderButton {
   display: none;
 }
@@ -1134,7 +1130,7 @@ model-field-video-edit .button-menu.hide-menu {
 }
 model-field-image-edit .upload-button,
 model-field-video-edit .upload-button {
-  width: 120px;
+  min-width: 120px;
 }
 model-field-image-edit .clear-button,
 model-field-video-edit .clear-button {
