@@ -148,6 +148,7 @@ angular.module('dashboard.Dashboard.Model.Edit', [
         if (callback) callback(response);
       },
       function(error) {
+        $rootScope.$broadcast('modelEditSaveFailed', { error: error });
         if (typeof error === 'object' && error.message) {
           alert(error.message);
         } else if (typeof error === 'object' && error.error && error.error.message) {
