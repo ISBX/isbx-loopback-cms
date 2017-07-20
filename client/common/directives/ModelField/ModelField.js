@@ -440,6 +440,13 @@ angular.module('dashboard.directives.ModelField', [
           }
         }, true);
 
+        scope.$watch('model.properties[key].display', function(newValue, oldValue) {
+          // if the schema changes, we need to rerender
+          if (newValue !== oldValue) {
+            performLink();
+          }
+        });
+
         performLink();
     }
   };
