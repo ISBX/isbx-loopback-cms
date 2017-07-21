@@ -33,9 +33,6 @@ angular.module('dashboard.directive.DateTimePicker', [
         
         scope.defaultDate = scope.defaultDate ? scope.defaultDate.replace(/"/g, '') : scope.defaultDate; //remove quotes  
         
-        // always force the model value = defaultDate to fix timezone issues
-        if (scope.defaultDate) ngModel.$setViewValue(moment(scope.defaultDate, scope.format));
-
         //Bind the Element
         elem.datetimepicker({
           format: scope.format,
