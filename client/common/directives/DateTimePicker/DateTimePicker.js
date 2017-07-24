@@ -59,7 +59,17 @@ angular.module('dashboard.directive.DateTimePicker', [
         //On Blur update the ng-model
         elem.on('blur', function () {
           if (!scope.format) scope.format = scope.ngFormat;
-          var dateValue = moment(elem.val(), scope.format);
+          if (scope.locale) moment.locale(scope.locale);
+          var value = elem.val();
+          if (value && scope.format && scope.format.indexOf('DD-MMM-YYYY') > -1 && scope.locale === 'es') {
+            //Hack to fix spanish date parsing via Spanish for DD-MMM-YYYY format as
+            //Spanish uses period abbreviation for MMM
+            var dateComponents = value.split('-');
+            if (dateComponents.length === 3) {
+              value = dateComponents[0] + '-' + dateComponents[1] + '.-' + dateComponents[2];
+            }
+          }
+          var dateValue = moment(value, scope.format);
           if (dateValue.isValid()) {
             ngModel.$setViewValue(dateValue);
           } else {
