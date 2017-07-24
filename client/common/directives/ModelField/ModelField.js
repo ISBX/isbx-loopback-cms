@@ -125,7 +125,8 @@ angular.module('dashboard.directives.ModelField', [
             <div class="error-message" ng-if="display.error.length > 0">{{ display.error }}</div>\
             <p class="date-picker input-group"> \
               <input type="text" class="form-control" \
-              control="dateControl" \
+              control="dateControl"\
+              locale="{{ display.options.locale }}"\
               min-date="{{ display.minDate }}" \
               max-date="{{ display.maxDate }}" \
               ng-model="data[key]" \

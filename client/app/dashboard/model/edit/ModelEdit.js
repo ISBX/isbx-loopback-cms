@@ -45,7 +45,6 @@ angular.module('dashboard.Dashboard.Model.Edit', [
 
   var modalInstance = null;
   function init() {
-
     $scope.hideSideMenu();
     if ($window.ga) $window.ga('send', 'pageview', { page: $location.path() });
 
@@ -70,6 +69,23 @@ angular.module('dashboard.Dashboard.Model.Edit', [
         $scope.model.properties[key].display.readonly = true;
       }
     }
+
+    initializeLocales();
+    _.forEach($scope.model.properties, function(property) {
+      if (!property.display) property.display = {};
+      if (!property.display.options) property.display.options = {};
+      if($scope.action.options.readonly) {//Check if readonly view
+        property.display.readonly = true;
+      }
+      if (typeof property.type === 'string') {
+        switch (property.type.toLowerCase()) {
+            case 'date':
+            case 'datetime':
+              property.display.options.locale = $scope.locale;
+              break;
+        }
+      }
+    });
 
     $scope.isLoading = true;
     $scope.data = {};
@@ -132,6 +148,13 @@ angular.module('dashboard.Dashboard.Model.Edit', [
       //trigger change event only after model has been loaded and actual change was detected
       $scope.$emit('onModelChange', { newData: newData, oldData: oldData });
     }, true);
+  }
+
+  function initializeLocales() {
+    $scope.locales = _.isEmpty(Config.serverParams.locales) ? {"ENG": "en"} : Config.serverParams.locales;
+    var languageCode = $translate.use();//retrieve currently used language key
+    $scope.locale = $scope.locales[languageCode];
+    if (!$scope.locale) $scope.locale = 'en';
   }
 
   function layoutModelDisplay() {
