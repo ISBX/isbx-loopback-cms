@@ -182,13 +182,12 @@ angular.module('dashboard.Dashboard.Model.Edit', [
 
   function displayError(error) {
     if (typeof error === 'object') {
-      if (error.code) {
-        if (error.code === 'ER_DUP_ENTRY') error.message = "There was a duplicate entry found. Please make sure the entry is unique.";
-        var msg = error.message;
-        if (error.translate) msg = $translate.instant(error.translate);
+      if (error.translate) {
+        var msg = $translate.instant(error.translate);
         if (msg === error.translate) msg = error.message; //if no translation then display english message
         alert(msg);
-      } else if (error.message) {
+      } else if (error.code || error.message) {
+        if (error.code === 'ER_DUP_ENTRY') error.message = "There was a duplicate entry found. Please make sure the entry is unique.";
         alert(error.message);
       } else if (error.error) {
         displayError(error.error)
