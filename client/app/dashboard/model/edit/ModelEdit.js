@@ -5,6 +5,7 @@ angular.module('dashboard.Dashboard.Model.Edit', [
   'dashboard.services.Cache',
   'dashboard.services.GeneralModel',
   'dashboard.services.FileUpload',
+  'dashboard.filters.locale',
   'ui.router',
   'ui.bootstrap',
   'ui.bootstrap.datepicker',
@@ -40,7 +41,7 @@ angular.module('dashboard.Dashboard.Model.Edit', [
   }
 })
 
-.controller('ModelEditCtrl', function ModelEditCtrl($rootScope, $scope, $cookies, $location, $stateParams, $state, $window, $modal, Config, GeneralModelService, FileUploadService, CacheService, modelEditConstants, $translate) {
+.controller('ModelEditCtrl', function ModelEditCtrl($rootScope, $scope, $cookies, $location, $stateParams, $state, $window, $modal, $filter, Config, GeneralModelService, FileUploadService, CacheService, modelEditConstants, $translate) {
   "ngInject";
 
   var modalInstance = null;
@@ -60,17 +61,10 @@ angular.module('dashboard.Dashboard.Model.Edit', [
       $scope.model.properties[key].display.readonly = true;
     }
 
-    //Check if readonly view
-    if ($scope.action.options.readonly) {
-      var keys = Object.keys($scope.model.properties);
-      for (var i in keys) {
-        var key = keys[i];
-        if (!$scope.model.properties[key].display) $scope.model.properties[key].display = {};
-        $scope.model.properties[key].display.readonly = true;
-      }
-    }
+    //Get locale
+    var languageCode = $translate.use();//retrieve currently used language key
+    $scope.locale = $filter('iso-639-1')(languageCode); //convert ISO 639-2 to 639-1 for datetime
 
-    initializeLocales();
     _.forEach($scope.model.properties, function(property) {
       if (!property.display) property.display = {};
       if (!property.display.options) property.display.options = {};
@@ -148,13 +142,6 @@ angular.module('dashboard.Dashboard.Model.Edit', [
       //trigger change event only after model has been loaded and actual change was detected
       $scope.$emit('onModelChange', { newData: newData, oldData: oldData });
     }, true);
-  }
-
-  function initializeLocales() {
-    $scope.locales = _.isEmpty(Config.serverParams.locales) ? {"ENG": "en"} : Config.serverParams.locales;
-    var languageCode = $translate.use();//retrieve currently used language key
-    $scope.locale = $scope.locales[languageCode];
-    if (!$scope.locale) $scope.locale = 'en';
   }
 
   function layoutModelDisplay() {
