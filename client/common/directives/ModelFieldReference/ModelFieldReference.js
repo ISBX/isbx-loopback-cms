@@ -21,7 +21,7 @@ angular.module('dashboard.directives.ModelFieldReference', [
   };
 })
 
-.directive('modelFieldReferenceEdit', function($compile, $cookies, Config, GeneralModelService) {
+.directive('modelFieldReferenceEdit', function($compile, $cookies, Config, GeneralModelService, $timeout) {
   "ngInject";
 
   function getTemplate(multiple, matchTemplate, choiceTemplate) {
@@ -271,7 +271,8 @@ angular.module('dashboard.directives.ModelFieldReference', [
            mergeArray(scope.selected.items, scope.modelData[scope.options.relationship]);
          } else {
            scope.modelData[scope.options.relationship] = scope.selected.items;
-         }
+         } 
+         element.removeClass('ng-invalid');
        } else {
          //For single record reference just assign the ID back to data
          scope.data = item[scope.options.key];
@@ -335,7 +336,12 @@ angular.module('dashboard.directives.ModelFieldReference', [
              var where = {};
              where[scope.options.key] = item[scope.options.key];
              var index = _.findIndex(scope.modelData[scope.options.relationship], where);
-             if (index > -1) scope.modelData[scope.options.relationship].splice(index, 1);
+             if (index > -1) {
+               scope.modelData[scope.options.relationship].splice(index, 1);
+               if (scope.selected.items.length == 0) {
+                 element.addClass('ng-invalid');
+               }
+             }
            }
            //Look for direct reference match
            var index = scope.modelData[scope.options.relationship].indexOf(item);
