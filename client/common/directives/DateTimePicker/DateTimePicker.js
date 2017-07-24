@@ -26,6 +26,12 @@ angular.module('dashboard.directive.DateTimePicker', [
         if (!scope.format) scope.format = scope.ngFormat;
         if (!scope.viewMode) scope.viewMode = scope.ngViewMode;
 
+        if (scope.format && scope.format.indexOf('DD-MMM-YYYY') > -1 && scope.locale === 'es') {
+          //Hack to fix spanish date parsing via Spanish for DD-MMM-YYYY format as
+          //Spanish uses period abbreviation for MMM
+          scope.format = scope.format.replace('DD-MMM-', 'DD MMM ');
+        }
+
         ngModel.$formatters.push(function(value) {
           //Format the passed in date
           if (!scope.format) scope.format = scope.ngFormat;
@@ -60,16 +66,7 @@ angular.module('dashboard.directive.DateTimePicker', [
         elem.on('blur', function () {
           if (!scope.format) scope.format = scope.ngFormat;
           if (scope.locale) moment.locale(scope.locale);
-          var value = elem.val();
-          if (value && scope.format && scope.format.indexOf('DD-MMM-YYYY') > -1 && scope.locale === 'es') {
-            //Hack to fix spanish date parsing via Spanish for DD-MMM-YYYY format as
-            //Spanish uses period abbreviation for MMM
-            var dateComponents = value.split('-');
-            if (dateComponents.length === 3) {
-              value = dateComponents[0] + '-' + dateComponents[1] + '.-' + dateComponents[2];
-            }
-          }
-          var dateValue = moment(value, scope.format);
+          var dateValue = moment(elem.val(), scope.format);
           if (dateValue.isValid()) {
             ngModel.$setViewValue(dateValue);
           } else {
