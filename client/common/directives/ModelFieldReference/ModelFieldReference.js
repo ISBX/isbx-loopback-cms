@@ -67,7 +67,7 @@ angular.module('dashboard.directives.ModelFieldReference', [
       scope.list = [];
 
       scope.$watch('selected.items', function(newValue, oldValue) {
-        if (scope.property.display.required && newValue.length === 0) {
+        if (scope.property.display.required && newValue && newValue.length === 0) {
           element.addClass('ng-invalid');
         }
         if (newValue.length > 0) {
