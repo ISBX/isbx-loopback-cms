@@ -1008,10 +1008,14 @@ model-field-edit .error-message:after {
 }
 model-field-reference-edit {
   display: block;
+  height: 36px;
   border-radius: 4px;
 }
 model-field-reference-edit .close {
   padding-top: 2px;
+}
+model-field-reference-edit .ui-select-multiple.ui-select-bootstrap {
+  height: 33px;
 }
 model-field-file-edit button.select-file {
   width: 120px;
