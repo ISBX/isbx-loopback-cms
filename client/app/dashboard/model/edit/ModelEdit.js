@@ -174,21 +174,17 @@ angular.module('dashboard.Dashboard.Model.Edit', [
         if (callback) callback(response);
       },
       displayError,
-      function(status) {
-        if (status.message) $scope.status = status.message;
-        if (status.progress) $scope.progress = status.progress;
-      });
+      displayStatus);
   }
 
   function displayError(error) {
-    if (typeof error === 'object') {
-      if (error.code) {
-        if (error.code === 'ER_DUP_ENTRY') error.message = "There was a duplicate entry found. Please make sure the entry is unique.";
-        var msg = error.message;
-        if (error.translate) msg = $translate.instant(error.translate);
+    if (_.isPlainObject(error)) {
+      if (typeof error.translate === 'string' && error.translate.length > 0) {
+        var msg = $translate.instant(error.translate);
         if (msg === error.translate) msg = error.message; //if no translation then display english message
         alert(msg);
-      } else if (error.message) {
+      } else if (error.code || error.message) {
+        if (error.code === 'ER_DUP_ENTRY') error.message = "There was a duplicate entry found. Please make sure the entry is unique.";
         alert(error.message);
       } else if (error.error) {
         displayError(error.error)
@@ -201,13 +197,20 @@ angular.module('dashboard.Dashboard.Model.Edit', [
     if (modalInstance) modalInstance.close();
   }
 
+  function displayStatus(status) {
+    if (_.isPlainObject(status)) {
+      if (status.translate) $scope.status = $translate.instant(status.translate, status.params);
+      else if (status.message) $scope.status = status.message;
+      if (status.progress) $scope.progress = status.progress;
+    }
+  }
+
 
   /**
    * Check to see if any file upload functionality exist and upload files first then call to save the model data
    */
   $scope.clickSaveModel = function(data) {
-    $scope.status = "Saving...";
-    $scope.progress = 0.0;
+    displayStatus({message:"Saving", translate:"cms.status.saving", progress:0.0});
     modalInstance = $modal.open({
       templateUrl: 'app/dashboard/model/edit/ModelEditSaveDialog.html',
       controller: 'ModelEditSaveDialogCtrl',
