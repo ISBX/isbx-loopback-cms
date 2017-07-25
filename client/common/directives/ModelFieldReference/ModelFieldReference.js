@@ -21,7 +21,7 @@ angular.module('dashboard.directives.ModelFieldReference', [
   };
 })
 
-.directive('modelFieldReferenceEdit', function($compile, $cookies, Config, GeneralModelService, $timeout) {
+.directive('modelFieldReferenceEdit', function($compile, $cookies, Config, GeneralModelService) {
   "ngInject";
 
   function getTemplate(multiple, matchTemplate, choiceTemplate) {
@@ -344,9 +344,7 @@ angular.module('dashboard.directives.ModelFieldReference', [
              var where = {};
              where[scope.options.key] = item[scope.options.key];
              var index = _.findIndex(scope.modelData[scope.options.relationship], where);
-             if (index > -1) {
-               scope.modelData[scope.options.relationship].splice(index, 1);
-             }
+             if (index > -1) scope.modelData[scope.options.relationship].splice(index, 1);
            }
            //Look for direct reference match
            var index = scope.modelData[scope.options.relationship].indexOf(item);
