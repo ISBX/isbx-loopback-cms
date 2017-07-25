@@ -66,6 +66,15 @@ angular.module('dashboard.directives.ModelFieldReference', [
       scope.selected.item = null; //for single select; initialize to null so placeholder is displayed
       scope.list = [];
 
+      scope.$watch('selected.items', function(newValue, oldValue) {
+        if (scope.property.display.required && newValue.length === 0) {
+          element.addClass('ng-invalid');
+        }
+        if (newValue.length > 0) {
+          element.removeClass('ng-invalid');
+        }
+      });
+
       function replaceSessionVariables(string) {
         if (typeof string !== 'string') return string;
         try {
@@ -271,8 +280,7 @@ angular.module('dashboard.directives.ModelFieldReference', [
            mergeArray(scope.selected.items, scope.modelData[scope.options.relationship]);
          } else {
            scope.modelData[scope.options.relationship] = scope.selected.items;
-         } 
-         element.removeClass('ng-invalid');
+         }
        } else {
          //For single record reference just assign the ID back to data
          scope.data = item[scope.options.key];
@@ -338,9 +346,6 @@ angular.module('dashboard.directives.ModelFieldReference', [
              var index = _.findIndex(scope.modelData[scope.options.relationship], where);
              if (index > -1) {
                scope.modelData[scope.options.relationship].splice(index, 1);
-               if (scope.selected.items.length == 0) {
-                 element.addClass('ng-invalid');
-               }
              }
            }
            //Look for direct reference match
