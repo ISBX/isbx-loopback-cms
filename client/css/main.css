@@ -1016,6 +1016,9 @@ model-field-reference-edit .close {
 model-field-reference-edit .ui-select-multiple.ui-select-bootstrap {
   height: 33px;
 }
+model-field-reference-edit .ui-select-multiple.ui-select-bootstrap input.ui-select-search {
+  position: absolute;
+}
 model-field-file-edit button.select-file {
   width: 120px;
   cursor: pointer;
