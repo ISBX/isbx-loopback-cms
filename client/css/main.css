@@ -928,8 +928,7 @@ model-field-edit label.radio {
 }
 model-field-edit input.ng-invalid,
 model-field-edit textarea.ng-invalid,
-model-field-edit select.ng-invalid,
-model-field-edit .field.ng-invalid {
+model-field-edit select.ng-invalid {
   border: solid 1px #f00;
 }
 model-field-edit .jslider {
