@@ -199,8 +199,10 @@ angular.module('dashboard.Dashboard.Model.Edit', [
 
   function displayStatus(status) {
     if (_.isPlainObject(status)) {
-      if (status.translate) $scope.status = $translate.instant(status.translate, status.params);
-      else if (status.message) $scope.status = status.message;
+      if (status.translate) {
+        var statusMsg = $translate.instant(status.translate, status.params);
+        $scope.status = (statusMsg === status.translate) ? status.message : statusMsg;
+      } else if (status.message) $scope.status = status.message;
       if (status.progress) $scope.progress = status.progress;
     }
   }
