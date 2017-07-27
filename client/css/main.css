@@ -1007,7 +1007,7 @@ model-field-edit .error-message:after {
 }
 model-field-reference-edit {
   display: block;
-  height: 36px;
+  height: auto;
   border-radius: 4px;
 }
 model-field-reference-edit .close {
