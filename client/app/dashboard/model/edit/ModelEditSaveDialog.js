@@ -8,10 +8,12 @@ angular.module('dashboard.Dashboard.Model.Edit.SaveDialog', [
   "ngInject";
 
   function init() {
+    $scope.statusLabel = 'Status';
     $translate("cms.status").then(function(translated) {
-      $scope.statusLabel = translated;
-    }, function() { // gracefully fallback to a default value if no override provided
-      $scope.statusLabel = 'Status';
+      if (typeof translated == 'string' && translated.length > 0 && translated !== 'cms.status')
+        $scope.statusLabel = translated;
+    }, function(e) {
+      console.log('Failed to translate cms.status', e);
     });
   }
   
