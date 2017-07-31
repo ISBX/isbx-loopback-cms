@@ -1022,6 +1022,9 @@ model-field-reference-edit .ui-select-multiple.ui-select-bootstrap input.ui-sele
 model-field-reference-edit .dropdown {
   padding-bottom: 1px;
 }
+model-field-reference-edit.ng-valid.ng-valid-required .ui-select-container.ui-select-multiple.ui-select-bootstrap.dropdown.form-control.ng-valid.ng-not-empty {
+  height: auto;
+}
 model-field-file-edit button.select-file {
   width: 120px;
   cursor: pointer;
