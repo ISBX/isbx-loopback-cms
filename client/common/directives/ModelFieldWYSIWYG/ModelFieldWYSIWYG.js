@@ -27,7 +27,7 @@ angular.module('dashboard.directives.ModelFieldWYSIWYG', [
       <div class="wysiwyg-toolbar" data-role="editor-toolbar" data-target=".wysiwyg-editor" ng-hide="disabled">\
         <div class="btn-group">\
           <span class="dropdown">\
-          <a class="btn btn-default" title="Font Size" ng-click="toggleDropdown($event)" ng-disabled="!options.allowFontSize || isEditingCode"><i class="fa fa-text-height"></i>&nbsp;<b class="caret"></b></a>\
+          <a class="btn btn-default" title="Font Size" ng-click="toggleDropdown($event)" ng-disabled="(!allow && !options.allowFontSize) || isEditingCode"><i class="fa fa-text-height"></i>&nbsp;<b class="caret"></b></a>\
           <ul class="menu" ng-click="toggleDropdown($event)" >\
             <li><a data-edit="fontSize 7">24 pt</a></li>\
             <li><a data-edit="fontSize 6">18 pt</a></li>\
@@ -40,39 +40,39 @@ angular.module('dashboard.directives.ModelFieldWYSIWYG', [
         </div>\
         <div class="btn-group">\
           <span class="dropdown">\
-          <a class="btn btn-default color-picker" title="Font Color" ng-click="toggleDropdown($event)" ng-disabled="!options.allowFontColor || isEditingCode"><i class="color-sample"></i>&nbsp;<b class="caret"></b></a>\
+          <a class="btn btn-default color-picker" title="Font Color" ng-click="toggleDropdown($event)" ng-disabled="(!allow && !options.allowFontColor) || isEditingCode"><i class="color-sample"></i>&nbsp;<b class="caret"></b></a>\
           <div class="menu input-append">\
             <input type="color" class="font-color-picker" value="#000" />\
           </div></span>\
         </div>\
         <div class="btn-group">\
-          <a class="btn btn-default" data-edit="bold" title="Bold" ng-disabled="!options.allowBoldFont || isEditingCode"><i class="fa fa-bold"></i></a>\
-          <a class="btn btn-default" data-edit="italic" title="Italic" ng-disabled="!options.allowItalicFont || isEditingCode"><i class="fa fa-italic"></i></a>\
-          <a class="btn btn-default" data-edit="underline" title="Underline" ng-disabled="!options.allowUnderlineFont || isEditingCode"><i class="fa fa-underline"></i></a>\
+          <a class="btn btn-default" data-edit="bold" title="Bold" ng-disabled="(!allow && !options.allowBoldFont) || isEditingCode"><i class="fa fa-bold"></i></a>\
+          <a class="btn btn-default" data-edit="italic" title="Italic" ng-disabled="(!allow && !options.allowItalicFont) || isEditingCode"><i class="fa fa-italic"></i></a>\
+          <a class="btn btn-default" data-edit="underline" title="Underline" ng-disabled="(!allow && !options.allowUnderlineFont) || isEditingCode"><i class="fa fa-underline"></i></a>\
         </div>\
         <div class="btn-group">\
-          <a class="btn btn-default" data-edit="insertunorderedlist" title="Bullet list" ng-disabled="!options.allowBullet || isEditingCode"><i class="fa fa-list-ul"></i></a>\
-          <a class="btn btn-default" data-edit="insertorderedlist" title="Number list" ng-disabled="!options.allowNumbered || isEditingCode"><i class="fa fa-list-ol"></i></a>\
-          <a class="btn btn-default" data-edit="outdent" title="Reduce indent" ng-disabled="!options.allowOutdent || isEditingCode"><i class="fa fa-dedent"></i></a>\
-          <a class="btn btn-default" data-edit="indent" title="Indent" ng-disabled="!options.allowIndent || isEditingCode"><i class="fa fa-indent"></i></a>\
+          <a class="btn btn-default" data-edit="insertunorderedlist" title="Bullet list" ng-disabled="(!allow && !options.allowBullet) || isEditingCode"><i class="fa fa-list-ul"></i></a>\
+          <a class="btn btn-default" data-edit="insertorderedlist" title="Number list" ng-disabled="(!allow && !options.allowNumbered) || isEditingCode"><i class="fa fa-list-ol"></i></a>\
+          <a class="btn btn-default" data-edit="outdent" title="Reduce indent" ng-disabled="(!allow && !options.allowOutdent) || isEditingCode"><i class="fa fa-dedent"></i></a>\
+          <a class="btn btn-default" data-edit="indent" title="Indent" ng-disabled="(!allow && !options.allowIndent) || isEditingCode"><i class="fa fa-indent"></i></a>\
         </div>\
         <div class="btn-group">\
-          <a class="btn btn-default" data-edit="justifyleft" title="Align Left" ng-disabled="!options.allowJustifyLeft || isEditingCode"><i class="fa fa-align-left"></i></a>\
-          <a class="btn btn-default" data-edit="justifycenter" title="Center" ng-disabled="!options.allowJustifyCenter || isEditingCode"><i class="fa fa-align-center"></i></a>\
-          <a class="btn btn-default" data-edit="justifyright" title="Align Right" ng-disabled="!options.allowJustifyRight || isEditingCode"><i class="fa fa-align-right"></i></a>\
-          <a class="btn btn-default" data-edit="justifyfull" title="Justify" ng-disabled="!options.allowJustifyFull || isEditingCode"><i class="fa fa-align-justify"></i></a>\
+          <a class="btn btn-default" data-edit="justifyleft" title="Align Left" ng-disabled="(!allow && !options.allowJustifyLeft) || isEditingCode"><i class="fa fa-align-left"></i></a>\
+          <a class="btn btn-default" data-edit="justifycenter" title="Center" ng-disabled="(!allow && !options.allowJustifyCenter) || isEditingCode"><i class="fa fa-align-center"></i></a>\
+          <a class="btn btn-default" data-edit="justifyright" title="Align Right" ng-disabled="(!allow && !options.allowJustifyRight) || isEditingCode"><i class="fa fa-align-right"></i></a>\
+          <a class="btn btn-default" data-edit="justifyfull" title="Justify" ng-disabled="(!allow && !options.allowJustifyFull) || isEditingCode"><i class="fa fa-align-justify"></i></a>\
         </div>\
         <div class="btn-group">\
           <span class="dropdown">\
-          <a class="btn btn-default" data-original-title="Hyperlink" ng-click="toggleDropdown($event)" ng-disabled="!options.allowHyperlink || isEditingCode"><i class="fa fa-link"></i></a>\
+          <a class="btn btn-default" data-original-title="Hyperlink" ng-click="toggleDropdown($event)" ng-disabled="(!allow && !options.allowHyperlink) || isEditingCode"><i class="fa fa-link"></i></a>\
           <div class="menu">\
             <input class="form-control" placeholder="URL" type="text" data-edit="createLink">\
             <button class="btn btn-default add-button" type="button">Add</button>\
           </div></span>\
         </div>\
         <div class="btn-group picture-button">\
-          <a class="btn btn-default picture-tool" title="Insert picture (or just drag & drop)" ng-disabled="!options.allowImageUpload || isEditingCode"><i class="fa fa-picture-o"></i></a>\
-          <input type="file" class="wysiwyg-picture-input" data-role="magic-overlay" data-target=".wysiwyg-toolbar .picture-tool" ng-file-select="onFileSelect($files)"  ng-disabled="!options.allowImageUpload || isEditingCode" />\
+          <a class="btn btn-default picture-tool" title="Insert picture (or just drag & drop)" ng-disabled="(!allow && !options.allowImageUpload) ||  isEditingCode"><i class="fa fa-picture-o"></i></a>\
+          <input type="file" class="wysiwyg-picture-input" data-role="magic-overlay" data-target=".wysiwyg-toolbar .picture-tool" ng-file-select="onFileSelect($files)"  ng-disabled="(!allow && !options.allowImageUpload) || isEditingCode" />\
         </div>\
         <div class="btn-group">\
           <a class="btn btn-default" data-edit="undo" title="Undo" ng-disabled="isEditingCode"><i class="fa fa-undo"></i></a>\
@@ -106,13 +106,13 @@ angular.module('dashboard.directives.ModelFieldWYSIWYG', [
         scope.toggleDropdown = toggleDropdown;
         scope.onFileSelect = onFileSelect;
         scope.toggleCodeEdit = toggleCodeEdit;
+        scope.allow = _.size(scope.options) === 0 || scope.options === 'undefined' ? true : false;
 
         element.html(getTemplate()).show();
         $compile(element.contents())(scope);
 
         initWysiwygEditor();
         initColorPicker();
-
         codeEditor = ace.edit(element.find('.code-editor')[0]);
         codeEditor.getSession().setMode("ace/mode/html");
 
