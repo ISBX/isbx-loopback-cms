@@ -1013,7 +1013,7 @@ model-field-reference-edit .close {
   padding-top: 2px;
 }
 model-field-file-edit button.select-file {
-  width: 120px;
+  min-width: 120px;
   cursor: pointer;
 }
 model-field-file-edit .file-upload-info {
