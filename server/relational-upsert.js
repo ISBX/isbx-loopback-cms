@@ -159,7 +159,7 @@ function next(processRelationshipType, model, data, index, relationshipKeys, rel
     }
     var id = relationshipModel.getIdName();
     var ctx = {
-      accessToken: context.accessToken.id,
+      accessToken: context.accessToken,
       model: relationSettings.model,
       property: relationshipData[id] ? 'updateAttributes' : 'create',
       modelId: relationshipData[id] || null,
