@@ -138,6 +138,8 @@ angular.module('dashboard.directives.ModelFieldReference', [
         }
         var apiPath = model.plural;
         if (scope.options.api) apiPath = replaceSessionVariables(scope.options.api);
+        //Forces list to respect the isDeleted=0 parameter
+        if (apiPath == "Organizations") params['filter[where][isDeleted]'] = 0;
         GeneralModelService.list(apiPath, params, {preventCancel: true}).then(function(response) {
           if (!response) return; //in case http request was cancelled by newer request
           scope.list = response;
