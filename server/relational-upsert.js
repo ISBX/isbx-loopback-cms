@@ -23,12 +23,11 @@
  */
 
 var app;
+var cmsConfig;
 var inflection = require('inflection');
 
 var RELATIONSHIP_SINGLE = "RELATIONSHIP_SINGLE";
 var RELATIONSHIP_MANY = "RELATIONSHIP_MANY";
-var relationshipKeys = [];
-var relationshipManyToManyKeys = [];
 
 /**
  * Performs a recursive upsert into the data source via loopback API calls
@@ -40,7 +39,7 @@ var relationshipManyToManyKeys = [];
  * @param callback
  *  The callback with [error, result] params
  */
-function upsert(data, callback) {
+function upsert(data, context, callback) {
   var model = app.models[data.__model];
   if (!model) {
     var message = "model not found in post body __model = '"+data.__model+"'";
@@ -51,8 +50,8 @@ function upsert(data, callback) {
   
   //Get all relationship keys by checking for nested objects
   var keys = Object.keys(data);
-  relationshipKeys = [];
-  relationshipManyToManyKeys = [];
+  var relationshipKeys = [];
+  var relationshipManyToManyKeys = [];
   for (var i in keys) {
     var relationshipKey = keys[i];
     var relationshipData = data[relationshipKey];
@@ -66,7 +65,7 @@ function upsert(data, callback) {
     }
   }
   
-  start(model, data, function(error, result) {
+  start(model, data, relationshipKeys, relationshipManyToManyKeys, context, function(error, result) {
     callback(error, result);
   });
   
@@ -78,9 +77,10 @@ function upsert(data, callback) {
  * @param data
  * @param callback
  */
-function start(model, data, callback) {
+function start(model, data, relationshipKeys, relationshipManyToManyKeys, context, callback) {
   var index = 0;
-  next(RELATIONSHIP_SINGLE, model, data, index, function(error, count) {
+  next(RELATIONSHIP_SINGLE, model, data, index, relationshipKeys, relationshipManyToManyKeys, context, function(error, count) {
+    if (error) return callback(error);
     //After inserting all one-to-many relationships, perform the primary model upsert
     model.upsert(data, function(error, result) {
       if (error) {
@@ -93,12 +93,11 @@ function start(model, data, callback) {
         
         //After upserting main model data, process all many-to-many relationship data last 
         index = 0;
-        next(RELATIONSHIP_MANY, model, data, index, function(error, count) {
-          callback(null, result); //finished upserting all relationship data and model data 
+        next(RELATIONSHIP_MANY, model, data, index, relationshipKeys, relationshipManyToManyKeys, context, function(error, count) {
+          callback(error, result); //finished upserting all relationship data and model data 
         });
       }
     });
-    
   });
 }
 
@@ -111,7 +110,7 @@ function start(model, data, callback) {
  * @param index
  * @param callback
  */
-function next(processRelationshipType, model, data, index, callback) {
+function next(processRelationshipType, model, data, index, relationshipKeys, relationshipManyToManyKeys, context, callback) {
   
   var length = processRelationshipType == RELATIONSHIP_SINGLE ? relationshipKeys.length : relationshipManyToManyKeys.length;
   if (index >= length) {
@@ -131,47 +130,91 @@ function next(processRelationshipType, model, data, index, callback) {
   if (!relationSettings) {
     console.warn("WARNING: no relationship found for relationshipKey = " + relationshipKey);
     index++;
-    next(processRelationshipType, model, data, index, callback);
+    next(processRelationshipType, model, data, index, relationshipKeys, relationshipManyToManyKeys, context, callback);
     return;
   }
   var relationshipModel = app.models[relationSettings.model];
   if (!relationshipModel) {
     console.warn("WARNING: cannot resolve relationship model = " + relationSettings.model);
     index++;
-    next(processRelationshipType, model, data, index, callback);
+    next(processRelationshipType, model, data, index, relationshipKeys, relationshipManyToManyKeys, context, callback);
     return;
   }
-
   if (processRelationshipType == RELATIONSHIP_SINGLE) {
     //upsert the one-to-many relationship model data before upserting main model data 
-    relationshipModel.upsert(relationshipData, function(error, result) {
-      if (error) {
-        console.error(error);
-        callback(error);
-      } else {
-        var id = result[relationshipModel.getIdName()];
-        //assign the FK ID back to main model
-        data[relationSettings.foreignKey] = id;
-        delete data[relationshipKey]; //make sure to remove relationship data from the main model (otherwise upsert won't work for the relationshipKey)
-        index++;
-        next(RELATIONSHIP_SINGLE, model, data, index, callback);
-      }
-    });
+    function executeUpsert() {
+      relationshipModel.upsert(relationshipData, function(error, result) {
+        if (error) {
+          console.error(error);
+          callback(error);
+        } else {
+          var id = result[relationshipModel.getIdName()];
+          //assign the FK ID back to main model
+          data[relationSettings.foreignKey] = id;
+          delete data[relationshipKey]; //make sure to remove relationship data from the main model (otherwise upsert won't work for the relationshipKey)
+          index++;
+          next(RELATIONSHIP_SINGLE, model, data, index, relationshipKeys, relationshipManyToManyKeys, context, callback);
+        }
+      });
+    }
+    var id = relationshipModel.getIdName();
+    var ctx = {
+      accessToken: context.accessToken.id,
+      model: relationSettings.model,
+      property: relationshipData[id] ? 'updateAttributes' : 'create',
+      modelId: relationshipData[id] || null,
+      remotingContext: context.remotingContext
+    };
+    if (cmsConfig.public.isUnsafeUpsert) {
+      executeUpsert();
+    } else {
+      app.models.ACL.checkAccessForContext(ctx, function(err, acl) {
+        if (err) return callback(err);
+        if (acl.permission === 'DENY') {
+          var error = new Error('Forbidden.');
+          error.status = 403;
+          return callback(error);
+        }
+        executeUpsert();
+      });
+    }
   } else if (processRelationshipType == RELATIONSHIP_MANY) {
     //relationshipData is an Array of hasMany values (a many-to-many relationship)
-    upsertManyToMany(model, data, relationshipKey, relationshipData, relationSettings, function(error, result) {
-      if (error) {
-        console.error(error);
-        callback(error);
-      } else {
-        delete data[relationshipKey]; //make sure to remove relationship data from the main model (otherwise upsert won't work for the relationshipKey)
-        index++;
-        next(RELATIONSHIP_MANY, model, data, index, callback);
-      }
-    });
-    
+    function executeUpsertManyToMany() {
+      upsertManyToMany(model, data, relationshipKey, relationshipData, relationSettings, function(error, result) {
+        if (error) {
+          console.error(error);
+          callback(error);
+        } else {
+          delete data[relationshipKey]; //make sure to remove relationship data from the main model (otherwise upsert won't work for the relationshipKey)
+          index++;
+          next(RELATIONSHIP_MANY, model, data, index, relationshipKeys, relationshipManyToManyKeys, context, callback);
+        }
+      });
+    }
+
+    var id = relationshipModel.getIdName();
+    var ctx = {
+      accessToken: context.accessToken,
+      model: relationSettings.model,
+      property: relationshipData[id] ? 'updateAttributes' : 'create',
+      modelId: relationshipData[id] || null,
+      remotingContext: context.remotingContext
+    };
+    if (cmsConfig.public.isUnsafeUpsert) {
+      executeUpsertManyToMany();
+    } else {
+      app.models.ACL.checkAccessForContext(ctx, function(err, acl) {
+        if (err) return callback(err);
+        if (acl.permission === 'DENY') {
+          var error = new Error('Forbidden.');
+          error.status = 403;
+          return callback(error);
+        }
+        executeUpsertManyToMany();
+      });
+    }
   }
- 
 }
 
 /**
@@ -324,9 +367,13 @@ function nextManyToMany(junctionModel, junctionModelIdKey, junctionRelationIdKey
   }
 }
 
-  
-module.exports.setLoopBack = function(loopback) {
-  app = loopback;
+module.exports = {
+  setLoopBack: function(loopback) {
+    app = loopback;
+  },
+  setConfig: function(config) {
+    cmsConfig = config;
+  }
 };
 
 module.exports.upsert = upsert;

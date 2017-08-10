@@ -277,6 +277,7 @@ function cms(loopbackApplication, options) {
 
   //for CMS custom services provide context to loopbackApplication
   relationalUpsert.setLoopBack(loopbackApplication);
+  relationalUpsert.setConfig(config);
   customSort.setLoopBack(loopbackApplication);
   aws.setConfig(config.private);
 
@@ -350,13 +351,16 @@ function cms(loopbackApplication, options) {
         accessToken: token,
         model: data.__model,
         property: data.__id ? 'updateAttributes' : 'create',
-        modelId: data.__id || null
+        modelId: data.__id || null,
+        remotingContext: {
+          req: req
+        }
       };
 
       function upsertData() {
-        relationalUpsert.upsert(data, function(error, response) {
+        relationalUpsert.upsert(data, context, function(error, response) {
           if (error) {
-            res.status(500).send(error);
+            res.status(error.status).send(error.message);
           } else {
             res.send(response);
           }
@@ -367,7 +371,7 @@ function cms(loopbackApplication, options) {
         upsertData();
       } else {
         ACL.checkAccessForContext(context, function(err, acl) {
-          if (err) { return res.status(500).send(err); }
+          if (err) return res.status(500).send(err);
           if (acl.permission === 'DENY') { return res.status(403).send('Forbidden'); }
           upsertData();
         });
@@ -413,8 +417,7 @@ function cms(loopbackApplication, options) {
     validateToken(req, function(err, isValid) {
       if (err) { return res.status(500).send(err); }
       if (!isValid) { return res.status(403).send('Forbidden'); }
-
-      aws.getS3Credentials(req.query["path"], req.query["fileType"], function(error, credentials) {
+      aws.getS3Credentials(req.query.path, req.query.fileType, req.query.acl, function(error, credentials) {
         if (error) {
           res.status(500).send(error);
         }
