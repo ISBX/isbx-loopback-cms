@@ -115,7 +115,7 @@ angular.module('dashboard.Dashboard.Model.Edit', [
       if ($scope.isLoading) return;
       //trigger change event only after model has been loaded and actual change was detected
       $scope.$emit('onModelChange', { newData: newData, oldData: oldData });
-    }, true);
+    }, false);
   }
 
   function layoutModelDisplay() {
