@@ -20,8 +20,15 @@ angular.module('dashboard.directives.ModelFieldReference', [
     }
   };
 })
+/**
+ * A service that provides shared variable to
+ * directive modelFieldReferenceEditData.
+ */
+.factory('modelFieldReferenceEditData', [function(){
+  return { items: [] };
+}])
 
-.directive('modelFieldReferenceEdit', function($compile, $cookies, Config, GeneralModelService) {
+.directive('modelFieldReferenceEdit', function($compile, $cookies, Config, GeneralModelService, modelFieldReferenceEditData) {
   "ngInject";
 
   function getTemplate(multiple, matchTemplate, choiceTemplate) {
@@ -139,6 +146,26 @@ angular.module('dashboard.directives.ModelFieldReference', [
         GeneralModelService.list(apiPath, params, {preventCancel: true}).then(function(response) {
           if (!response) return; //in case http request was cancelled by newer request
           scope.list = response;
+          /**
+           * If option removeSelected is true
+           * the shared variable of model-field-reference-edit (modelReferenceEditData.items)
+           * will be used to save selected data for the comparison. This was tested only on
+           * single selection and schedule templates (object that has a property of formId).
+           * It removes data that is in scope.list base 
+           * on the modelReferenceEditData.items
+           * @param  {Boolean} scope.options.removeSelected true or false
+           */
+          if (scope.options.removeSelected) {
+            modelFieldReferenceEditData.items.forEach(function (value) {
+
+              scope.list = scope.list.filter(function(object) {
+
+                  if (object.formId != value) {
+                    return object;
+                  }
+              });
+            })
+          }
           if (scope.options.allowInsert) {
             var addNewItem = {};
             addNewItem[scope.options.searchField] = "[Add New Item]";
@@ -255,6 +282,22 @@ angular.module('dashboard.directives.ModelFieldReference', [
      }
 
      scope.onSelect = function(item, model) {
+      /**
+       * If option removeSelected is true
+       * the shared variable of model-field-reference-edit (modelFieldReferenceEditData.items)
+       * will be used to save selected data for comparison. This was tested only on
+       * single selection and schedule templates (object that has a property of formId).
+       * @param  {Boolean} scope.options.removeSelected true or false
+       */
+      if (scope.options.removeSelected) {
+        if (scope.data) {
+          modelFieldReferenceEditData.items = modelFieldReferenceEditData.items.filter(function(item) { 
+              return item != scope.data;
+          })
+        }
+        modelFieldReferenceEditData.items.push(item.formId);
+        console.log(modelFieldReferenceEditData.items)
+      }
        if (scope.options.multiple) {
          if (item && item[scope.options.searchField] == "[Add New Item]") {
            var value = element.find("input.ui-select-search").val();
