@@ -21,8 +21,8 @@ angular.module('dashboard.directives.ModelFieldReference', [
   };
 })
 /**
- * A service that provides shared variable to
- * directive modelFieldReferenceEditData.
+ * A service that provides shared variable to 
+ * all modelFieldReferenceEditData directives.
  */
 .factory('modelFieldReferenceEditData', [function(){
   return { items: [] };
@@ -150,17 +150,15 @@ angular.module('dashboard.directives.ModelFieldReference', [
            * If option removeSelected is true
            * the shared variable of model-field-reference-edit (modelReferenceEditData.items)
            * will be used to save selected data for the comparison. This was tested only on
-           * single selection and schedule templates (object that has a property of formId).
+           * single selection and schedule templates. Only available in single selection.
            * It removes data that is in scope.list base 
            * on the modelReferenceEditData.items
            * @param  {Boolean} scope.options.removeSelected true or false
            */
-          if (scope.options.removeSelected) {
+          if (scope.options.removeSelected && !scope.options.multiple) {
             modelFieldReferenceEditData.items.forEach(function (value) {
-
               scope.list = scope.list.filter(function(object) {
-
-                  if (object.formId != value) {
+                  if (object[scope.options.key] != value) {
                     return object;
                   }
               });
@@ -282,22 +280,6 @@ angular.module('dashboard.directives.ModelFieldReference', [
      }
 
      scope.onSelect = function(item, model) {
-      /**
-       * If option removeSelected is true
-       * the shared variable of model-field-reference-edit (modelFieldReferenceEditData.items)
-       * will be used to save selected data for comparison. This was tested only on
-       * single selection and schedule templates (object that has a property of formId).
-       * @param  {Boolean} scope.options.removeSelected true or false
-       */
-      if (scope.options.removeSelected) {
-        if (scope.data) {
-          modelFieldReferenceEditData.items = modelFieldReferenceEditData.items.filter(function(item) { 
-              return item != scope.data;
-          })
-        }
-        modelFieldReferenceEditData.items.push(item.formId);
-        console.log(modelFieldReferenceEditData.items)
-      }
        if (scope.options.multiple) {
          if (item && item[scope.options.searchField] == "[Add New Item]") {
            var value = element.find("input.ui-select-search").val();
@@ -316,6 +298,22 @@ angular.module('dashboard.directives.ModelFieldReference', [
            scope.modelData[scope.options.relationship] = scope.selected.items;
          }
        } else {
+        /**
+         * If option removeSelected is true
+         * the shared variable of model-field-reference-edit (modelFieldReferenceEditData.items)
+         * will be used to save selected data for comparison. This was tested only on
+         * single selection and schedule templates. Only available in single selection.
+         * @param  {Boolean} scope.options.removeSelected true or false
+         */
+        if (scope.options.removeSelected) {
+          if (scope.data) {
+            modelFieldReferenceEditData.items = modelFieldReferenceEditData.items.filter(function(item) { 
+                return item != scope.data;
+            })
+          }
+          modelFieldReferenceEditData.items.push(item[scope.options.key]);
+          console.log(modelFieldReferenceEditData.items)
+        }
          //For single record reference just assign the ID back to data
          scope.data = item[scope.options.key];
          if (scope.rowData) scope.rowData[scope.options.key] = scope.data; //work around for ui-grid not being able to set ng-model for cell edit
