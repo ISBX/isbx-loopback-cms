@@ -277,7 +277,7 @@ angular.module('dashboard.directives.ModelFieldReference', [
          scope.data = item[scope.options.key];
          if (scope.rowData) scope.rowData[scope.options.key] = scope.data; //work around for ui-grid not being able to set ng-model for cell edit
          //emit an event when an item is selected
-         scope.$emit('onModelFieldReferenceSelect', scope.modelData, scope.key, item);
+         scope.$emit('onModelFieldReferenceSelect', scope.modelData, scope.key, item, scope.rowData);
          var textValue = item[scope.options.searchField];
           if (item && item[scope.options.searchField] == "[Add New Item]") {
             //console.log("should add " + $select.search);
