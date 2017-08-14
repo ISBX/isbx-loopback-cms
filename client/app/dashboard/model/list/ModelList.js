@@ -712,10 +712,20 @@ angular.module('dashboard.Dashboard.Model.List', [
   }, true);
   
   $scope.$watch('pagingOptions', function (newVal, oldVal) {
-    if (newVal.currentPage != oldVal.currentPage || newVal.pageSize != oldVal.pageSize) {
-      $scope.pagingOptions.pageSize = $scope.pagingOptions.pageSize.toString();
-      $scope.loadItems();
-    }
+      if (newVal.currentPage != oldVal.currentPage || newVal.pageSize != oldVal.pageSize) {
+          $scope.pagingOptions.pageSize = $scope.pagingOptions.pageSize.toString();
+          $scope.loadItems();
+      }
+      $scope.$watch('pagingOptions.pageSize', (newVal, oldVal) => {
+        console.log($scope.pagingOptions.pageSize)
+          if(newVal !== oldVal) $scope.pagingOptions.currentPage = 1;
+      });
+      $scope.$watch('pagingOptions.currentPage', (newVal, oldVal) => {
+          let maxPage =  Math.ceil($scope.totalServerItems / $scope.pagingOptions.pageSize);
+          if (newVal !== oldVal && newVal > maxPage) {
+              $scope.pagingOptions.currentPage = maxPage;
+          }
+      });
   }, true);
 
   $scope.$watch('gridOptions.$gridScope.filterText', _.debounce(function (newVal, oldVal) {
