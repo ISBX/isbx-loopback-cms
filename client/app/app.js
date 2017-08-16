@@ -18,7 +18,7 @@ angular.module('dashboard', [
 .config(function myAppConfig($locationProvider, $stateProvider, $urlRouterProvider, $compileProvider, $qProvider, $translateProvider, Config) {
   "ngInject";
 
-  $compileProvider.aHrefSanitizationWhitelist(/^\s*(http|https|ftp|mailto|tel|file|data):/);
+  $compileProvider.aHrefSanitizationWhitelist(/^\s*(http|https|ftp|mailto|tel|file|blob|data):/);
   $urlRouterProvider.otherwise('/login');
   if(Config.serverParams.disableRegistration) $urlRouterProvider.when('/register','/login');
   $locationProvider.html5Mode(true);
