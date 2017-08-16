@@ -42,17 +42,18 @@ angular.module('dashboard.Dashboard.Model.Edit', [
     $scope.model = angular.copy(Config.serverParams.models[$scope.action.options.model]);
 
     //Make Key field readonly
+    var keys, key;
     if ($scope.action.options.key) {
-      var key = $scope.action.options.key;
+      key = $scope.action.options.key;
       if (!$scope.model.properties[key].display) $scope.model.properties[key].display = {};
       $scope.model.properties[key].display.readonly = true;
     }
 
     //Check if readonly view
     if ($scope.action.options.readonly) {
-      var keys = Object.keys($scope.model.properties);
+      keys = Object.keys($scope.model.properties);
       for (var i in keys) {
-        var key = keys[i];
+        key = keys[i];
         if (!$scope.model.properties[key].display) $scope.model.properties[key].display = {};
         $scope.model.properties[key].display.readonly = true;
       }
@@ -63,9 +64,9 @@ angular.module('dashboard.Dashboard.Model.Edit', [
 
     //Check to see if there's any passed in values from the referring page
     if ($scope.action.options.data) {
-      var keys = Object.keys($scope.action.options.data);
-      for (var i in keys) {
-        var key = keys[i];
+      keys = Object.keys($scope.action.options.data);
+      for (var j in keys) {
+        key = keys[j];
         $scope.data[key] = $scope.action.options.data[key]; //only occurs for new records (this gets replaced when editing a record)
       }
     }
@@ -235,10 +236,11 @@ angular.module('dashboard.Dashboard.Model.Edit', [
    */
   $scope.hasPermission = function(key) {
     var displayInfo = null;
+    var property;
     if (typeof key === "object") {
       displayInfo = key;
     } else {
-      var property = $scope.model.properties[key];
+      property = $scope.model.properties[key];
       displayInfo = property.display;
     }
 
@@ -249,7 +251,7 @@ angular.module('dashboard.Dashboard.Model.Edit', [
     if (displayInfo.askIf) {
       var properties = Object.keys(displayInfo.askIf);
       for (var i in properties) {
-        var property = properties[i];
+        property = properties[i];
         if ($scope.data[property] != displayInfo.askIf[property]) {
           return false; //don't display if doesn't match criteria
         }
@@ -265,8 +267,8 @@ angular.module('dashboard.Dashboard.Model.Edit', [
     }
     
     var userRoles = JSON.parse($cookies.get('roles'));
-    for (var i in userRoles) {
-      var role = userRoles[i];
+    for (var j in userRoles) {
+      var role = userRoles[j];
       if (displayInfo.roles.indexOf(role.name) > -1) {
         return true;
       }

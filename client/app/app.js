@@ -18,7 +18,7 @@ angular.module('dashboard', [
 .config(function myAppConfig($locationProvider, $stateProvider, $urlRouterProvider, $compileProvider, $qProvider, $translateProvider, Config) {
   "ngInject";
 
-  $compileProvider.aHrefSanitizationWhitelist(/^\s*(http|https|ftp|mailto|tel|file|blo‌​b|data):/);
+  $compileProvider.aHrefSanitizationWhitelist(/^\s*(http|https|ftp|mailto|tel|file|data):/);
   $urlRouterProvider.otherwise('/login');
   if(Config.serverParams.disableRegistration) $urlRouterProvider.when('/register','/login');
   $locationProvider.html5Mode(true);
@@ -61,7 +61,7 @@ angular.module('dashboard', [
         if (Array.isArray(Config.serverParams.injectOnStart)) {
           Config.serverParams.injectOnStart.forEach($injector.get);
         }
-      }, function(error){console.log(error)});
+      }, function(error){console.log(error);});
   } else {
     modulesLoaded = true;
   }
@@ -156,7 +156,7 @@ angular.module('dashboard', [
         }
       }, constants.TIMEOUT_INTERVAL);
     }
-  }
+  };
 
   $rootScope.checkTimeout = function() {
     $timeout.cancel($rootScope.timeoutId);
