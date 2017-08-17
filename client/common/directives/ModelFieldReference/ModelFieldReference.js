@@ -162,7 +162,7 @@ angular.module('dashboard.directives.ModelFieldReference', [
                     return object;
                   }
               });
-            })
+            });
           }
           if (scope.options.allowInsert) {
             var addNewItem = {};
@@ -309,7 +309,7 @@ angular.module('dashboard.directives.ModelFieldReference', [
           if (scope.data) {
             modelFieldReferenceEditData.items = modelFieldReferenceEditData.items.filter(function(item) { 
                 return item != scope.data;
-            })
+            });
           }
           modelFieldReferenceEditData.items.push(item[scope.options.key]);
         }
