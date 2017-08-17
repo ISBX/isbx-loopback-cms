@@ -26,7 +26,7 @@ angular.module('dashboard.directives.ModelFieldReference', [
  */
 .factory('modelFieldReferenceEditData', [function(){
   return { items: [] };
-}])
+}]);
 
 .directive('modelFieldReferenceEdit', function($compile, $cookies, Config, GeneralModelService, modelFieldReferenceEditData) {
   "ngInject";
@@ -312,7 +312,6 @@ angular.module('dashboard.directives.ModelFieldReference', [
             })
           }
           modelFieldReferenceEditData.items.push(item[scope.options.key]);
-          console.log(modelFieldReferenceEditData.items)
         }
          //For single record reference just assign the ID back to data
          scope.data = item[scope.options.key];
