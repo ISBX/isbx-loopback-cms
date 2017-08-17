@@ -26,7 +26,7 @@ angular.module('dashboard.directives.ModelFieldReference', [
  */
 .factory('modelFieldReferenceEditData', [function(){
   return { items: [] };
-}]);
+}])
 
 .directive('modelFieldReferenceEdit', function($compile, $cookies, Config, GeneralModelService, modelFieldReferenceEditData) {
   "ngInject";
