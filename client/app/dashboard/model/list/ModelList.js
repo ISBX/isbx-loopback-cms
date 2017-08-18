@@ -388,7 +388,7 @@ angular.module('dashboard.Dashboard.Model.List', [
           $scope.totalServerItems = response.count;
         }
       });
-      
+
     $q.all([countPromise, $scope.loadItems(params)])
       .catch(function(err) {
         $scope.errorMessage = 'There was an error while loading...';
@@ -715,6 +715,8 @@ angular.module('dashboard.Dashboard.Model.List', [
   $scope.$watch('pagingOptions', function (newVal, oldVal) {
     if (newVal.currentPage != oldVal.currentPage || newVal.pageSize != oldVal.pageSize) {
       $scope.pagingOptions.pageSize = $scope.pagingOptions.pageSize.toString();
+      var maxPageNumber = Math.ceil($scope.totalServerItems / newVal.pageSize);
+      if (newVal.currentPage > maxPageNumber) newVal.currentPage = maxPageNumber;
       $scope.loadItems();
     }
   }, true);
