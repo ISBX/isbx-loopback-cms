@@ -12,7 +12,6 @@ angular.module('dashboard.services.FileUpload', [
 
   this.getS3Credentials = function(path, fileType) {
     var params = {
-        access_token: $cookies.accessToken,
         path: path,
         fileType: fileType,
         acl: defaultACL,
@@ -20,12 +19,12 @@ angular.module('dashboard.services.FileUpload', [
     };
     return Utils.apiHelper('GET', Config.serverParams.cmsBaseUrl + '/aws/s3/credentials', params);
   };
-  
+
   this.getFileUploadData = function(credentials) {
     return {
       key: credentials.uniqueFilePath, // the key to store the file on S3, could be file name or customized
-      AWSAccessKeyId: credentials.AWSAccessKeyId, 
-      acl: defaultACL, // sets the access to the uploaded file in the bucker: private or public 
+      AWSAccessKeyId: credentials.AWSAccessKeyId,
+      acl: defaultACL, // sets the access to the uploaded file in the bucker: private or public
       policy: credentials.policy, // base64-encoded json policy (see article below)
       signature: credentials.signature, // base64-encoded signature based on policy string (see article below)
       //"Content-Type": file.type != '' ? file.type : 'application/octet-stream', // content type of the file (NotEmpty),
@@ -34,7 +33,7 @@ angular.module('dashboard.services.FileUpload', [
       //filename:  credentials.uniqueFilePath // this is needed for Flash polyfill IE8-9
     };
   };
-  
+
   this.uploadFile = function(file, path) {
     if (typeof file === 'string' || file instanceof String && file.indexOf('data:') == 0) {
       //Found data URI so convert to blob
@@ -88,20 +87,20 @@ angular.module('dashboard.services.FileUpload', [
         //error
         console.log(error);
         deferred.reject(error);
-      }); 
+      });
     }, function(error) {
       console.log(error);
       deferred.reject(error);
-    });   
-    
-    return deferred.promise;    
+    });
+
+    return deferred.promise;
   };
 
-  
+
   var uploadFilePath = null;
   this.uploadImages = function(imageFiles) {
     //Try to get index, results, and deferred objects from recursion
-    //otherwise init the variables 
+    //otherwise init the variables
     var fileIndex = arguments[1];
     var exportIndex = arguments[2];
     var imageUploadResults = arguments[3];
@@ -109,12 +108,12 @@ angular.module('dashboard.services.FileUpload', [
     if (!fileIndex) fileIndex = 0;
     if (!exportIndex) exportIndex = 0;
     if (!deferred) deferred = $q.defer();
-    var fileKey = null; //the file key represents the model (table) column key used for reference 
+    var fileKey = null; //the file key represents the model (table) column key used for reference
     var exportKey = null; //the export key represents the various sizes of the image
     var file = null;
     var currentUploadedSize = 0;
     var totalUploadSize = 0;
-    
+
     //Get next file to process
     if (imageFiles && imageFiles instanceof Array && fileIndex < imageFiles.length) {
       //Array of File
@@ -126,7 +125,7 @@ angular.module('dashboard.services.FileUpload', [
         self.uploadImages(imageFiles, fileIndex, exportIndex, imageUploadResults, deferred);
         return;
       }
-      
+
       if (imageFiles[fileIndex] && imageFiles[fileIndex].file) {
         uploadFilePath = imageFiles[fileIndex].path;
         file = imageFiles[fileIndex].file;
@@ -174,8 +173,8 @@ angular.module('dashboard.services.FileUpload', [
           file = exports[exportKey];
         }
       }
-      
-      
+
+
       if (!imageUploadResults) imageUploadResults = {}; //initialize results object
       //Calculate File Size
       for (var i = 0; i < fileKeys.length; i++) {
@@ -207,13 +206,13 @@ angular.module('dashboard.services.FileUpload', [
         }
       }
     }
-    
+
     if (!file) {
       //No more files to upload
       deferred.resolve(imageUploadResults);
       return deferred.promise;
     }
-    
+
     //Get S3 credentials from Server
     self.getS3Credentials(uploadFilePath, file.type).then(function(credentials) {
       $upload.upload({
@@ -255,22 +254,22 @@ angular.module('dashboard.services.FileUpload', [
         } else {
           imageUploadResults.push(locationUrl); //results store in array
         }
-        
+
         //recurse through all imageFiles
         exportIndex++;
-        self.uploadImages(imageFiles, fileIndex, exportIndex, imageUploadResults, deferred); 
+        self.uploadImages(imageFiles, fileIndex, exportIndex, imageUploadResults, deferred);
       }).error(function(error) {
         //error
         console.log(error);
         deferred.reject(error);
-      }); 
+      });
     }, function(error) {
       //get credentials error
       console.log(error);
       deferred.reject(error);
-      
-    });   
-    
+
+    });
+
     return deferred.promise;
   };
 

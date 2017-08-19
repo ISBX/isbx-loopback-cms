@@ -2,10 +2,10 @@ angular.module('dashboard.Utils', [
   'dashboard.Config'
 ])
 
-.service('Utils', function(Config, $http, $q) {
-  
+.service('Utils', function($cookies, $http, $q, Config) {
+
   var apiRequests = {}; //stores active http requests using method+path as key
-  
+
   /**
    * Allows for cancelling prior API calls matching the method + path
    */
@@ -16,7 +16,7 @@ angular.module('dashboard.Utils', [
     }
     delete apiRequests[method+":"+path];
   };
-  
+
   /**
    * Implements an http call and returns promise
    */
@@ -32,15 +32,21 @@ angular.module('dashboard.Utils', [
       }
       params.url = Config.apiBaseUrl + path;
     }
-    
+
     if (method == 'POST' || method == 'PUT') {
       params.data = data;
     } else {
       params.params = data;
     }
-    
+
+    if ($cookies.accessToken) {
+      params.headers = {
+        'X-Access-Token': $cookies.accessToken
+      };
+    }
+
     apiRequests[method+":"+path] = deferred;
-    params.timeout = deferred.promise; 
+    params.timeout = deferred.promise;
     $http(params)
       .success(function(response) {
         deferred.resolve(response);
@@ -49,6 +55,6 @@ angular.module('dashboard.Utils', [
         deferred.reject(response);
       });
 
-    return deferred.promise; 
+    return deferred.promise;
   };
 });

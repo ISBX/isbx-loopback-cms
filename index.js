@@ -326,7 +326,7 @@ function cms(loopbackApplication, options) {
 
   function validateToken(request, callback) {
     var AccessToken = loopbackApplication.models.AccessToken;
-    var tokenString = request.body.__accessToken || request.query.access_token;
+    var tokenString = request.header('Authorization') || request.header('X-Access-Token') || request.body.__accessToken || request.query.access_token;
     AccessToken.findById(tokenString, function(err, token) {
       if (err || !token) { return callback(err); }
       token.validate(function(err, isValid) {
