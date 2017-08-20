@@ -6,7 +6,7 @@ angular.module('dashboard.services.Session', [
 
 .service('SessionService', function($cookies, $cookieStore, $http, $q, UserService, Config, Utils) {
   var self = this;
-  
+
   var session = null;
   function init() {
     var sessionStr = $cookies.session;
@@ -17,7 +17,7 @@ angular.module('dashboard.services.Session', [
 
   this.logIn = function(email, password, options) {
 	  var authModel = "Users";
-	  if (config.authModel) authModel = config.authModel; 
+	  if (config.authModel) authModel = config.authModel;
        return Utils.apiHelper('POST', authModel + '/login?include=user', { email: email, password: password,  options: options})
 	      .then(function(userInfo) {
 	      	return self.setSession(userInfo);
@@ -37,13 +37,13 @@ angular.module('dashboard.services.Session', [
 		$cookieStore.remove('accessToken');
 		$cookieStore.remove('roles');
 		$cookieStore.remove('session');
-	  return Utils.apiHelper('POST', authModel + '/logout?access_token=' + accessToken);
+	  return Utils.apiHelper('POST', authModel + '/logout');
   };
 
   this.setSession = function(userInfo) {
-    return Utils.apiHelper('GET', 'Roles?access_token=' + userInfo.id)
+    return Utils.apiHelper('GET', 'Roles')
       .then(function(roles) {
-        return Utils.apiHelper('GET', 'RoleMappings?filter[where][principalId]='+userInfo.userId+'&access_token=' + userInfo.id)
+        return Utils.apiHelper('GET', 'RoleMappings?filter[where][principalId]=' + userInfo.userId)
           .then(function(roleMappings) {
             session = userInfo;
             $cookies.username = userInfo.user.username;
