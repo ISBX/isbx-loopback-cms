@@ -117,7 +117,6 @@ angular.module('dashboard.Dashboard.Model.List', [
     }
     $scope.origApiPath = $scope.apiPath;
     addQueryStringParams();
-    $scope.getTotalServerItems();
 
     $timeout(function() {
       //Custom styling override for ng-grid
@@ -130,6 +129,8 @@ angular.module('dashboard.Dashboard.Model.List', [
     angular.element($window).bind("resize", function() {
     	processWindowSize();
     });
+
+    $scope.getTotalServerItems();
 
     //Check if editing then show Save/Cancel buttons
     $scope.$on('ngGridEventStartCellEdit', function () {
