@@ -32,6 +32,7 @@ angular.module('dashboard.services.GeneralModel', [
         params.where = params.filter.where;
       }
     }
+    apiPath = apiPath + '/count';
     Utils.apiCancel('GET', apiPath); //cancels any prior calls to method + path
     return Utils.apiHelper('GET', apiPath, params);
   };
