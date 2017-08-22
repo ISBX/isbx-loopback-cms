@@ -21,7 +21,7 @@ angular.module('dashboard.directives.ModelFieldReference', [
   };
 })
 /**
- * A service that provides shared variable to 
+ * A service that provides shared variable to
  * all modelFieldReferenceEditData directives.
  */
 .factory('modelFieldReferenceEditData', [function(){
@@ -146,15 +146,7 @@ angular.module('dashboard.directives.ModelFieldReference', [
         GeneralModelService.list(apiPath, params, {preventCancel: true}).then(function(response) {
           if (!response) return; //in case http request was cancelled by newer request
           scope.list = response;
-          /**
-           * If option removeSelected is true
-           * the shared variable of model-field-reference-edit (modelReferenceEditData.items)
-           * will be used to save selected data for the comparison. This was tested only on
-           * single selection and schedule templates. Only available in single selection.
-           * It removes data that is in scope.list base 
-           * on the modelReferenceEditData.items
-           * @param  {Boolean} scope.options.removeSelected true or false
-           */
+          // Check for already selected and remove
           if (scope.options.removeSelected && !scope.options.multiple) {
             modelFieldReferenceEditData.items.forEach(function (value) {
               scope.list = scope.list.filter(function(object) {
@@ -298,16 +290,10 @@ angular.module('dashboard.directives.ModelFieldReference', [
            scope.modelData[scope.options.relationship] = scope.selected.items;
          }
        } else {
-        /**
-         * If option removeSelected is true
-         * the shared variable of model-field-reference-edit (modelFieldReferenceEditData.items)
-         * will be used to save selected data for comparison. This was tested only on
-         * single selection and schedule templates. Only available in single selection.
-         * @param  {Boolean} scope.options.removeSelected true or false
-         */
+        // Remove the already selected items
         if (scope.options.removeSelected) {
           if (scope.data) {
-            modelFieldReferenceEditData.items = modelFieldReferenceEditData.items.filter(function(item) { 
+            modelFieldReferenceEditData.items = modelFieldReferenceEditData.items.filter(function(item) {
                 return item != scope.data;
             });
           }
