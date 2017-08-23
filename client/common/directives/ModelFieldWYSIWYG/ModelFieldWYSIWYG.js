@@ -79,7 +79,7 @@ angular.module('dashboard.directives.ModelFieldWYSIWYG', [
           <a class="btn btn-default" data-edit="redo" title="Redo" ng-disabled="isEditingCode"><i class="fa fa-repeat"></i></a>\
         </div>\
         <div class="btn-group">\
-          <a class="btn btn-default" title="Edit HTML" ng-click="toggleCodeEdit()"><i class="fa fa-code"></i></a>\
+          <a class="btn btn-default" title="Edit HTML" ng-click="toggleCodeEdit()" ng-disabled="options.allowHTMLEdit === false"><i class="fa fa-code"></i></a>\
         </div>\
       </div>\
       <div class="wysiwyg-editor" ng-hide="isEditingCode"></div>\
