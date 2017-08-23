@@ -386,7 +386,7 @@ angular.module('dashboard.Dashboard.Model.List', [
     var params = setupPagination();
     var countApiPath = $scope.apiPath;
     if ($scope.action.options && $scope.action.options.searchCriteria) {
-       countApiPath = $scope.action.options.searchCriteria.custCountApi ? $scope.apiPath + '/' + $scope.action.options.searchCriteria.custCountApi : $scope.apitPath;
+       countApiPath = $scope.action.options.searchCriteria.custCountApi ? $scope.apiPath + '/' + $scope.action.options.searchCriteria.custCountApi : $scope.apiPath;
     }
     
     GeneralModelService.count(countApiPath, params)
@@ -416,7 +416,7 @@ angular.module('dashboard.Dashboard.Model.List', [
     if(!params) params = setupPagination();
       //Rudimentary Caching (could use something more robust here)
       var cacheKey = CacheService.getKeyForAction($scope.action,params);
-      if(!$scope.filterOptions.useExternalFilte) {
+      if(!$scope.filterOptions.useExternalFilter) {
         if(CacheService.get(cacheKey)) {
           //Instantly load from previous cached results for immediate response
           try {
