@@ -41,6 +41,19 @@ angular.module('dashboard.directives.ModelField', [
   };
 })
 
+.directive('mySpace', function() {
+  return function(scope, element, attrs) {
+    element.bind('keydown keypress', function (event) {
+      if (event.which === 32) {
+        scope.$apply(function () {
+          scope.$eval(attrs.mySpace);
+        });
+        event.preventDefault();
+      }
+    });
+  };
+})
+
 .directive('modelFieldEdit', function($compile, $cookies) {
   function getTemplate(type, scope) {
     var template = '';
@@ -135,7 +148,7 @@ angular.module('dashboard.directives.ModelField', [
         template = '<label class="col-sm-2 control-label">{{ display.label || key }}:</label>\
           <div class="col-sm-10 multi-select">\
             <div class="select-item checkbox-container" ng-repeat="(itemKey, itemValue) in display.options">\
-              <input type="checkbox" class="field" ng-model="multiSelectOptions[itemKey]" ng-checked="multiSelectOptions[itemKey]" ng-disabled="display.readonly">\
+              <input type="checkbox" class="field" my-space="clickMultiSelectCheckbox(key, itemKey, itemValue, multiSelectOptions)" ng-model="multiSelectOptions[itemKey]" ng-checked="multiSelectOptions[itemKey]" ng-disabled="display.readonly">\
               <label class="checkbox-label" ng-click="clickMultiSelectCheckbox(key, itemKey, itemValue, multiSelectOptions)">{{ itemValue }}</label>\
             </div>\
             <div class="model-field-description" ng-if="display.description">{{ display.description }}</div>\
