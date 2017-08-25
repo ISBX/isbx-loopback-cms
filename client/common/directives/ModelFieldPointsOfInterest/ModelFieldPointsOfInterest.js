@@ -373,7 +373,7 @@ angular.module('dashboard.directives.ModelFieldPointsOfInterest', [
 				scope.getClickedMarker = function(markerLocation) {
 					if(scope.displayedSearchResults) {
 						for(var i = 0; i < scope.displayedSearchResults.length; i++) {
-							if(google.maps.geometry.spherical.computeDistanceBetween(markerLocation, scope.displayedSearchResults[i].geometry.location) == 0) {
+							if(google.maps.geometry.spherical.computeDistanceBetween(markerLocation, scope.displayedSearchResults[i].geometry.location) == 0 && scope.data.placeId === scope.displayedSearchResults[i].placeId) {
 								scope.displayedSearchResults[i].checked = true;
 								scope.getSelectResultData(scope.displayedSearchResults[i]);
 							} else {
