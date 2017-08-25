@@ -62,7 +62,7 @@ angular.module('dashboard.directives.ModelFieldReference', [
       scope.list = [];
 
       /**
-       * Watch for scope.data. If it has no data, it will clear the selected item/s.
+       * Watch for scope.data. If it has no data, it will clear the selected item/s. 
        */
       scope.$watch('data', function() {
         if (!scope.data) scope.selected = {};
@@ -83,7 +83,7 @@ angular.module('dashboard.directives.ModelFieldReference', [
         });
         return filteredList;
       }
-
+      
       function replaceSessionVariables(string) {
         if (typeof string !== 'string') return string;
         try {

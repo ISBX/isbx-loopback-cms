@@ -120,6 +120,7 @@ angular.module('dashboard.directives.ModelField', [
               ng-model="data[key]" \
               default-date="{{data[key]}}" \
               ng-format="display.options.format" \
+              ng-time-zone="display.options.timeZone" \
               ng-view-mode="display.options.viewMode" \
               ng-required="{{ model.properties[key].required }}" ng-disabled="{{ display.readonly }}" \
               data-date-time-picker \
@@ -230,7 +231,7 @@ angular.module('dashboard.directives.ModelField', [
       case 'number':
         template = '<label class="col-sm-2 control-label">{{ display.label || key }}:</label>\
           <div class="col-sm-10">\
-            <input type="number" ng-model="data[key]" ng-pattern="{{ display.pattern }}" ng-disabled="{{ display.readonly }}" ng-required="{{ model.properties[key].required }}" class="field form-control">\
+            <input type="number" min="{{ display.minValue }}" ng-model="data[key]" ng-pattern="{{ display.pattern }}" ng-disabled="{{ display.readonly }}" ng-required="{{ model.properties[key].required }}" class="field form-control">\
             <div class="model-field-description" ng-if="display.description">{{ display.description }}</div>\
           </div>';
         break;
@@ -339,7 +340,9 @@ angular.module('dashboard.directives.ModelField', [
         }
         
         if (property.display.type == "slider") {
-          if (!scope.data[scope.key]) scope.data[scope.key] = property.display.options.from + ";" + property.display.options.to;
+          if (typeof scope.data[scope.key] === 'undefined' || scope.data[scope.key] == null) {
+            scope.data[scope.key] = property.display.options.from + ";" + property.display.options.to;
+          }
         }
 
         //See if there is a default value

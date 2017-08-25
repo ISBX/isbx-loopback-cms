@@ -50,7 +50,7 @@ angular.module('dashboard.directives.ModelFieldPointsOfInterest', [
 		function getTemplate() {
 			var repeatExpression = 'item in displayedSearchResults track by item.id';
 			var template = ' \
-        <div class="loading" ng-if="isMapLoading"><img src="http://www.nasa.gov/multimedia/videogallery/ajax-loader.gif" width="20" height="20" />Search results are loading...</div> \
+        <div class="loading" ng-if="isMapLoading"><i class="fa fa-spin fa-spinner"></i>Search results are loading...</div> \
         <div ng-show="isLoaded"> \
         <accordion close-others="oneAtATime"> \
         <accordion-group class="accordion-group" heading="Location Search" is-open="true"> \

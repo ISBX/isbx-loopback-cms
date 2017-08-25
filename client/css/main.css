@@ -98,6 +98,9 @@ model-field-file-edit button.select-file {
   width: 120px;
   cursor: pointer;
 }
+model-field-file-edit .file-upload-info {
+  margin-left: 5px;
+}
 model-field-file-edit .file-drop {
   display: none;
   margin-top: 10px;
