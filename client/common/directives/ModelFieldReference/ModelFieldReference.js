@@ -156,7 +156,7 @@ angular.module('dashboard.directives.ModelFieldReference', [
         if (scope.options.api) apiPath = replaceSessionVariables(scope.options.api);
         GeneralModelService.list(apiPath, params, {preventCancel: true}).then(function(response) {
           if (!response) return; //in case http request was cancelled by newer request
-          scope.list = scope.selected.items ? removeSelectedFromList(scope.selected.items, response, scope.options.key) : response;
+          scope.list = removeSelectedFromList(scope.selected.items, response, scope.options.key);
           if (scope.options.allowInsert) {
             var addNewItem = {};
             addNewItem[scope.options.searchField] = "[Add New Item]";
