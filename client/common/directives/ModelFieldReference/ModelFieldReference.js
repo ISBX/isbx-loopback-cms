@@ -77,11 +77,9 @@ angular.module('dashboard.directives.ModelFieldReference', [
 
       function removeSelectedFromList(selected, list, id) {
         var filteredList = _.reject(list, function(o) {
-          for (var i = 0; i < selected.length; i++) {
-            if (o[id] === selected[i][id]) {
-              return true;
-            }
-          }
+          return _.find(selected, function(s) {
+            return o[id] === s[id];
+          })
         });
         return filteredList;
       }
