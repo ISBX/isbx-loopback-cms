@@ -137,11 +137,11 @@ angular.module('dashboard.Dashboard.Model.Edit', [
     $scope.$on('onModelDelete', function(event, formParams) {
       $scope.clickDeleteModel($scope.data, formParams);
     });
-    $scope.$watch('data', function(newData, oldData) {
+    $scope.$watchCollection('data', function(newData, oldData) {
       if ($scope.isLoading) return;
       //trigger change event only after model has been loaded and actual change was detected
       $scope.$emit('onModelChange', { newData: newData, oldData: oldData });
-    }, true);
+    });
   }
 
   function layoutModelDisplay() {
