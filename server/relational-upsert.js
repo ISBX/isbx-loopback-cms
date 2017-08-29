@@ -191,8 +191,9 @@ function next(processRelationshipType, model, data, index, callback) {
  * @param callback
  */
 function upsertManyToMany(model, data, relationshipKey, relationshipData, relationSettings, callback) {
+  var message = "";
   if (!relationSettings.through) {
-    var message = "upsertManyToMany cannot proceed as no relations." + relationshipKey + ".through exists in " + model.name + " JSON definition";
+    message = "upsertManyToMany cannot proceed as no relations." + relationshipKey + ".through exists in " + model.name + " JSON definition";
     console.error("ERROR: " + message);
     //callback({ error: message });
     callback();
@@ -202,7 +203,7 @@ function upsertManyToMany(model, data, relationshipKey, relationshipData, relati
   var junctionSettings = model.settings.relations[relationSettings.through];
   if (!junctionSettings) junctionSettings = model.settings.relations[inflection.pluralize(relationSettings.through)];
   if (!junctionSettings) {
-    var message = "upsertManyToMany cannot proceed as no model.settings.relations." + relationSettings.through + " or "+ inflection.pluralize(relationSettings.through) +" exists in " + model.name + " JSON definition";
+    message = "upsertManyToMany cannot proceed as no model.settings.relations." + relationSettings.through + " or "+ inflection.pluralize(relationSettings.through) +" exists in " + model.name + " JSON definition";
     console.error("ERROR: " + message);
     //callback({ error: message });
     callback();
@@ -214,8 +215,9 @@ function upsertManyToMany(model, data, relationshipKey, relationshipData, relati
   var junctionRelations = junctionModel.settings.relations;
   var junctionRelationIdKey = null;
   var keys = Object.keys(junctionRelations);
+  var key;
   for (var i in keys) {
-    var key = keys[i];
+    key = keys[i];
     var junctionRelationshipSettings = junctionRelations[key];
     if (junctionRelationshipSettings.model == relationSettings.model) {
       junctionRelationIdKey = junctionRelationshipSettings.foreignKey;
@@ -224,7 +226,7 @@ function upsertManyToMany(model, data, relationshipKey, relationshipData, relati
   }
   
   if (!junctionRelationIdKey) {
-    var message = "upsertManyToMany cannot proceed as no relation named '" + relationSettings.model + "' exists in " + junctionSettings.model + " JSON definition";
+    message = "upsertManyToMany cannot proceed as no relation named '" + relationSettings.model + "' exists in " + junctionSettings.model + " JSON definition";
     console.error("ERROR: " + message);
     callback({ error: message });
     return;
@@ -236,7 +238,7 @@ function upsertManyToMany(model, data, relationshipKey, relationshipData, relati
   var modelId = data[modelIdKey];
   
   if (!modelId) {
-    var message = "upsertManyToMany cannot proceed as no data[modelIdKey] found for modelIdKey = '" + modelIdKey + "'";
+    message = "upsertManyToMany cannot proceed as no data[modelIdKey] found for modelIdKey = '" + modelIdKey + "'";
     console.error("ERROR: " + message);
     callback({ error: message });
     return;
@@ -249,15 +251,15 @@ function upsertManyToMany(model, data, relationshipKey, relationshipData, relati
   //FIRST Delete Any existing Primary Model's records from junction table
   var where = {};
   where[junctionModelIdKey] = modelId;
-  for (var i in relationshipData) {
-    var junctionData = relationshipData[i];
+  for (var j in relationshipData) {
+    var junctionData = relationshipData[j];
     if (junctionData && junctionData[relationIdKey]) {
       //delete only the junction table records matching the junction meta (this is import as not to delete records
       //that should not be deleted (i.e. when 2 ModelFieldReference fields exists with different junctionMeta values)
       if (junctionData.junctionMeta) {
-        var keys = Object.keys(junctionData.junctionMeta);
-        for (var i in keys) {
-          var key = keys[i];
+        keys = Object.keys(junctionData.junctionMeta);
+        for (var k in keys) {
+          key = keys[k];
           if (typeof where[key] !== 'undefined' && where[key] != junctionData.junctionMeta[key]) {
             if (typeof where[key] === 'string' || typeof where[key] === 'number') {
               where[key] = {inq: [where[key]]};

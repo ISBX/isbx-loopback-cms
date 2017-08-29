@@ -26,6 +26,7 @@ angular.module('dashboard.services.Image', [])
         var width = options.width ? options.width : image.width;
         var height = options.height ? options.height : image.height;
         var aspect = options.aspect ? options.aspect : 'fit';
+        var scale;
         switch(aspect) {
           case "stretch":
             canvas.width = width;
@@ -34,13 +35,14 @@ angular.module('dashboard.services.Image', [])
           case "fill":
             canvas.width = width;
             canvas.height = height;
-            var scale = Math.max(width / image.width, height / image.height);
+            scale = Math.max(width / image.width, height / image.height);
             width = image.width * scale;
             height = image.height * scale;
             break;
           case "fit":
+            /* falls through */
           default:
-            var scale = Math.min(width / image.width, height / image.height);
+            scale = Math.min(width / image.width, height / image.height);
             if (scale > 1.0) scale = 1.0; //don't enlarge the image
             width = image.width * scale;
             height = image.height * scale;

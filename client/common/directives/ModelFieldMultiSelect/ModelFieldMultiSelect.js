@@ -52,6 +52,8 @@ angular.module('dashboard.directives.ModelFieldMultiSelect', [])
        */
       function initOptions() {
         var options = scope.options || property.display.options;
+        var option;
+        var key;
         if (typeof options === 'string') {
           //Check if options on new line
           if (options.indexOf('\n') > -1) {
@@ -71,12 +73,12 @@ angular.module('dashboard.directives.ModelFieldMultiSelect', [])
             var item = options[i];
             if (typeof item === 'string') {
               //string option
-              var option = {key: item, value: item};
+              option = { key: item, value: item };
               scope.multiSelectOptions.push(option);
             } else if (item && typeof item === 'object') {
               //Objects (key/value pair)
-              var key = item[keyOverride] || i; //fallback to index if no key
-              var option = { key: key, value: item[valueOverride], item: item };
+              key = item[keyOverride] || i; //fallback to index if no key
+              option = { key: key, value: item[valueOverride], item: item };
               scope.multiSelectOptions.push(option);
             }
           }
@@ -85,8 +87,8 @@ angular.module('dashboard.directives.ModelFieldMultiSelect', [])
           //Assume object containing key/value pair
           var keys = Object.keys(options);
           for (var k in keys) {
-            var key = keys[k];
-            var option = { key: key, value: options[key] };
+            key = keys[k];
+            option = { key: key, value: options[key] };
             scope.multiSelectOptions.push(option);
           }
         }
@@ -96,6 +98,7 @@ angular.module('dashboard.directives.ModelFieldMultiSelect', [])
        * Initial data load by checking desired output as comma, array, or object
        */
       function initData() {
+        var index;
         if (typeof property.display.output === 'undefined') {
           var options = scope.options || property.display.options;
           property.display.output = options instanceof Array ? "comma" : "object";
@@ -107,14 +110,14 @@ angular.module('dashboard.directives.ModelFieldMultiSelect', [])
             var item = items[i];
             if (item[0] == '"') item = item.substring(1, item.length);
             if (item[item.length-1] == '"') item = item.substring(0, item.length-1);
-            var index = _.findIndex(scope.multiSelectOptions, {key: item});
+            index = _.findIndex(scope.multiSelectOptions, { key: item });
             if (index > -1) scope.selected[index] = true;
           }
         } else if (Array.isArray(scope.data)) {
           if (!scope.data) scope.data = [];
-          for (var i in scope.data) {
-            var value = scope.data[i];
-            var index = _.findIndex(scope.multiSelectOptions, {key: value});
+          for (var j in scope.data) {
+            var value = scope.data[j];
+            index = _.findIndex(scope.multiSelectOptions, { key: value });
             if (index > -1) scope.selected[index] = true;
           }
         } else if (scope.data && typeof scope.data === 'object') {
@@ -122,7 +125,7 @@ angular.module('dashboard.directives.ModelFieldMultiSelect', [])
           var keys = Object.keys(scope.data);
           for (var k in keys) {
             var key = keys[k];
-            var index = _.findIndex(scope.multiSelectOptions, {key: key});
+            index = _.findIndex(scope.multiSelectOptions, { key: key });
             if (index > -1) scope.selected[index] = true;
           }
         }

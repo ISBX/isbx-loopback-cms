@@ -73,8 +73,9 @@ angular.module('dashboard.directives.ModelFieldReference', [
           var session = JSON.parse($cookies.get('session')); //needed for eval() below
           var searchString = "{session.";
           var startPos = string.indexOf(searchString);
+          var endPos;
           while (startPos > -1) {
-            var endPos = string.indexOf("}", startPos);
+            endPos = string.indexOf("}", startPos);
             if (endPos == -1) {
               console.error("ModelList session parsing malformed for string");
               break;
@@ -87,7 +88,7 @@ angular.module('dashboard.directives.ModelFieldReference', [
           searchString = "{";
           startPos = string.indexOf(searchString);
           while (startPos > -1) {
-            var endPos = string.indexOf("}", startPos);
+            endPos = string.indexOf("}", startPos);
             if (endPos == -1) {
               console.error("ModelList session parsing malformed for string");
               break;
@@ -119,33 +120,36 @@ angular.module('dashboard.directives.ModelFieldReference', [
         var model = Config.serverParams.models[scope.options.model];
         var params = { 'filter[limit]': 100 }; //limit only 100 items in drop down list
         params['filter[where]['+scope.options.searchField+'][like]'] = "%" + search + "%";
+        var keys;
+        var key;
         if (scope.options.where) {
           //Add additional filtering on reference results
-          var keys = Object.keys(scope.options.where);
+          keys = Object.keys(scope.options.where);
           for (var i in keys) {
-            var key = keys[i];
+            key = keys[i];
             params['filter[where][' + key + ']'] = replaceSessionVariables(scope.options.where[key]);
           }
         }
         if (scope.options.filters) {
-          var keys = Object.keys(scope.options.filters);
-          for (var i in keys) {
-            var key = keys[i];
+          keys = Object.keys(scope.options.filters);
+          for (var j in keys) {
+            key = keys[j];
             params[key] = replaceSessionVariables(scope.options.filters[key]);
           }
         }
         var apiPath = model.plural;
+        var addNewItem;
         if (scope.options.api) apiPath = replaceSessionVariables(scope.options.api);
         GeneralModelService.list(apiPath, params, {preventCancel: true}).then(function(response) {
           if (!response) return; //in case http request was cancelled by newer request
           scope.list = response;
           if (scope.options.allowInsert) {
-            var addNewItem = {};
+            addNewItem = {};
             addNewItem[scope.options.searchField] = "[Add New Item]";
             scope.list.push(addNewItem);
           }
           if (scope.options.allowClear) {
-            var addNewItem = {};
+            addNewItem = {};
             addNewItem[scope.options.searchField] = "[clear]";
             scope.list.unshift(addNewItem);
 
@@ -281,11 +285,11 @@ angular.module('dashboard.directives.ModelFieldReference', [
          var textValue = item[scope.options.searchField];
           if (item && item[scope.options.searchField] == "[Add New Item]") {
             //console.log("should add " + $select.search);
-            var value = element.find("input.ui-select-search").val();
-            scope.data = value;
+            var input = element.find("input.ui-select-search").val();
+            scope.data = input;
             var newItem = {};
-            newItem[scope.options.key] = value;
-            newItem[scope.options.searchField] = value;
+            newItem[scope.options.key] = input;
+            newItem[scope.options.searchField] = input;
             scope.selected.item = newItem;
             scope.list.push(newItem);
           } else if (item && item[scope.options.searchField] == "[clear]") {
@@ -334,11 +338,11 @@ angular.module('dashboard.directives.ModelFieldReference', [
              //Remove item previously loaded using object key
              var where = {};
              where[scope.options.key] = item[scope.options.key];
-             var index = _.findIndex(scope.modelData[scope.options.relationship], where);
+             index = _.findIndex(scope.modelData[scope.options.relationship], where);
              if (index > -1) scope.modelData[scope.options.relationship].splice(index, 1);
            }
            //Look for direct reference match
-           var index = scope.modelData[scope.options.relationship].indexOf(item);
+           index = scope.modelData[scope.options.relationship].indexOf(item);
            if (index > -1) scope.modelData[scope.options.relationship].splice(index, 1);
            mergeArray(scope.selected.items, scope.modelData[scope.options.relationship]); //make sure to merge in any items previously selected
          } else {

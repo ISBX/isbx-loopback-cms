@@ -81,7 +81,7 @@ function getS3Credentials(path, fileType, callback) {
           signature: signature
   };
   callback(null, credentials);
-};
+}
 
 module.exports = {
   setConfig: function(config) {

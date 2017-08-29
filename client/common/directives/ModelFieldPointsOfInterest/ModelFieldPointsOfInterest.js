@@ -193,7 +193,7 @@ angular.module('dashboard.directives.ModelFieldPointsOfInterest', [
 				scope.doSearch();
 
 			}, function () {
-				console.error("Error loading Google Maps")
+				console.error("Error loading Google Maps");
 			});
 
 			function initMap() {
@@ -298,16 +298,19 @@ angular.module('dashboard.directives.ModelFieldPointsOfInterest', [
 					var text = "Location:  " + results[i].name;
 					var marker = new google.maps.Marker({
 						map: map,
-						position: results[i].geometry.location,
+						position: results[i].geometry.location
 					});
+					/* jshint ignore: start */
 					google.maps.event.addListener(marker, 'click', (function(marker, text) {
 						return function() {
 							markerLocation = marker.getPosition();
 							infowindow.setContent(text);
 							infowindow.open(map, marker);
 							scope.getClickedMarker(markerLocation);
-						}
+						};
 					})(marker, text));
+					/* jshint ignore:end */
+
 					scope.markers.push(marker);
 				}
 			}
@@ -412,7 +415,7 @@ angular.module('dashboard.directives.ModelFieldPointsOfInterest', [
 					} else {
 						console.log('The selection made does not exist');
 					}
-				})
+				});
 			};
 
 			scope.getSelectResultData = function (item) {

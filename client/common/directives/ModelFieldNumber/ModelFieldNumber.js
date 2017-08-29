@@ -83,40 +83,40 @@ angular.module('dashboard.directives.ModelFieldNumber', [])
           } else if (scope.ngError) {
             scope.ngError({error: null});
           }
-          return
+          return;
         }
 
         if (property.display.allowDecimal === true) {
           var decimalString = $filter('decimalWithScale')(e.target.value, property.display.scaleValue);
           if (isNaN(decimalString) && scope.ngError) {
             scope.ngError({error: new Error('Please enter a valid number')});
-            return
+            return;
           } else {
             scope.data = decimalString; /*scope.data.scale is to handle parsing the field while scale data is being entered - formEdit */
           }
           if (property.display.minValue !== undefined && isFirstDecLarger(property.display.minValue, e.target.value)) {
             if (scope.ngError) scope.ngError({error: new Error('Value is less than the minimum allowed value (' + property.display.minValue + ').')});
-            return
+            return;
           }
           if (property.display.maxValue !== undefined && isFirstDecLarger(e.target.value, property.display.maxValue)) {
             if (scope.ngError) scope.ngError({error: new Error('Value is greater than the maximum allowed value (' + property.display.maxValue + ').')});
-            return
+            return;
           }
           if (scope.ngError) scope.ngError({error: null});
         } else if (property.display.allowDecimal === false) { /*handle when don't allow decimals - needs to be explicitly implied*/
           if (isNaN(_.round(e.target.value)) || isNaN(parseInt(e.target.value))) {
             if (scope.ngError) scope.ngError({error: new Error('Please enter a valid number')});
-            return
+            return;
           }
           var roundedValue = _.round(e.target.value, 0);
           scope.data = roundedValue;
           if (property.display.minValue !== undefined && property.display.minValue > parseFloat(e.target.value)) {
             if (scope.ngError) scope.ngError({error: new Error('Value is less than the minimum allowed value (' + property.display.minValue + ').')});
-            return
+            return;
           }
           if (property.display.maxValue !== undefined && property.display.maxValue < parseFloat(e.target.value)) {
             if (scope.ngError) scope.ngError({error: new Error('Value is greater than the maximum allowed value (' + property.display.maxValue + ').')});
-            return
+            return;
           }
           if (scope.ngError) scope.ngError({error: null});
         }
@@ -134,11 +134,11 @@ angular.module('dashboard.directives.ModelFieldNumber', [])
         var dec1Components = dec1.split('.');
         var dec2Components = dec2.split('.');
         if (parseInt(dec1Components[0]) > parseInt(dec2Components[0])) {
-          return true
+          return true;
         } else if (parseInt(dec1Components[0]) < parseInt(dec2Components[0])) {
-          return false
+          return false;
         } else { /*equal so look at decimal spots */
-          var areBothPositive = (parseInt(dec1Components[0]) >= 0 && parseInt(dec2Components[0]) >= 0)
+          var areBothPositive = (parseInt(dec1Components[0]) >= 0 && parseInt(dec2Components[0]) >= 0);
           for (var i = 0; i < Math.max(dec1Components[1].length, dec2Components[1].length); i++) {
             if (dec1Components[1].charAt(i) === '') dec1Components[1] += '0';
             if (dec2Components[1].charAt(i) === '') dec2Components[1] += '0';
@@ -149,7 +149,7 @@ angular.module('dashboard.directives.ModelFieldNumber', [])
             }
           }
         }
-      };
+      }
 
       init();
     }

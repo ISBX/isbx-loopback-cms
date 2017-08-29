@@ -43,7 +43,7 @@ angular.module('dashboard.directive.DateTimePicker', [
           defaultDate: scope.defaultDate ? moment(scope.defaultDate).toDate() : undefined,
           viewMode: scope.viewMode,
           widgetPositioning: { horizontal: scope.horizontal ? scope.horizontal : 'auto' }
-        }
+        };
         if (scope.minDate) options.minDate = scope.minDate;
         if (scope.maxDate) options.maxDate = scope.maxDate;
         elem.datetimepicker(options);

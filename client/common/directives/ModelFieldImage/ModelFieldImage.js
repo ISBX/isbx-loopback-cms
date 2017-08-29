@@ -230,9 +230,10 @@ angular.module('dashboard.directives.ModelFieldImage', [
               $modal.append($container);
               $("body").append($modal);
 
+              var scale;
               if (scope.options.isLightbox) {
                 //Lightbox only
-                var scale = Math.min($container.width() / image.width, $container.height() / image.height);
+                scale = Math.min($container.width() / image.width, $container.height() / image.height);
                 var width = image.width * scale;
                 var height = image.height * scale;
                 $container.css({
@@ -245,7 +246,7 @@ angular.module('dashboard.directives.ModelFieldImage', [
                 var $zoom = $('<div style="display: inline-block; width: 70%; height: 100%;"></div>');
                 $container.append($thumbnail);
                 $container.append($zoom);
-                var scale = Math.min($thumbnail.width() / image.width, $thumbnail.height() / image.height);
+                scale = Math.min($thumbnail.width() / image.width, $thumbnail.height() / image.height);
                 var thumbnailWidth = image.width * scale;
                 var thumbnailHeight = image.height * scale;
                 $thumbnail.css({

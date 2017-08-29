@@ -26,7 +26,7 @@ angular.module('dashboard.filters', [
         value = parseInt(valueComponents[0]) + '.';
       }
       if (valueComponents[1].match(/[\D]/) !== null) {
-        return NaN
+        return NaN;
       } else if (valueComponents[1].length > scale) {
         //Truncate value
         value += valueComponents[1].substring(0, scale);

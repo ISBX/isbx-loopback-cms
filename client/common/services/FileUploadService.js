@@ -110,7 +110,9 @@ angular.module('dashboard.services.FileUpload', [
     if (!deferred) deferred = $q.defer();
     var fileKey = null; //the file key represents the model (table) column key used for reference 
     var exportKey = null; //the export key represents the various sizes of the image
+    var exportKeys = null;
     var file = null;
+    var imageFile = null;
     var currentUploadedSize = 0;
     var totalUploadSize = 0;
     
@@ -135,7 +137,7 @@ angular.module('dashboard.services.FileUpload', [
       if (!imageUploadResults) imageUploadResults = []; //initialize results object
       //Calculate File Size
       for (var i = 0; i < imageFiles.length; i++) {
-        var imageFile = imageFiles[i].file ? imageFiles[i].file : imageFiles[i];
+        imageFile = imageFiles[i].file ? imageFiles[i].file : imageFiles[i];
         if (i < fileIndex) currentUploadedSize += imageFile.size;
         totalUploadSize += imageFile.size;
       }
@@ -157,7 +159,7 @@ angular.module('dashboard.services.FileUpload', [
         file = exports; //the case where no exports are specified in options
       } else {
         //exports contains various export file objects
-        var exportKeys = Object.keys(exports);
+        exportKeys = Object.keys(exports);
         if (exportIndex >= exportKeys.length) {
           //Processed all export keys so move to next file
           fileIndex++;
@@ -177,19 +179,19 @@ angular.module('dashboard.services.FileUpload', [
       
       if (!imageUploadResults) imageUploadResults = {}; //initialize results object
       //Calculate File Size
-      for (var i = 0; i < fileKeys.length; i++) {
-        var fkey = fileKeys[i];
-        var exports = imageFiles[fkey];
+      for (var j = 0; j < fileKeys.length; j++) {
+        var fkey = fileKeys[j];
+        exports = imageFiles[fkey];
         if (exports && exports.type && exports.size) {
           //exports is a file object
-          var imageFile = exports;
-          if (i < fileIndex) {
+          imageFile = exports;
+          if (j < fileIndex) {
             currentUploadedSize += imageFile.size;
           }
           totalUploadSize += imageFile.size;
         } else if (exports && exports.file) {
-          var imageFile = exports.file;
-          if (i < fileIndex) {
+          imageFile = exports.file;
+          if (j < fileIndex) {
             currentUploadedSize += imageFile.size;
           }
           totalUploadSize += imageFile.size;
@@ -197,8 +199,8 @@ angular.module('dashboard.services.FileUpload', [
           //exports contains various export file objects
           for (var k = 0; k < exportKeys.length; k++) {
             var ekey = exportKeys[k];
-            var imageFile = exports[ekey].file ? exports[ekey].file : exports[ekey];
-            if (i < fileIndex || (i == fileIndex && k < exportIndex)) {
+            imageFile = exports[ekey].file ? exports[ekey].file : exports[ekey];
+            if (j < fileIndex || (j == fileIndex && k < exportIndex)) {
               currentUploadedSize += imageFile.size;
             }
             totalUploadSize += imageFile.size;
@@ -752,6 +754,6 @@ angular.module('dashboard.services.FileUpload', [
     }
 
     return '';
-  }
+  };
 });
 

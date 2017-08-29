@@ -13,8 +13,8 @@ angular.module('dashboard.services.GeneralModel', [
   /**
    * Returns a list of models given filter params (see loopback.io filters)
    */
-  this.list = function(apiPath, params, options) {
-    var apiPath = apiPath + (apiPath.indexOf('?')>-1 ? '&' : '?') + 'access_token=' + $cookies.get('accessToken');
+  this.list = function(path, params, options) {
+    var apiPath = path + (path.indexOf('?')>-1 ? '&' : '?') + 'access_token=' + $cookies.get('accessToken');
     if (!options || !options.preventCancel) Utils.apiCancel('GET', apiPath); //cancels any prior calls to method + path
     return Utils.apiHelper('GET', apiPath, params);
   };

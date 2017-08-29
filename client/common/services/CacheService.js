@@ -37,11 +37,11 @@ angular.module('dashboard.services.Cache', [
     if (action.options.api) key = action.options.api;
     if(params) key += this.KEY_DELIMITER + JSON.stringify(params);
     return key;
-  }
+  };
 
   this.clear = function(model) {
     var key = model;
-    var regex = new RegExp('^'+key)
+    var regex = new RegExp('^'+key);
     for(var k in localStorage)
     {
         if(regex.test(k))
@@ -51,10 +51,9 @@ angular.module('dashboard.services.Cache', [
     }
   };
 
-  this.reset = function()
-  {
+  this.reset = function() {
     localStorage.clear();
-  }
+  };
 })
 
 ;

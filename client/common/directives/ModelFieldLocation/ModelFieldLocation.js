@@ -155,7 +155,7 @@ angular.module('dashboard.directives.ModelFieldLocation', [
           });
 
       }, function () {
-          console.error("Error loading Google Maps")
+          console.error("Error loading Google Maps");
       });
 
       function initMap() {
@@ -201,7 +201,7 @@ angular.module('dashboard.directives.ModelFieldLocation', [
               }
             });
         }
-      }
+      };
 
       function initSelectedMarker() {
         //update marker
@@ -229,7 +229,7 @@ angular.module('dashboard.directives.ModelFieldLocation', [
           } else {
             var LatLng = new google.maps.LatLng(scope.data.lat,scope.data.lng);
             selectedMarker.setPosition(LatLng);
-            selectedMarker.setMap(map)
+            selectedMarker.setMap(map);
             map.setCenter(LatLng);
           }
         }
@@ -237,11 +237,11 @@ angular.module('dashboard.directives.ModelFieldLocation', [
 
       scope.clearSearch = function() {
         scope.hasSearched = false;
-      }
+      };
 
       scope.revertValue = function() {
         if( originalValue ) scope.data = originalValue;
-      }
+      };
     }
   };
 })
