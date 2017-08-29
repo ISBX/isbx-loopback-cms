@@ -41,7 +41,7 @@ angular.module('dashboard.Register', [
       .catch(function(response) {
         alert("Error registering");
       });
-  }
+  };
   
   init();
 })

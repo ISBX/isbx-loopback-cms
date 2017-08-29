@@ -156,7 +156,7 @@ angular.module('dashboard.directives.ModelField', [
         if (scope.property.display.options instanceof Array) {
           //Handle when options is array of objects containing key/value pair
           if (typeof scope.property.display.options[0] === 'object' && !Array.isArray(scope.property.display.options[0])) {
-            ngOptions = 'item.key as item.value disable when item.disabled for item in display.options'
+            ngOptions = 'item.key as item.value disable when item.disabled for item in display.options';
           } else {
             //Handle when options is a an array vs key/value pair object
             ngOptions = 'value as value for value in display.options';
@@ -175,7 +175,7 @@ angular.module('dashboard.directives.ModelField', [
         if (scope.property.display.options instanceof Array) {
           //Handle when options is array of objects containing key/value pair
           if (typeof scope.property.display.options[0] === 'object' && !Array.isArray(scope.property.display.options[0])) {
-            ngRepeat = 'item in display.options'
+            ngRepeat = 'item in display.options';
           } else {
             //Handle when options is a an array vs key/value pair
             ngRepeat = 'text in display.options';
@@ -280,6 +280,7 @@ angular.module('dashboard.directives.ModelField', [
           </div>';
         break;
       case 'text':
+        /* falls through */
       default:
         template = '<label class="col-sm-2 control-label">{{ display.label || key }}:</label>\
           <div class="col-sm-10">\
@@ -408,12 +409,12 @@ angular.module('dashboard.directives.ModelField', [
               delete scope.display.error;
               delete scope.display.errorCode;
               if (scope.ngError) scope.ngError({error: null});
-              return
+              return;
             } else if (e.target.value.length === 0 && property.display.isRequired) {
               scope.display.error = "This is a required field.";
               if (scope.ngError) scope.ngError({error: new Error(scope.display.error)});
             }
-          }
+          };
         }
 
         if (property.display.type == 'file' && scope.data[scope.key]) {
@@ -452,7 +453,7 @@ angular.module('dashboard.directives.ModelField', [
             if (value == undefined || value == null) return property.display.default;
             data[key] = value == '1' || value == 1; //Fixes a bug where data[key] changes from bool to string can cause checkbox to get unchecked
             return data[key];
-          }
+          };
           //Make sure boolean (checkbox) values are numeric (below only gets called on init and not when state changes)
           if (typeof scope.data[scope.key] === "string") scope.data[scope.key] = parseInt(scope.data[scope.key]);
         }

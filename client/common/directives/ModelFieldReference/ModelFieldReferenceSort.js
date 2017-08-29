@@ -63,7 +63,7 @@ angular.module('dashboard.directives.ModelFieldReferenceSort', [
       scope.sortableOptions = {
         placeholder: 'sortable-placeholder',
         disabled: scope.disabled
-      }
+      };
 
       function replaceSessionVariables(string) {
         if (typeof string !== 'string') return string;
@@ -72,8 +72,9 @@ angular.module('dashboard.directives.ModelFieldReferenceSort', [
           var session = JSON.parse($cookies.get('session')); //needed for eval() below
           var searchString = "{session.";
           var startPos = string.indexOf(searchString);
+          var endPos;
           while (startPos > -1) {
-            var endPos = string.indexOf("}", startPos);
+            endPos = string.indexOf("}", startPos);
             if (endPos == -1) {
               console.error("ModelList session parsing malformed for string");
               break;
@@ -86,7 +87,7 @@ angular.module('dashboard.directives.ModelFieldReferenceSort', [
           searchString = "{";
           startPos = string.indexOf(searchString);
           while (startPos > -1) {
-            var endPos = string.indexOf("}", startPos);
+            endPos = string.indexOf("}", startPos);
             if (endPos == -1) {
               console.error("ModelList session parsing malformed for string");
               break;
@@ -105,18 +106,20 @@ angular.module('dashboard.directives.ModelFieldReferenceSort', [
         var model = Config.serverParams.models[scope.options.model];
         var params = { 'filter[limit]': 100 }; //limit only 100 items in drop down list
         params['filter[where]['+scope.options.searchField+'][like]'] = "%" + search + "%";
+        var keys;
+        var key;
         if (scope.options.where) {
           //Add additional filtering on reference results
-          var keys = Object.keys(scope.options.where);
+          keys = Object.keys(scope.options.where);
           for (var i in keys) {
-            var key = keys[i];
+            key = keys[i];
             params['filter[where][' + key + ']'] = replaceSessionVariables(scope.options.where[key]);
           }
         }
         if (scope.options.filters) {
-          var keys = Object.keys(scope.options.filters);
-          for (var i in keys) {
-            var key = keys[i];
+          keys = Object.keys(scope.options.filters);
+          for (var j in keys) {
+            key = keys[j];
             params[key] = replaceSessionVariables(scope.options.filters[key]);
           }
         }

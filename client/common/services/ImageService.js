@@ -39,7 +39,9 @@ angular.module('dashboard.services.Image', [])
             width = image.width * scale;
             height = image.height * scale;
             break;
-          default: // fit
+          case "fit":
+            /* falls through */
+          default:
             scale = Math.min(width / image.width, height / image.height);
             if (scale > 1.0) scale = 1.0; //don't enlarge the image
             width = image.width * scale;

@@ -156,7 +156,7 @@ angular.module('dashboard.directives.ModelFieldWYSIWYG', [
       function initWysiwygEditor() {
         // check for multiple instances
         var instances = $('.wysiwyg-editor');
-        var instanceIdx = 0
+        var instanceIdx = 0;
         if(instances && instances.length > 0) {
           instanceIdx = instances.length;
         }

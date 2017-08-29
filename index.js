@@ -38,7 +38,6 @@ var express = require('express')
   , customSort = require('./server/sort')
   , aws = require('./server/aws.js')
   , package = require('./package.json');
-  ;
 
 
 var environment = process.env.NODE_ENV || 'development'
@@ -273,7 +272,7 @@ function cms(loopbackApplication, options) {
 
   //force browser cache refresh on custom UI modules after deployment (when service restarts)
   if (config.public.customModules) {
-    var version = Math.ceil((new Date).getTime()/300000)*300000; //unique code within 5min window (for multi-web server instances)
+    var version = Math.ceil((new Date()).getTime()/300000)*300000; //unique code within 5min window (for multi-web server instances)
     for (var i in config.public.customModules) {
       var customModule = config.public.customModules[i];
       if (!customModule.files) continue;

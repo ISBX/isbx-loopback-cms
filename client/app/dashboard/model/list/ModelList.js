@@ -166,15 +166,16 @@ angular.module('dashboard.Dashboard.Model.List', [
 	//Setup Columns in Grid
 	var columnRef = $scope.action.options.columnRef;
 	var columns = $scope.action.options.columns;
+	var subnav;
 	if (columnRef && typeof columnRef === 'object' && columnRef.label) {
 	  if (columnRef.path) {
 		//reference to another main-nav's sub-nav's columns :)
 		var section = _.find(Config.serverParams.nav, { path: columnRef.path });
-		var subnav = _.find(section.subnav, { label: columnRef.label });
+		subnav = _.find(section.subnav, { label: columnRef.label });
 		columns = subnav.options.columns;
 	  } else {
 		//reference to another subnav's columns in the same section
-		var subnav = _.find($scope.section.subnav, { label: columnRef.label });
+		subnav = _.find($scope.section.subnav, { label: columnRef.label });
 		columns = subnav.options.columns;
 	        
 	  }
@@ -292,6 +293,8 @@ angular.module('dashboard.Dashboard.Model.List', [
   function setupPagination() {
     //make a copy of config params
     var params = angular.copy($scope.action.options.params);
+    var field;
+    var direction;
 
     if (params && params.filter && params.filter.length > 0) {
       //use of filter JSON string
@@ -302,8 +305,8 @@ angular.module('dashboard.Dashboard.Model.List', [
         if ($scope.sortInfo.fields.length > 0) {
           filter.order = "";
           for (var i in $scope.sortInfo.fields) {
-            var field = $scope.sortInfo.fields[i];
-            var direction = $scope.sortInfo.directions[i];
+            field = $scope.sortInfo.fields[i];
+            direction = $scope.sortInfo.directions[i];
             if (!direction) direction = "ASC";
             if (parseInt(i) > 0) filter.order += ", ";
             filter.order += field + " " + direction;
@@ -323,11 +326,11 @@ angular.module('dashboard.Dashboard.Model.List', [
 
       if ($scope.sortInfo.fields.length > 0) {
         var sortOrder = "";
-        for (var i in $scope.sortInfo.fields) {
-          var field = $scope.sortInfo.fields[i];
-          var direction = $scope.sortInfo.directions[i];
+        for (var j in $scope.sortInfo.fields) {
+          field = $scope.sortInfo.fields[j];
+          direction = $scope.sortInfo.directions[j];
           if (!direction) direction = "ASC";
-          if (parseInt(i) > 0) sortOrder += ", ";
+          if (parseInt(j) > 0) sortOrder += ", ";
           sortOrder += field + " " + direction;
         }
 
@@ -424,8 +427,7 @@ angular.module('dashboard.Dashboard.Model.List', [
     GeneralModelService.list($scope.apiPath, params).then(
       function(response) {
         if (!response) return; //in case http request was cancelled
-        if( $scope.action.options.resultField !== undefined
-          && response[$scope.action.options.resultField] !== undefined )
+        if($scope.action.options.resultField !== undefined && response[$scope.action.options.resultField] !== undefined)
           $scope.list = response[$scope.action.options.resultField];
         else
           $scope.list = response;
@@ -440,7 +442,7 @@ angular.module('dashboard.Dashboard.Model.List', [
       function(error) {
         $scope.errorMessage = 'There was an error while loading...';
         console.error(error);
-      })
+      });
   };
   
   /**
@@ -558,18 +560,18 @@ angular.module('dashboard.Dashboard.Model.List', [
           
           //Remove all relationships to prevent upserting on the server side
           var rowKeys = Object.keys(newRow);
-          for (var i in rowKeys) {
-            var key = rowKeys[i];
-            if (newRow[key] && typeof newRow[key] === 'object') {
-              delete newRow[key];
+          for (var j in rowKeys) {
+            var rowKey = rowKeys[j];
+            if (newRow[rowKey] && typeof newRow[rowKey] === 'object') {
+              delete newRow[rowKey];
             }
           }
           
           //insert defaults as specified in config.json
           if ($scope.action.options.defaults) {
             var keys = Object.keys($scope.action.options.defaults);
-            for (var i in keys) {
-              var key = keys[i];
+            for (var k in keys) {
+              var key = keys[k];
               var property = $scope.action.options.defaults[key];
               if (property && (property.foreceDefaultOnSave || !newRow[key])) {
                 //set the default value (i.e. lastUpdated or lastUpdatedBy)
@@ -584,8 +586,8 @@ angular.module('dashboard.Dashboard.Model.List', [
           
           //check if all required fields are filled in
           if ($scope.action.options.columns) {
-            for (var i in $scope.action.options.columns) {
-              var column = $scope.action.options.columns[i];
+            for (var l in $scope.action.options.columns) {
+              var column = $scope.action.options.columns[l];
               if (column.required && !newRow[column.field]) {
                 alert("Please fill in all required fields: " + column.displayName);
                 return;
@@ -764,7 +766,7 @@ angular.module('dashboard.Dashboard.Model.List', [
       
       if (direction < 0) {
         //scrolling down
-        var scrollY = $viewport.scrollTop();
+        scrollY = $viewport.scrollTop();
         if (scrollY == 0) scrollY = -direction;
         if ($scope.gridContainerTopMargin-scrollY > 0) {
           $scope.gridContainerTopMargin -= scrollY;
@@ -792,8 +794,7 @@ angular.module('dashboard.Dashboard.Model.List', [
         }
       }
       $scope.$digest(); //Make sure to refresh UI
-      
-    }
+    };
 
     //For Mobile let entire page scroll
     if (/(iPad|iPhone|iPod|Android)/g.test( navigator.userAgent ) || $scope.action.options.flexibleHeight)  {
