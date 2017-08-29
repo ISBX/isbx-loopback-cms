@@ -170,7 +170,8 @@ function next(processRelationshipType, model, data, index, relationshipKeys, rel
     } else {
       app.models.ACL.checkAccessForContext(ctx, function(err, acl) {
         if (err) return callback(err);
-        if (acl.permission === 'DENY' && relationshipModel.settings.strictRelationalUpsert) {
+        if (acl.permission === 'DENY') {
+          if (!relationshipModel.settings.strictRelationalUpsert) return callback();
           var error = new Error('Forbidden.');
           error.status = 403;
           return callback(error);
@@ -206,7 +207,8 @@ function next(processRelationshipType, model, data, index, relationshipKeys, rel
     } else {
       app.models.ACL.checkAccessForContext(ctx, function(err, acl) {
         if (err) return callback(err);
-        if (acl.permission === 'DENY' && relationshipModel.settings.strictRelationalUpsert) {
+        if (acl.permission === 'DENY') {
+          if (!relationshipModel.settings.strictRelationalUpsert) return callback();
           var error = new Error('Forbidden.');
           error.status = 403;
           return callback(error);
