@@ -1,6 +1,6 @@
 {
+  "evil": true,
   "laxcomma": true,
   "multistr": true,
-  "sub": true,
-  "evil": true
+  "sub": true
 }
