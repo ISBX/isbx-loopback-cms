@@ -1,0 +1,6 @@
+{
+  "laxcomma": true,
+  "multistr": true,
+  "sub": true,
+  "evil": true
+}

@@ -90,9 +90,10 @@ angular.module('dashboard.services.Session', [
     var path = toParams.model; // model = config.nav[].path
     var label = toParams.action;// action = config.nav[].label
     var roles = angular.fromJson($cookies.get('roles'));
+    var found;
 
     if(!_.isEmpty(path)) { //check subnavs
-      var found = _.find(nav, { path: path });
+      found = _.find(nav, { path: path });
       if(found) {
         if(!DashboardService.hasAccess(roles, found)) return false;
         if(_.isArray(found.subnav) && !_.isEmpty(label)) {
@@ -101,7 +102,7 @@ angular.module('dashboard.services.Session', [
         }
       }
     } else { // check top nav using state
-      var found = _.find(nav, { state: state });
+      found = _.find(nav, { state: state });
       if(found) return DashboardService.hasAccess(roles, found);
     }
 
