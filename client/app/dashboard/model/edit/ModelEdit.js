@@ -5,6 +5,7 @@ angular.module('dashboard.Dashboard.Model.Edit', [
   'dashboard.services.Cache',
   'dashboard.services.GeneralModel',
   'dashboard.services.FileUpload',
+  'dashboard.filters.locale',
   'ui.router',
   'ui.bootstrap',
   'ui.bootstrap.datepicker',
@@ -27,12 +28,24 @@ angular.module('dashboard.Dashboard.Model.Edit', [
     ;
 })
 
-.controller('ModelEditCtrl', function ModelEditCtrl($rootScope, $scope, $cookies, $location, $stateParams, $state, $window, $modal, Config, GeneralModelService, FileUploadService, CacheService) {
+.constant('modelEditConstants', {
+  'keys': {
+      'save': 'button.save',
+      'delete':'button.delete',
+      'confirmMessage':'button.delete.confirm'
+  },
+  'defaults': {
+      'save': 'Save',
+      'delete': 'Delete',
+      'confirmMessage': 'Are you sure you want to delete this record?'
+  }
+})
+
+.controller('ModelEditCtrl', function ModelEditCtrl($rootScope, $scope, $cookies, $location, $stateParams, $state, $window, $modal, $filter, Config, GeneralModelService, FileUploadService, CacheService, modelEditConstants, $translate) {
   "ngInject";
 
   var modalInstance = null;
   function init() {
-
     $scope.hideSideMenu();
     if ($window.ga) $window.ga('send', 'pageview', { page: $location.path() });
 
@@ -48,15 +61,25 @@ angular.module('dashboard.Dashboard.Model.Edit', [
       $scope.model.properties[key].display.readonly = true;
     }
 
-    //Check if readonly view
-    if ($scope.action.options.readonly) {
-      var keys = Object.keys($scope.model.properties);
-      for (var i in keys) {
-        var key = keys[i];
-        if (!$scope.model.properties[key].display) $scope.model.properties[key].display = {};
-        $scope.model.properties[key].display.readonly = true;
+    //Get locale
+    var languageCode = $translate.use();//retrieve currently used language key
+    $scope.locale = $filter('iso-639-1')(languageCode); //convert ISO 639-2 to 639-1 for datetime
+
+    _.forEach($scope.model.properties, function(property) {
+      if (!property.display) property.display = {};
+      if (!property.display.options) property.display.options = {};
+      if($scope.action.options.readonly) {//Check if readonly view
+        property.display.readonly = true;
       }
-    }
+      if (typeof property.type === 'string') {
+        switch (property.type.toLowerCase()) {
+            case 'date':
+            case 'datetime':
+              property.display.options.locale = $scope.locale;
+              break;
+        }
+      }
+    });
 
     $scope.isLoading = true;
     $scope.data = {};
@@ -93,14 +116,17 @@ angular.module('dashboard.Dashboard.Model.Edit', [
       $scope.isLoading = false;
     }
 
-    //Load Strings
-    if (!Config.serverParams.strings) {
-      Config.serverParams.strings = {};
-    }
-    $scope.saveButtonText = Config.serverParams.strings.saveButton;
-    $scope.deleteButtonText = Config.serverParams.strings.deleteButton;
-    $scope.deleteDialogText = Config.serverParams.strings.deleteDiaglog ? Config.serverParams.strings.deleteDiaglog : "Are you sure you want to delete?";
 
+    $translate([modelEditConstants.keys.save, modelEditConstants.keys.delete, modelEditConstants.keys.confirmMessage])
+      .then(function (translated) { // If translation fails or errors, use default strings
+        $scope.saveButtonText = (translated[modelEditConstants.keys.save]==modelEditConstants.keys.save) ? modelEditConstants.defaults.save:translated[modelEditConstants.keys.save];
+        $scope.deleteButtonText = (translated[modelEditConstants.keys.delete]==modelEditConstants.keys.delete) ? modelEditConstants.defaults.delete:translated[modelEditConstants.keys.delete];
+        $scope.deleteDialogText = (translated[modelEditConstants.keys.confirmMessage]==modelEditConstants.keys.confirmMessage) ? modelEditConstants.defaults.confirmMessage:translated[modelEditConstants.keys.confirmMessage];
+      }, function(transId) {
+        $scope.saveButtonText = modelEditConstants.defaults.save;
+        $scope.deleteButtonText = modelEditConstants.defaults.delete;
+        $scope.deleteDialogText = modelEditConstants.defaults.confirmMessage;
+      });
     //for deprecation
     $scope.$on('saveModel', function() { $scope.clickSaveModel($scope.data); });
     $scope.$on('deleteModel', function(event, formParams) {
@@ -111,11 +137,11 @@ angular.module('dashboard.Dashboard.Model.Edit', [
     $scope.$on('onModelDelete', function(event, formParams) {
       $scope.clickDeleteModel($scope.data, formParams);
     });
-    $scope.$watch('data', function(newData, oldData) {
+    $scope.$watchCollection('data', function(newData, oldData) {
       if ($scope.isLoading) return;
       //trigger change event only after model has been loaded and actual change was detected
       $scope.$emit('onModelChange', { newData: newData, oldData: oldData });
-    }, true);
+    });
   }
 
   function layoutModelDisplay() {
@@ -147,27 +173,39 @@ angular.module('dashboard.Dashboard.Model.Edit', [
         $rootScope.$broadcast('modelEditSaved');
         if (callback) callback(response);
       },
-      function(error) {
-        $rootScope.$broadcast('modelEditSaveFailed', { error: error });
-        if (typeof error === 'object' && error.message) {
-          alert(error.message);
-        } else if (typeof error === 'object' && error.error && error.error.message) {
-          alert(error.error.message);
-        } else if (typeof error === 'object' && error.code) {
-          switch (error.code) {
-            case "ER_DUP_ENTRY": alert("There was a duplicate entry found. Please make sure the entry is unique."); break;
-          }
-        } else if (typeof error === 'object') {
-          alert(JSON.stringify(error));
-        } else {
-          alert(error);
-        }
-        if (modalInstance) modalInstance.close();
-      },
-      function(status) {
-        if (status.message) $scope.status = status.message;
-        if (status.progress) $scope.progress = status.progress;
-      });
+      displayError,
+      displayStatus);
+  }
+
+  function displayError(error) {
+    $rootScope.$broadcast('modelEditSaveFailed', { error: error });
+    if (_.isPlainObject(error)) {
+      if (typeof error.translate === 'string' && error.translate.length > 0) {
+        var msg = $translate.instant(error.translate);
+        if (msg === error.translate) msg = error.message; //if no translation then display english message
+        alert(msg);
+      } else if (error.code || error.message) {
+        if (error.code === 'ER_DUP_ENTRY') error.message = "There was a duplicate entry found. Please make sure the entry is unique.";
+        alert(error.message);
+      } else if (error.error) {
+        displayError(error.error)
+      } else {
+        alert(angular.toJson(error))
+      }
+    } else {
+      alert(error);
+    }
+    if (modalInstance) modalInstance.close();
+  }
+
+  function displayStatus(status) {
+    if (_.isPlainObject(status)) {
+      if (status.translate) {
+        var statusMsg = $translate.instant(status.translate, status.params);
+        $scope.status = (statusMsg === status.translate) ? status.message : statusMsg;
+      } else if (status.message) $scope.status = status.message;
+      if (status.progress) $scope.progress = status.progress;
+    }
   }
 
 
@@ -175,8 +213,7 @@ angular.module('dashboard.Dashboard.Model.Edit', [
    * Check to see if any file upload functionality exist and upload files first then call to save the model data
    */
   $scope.clickSaveModel = function(data) {
-    $scope.status = "Saving...";
-    $scope.progress = 0.0;
+    displayStatus({message:"Saving", translate:"cms.status.saving", progress:0.0});
     modalInstance = $modal.open({
       templateUrl: 'app/dashboard/model/edit/ModelEditSaveDialog.html',
       controller: 'ModelEditSaveDialogCtrl',
