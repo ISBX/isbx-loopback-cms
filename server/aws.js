@@ -35,7 +35,7 @@ var awsConfig;
  * @param fileType
  *  The MIME type of the file being uploaded and must be defined in the config.json under private.asws.s3.path[path][fileType]
  */
-function getS3Credentials(path, fileType, callback) {
+function getS3Credentials(path, fileType, acl, callback) {
   var acceptableFileTypes = awsConfig.s3.path[path];
   if (!acceptableFileTypes) {
     callback({error: "Invalid path value"});
@@ -56,7 +56,7 @@ function getS3Credentials(path, fileType, callback) {
   var policy = {
           expiration: expirationDate,
           conditions: [{ bucket: awsConfig.s3.bucket },
-                       { acl: "public-read" },
+                       { acl: acl },
                        { success_action_status: "201" },
                        ["starts-with", "$key", path + "/"],
                        //["starts-with", "$Content-Type", fileType],
@@ -87,7 +87,7 @@ module.exports = {
   setConfig: function(config) {
     awsConfig = config.aws;
   },
-  getS3Credentials: function(cmsKey, fileExtension, callback) {
-    getS3Credentials(cmsKey, fileExtension, callback);
+  getS3Credentials: function(cmsKey, fileExtension, acl, callback) {
+    getS3Credentials(cmsKey, fileExtension, acl, callback);
   }
 };

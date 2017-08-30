@@ -50,8 +50,14 @@ angular.module('dashboard.services.Image', [])
         self.setOrientation(canvas, context, width, height, orientation);
         context.drawImage(image, 0, 0, width, height);
         context.restore();
-        var dataUrl = canvas.toDataURL("image/jpeg", 0.8);
-        callback(null, dataUrl);
+
+        try {
+          var dataUrl = canvas.toDataURL("image/jpeg", 0.8);
+          callback(null, dataUrl);
+        } catch(e) {
+          callback(null, dataURI);
+        }
+
       });
     });    
   };
