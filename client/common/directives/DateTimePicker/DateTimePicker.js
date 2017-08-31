@@ -16,6 +16,7 @@ angular.module('dashboard.directive.DateTimePicker', [
           viewMode: '@',
           ngViewMode: '=ngViewMode',
           horizontal: '@',
+          locale: '@',
           maxDate: '@',
           minDate: '@'
       },
@@ -24,6 +25,12 @@ angular.module('dashboard.directive.DateTimePicker', [
         //If no static attribute then use dynamic angular attributes
         if (!scope.format) scope.format = scope.ngFormat;
         if (!scope.viewMode) scope.viewMode = scope.ngViewMode;
+
+        if (scope.format && scope.format.indexOf('DD-MMM-YYYY') > -1 && scope.locale === 'es') {
+          //Hack to fix spanish date parsing via Spanish for DD-MMM-YYYY format as
+          //Spanish uses period abbreviation for MMM
+          scope.format = scope.format.replace('DD-MMM-', 'DD MMM ');
+        }
 
         ngModel.$formatters.push(function(value) {
           //Format the passed in date
@@ -40,6 +47,7 @@ angular.module('dashboard.directive.DateTimePicker', [
         var options = {
           format: scope.format,
           useCurrent: false,
+          locale: scope.locale,
           defaultDate: scope.defaultDate ? moment(scope.defaultDate).toDate() : undefined,
           viewMode: scope.viewMode,
           widgetPositioning: { horizontal: scope.horizontal ? scope.horizontal : 'auto' }
@@ -57,6 +65,7 @@ angular.module('dashboard.directive.DateTimePicker', [
         //On Blur update the ng-model
         elem.on('blur', function () {
           if (!scope.format) scope.format = scope.ngFormat;
+          if (scope.locale) moment.locale(scope.locale);
           var dateValue = moment(elem.val(), scope.format);
           if (dateValue.isValid()) {
             ngModel.$setViewValue(dateValue);
