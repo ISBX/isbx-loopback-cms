@@ -37,6 +37,7 @@ angular.module('dashboard.services.Session', [
 		$cookieStore.remove('accessToken');
 		$cookieStore.remove('roles');
 		$cookieStore.remove('session');
+		session = null;
 	  return Utils.apiHelper('POST', authModel + '/logout');
   };
 
