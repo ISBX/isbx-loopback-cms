@@ -735,7 +735,7 @@ angular.module('dashboard.Dashboard.Model.List', [
   }, true);
 
   $scope.$watch('gridOptions.$gridScope.filterText', _.debounce(function (newVal, oldVal) {
-    if (!newVal && newVal != oldVal) {
+    if (newVal && newVal != oldVal) {
       $scope.$apply(function() {
         $scope.pagingOptions.currentPage = 1;
         $scope.filterOptions.filterText = newVal;
