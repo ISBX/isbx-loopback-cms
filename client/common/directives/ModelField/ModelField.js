@@ -55,7 +55,7 @@ angular.module('dashboard.directives.ModelField', [
         template = '<label class="col-sm-2 control-label">{{ display.label || key | translate }}:</label> \
           <div class="col-sm-10"> \
             <div class="error-message" ng-if="display.error.length > 0">{{ display.error }}</div>\
-            <model-field-reference-edit key="key" property="property" options="display.options" model-data="data" ng-model="data[key]" class="field" ng-required="{{ model.properties[key].required }}" ng-disabled="display.readonly"  /> \
+            <model-field-reference-edit key="key" property="property" options="display.options" model-data="data" ng-model="data[key]" class="field" ng-required="{{ model.properties[key].required || property.display.required }}" ng-disabled="display.readonly" /> \
             <div class="model-field-description" ng-if="display.description">{{ display.description | translate }}</div>\
           </div>' ;
         break;

@@ -137,11 +137,11 @@ angular.module('dashboard.Dashboard.Model.Edit', [
     $scope.$on('onModelDelete', function(event, formParams) {
       $scope.clickDeleteModel($scope.data, formParams);
     });
-    $scope.$watch('data', function(newData, oldData) {
+    $scope.$watchCollection('data', function(newData, oldData) {
       if ($scope.isLoading) return;
       //trigger change event only after model has been loaded and actual change was detected
       $scope.$emit('onModelChange', { newData: newData, oldData: oldData });
-    }, true);
+    });
   }
 
   function layoutModelDisplay() {
@@ -178,6 +178,7 @@ angular.module('dashboard.Dashboard.Model.Edit', [
   }
 
   function displayError(error) {
+    $rootScope.$broadcast('modelEditSaveFailed', { error: error });
     if (_.isPlainObject(error)) {
       if (typeof error.translate === 'string' && error.translate.length > 0) {
         var msg = $translate.instant(error.translate);

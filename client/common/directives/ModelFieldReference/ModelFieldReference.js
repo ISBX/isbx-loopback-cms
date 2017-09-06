@@ -66,6 +66,16 @@ angular.module('dashboard.directives.ModelFieldReference', [
       scope.selected.item = null; //for single select; initialize to null so placeholder is displayed
       scope.list = [];
 
+      scope.$watch('selected.items', function(newValue, oldValue) {
+        var hasClass = element.hasClass('ng-invalid');
+        if (scope.property.display.required && newValue && newValue.length === 0) {
+           element.addClass('ng-invalid');
+        }
+        if (newValue && newValue.length > 0 && hasClass) {
+            element.removeClass('ng-invalid');
+        }
+      });
+
       function replaceSessionVariables(string) {
         if (typeof string !== 'string') return string;
         try {

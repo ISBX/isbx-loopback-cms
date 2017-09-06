@@ -1007,10 +1007,23 @@ model-field-edit .error-message:after {
 }
 model-field-reference-edit {
   display: block;
+  height: auto;
   border-radius: 4px;
 }
 model-field-reference-edit .close {
   padding-top: 2px;
+}
+model-field-reference-edit .ui-select-multiple.ui-select-bootstrap {
+  height: 33px;
+}
+model-field-reference-edit .ui-select-multiple.ui-select-bootstrap input.ui-select-search {
+  position: absolute;
+}
+model-field-reference-edit .dropdown {
+  padding-bottom: 1px;
+}
+model-field-reference-edit.ng-valid.ng-valid-required .ui-select-container.ui-select-multiple.ui-select-bootstrap.dropdown.form-control.ng-valid.ng-not-empty {
+  height: auto;
 }
 model-field-file-edit button.select-file {
   min-width: 120px;
