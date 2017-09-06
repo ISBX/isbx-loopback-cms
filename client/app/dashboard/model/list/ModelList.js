@@ -735,8 +735,8 @@ angular.module('dashboard.Dashboard.Model.List', [
   }, true);
 
   $scope.$watch('gridOptions.$gridScope.filterText', _.debounce(function (newVal, oldVal) {
-    if(newVal != oldVal && newVal != undefined) {
-      $scope.$apply(function () {
+    if (!newVal && newVal != oldVal) {
+      $scope.$apply(function() {
         $scope.pagingOptions.currentPage = 1;
         $scope.filterOptions.filterText = newVal;
         $scope.getTotalServerItems();
