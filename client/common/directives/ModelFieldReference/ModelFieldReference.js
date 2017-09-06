@@ -21,7 +21,15 @@ angular.module('dashboard.directives.ModelFieldReference', [
   };
 })
 
-.directive('modelFieldReferenceEdit', function($compile, $cookies, Config, GeneralModelService) {
+/**
+ * A service that provides shared variable to
+ * all modelFieldReferenceEdit directives.
+ */
+.factory('modelFieldReferenceEditData', [function(){
+  return { items: [] };
+}])
+
+.directive('modelFieldReferenceEdit', function($compile, $cookies, Config, GeneralModelService, modelFieldReferenceEditData) {
   "ngInject";
 
   function getTemplate(multiple, matchTemplate, choiceTemplate) {
@@ -149,6 +157,16 @@ angular.module('dashboard.directives.ModelFieldReference', [
         GeneralModelService.list(apiPath, params, {preventCancel: true}).then(function(response) {
           if (!response) return; //in case http request was cancelled by newer request
           scope.list = response;
+          // Check for already selected and remove
+          if (scope.options.removeSelected && !scope.options.multiple) {
+            modelFieldReferenceEditData.items.forEach(function (value) {
+              scope.list = scope.list.filter(function(object) {
+                  if (object[scope.options.key] != value) {
+                    return object;
+                  }
+              });
+            });
+          }
           if (scope.options.allowInsert) {
             var addNewItem = {};
             addNewItem[scope.options.searchField] = "[Add New Item]";
@@ -283,6 +301,15 @@ angular.module('dashboard.directives.ModelFieldReference', [
            scope.modelData[scope.options.relationship] = scope.selected.items;
          }
        } else {
+         // Remove the already selected items
+         if (scope.options.removeSelected) {
+           if (scope.data) {
+             modelFieldReferenceEditData.items = modelFieldReferenceEditData.items.filter(function(item) {
+               return item != scope.data;
+             });
+           }
+           modelFieldReferenceEditData.items.push(item[scope.options.key]);
+         }
          //For single record reference just assign the ID back to data
          scope.data = item[scope.options.key];
          if (scope.rowData) scope.rowData[scope.options.key] = scope.data; //work around for ui-grid not being able to set ng-model for cell edit
