@@ -358,6 +358,17 @@ angular.module('dashboard.Dashboard.Model.List', [
           });
         }
       }
+      // Search Criteria
+      if($scope.action.options.searchCriteria && $scope.gridOptions.filterOptions.filterText) {
+        params = GeneralModelService.queryStringParamsToJSON(params);
+        var filterText = $scope.gridOptions.filterOptions.filterText;
+        var searchFields = $scope.action.options.searchCriteria.searchFields;
+        angular.forEach(searchFields, function(field, idx) {
+          var key = 'filter[where][or][' + idx + '][' + field + '][like]';
+          params = _.set(params, key, '%' + filterText + '%');
+        });
+      }
+
     }
     
     //TODO: Figure out a better way to preserve state; the following
@@ -373,7 +384,12 @@ angular.module('dashboard.Dashboard.Model.List', [
   
   $scope.getTotalServerItems = function() {
     var params = setupPagination();
-    GeneralModelService.count($scope.apiPath, params)
+    var countApiPath = $scope.apiPath;
+    if ($scope.action.options && $scope.action.options.searchCriteria) {
+       countApiPath = $scope.action.options.searchCriteria.custCountApi ? $scope.apiPath + '/' + $scope.action.options.searchCriteria.custCountApi : $scope.apiPath;
+    }
+    
+    GeneralModelService.count(countApiPath, params)
     .then(function(response) {
       if (!response) return; //in case http request was cancelled
       //Check if response is an array or object
@@ -719,8 +735,8 @@ angular.module('dashboard.Dashboard.Model.List', [
   }, true);
 
   $scope.$watch('gridOptions.$gridScope.filterText', _.debounce(function (newVal, oldVal) {
-    if(newVal != oldVal) {
-      $scope.$apply(function () {
+    if (newVal && newVal != oldVal) {
+      $scope.$apply(function() {
         $scope.pagingOptions.currentPage = 1;
         $scope.filterOptions.filterText = newVal;
         $scope.getTotalServerItems();
