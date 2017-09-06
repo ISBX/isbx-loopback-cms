@@ -22,7 +22,7 @@ angular.module('dashboard.Dashboard.Model.List', [
     ;
 })
 
-.controller('ModelListCtrl', function ModelListCtrl($scope, $cookies, $timeout, $state, $location, $window, $modal, Config, GeneralModelService, CacheService) {
+.controller('ModelListCtrl', function ModelListCtrl($scope, $cookies, $timeout, $state, $location, $window, $modal, Config, GeneralModelService, CacheService, $q) {
   var isFirstLoad = true;
   var modalInstance = null;
 
@@ -373,26 +373,27 @@ angular.module('dashboard.Dashboard.Model.List', [
   
   $scope.getTotalServerItems = function() {
     var params = setupPagination();
-    GeneralModelService.count($scope.apiPath, params)
-    .then(function(response) {
-      if (!response) return; //in case http request was cancelled
-      //Check if response is an array or object
-      if (typeof response === 'string') {
-        $scope.totalServerItems = response;
-      } else {
-        if (response instanceof Array && response.length > 0) response = response[0];
-        var keys = Object.keys(response);
-        if (!response.count && keys.length > 0) {
-          response.count = response[keys[0]]; //grab first key as the count if count property doesn't exist
+    var countPromise = GeneralModelService.count($scope.apiPath, params)
+      .then(function(response) {
+        if (!response) return; //in case http request was cancelled
+        //Check if response is an array or object
+        if (typeof response === 'string') {
+          $scope.totalServerItems = response;
+        } else {
+          if (response instanceof Array && response.length > 0) response = response[0];
+          var keys = Object.keys(response);
+          if (!response.count && keys.length > 0) {
+            response.count = response[keys[0]]; //grab first key as the count if count property doesn't exist
+          }
+          $scope.totalServerItems = response.count;
         }
-        $scope.totalServerItems = response.count;
-      }
-      $scope.loadItems(params);
-    },
-    function(error) {
+      });
+      
+    $q.all([countPromise, $scope.loadItems(params)])
+      .catch(function(err) {
         $scope.errorMessage = 'There was an error while loading...';
         console.error(error);
-    });
+      });
   };
 
   $scope.loadItems = function(params) {
