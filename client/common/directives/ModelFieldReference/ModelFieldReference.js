@@ -230,26 +230,30 @@ angular.module('dashboard.directives.ModelFieldReference', [
           //Lookup default reference record
           var model = Config.serverParams.models[scope.options.model];
           //unwatch(); //due to late binding need to unwatch here
-          GeneralModelService.get(model.plural, scope.data)
-          .then(function(response) {
-            if (!response) return;  //in case http request was cancelled
-            //console.log("default select = " + JSON.stringify(response));
-            scope.selected.item = response;
-            assignJunctionMeta();
-            scope.list = [scope.selected.item]; //make sure list contains item otherwise won't be displayed
-            if (scope.onModelChanged) scope.onModelChanged({'$item': scope.selected.item});
-          }, function(error) {
-              if (scope.options.allowInsert) {
-                //Not found so just add the item
-                var newItem = {};
-                newItem[scope.options.key] = scope.data;
-                newItem[scope.options.searchField] = scope.data;
-                scope.selected.item = newItem;
-                assignJunctionMeta();
-                scope.list.push(newItem);
-              }
+          if (scope.options.apiOff) {
+            // do nothing - don't call the api
+          } else {
+            GeneralModelService.get(model.plural, scope.data)
+            .then(function(response) {
+              if (!response) return;  //in case http request was cancelled
+              //console.log("default select = " + JSON.stringify(response));
+              scope.selected.item = response;
+              assignJunctionMeta();
+              scope.list = [scope.selected.item]; //make sure list contains item otherwise won't be displayed
+              if (scope.onModelChanged) scope.onModelChanged({'$item': scope.selected.item});
+            }, function(error) {
+                if (scope.options.allowInsert) {
+                  //Not found so just add the item
+                  var newItem = {};
+                  newItem[scope.options.key] = scope.data;
+                  newItem[scope.options.searchField] = scope.data;
+                  scope.selected.item = newItem;
+                  assignJunctionMeta();
+                  scope.list.push(newItem);
+                }
 
-          });
+            });
+          }
         }
      });
 
