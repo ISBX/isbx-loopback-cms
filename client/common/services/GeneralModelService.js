@@ -285,14 +285,14 @@ angular.module('dashboard.services.GeneralModel', [
 
   this.validateRequiredFields = function(model, data) {
     var invalids = model.display.filter(function(item) {
-    var property;
-    if (typeof item === 'string') {
-      property = model.properties[item];
-      return (property.required && !data[item]);
-    } else if(typeof item === 'object') {
-      return (item.required && item.options && item.options.relationship && _.isEmpty(data[item.options.relationship]));
-    }
-    return false;
+      var property;
+      if (typeof item === 'string') {
+        property = model.properties[item];
+        return (property.required && !data[item]);
+      } else if(typeof item === 'object') {
+        return (item.required && item.options && item.options.relationship && _.isEmpty(data[item.options.relationship]));
+      }
+      return false;
     });
     return _.isEmpty(invalids);
   };
