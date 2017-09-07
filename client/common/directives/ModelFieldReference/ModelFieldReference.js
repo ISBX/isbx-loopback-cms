@@ -74,6 +74,7 @@ angular.module('dashboard.directives.ModelFieldReference', [
         if (newValue && newValue.length > 0 && hasClass) {
             element.removeClass('ng-invalid');
         }
+        scope.$emit('onModelFieldReferenceChange', (scope.options.relationship)? scope.options.relationship : scope.key, newValue, oldValue);
       });
 
       function replaceSessionVariables(string) {
