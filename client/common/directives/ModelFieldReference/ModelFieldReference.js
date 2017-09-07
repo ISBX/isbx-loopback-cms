@@ -68,12 +68,13 @@ angular.module('dashboard.directives.ModelFieldReference', [
 
       scope.$watch('selected.items', function(newValue, oldValue) {
         var hasClass = element.hasClass('ng-invalid');
-        if (scope.property.display.required && newValue && newValue.length === 0) {
+        if (scope.property && scope.property.display && scope.property.display.required && newValue && newValue.length === 0) {
            element.addClass('ng-invalid');
         }
         if (newValue && newValue.length > 0 && hasClass) {
             element.removeClass('ng-invalid');
         }
+        scope.$emit('onModelFieldReferenceChange', (scope.options.relationship)? scope.options.relationship : scope.key, newValue, oldValue);
       });
 
       function replaceSessionVariables(string) {
