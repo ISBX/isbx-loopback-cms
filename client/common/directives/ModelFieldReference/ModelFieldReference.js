@@ -66,8 +66,10 @@ angular.module('dashboard.directives.ModelFieldReference', [
       scope.selected.item = null; //for single select; initialize to null so placeholder is displayed
       scope.list = [];
 
-      scope.$watch('selected.items', function(newValue, oldValue) {
+      scope.$watch('selected', function(newData, oldData) {
         var hasClass = element.hasClass('ng-invalid');
+        var newValue = (scope.options && scope.options.multiple) ? newData.items : newData.item;
+        var oldValue = (scope.options && scope.options.multiple) ? oldData.items : oldData.item;
         if (!newValue || newValue.length <= 0) {
           if ((scope.property) && (scope.property.required || (scope.property.display && scope.property.display.required))) {
             element.addClass('ng-invalid');
@@ -75,10 +77,8 @@ angular.module('dashboard.directives.ModelFieldReference', [
         } else if(hasClass) {
           element.removeClass('ng-invalid');
         }
-        // prevent empty array values for single select reference fields
-        if (!(scope.options && scope.options.multiple) && Array.isArray(newValue) && newValue.length <= 0) newValue = null;
         scope.$emit('onModelFieldReferenceChange', (scope.options.relationship)? scope.options.relationship : scope.key, newValue, oldValue);
-      });
+      }, true);
 
       function replaceSessionVariables(string) {
         if (typeof string !== 'string') return string;
