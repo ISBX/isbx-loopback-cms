@@ -86,7 +86,7 @@ module.exports = {
       'vendor/bootstrap/js/transition.js',
       'vendor/oclazyload/dist/ocLazyLoad.min.js',
       'vendor/angular-google-chart/ng-google-chart.js',
-      'vendor/moment/min/moment.min.js',
+      'vendor/moment/min/moment-with-locales.js',
       'vendor/fullcalendar/dist/fullcalendar.js',
       'vendor/fullcalendar/dist/gcal.js',
       'vendor/eonasdan-bootstrap-datetimepicker/build/js/bootstrap-datetimepicker.min.js',

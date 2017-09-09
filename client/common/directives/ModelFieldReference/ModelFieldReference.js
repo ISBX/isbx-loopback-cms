@@ -66,6 +66,16 @@ angular.module('dashboard.directives.ModelFieldReference', [
       scope.selected.item = null; //for single select; initialize to null so placeholder is displayed
       scope.list = [];
 
+      scope.$watch('selected.items', function(newValue, oldValue) {
+        var hasClass = element.hasClass('ng-invalid');
+        if (scope.property.display.required && newValue && newValue.length === 0) {
+           element.addClass('ng-invalid');
+        }
+        if (newValue && newValue.length > 0 && hasClass) {
+            element.removeClass('ng-invalid');
+        }
+      });
+
       function replaceSessionVariables(string) {
         if (typeof string !== 'string') return string;
         try {
@@ -277,7 +287,7 @@ angular.module('dashboard.directives.ModelFieldReference', [
          scope.data = item[scope.options.key];
          if (scope.rowData) scope.rowData[scope.options.key] = scope.data; //work around for ui-grid not being able to set ng-model for cell edit
          //emit an event when an item is selected
-         scope.$emit('onModelFieldReferenceSelect', scope.modelData, scope.key, item);
+         scope.$emit('onModelFieldReferenceSelect', scope.modelData, scope.key, item, scope.rowData);
          var textValue = item[scope.options.searchField];
           if (item && item[scope.options.searchField] == "[Add New Item]") {
             //console.log("should add " + $select.search);

@@ -52,7 +52,7 @@ angular.module('dashboard.Dashboard', [
       //Fail elegantly 
       console.error("Unable to parse $cookies.get(session)", e);
     }
-    console.log('DashboardCtrl: $scope.userInfo', $scope.userInfo);
+    // console.log('DashboardCtrl: $scope.userInfo', $scope.userInfo);
     $scope.title = Config.serverParams.title || 'Content Management System';
     $scope.nav = DashboardService.getNavigation();
 

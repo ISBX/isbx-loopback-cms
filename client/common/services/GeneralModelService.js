@@ -121,13 +121,13 @@ angular.module('dashboard.services.GeneralModel', [
 
     var uploadImages = function(callback) {
       if (data.__ModelFieldImageData) {
-        deferred.notify({message: "Uploading image file(s)", progress: 0});
+        deferred.notify({message: "Uploading image file(s)", progress: 0, translate:"cms.status.uploading_image_files"});
 
         //First Upload Images and set Image Meta Data
         FileUploadService.uploadImages(data.__ModelFieldImageData)
           .then(function(result) {
             self.assignImageFileMetaData(modelDef, data, result);
-            deferred.notify({message: "Saving...", progress: 0});
+            deferred.notify({message: "Saving...", progress: 0, translate:"cms.status.saving"});
             callback();
           }, function(error) {
             console.log(error);
@@ -153,7 +153,7 @@ angular.module('dashboard.services.GeneralModel', [
         var field = data[key];
         if (field && typeof field === 'object' && field.file) {
           //Found file so upload it
-          deferred.notify({message: "Uploading file: " + field.file.name});
+          deferred.notify({message: "Uploading file: " + field.file.name, translate:"cms.status.uploading_file", params: { file: field.file.name }, progress:0});
           FileUploadService.uploadFile(field.file, field.path)
             .then(function(result) {
               data[key] = result.fileUrl;
@@ -161,7 +161,7 @@ angular.module('dashboard.services.GeneralModel', [
               nextFile();
             }, function(error) {
               if (typeof error === "object" && error.error) {
-                deferred.reject("The file being uploaded is not an accepted file type for this patient form. Please contact a system administrator for assistance.");
+                deferred.reject({message:"The file being uploaded is not an accepted file type for this form", translate:"cms.error.file_upload.not_accepted"});
               } else {
                 deferred.reject(error);
               }
