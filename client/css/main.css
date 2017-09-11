@@ -1025,6 +1025,9 @@ model-field-reference-edit .dropdown {
 model-field-reference-edit.ng-valid.ng-valid-required .ui-select-container.ui-select-multiple.ui-select-bootstrap.dropdown.form-control.ng-valid.ng-not-empty {
   height: auto;
 }
+model-field-reference-edit.ng-invalid {
+  border: solid 1px #f00;
+}
 model-field-file-edit button.select-file {
   min-width: 120px;
   cursor: pointer;
