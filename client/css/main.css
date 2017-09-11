@@ -1,3 +1,36 @@
+.grid-container {
+  border-radius: 4px;
+  border: solid 1px #ddd;
+  background-color: #fff;
+}
+.grid-container .grid-no-data,
+.grid-container .grid-loading {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  text-align: center;
+  width: 100%;
+  height: 100%;
+  min-height: 60px;
+  margin: 0;
+  border-radius: 0;
+}
+.grid-container h2 {
+  margin: 0 0;
+  padding: 0 12px;
+  line-height: 36px;
+  height: 36px;
+  font-weight: 300;
+  font-size: 14px;
+  border-bottom: solid 1px #ddd;
+  background: #fafafa; /* Old browsers */
+  background: -moz-linear-gradient(top, #fafafa 0%, #ededed 100%, #ededed 100%, #ededed 100%);
+  background: -webkit-gradient(linear, left top, left bottom, color-stop(0%, #fafafa), color-stop(100%, #ededed), color-stop(100%, #ededed), color-stop(100%, #ededed));
+  background: -webkit-linear-gradient(top, #fafafa 0%, #ededed 100%, #ededed 100%, #ededed 100%);
+  background: -o-linear-gradient(top, #fafafa 0%, #ededed 100%, #ededed 100%, #ededed 100%);
+  background: -ms-linear-gradient(top, #fafafa 0%, #ededed 100%, #ededed 100%, #ededed 100%);
+  background: linear-gradient(top, #fafafa 0%, #ededed 100%, #ededed 100%, #ededed 100%);
+}
 .modal-header {
   border-bottom: none;
   background-color: #efefef;
@@ -87,416 +120,6 @@
 .multi-select .select-item .checkbox-label {
   font-weight: 400;
 }
-model-field-reference-edit {
-  display: block;
-  border-radius: 4px;
-}
-model-field-reference-edit .close {
-  padding-top: 2px;
-}
-model-field-file-edit button.select-file {
-  width: 120px;
-  cursor: pointer;
-}
-model-field-file-edit .file-drop {
-  display: none;
-  margin-top: 10px;
-  width: 300px;
-  height: 80px;
-  line-height: 70px;
-  text-align: center;
-  font-weight: 600;
-  border: dashed 6px #dedede;
-  vertical-align: top;
-}
-model-field-file-edit .file-drop:show {
-  display: block;
-}
-model-field-file-edit input[type=file] {
-  margin-left: -120px;
-  display: inline-block;
-  width: 120px;
-  height: 34px;
-  vertical-align: top;
-  opacity: 0;
-  cursor: pointer;
-}
-model-field-image-edit,
-model-field-video-edit {
-  vertical-align: top;
-}
-model-field-image-edit .image-container,
-model-field-video-edit .image-container {
-  display: inline-block;
-  width: 160px;
-  height: 160px;
-  vertical-align: top;
-  margin-right: 8px;
-  border: solid 1px #dedede;
-  cursor: pointer;
-}
-model-field-image-edit .video-container,
-model-field-video-edit .video-container {
-  display: inline-block;
-  width: 320px;
-  vertical-align: top;
-  margin-right: 8px;
-  border: solid 1px #dedede;
-}
-model-field-image-edit .video-container video,
-model-field-video-edit .video-container video {
-  width: 320px;
-}
-model-field-image-edit .video-container .placeholder,
-model-field-video-edit .video-container .placeholder {
-  width: 100%;
-  height: 160px;
-  line-height: 150px;
-  text-align: center;
-}
-@media screen and (max-width: 480px) {
-  model-field-image-edit .video-container,
-  model-field-video-edit .video-container {
-    width: 160px;
-  }
-  model-field-image-edit .video-container video,
-  model-field-video-edit .video-container video {
-    width: 160px;
-  }
-}
-model-field-image-edit input[type=file],
-model-field-video-edit input[type=file] {
-  margin-left: -124px;
-  display: inline-block;
-  width: 120px;
-  height: 34px;
-  vertical-align: top;
-  opacity: 0;
-  cursor: pointer;
-}
-model-field-image-edit input[type=file].show-upload,
-model-field-video-edit input[type=file].show-upload {
-  margin-left: -160px;
-  width: 160px;
-  height: 160px;
-}
-model-field-image-edit .image-drop,
-model-field-video-edit .image-drop {
-  display: none;
-  width: 160px;
-  height: 160px;
-  line-height: 160px;
-  text-align: center;
-  font-weight: 600;
-  border: dashed 6px #dedede;
-  vertical-align: top;
-}
-model-field-image-edit .image-drop.show-upload,
-model-field-video-edit .image-drop.show-upload {
-  display: inline-block;
-}
-model-field-image-edit .cancel-button,
-model-field-video-edit .cancel-button {
-  display: none;
-}
-model-field-image-edit .button-menu,
-model-field-video-edit .button-menu {
-  display: inline-block;
-}
-model-field-image-edit .button-menu.hide-menu,
-model-field-video-edit .button-menu.hide-menu {
-  display: none;
-}
-model-field-image-edit .upload-button,
-model-field-video-edit .upload-button {
-  width: 120px;
-}
-model-field-image-edit .clear-button,
-model-field-video-edit .clear-button {
-  display: block;
-  margin-top: 8px;
-}
-model-field-canvas-edit canvas {
-  border: solid 1px #ddd;
-  vertical-align: top;
-}
-model-field-canvas-edit button {
-  display: inline-block;
-  vertical-align: top;
-  margin-left: 10px;
-}
-model-field-edit .checkbox-container input[type=checkbox] {
-  margin: -2px 0 0 10px;
-  transform: scale(1.5);
-  -ms-transform: scale(1.5); /* IE */
-  -moz-transform: scale(1.5); /* FF */
-  -webkit-transform: scale(1.5); /* Safari and Chrome */
-  -o-transform: scale(1.5); /* Opera */
-}
-model-field-edit .checkbox-container .checkbox-label {
-  margin-left: 15px;
-  text-align: left;
-  font-weight: bold;
-  width: auto;
-}
-model-field-edit .ng-invalid {
-  border: solid 1px #f00;
-}
-model-field-edit .jslider {
-  top: 15px;
-}
-model-field-edit .jslider .jslider-bg {
-  height: 8px;
-  border: solid 1px #ccc;
-  border-radius: 4px;
-  overflow: hidden;
-  background: #fff;
-}
-model-field-edit .jslider .jslider-bg i.l,
-model-field-edit .jslider .jslider-bg i.r,
-model-field-edit .jslider .jslider-bg i.v,
-model-field-edit .jslider .jslider-bg i.p,
-model-field-edit .jslider .jslider-bg i.s,
-model-field-edit .jslider .jslider-bg i.f {
-  height: 8px;
-  background: transparent;
-}
-model-field-edit .jslider .jslider-bg i.v {
-  background-color: #eee;
-}
-model-field-edit .jslider .jslider-pointer {
-  top: -6px;
-  width: 20px;
-  height: 20px;
-  border-radius: 10px;
-  background-color: #fff;
-  background: -webkit-linear-gradient(top, #fff 0%, #e0e0e0 100%);
-  background: -webkit-gradient(linear, left top, left bottom, from(#fff), to(#e0e0e0));
-  background: linear-gradient(to bottom, #fff 0%, #e0e0e0 100%);
-  background-repeat: repeat-x;
-  border: solid 1px #ccc;
-  box-shadow: inset 0 1px 0 rgba(255,255,255,0.15), 0 1px 1px rgba(0,0,0,0.075);
-}
-model-field-location-edit {
-  min-width: 320px;
-}
-model-field-location-edit .map-canvas {
-  display: block;
-  width: 620px;
-  height: 275px;
-  background-color: #d3d3d3;
-}
-model-field-location-edit label .col-sm {
-  width: 100%;
-  margin-top: 8px;
-}
-model-field-location-edit .checkbox-container input[type=checkbox] {
-  margin: 2px 0 0 10px;
-  transform: scale(1.5);
-  -ms-transform: scale(1.5); /* IE */
-  -moz-transform: scale(1.5); /* FF */
-  -webkit-transform: scale(1.5); /* Safari and Chrome */
-  -o-transform: scale(1.5); /* Opera */
-}
-model-field-location-edit .checkbox-container .checkbox-label {
-  font-weight: bold;
-  float: right;
-  bottom: 50px;
-}
-model-field-location-edit .form-control {
-  margin-bottom: 10px;
-}
-model-field-location-edit .ui-select-bootstrap {
-  margin-top: 10px;
-  padding: 3px 0px;
-}
-model-field-location-edit ul {
-  list-style: none;
-  margin: 10px 0px;
-  padding: 0 0;
-}
-model-field-location-edit ul li {
-  position: relative;
-  border: solid 1px #dedede;
-  border-width: 1px 1px 1px 1px;
-  padding: 0px 10px;
-  line-height: 30px;
-  background-color: #fefefe;
-  clear: both;
-  white-space: nowrap;
-}
-model-field-location-edit ul li .location-title {
-  font-weight: bold;
-}
-model-field-points-of-interest-edit {
-  min-width: 400px;
-  font-size: 14px;
-}
-@media screen and (max-width: 580px) {
-  model-field-points-of-interest-edit .search-results {
-    font-size: 8.5px;
-  }
-}
-model-field-points-of-interest-edit .map-canvas {
-  display: block;
-  height: 275px;
-  background-color: #d3d3d3;
-}
-model-field-points-of-interest-edit label .col-sm {
-  width: 100%;
-  margin-top: 8px;
-}
-model-field-points-of-interest-edit .checkbox-container input[type=checkbox] {
-  margin: 2px 0 0 10px;
-  transform: scale(1.5);
-  -ms-transform: scale(1.5); /* IE */
-  -moz-transform: scale(1.5); /* FF */
-  -webkit-transform: scale(1.5); /* Safari and Chrome */
-  -o-transform: scale(1.5); /* Opera */
-}
-model-field-points-of-interest-edit .checkbox-container .checkbox-label {
-  font-weight: bold;
-  float: right;
-  bottom: 50px;
-}
-model-field-points-of-interest-edit .form-control {
-  margin-bottom: 10px;
-}
-model-field-points-of-interest-edit .ui-select-bootstrap {
-  margin-top: 10px;
-  padding: 3px 0px;
-}
-model-field-points-of-interest-edit ul {
-  list-style: none;
-  margin: 10px 0px;
-  padding: 0 0;
-}
-model-field-points-of-interest-edit ul li {
-  position: relative;
-  border: solid 1px #dedede;
-  border-width: 1px 1px 1px 1px;
-  padding: 0px 10px;
-  line-height: 30px;
-  background-color: #fefefe;
-  clear: both;
-  white-space: nowrap;
-}
-model-field-points-of-interest-edit ul li .location-title {
-  font-weight: bold;
-}
-model-field-points-of-interest-edit a:hover {
-  color: #000;
-}
-model-field-points-of-interest-edit .loading {
-  margin-top: 8px;
-}
-model-field-points-of-interest-edit .search-error {
-  float: right;
-  margin-top: 10px;
-  color: #f00;
-}
-model-field-wysiwyg-edit .wysiwyg-toolbar {
-  display: block;
-  position: relative;
-  z-index: 99;
-  width: 100%;
-  height: 48px;
-  line-height: 44px;
-  background-color: #f9f9f9;
-  border: solid 1px #ccc;
-  border-width: 1px 1px 0 1px;
-  border-radius: 4px 4px 0 0;
-  padding-left: 10px;
-  white-space: nowrap;
-}
-@media screen and (max-width: 867px) {
-  model-field-wysiwyg-edit .wysiwyg-toolbar {
-    height: 96px;
-    white-space: normal;
-  }
-}
-@media screen and (max-width: 767px) {
-  model-field-wysiwyg-edit .wysiwyg-toolbar {
-    height: 48px;
-    white-space: nowrap;
-  }
-}
-@media screen and (max-width: 650px) {
-  model-field-wysiwyg-edit .wysiwyg-toolbar {
-    height: 96px;
-    white-space: normal;
-  }
-}
-model-field-wysiwyg-edit .wysiwyg-toolbar .picture-button * {
-  cursor: pointer;
-}
-model-field-wysiwyg-edit .wysiwyg-toolbar .picture-button .picture-tool {
-  pointer-events: none;
-  border-top-right-radius: 4px !important;
-  border-bottom-right-radius: 4px !important;
-}
-model-field-wysiwyg-edit .wysiwyg-toolbar .btn {
-  padding: 3px 8px;
-}
-model-field-wysiwyg-edit .wysiwyg-toolbar .btn .color-sample {
-  display: inline-block;
-  margin-top: 3px;
-  width: 15px;
-  height: 12px;
-  background-color: #000;
-  border: solid 1px #000;
-}
-model-field-wysiwyg-edit .wysiwyg-toolbar .btn-info {
-  text-shadow: 0 -1px 0 rgba(0,0,0,0.2);
-}
-model-field-wysiwyg-edit .wysiwyg-toolbar .sp-container {
-  background-color: #fff !important;
-  border: 0 !important;
-}
-model-field-wysiwyg-edit .wysiwyg-toolbar .dropdown {
-  display: block;
-}
-model-field-wysiwyg-edit .wysiwyg-toolbar .menu {
-  display: none;
-  position: absolute;
-  top: 100%;
-  left: 0;
-  z-index: 1000;
-  float: left;
-  margin: 2px 0 0;
-  min-width: 160px;
-  padding: 10px;
-  border: 1px solid rgba(0,0,0,0.15);
-  border-radius: 4px;
-  box-shadow: 0 6px 12px rgba(0,0,0,0.175);
-  background-color: #fff;
-}
-model-field-wysiwyg-edit .wysiwyg-toolbar .menu.open {
-  display: block;
-  list-style-type: none;
-}
-model-field-wysiwyg-edit .wysiwyg-toolbar .menu.open li {
-  line-height: normal;
-  padding: 5px;
-}
-model-field-wysiwyg-edit .wysiwyg-toolbar .menu.open li a {
-  cursor: pointer;
-}
-model-field-wysiwyg-edit .wysiwyg-toolbar .menu .add-button {
-  width: 100%;
-}
-model-field-wysiwyg-edit .wysiwyg-editor,
-model-field-wysiwyg-edit .code-editor {
-  height: 300px;
-  overflow: auto;
-  border: solid 1px #ccc;
-  outline: none;
-  border-radius: 0 0 4px 4px;
-  box-shadow: inset 0 1px 1px rgba(0,0,0,0.075);
-  -webkit-box-shadow: inset 0 1px 1px rgba(0,0,0,0.075);
-  padding: 10px;
-  background-color: #fff;
-}
 .model-field-description {
   padding: 10px 5px;
 }
@@ -517,26 +140,11 @@ model-field-wysiwyg-edit .code-editor {
   padding: 0 10px;
 }
 .model-list .grid-container {
-  border-radius: 4px;
-  border: solid 1px #ddd;
-  background-color: #fff;
   overflow: hidden;
   position: absolute;
   top: 70px;
   left: 30px;
   right: 30px;
-}
-.model-list .grid-container .grid-no-data,
-.model-list .grid-container .grid-loading {
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  text-align: center;
-  width: 100%;
-  height: 100%;
-  min-height: 60px;
-  margin: 0;
-  border-radius: 0;
 }
 .model-list .grid-container.flexible {
   overflow: visible;
@@ -569,22 +177,6 @@ model-field-wysiwyg-edit .code-editor {
     left: 5px;
     right: 5px;
   }
-}
-.model-list .grid-container h2 {
-  margin: 0 0;
-  padding: 0 12px;
-  line-height: 36px;
-  height: 36px;
-  font-weight: 300;
-  font-size: 14px;
-  border-bottom: solid 1px #ddd;
-  background: #fafafa; /* Old browsers */
-  background: -moz-linear-gradient(top, #fafafa 0%, #ededed 100%, #ededed 100%, #ededed 100%);
-  background: -webkit-gradient(linear, left top, left bottom, color-stop(0%, #fafafa), color-stop(100%, #ededed), color-stop(100%, #ededed), color-stop(100%, #ededed));
-  background: -webkit-linear-gradient(top, #fafafa 0%, #ededed 100%, #ededed 100%, #ededed 100%);
-  background: -o-linear-gradient(top, #fafafa 0%, #ededed 100%, #ededed 100%, #ededed 100%);
-  background: -ms-linear-gradient(top, #fafafa 0%, #ededed 100%, #ededed 100%, #ededed 100%);
-  background: linear-gradient(top, #fafafa 0%, #ededed 100%, #ededed 100%, #ededed 100%);
 }
 .model-list .grid-container h2 .btn-group {
   position: absolute;
@@ -1315,6 +907,480 @@ model-field-list-edit ul {
 .login button:active {
   outline: none;
   color: #fff;
+}
+model-field-edit .checkbox-container input[type=checkbox] {
+  margin: -2px 0 0 10px;
+  transform: scale(1.5);
+  -ms-transform: scale(1.5); /* IE */
+  -moz-transform: scale(1.5); /* FF */
+  -webkit-transform: scale(1.5); /* Safari and Chrome */
+  -o-transform: scale(1.5); /* Opera */
+}
+model-field-edit .checkbox-container .checkbox-label {
+  margin-left: 15px;
+  text-align: left;
+  font-weight: bold;
+  width: auto;
+}
+model-field-edit label.radio {
+  display: inline-block;
+  margin-left: 4px;
+}
+model-field-edit input.ng-invalid,
+model-field-edit textarea.ng-invalid,
+model-field-edit select.ng-invalid {
+  border: solid 1px #f00;
+}
+model-field-edit .jslider {
+  top: 15px;
+}
+model-field-edit .jslider .jslider-bg {
+  height: 8px;
+  border: solid 1px #ccc;
+  border-radius: 4px;
+  overflow: hidden;
+  background: #fff;
+}
+model-field-edit .jslider .jslider-bg i.l,
+model-field-edit .jslider .jslider-bg i.r,
+model-field-edit .jslider .jslider-bg i.v,
+model-field-edit .jslider .jslider-bg i.p,
+model-field-edit .jslider .jslider-bg i.s,
+model-field-edit .jslider .jslider-bg i.f {
+  height: 8px;
+  background: transparent;
+}
+model-field-edit .jslider .jslider-bg i.v {
+  background-color: #eee;
+}
+model-field-edit .jslider .jslider-pointer {
+  top: -6px;
+  width: 20px;
+  height: 20px;
+  border-radius: 10px;
+  background-color: #fff;
+  background: -webkit-linear-gradient(top, #fff 0%, #e0e0e0 100%);
+  background: -webkit-gradient(linear, left top, left bottom, from(#fff), to(#e0e0e0));
+  background: linear-gradient(to bottom, #fff 0%, #e0e0e0 100%);
+  background-repeat: repeat-x;
+  border: solid 1px #ccc;
+  box-shadow: inset 0 1px 0 rgba(255,255,255,0.15), 0 1px 1px rgba(0,0,0,0.075);
+}
+model-field-edit .input-status-indicator {
+  display: table;
+  width: 100%;
+}
+model-field-edit .input-status-indicator input {
+  display: table-cell;
+}
+model-field-edit .input-status-indicator .field-status-indicator {
+  display: table-cell;
+  width: 30px;
+  text-align: center;
+}
+model-field-edit .error-message {
+  background-color: #fad3cf;
+  border: 1px solid #d63e2f;
+  color: #d63e2f;
+  border-radius: 3px;
+  padding: 2px 5px;
+  display: inline-block;
+  font-size: smaller;
+  position: absolute;
+  left: 1px;
+  top: -30px;
+  z-index: 2;
+}
+model-field-edit .error-message:after {
+  display: block;
+  width: 8px;
+  height: 8px;
+  border: 1px solid transparent;
+  border-bottom-color: #d63e2f;
+  border-right-color: #d63e2f;
+  position: absolute;
+  content: "";
+  top: 17px;
+  left: 20px;
+  transform: rotate(45deg);
+  background-color: #fad3cf;
+}
+model-field-reference-edit {
+  display: block;
+  height: auto;
+  border-radius: 4px;
+}
+model-field-reference-edit .close {
+  padding-top: 2px;
+}
+model-field-reference-edit .ui-select-multiple.ui-select-bootstrap {
+  height: 33px;
+}
+model-field-reference-edit .ui-select-multiple.ui-select-bootstrap input.ui-select-search {
+  position: absolute;
+}
+model-field-reference-edit .dropdown {
+  padding-bottom: 1px;
+}
+model-field-reference-edit.ng-valid.ng-valid-required .ui-select-container.ui-select-multiple.ui-select-bootstrap.dropdown.form-control.ng-valid.ng-not-empty {
+  height: auto;
+}
+model-field-file-edit button.select-file {
+  min-width: 120px;
+  cursor: pointer;
+}
+model-field-file-edit .file-upload-info {
+  margin-left: 5px;
+}
+model-field-file-edit .file-drop {
+  display: none;
+  margin-top: 10px;
+  width: 300px;
+  height: 80px;
+  line-height: 70px;
+  text-align: center;
+  font-weight: 600;
+  border: dashed 6px #dedede;
+  vertical-align: top;
+}
+model-field-file-edit .file-drop:show {
+  display: block;
+}
+model-field-file-edit input[type=file] {
+  margin-left: -120px;
+  display: inline-block;
+  width: 120px;
+  height: 34px;
+  vertical-align: top;
+  opacity: 0;
+  cursor: pointer;
+}
+model-field-image-edit,
+model-field-video-edit {
+  vertical-align: top;
+}
+model-field-image-edit .image-container,
+model-field-video-edit .image-container {
+  display: inline-block;
+  width: 160px;
+  height: 160px;
+  vertical-align: top;
+  margin-right: 8px;
+  border: solid 1px #dedede;
+  cursor: pointer;
+}
+model-field-image-edit .video-container,
+model-field-video-edit .video-container {
+  display: inline-block;
+  width: 320px;
+  vertical-align: top;
+  margin-right: 8px;
+  border: solid 1px #dedede;
+}
+model-field-image-edit .video-container video,
+model-field-video-edit .video-container video {
+  width: 320px;
+}
+model-field-image-edit .video-container .placeholder,
+model-field-video-edit .video-container .placeholder {
+  width: 100%;
+  height: 160px;
+  line-height: 150px;
+  text-align: center;
+}
+@media screen and (max-width: 480px) {
+  model-field-image-edit .video-container,
+  model-field-video-edit .video-container {
+    width: 160px;
+  }
+  model-field-image-edit .video-container video,
+  model-field-video-edit .video-container video {
+    width: 160px;
+  }
+}
+model-field-image-edit input[type=file],
+model-field-video-edit input[type=file] {
+  margin-left: -124px;
+  display: inline-block;
+  width: 120px;
+  height: 34px;
+  vertical-align: top;
+  opacity: 0;
+  cursor: pointer;
+}
+model-field-image-edit input[type=file].show-upload,
+model-field-video-edit input[type=file].show-upload {
+  margin-left: -160px;
+  width: 160px;
+  height: 160px;
+}
+model-field-image-edit .image-drop,
+model-field-video-edit .image-drop {
+  display: none;
+  width: 160px;
+  height: 160px;
+  line-height: 160px;
+  text-align: center;
+  font-weight: 600;
+  border: dashed 6px #dedede;
+  vertical-align: top;
+}
+model-field-image-edit .image-drop.show-upload,
+model-field-video-edit .image-drop.show-upload {
+  display: inline-block;
+}
+model-field-image-edit .cancel-button,
+model-field-video-edit .cancel-button {
+  display: none;
+}
+model-field-image-edit .button-menu,
+model-field-video-edit .button-menu {
+  display: inline-block;
+}
+model-field-image-edit .button-menu.hide-menu,
+model-field-video-edit .button-menu.hide-menu {
+  display: none;
+}
+model-field-image-edit .upload-button,
+model-field-video-edit .upload-button {
+  min-width: 120px;
+}
+model-field-image-edit .clear-button,
+model-field-video-edit .clear-button {
+  display: block;
+  margin-top: 8px;
+}
+model-field-canvas-edit canvas {
+  border: solid 1px #ddd;
+  vertical-align: top;
+}
+model-field-canvas-edit button {
+  display: inline-block;
+  vertical-align: top;
+  margin-left: 10px;
+}
+model-field-location-edit {
+  min-width: 320px;
+}
+model-field-location-edit .map-canvas {
+  display: block;
+  width: 620px;
+  height: 275px;
+  background-color: #d3d3d3;
+}
+model-field-location-edit label .col-sm {
+  width: 100%;
+  margin-top: 8px;
+}
+model-field-location-edit .checkbox-container input[type=checkbox] {
+  margin: 2px 0 0 10px;
+  transform: scale(1.5);
+  -ms-transform: scale(1.5); /* IE */
+  -moz-transform: scale(1.5); /* FF */
+  -webkit-transform: scale(1.5); /* Safari and Chrome */
+  -o-transform: scale(1.5); /* Opera */
+}
+model-field-location-edit .checkbox-container .checkbox-label {
+  font-weight: bold;
+  float: right;
+  bottom: 50px;
+}
+model-field-location-edit .form-control {
+  margin-bottom: 10px;
+}
+model-field-location-edit .ui-select-bootstrap {
+  margin-top: 10px;
+  padding: 3px 0px;
+}
+model-field-location-edit ul {
+  list-style: none;
+  margin: 10px 0px;
+  padding: 0 0;
+}
+model-field-location-edit ul li {
+  position: relative;
+  border: solid 1px #dedede;
+  border-width: 1px 1px 1px 1px;
+  padding: 0px 10px;
+  line-height: 30px;
+  background-color: #fefefe;
+  clear: both;
+  white-space: nowrap;
+}
+model-field-location-edit ul li .location-title {
+  font-weight: bold;
+}
+model-field-number input.error {
+  border: 1px solid #f00;
+}
+model-field-points-of-interest-edit {
+  min-width: 400px;
+  font-size: 14px;
+}
+@media screen and (max-width: 580px) {
+  model-field-points-of-interest-edit .search-results {
+    font-size: 8.5px;
+  }
+}
+model-field-points-of-interest-edit .map-canvas {
+  display: block;
+  height: 275px;
+  background-color: #d3d3d3;
+}
+model-field-points-of-interest-edit label .col-sm {
+  width: 100%;
+  margin-top: 8px;
+}
+model-field-points-of-interest-edit .checkbox-container input[type=checkbox] {
+  margin: 2px 0 0 10px;
+  transform: scale(1.5);
+  -ms-transform: scale(1.5); /* IE */
+  -moz-transform: scale(1.5); /* FF */
+  -webkit-transform: scale(1.5); /* Safari and Chrome */
+  -o-transform: scale(1.5); /* Opera */
+}
+model-field-points-of-interest-edit .checkbox-container .checkbox-label {
+  font-weight: bold;
+  float: right;
+  bottom: 50px;
+}
+model-field-points-of-interest-edit .form-control {
+  margin-bottom: 10px;
+}
+model-field-points-of-interest-edit .ui-select-bootstrap {
+  margin-top: 10px;
+  padding: 3px 0px;
+}
+model-field-points-of-interest-edit ul {
+  list-style: none;
+  margin: 10px 0px;
+  padding: 0 0;
+}
+model-field-points-of-interest-edit ul li {
+  position: relative;
+  border: solid 1px #dedede;
+  border-width: 1px 1px 1px 1px;
+  padding: 0px 10px;
+  line-height: 30px;
+  background-color: #fefefe;
+  clear: both;
+  white-space: nowrap;
+}
+model-field-points-of-interest-edit ul li .location-title {
+  font-weight: bold;
+}
+model-field-points-of-interest-edit a:hover {
+  color: #000;
+}
+model-field-points-of-interest-edit .loading {
+  margin-top: 8px;
+}
+model-field-points-of-interest-edit .search-error {
+  float: right;
+  margin-top: 10px;
+  color: #f00;
+}
+model-field-wysiwyg-edit .wysiwyg-toolbar {
+  display: block;
+  position: relative;
+  z-index: 99;
+  width: 100%;
+  height: 48px;
+  line-height: 44px;
+  background-color: #f9f9f9;
+  border: solid 1px #ccc;
+  border-width: 1px 1px 0 1px;
+  border-radius: 4px 4px 0 0;
+  padding-left: 10px;
+  white-space: nowrap;
+}
+@media screen and (max-width: 867px) {
+  model-field-wysiwyg-edit .wysiwyg-toolbar {
+    height: 96px;
+    white-space: normal;
+  }
+}
+@media screen and (max-width: 767px) {
+  model-field-wysiwyg-edit .wysiwyg-toolbar {
+    height: 48px;
+    white-space: nowrap;
+  }
+}
+@media screen and (max-width: 650px) {
+  model-field-wysiwyg-edit .wysiwyg-toolbar {
+    height: 96px;
+    white-space: normal;
+  }
+}
+model-field-wysiwyg-edit .wysiwyg-toolbar .picture-button * {
+  cursor: pointer;
+}
+model-field-wysiwyg-edit .wysiwyg-toolbar .picture-button .picture-tool {
+  pointer-events: none;
+  border-top-right-radius: 4px !important;
+  border-bottom-right-radius: 4px !important;
+}
+model-field-wysiwyg-edit .wysiwyg-toolbar .btn {
+  padding: 3px 8px;
+}
+model-field-wysiwyg-edit .wysiwyg-toolbar .btn .color-sample {
+  display: inline-block;
+  margin-top: 3px;
+  width: 15px;
+  height: 12px;
+  background-color: #000;
+  border: solid 1px #000;
+}
+model-field-wysiwyg-edit .wysiwyg-toolbar .btn-info {
+  text-shadow: 0 -1px 0 rgba(0,0,0,0.2);
+}
+model-field-wysiwyg-edit .wysiwyg-toolbar .sp-container {
+  background-color: #fff !important;
+  border: 0 !important;
+}
+model-field-wysiwyg-edit .wysiwyg-toolbar .dropdown {
+  display: block;
+}
+model-field-wysiwyg-edit .wysiwyg-toolbar .menu {
+  display: none;
+  position: absolute;
+  top: 100%;
+  left: 0;
+  z-index: 1000;
+  float: left;
+  margin: 2px 0 0;
+  min-width: 160px;
+  padding: 10px;
+  border: 1px solid rgba(0,0,0,0.15);
+  border-radius: 4px;
+  box-shadow: 0 6px 12px rgba(0,0,0,0.175);
+  background-color: #fff;
+}
+model-field-wysiwyg-edit .wysiwyg-toolbar .menu.open {
+  display: block;
+  list-style-type: none;
+}
+model-field-wysiwyg-edit .wysiwyg-toolbar .menu.open li {
+  line-height: normal;
+  padding: 5px;
+}
+model-field-wysiwyg-edit .wysiwyg-toolbar .menu.open li a {
+  cursor: pointer;
+}
+model-field-wysiwyg-edit .wysiwyg-toolbar .menu .add-button {
+  width: 100%;
+}
+model-field-wysiwyg-edit .wysiwyg-editor,
+model-field-wysiwyg-edit .code-editor {
+  height: 300px;
+  overflow: auto;
+  border: solid 1px #ccc;
+  outline: none;
+  border-radius: 0 0 4px 4px;
+  box-shadow: inset 0 1px 1px rgba(0,0,0,0.075);
+  -webkit-box-shadow: inset 0 1px 1px rgba(0,0,0,0.075);
+  padding: 10px;
+  background-color: #fff;
 }
 body,
 html {

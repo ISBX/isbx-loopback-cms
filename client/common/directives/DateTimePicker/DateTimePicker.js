@@ -2,7 +2,8 @@ angular.module('dashboard.directive.DateTimePicker', [
 ])
 
 .directive('dateTimePicker', function ($rootScope) {
-  
+  "ngInject";
+
   return {
       require: '?ngModel',
       restrict: 'AE',
@@ -10,10 +11,14 @@ angular.module('dashboard.directive.DateTimePicker', [
           control: '=',
           format: '@',
           ngFormat: '=ngFormat',
+          ngTimeZone: '=ngTimeZone',
           defaultDate: '@',
           viewMode: '@',
           ngViewMode: '=ngViewMode',
-          horizontal: '@'
+          horizontal: '@',
+          locale: '@',
+          maxDate: '@',
+          minDate: '@'
       },
       link: function (scope, elem, attrs, ngModel) {
 
@@ -21,21 +26,35 @@ angular.module('dashboard.directive.DateTimePicker', [
         if (!scope.format) scope.format = scope.ngFormat;
         if (!scope.viewMode) scope.viewMode = scope.ngViewMode;
 
+        if (scope.format && scope.format.indexOf('DD-MMM-YYYY') > -1 && scope.locale === 'es') {
+          //Hack to fix spanish date parsing via Spanish for DD-MMM-YYYY format as
+          //Spanish uses period abbreviation for MMM
+          scope.format = scope.format.replace('DD-MMM-', 'DD MMM ');
+        }
+
         ngModel.$formatters.push(function(value) {
           //Format the passed in date
           if (!scope.format) scope.format = scope.ngFormat;
           if (!value) return;
-          return moment(value).format(scope.format);
+          var date = moment(value);
+          if (scope.ngTimeZone && date.tz) date = date.tz(scope.ngTimeZone); //NOTE: requires moment-timezone
+          return date.format(scope.format);
         });
-          
+        
+        scope.defaultDate = (scope.defaultDate && typeof scope.defaultDate === 'string') ? scope.defaultDate.replace(/"/g, '') : scope.defaultDate; //remove quotes
+
         //Bind the Element
-        elem.datetimepicker({
+        var options = {
           format: scope.format,
           useCurrent: false,
-          defaultDate: scope.defaultDate ? moment(scope.defaultDate, scope.format) : undefined,
+          locale: scope.locale,
+          defaultDate: scope.defaultDate ? moment(scope.defaultDate).toDate() : undefined,
           viewMode: scope.viewMode,
           widgetPositioning: { horizontal: scope.horizontal ? scope.horizontal : 'auto' }
-        });
+        }
+        if (scope.minDate) options.minDate = scope.minDate;
+        if (scope.maxDate) options.maxDate = scope.maxDate;
+        elem.datetimepicker(options);
 
         //For companion button to launch the popup
         if (!scope.control) scope.control = {};
@@ -46,6 +65,7 @@ angular.module('dashboard.directive.DateTimePicker', [
         //On Blur update the ng-model
         elem.on('blur', function () {
           if (!scope.format) scope.format = scope.ngFormat;
+          if (scope.locale) moment.locale(scope.locale);
           var dateValue = moment(elem.val(), scope.format);
           if (dateValue.isValid()) {
             ngModel.$setViewValue(dateValue);

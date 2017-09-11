@@ -37,6 +37,7 @@ var express = require('express')
   , settingsEditor = require('./server/settings-editor')
   , customSort = require('./server/sort')
   , aws = require('./server/aws.js')
+  , package = require('./package.json');
   ;
 
 
@@ -172,11 +173,16 @@ function renderIndex(req, res) {
         return app.mountpath + '/' + file;
       }
     }).concat(files.javascript);
-    files.javascript = _.map(_.filter(scripts, function(file) {
-      return !file.match(/\.spec\.js$/);
-    }), function(file) {
-      return file.replace(__dirname + srcDir, app.mountpath);
-    }).concat(files.javascript);
+
+    if (environment.indexOf('development') > -1) {
+      files.javascript = _.map(_.filter(scripts, function(file) {
+        return !file.match(/\.spec\.js$/);
+      }), function(file) {
+        return file.replace(__dirname + srcDir, app.mountpath);
+      }).concat(files.javascript);
+    } else {
+      files.javascript.unshift(app.mountpath + '/dist/app.js');
+    }
 
     var buildConfig = require('./build.config.js');
     files.css = _.map(buildConfig.vendor_files.css.concat(files.css), function(file) {
@@ -186,15 +192,19 @@ function renderIndex(req, res) {
          return app.mountpath + '/' + file;
       }
     });
-    files.javascript = _.map(buildConfig.vendor_files.js, function(file) {
-      if (file.charAt(0) == '/') {
-        return app.mountpath + file;
-      } else {
-         return app.mountpath + '/' + file;
-      }
-    }).concat(files.javascript);
+    if (environment.indexOf('development') > -1) {
+      files.javascript = _.map(buildConfig.vendor_files.js, function(file) {
+        if (file.charAt(0) == '/') {
+          return app.mountpath + file;
+        } else {
+          return app.mountpath + '/' + file;
+        }
+      }).concat(files.javascript);
+    } else {
+      files.javascript.unshift(app.mountpath + '/dist/vendor.js');
+    }
     files.javascript.unshift(app.mountpath + '/config.js');
-    res.render(__dirname + srcDir + '/index.jade', { files: files, config: config });
+    res.render(__dirname + srcDir + '/index.jade', { version: package.version, files: files, config: config });
   });
 }
 
@@ -261,6 +271,19 @@ function cms(loopbackApplication, options) {
     setup.setupDefaultAdmin(loopbackApplication, config);
   });
 
+  //force browser cache refresh on custom UI modules after deployment (when service restarts)
+  if (config.public.customModules) {
+    var version = Math.ceil((new Date).getTime()/300000)*300000; //unique code within 5min window (for multi-web server instances)
+    for (var i in config.public.customModules) {
+      var customModule = config.public.customModules[i];
+      if (!customModule.files) continue;
+      for (var k in customModule.files) {
+        var file = customModule.files[k];
+        customModule.files[k] = file + '?v=' + version; //force browser to refresh local cache after deploying updates
+      }
+    }
+  }
+
   //for CMS custom services provide context to loopbackApplication
   relationalUpsert.setLoopBack(loopbackApplication);
   customSort.setLoopBack(loopbackApplication);
@@ -280,9 +303,11 @@ function cms(loopbackApplication, options) {
   app.use(overlayJade());
   app.locals.pretty = true;
 
+  app.use('/dist', express.static(__dirname + '/dist'));
   app.use('/vendor', express.static(__dirname + '/vendor'));
 
   app.get('/dev-templates.js', function(req, res) {
+    res.setHeader('content-type', 'text/javascript');
     res.send('angular.module(\'templates-app\', []);angular.module(\'templates-common\', []);');
   });
 
@@ -300,22 +325,64 @@ function cms(loopbackApplication, options) {
       if (exists) localConfig.public.strings = require(stringsPath);
       localConfig.public.apiBaseUrl = options.basePath;
       localConfig.public.cmsBaseUrl = app.mountpath;
+      res.setHeader('content-type', 'text/javascript');
       res.send('window.config = ' + JSON.stringify(localConfig.public) + ';');
     });
   });
 
+  if (config.allowUnsafeUpsert) {
+    console.warn('Warning (isbx-loopback-cms): /model/save end point is running in compatibility mode, please update your ACL rules asap then set config.allowUnsafeUpsert to false.');
+  } else if (typeof config.allowUnsafeUpsert === 'undefined' || config.allowUnsafeUpsert === null ) {
+    console.warn('Warning (isbx-loopback-cms): /model/save end point is running in secure mode. This can potentially break your application if have not updated your ACL rules. For backwards compatibility, you may set config.allowUnsafeUpsert to true in your CMS Config if you are not ready to update your ACL rules yet.');
+  }
+
+  function validateToken(request, callback) {
+    var AccessToken = loopbackApplication.models.AccessToken;
+    var tokenString = request.body.__accessToken || request.query.access_token;
+    AccessToken.findById(tokenString, function(err, token) {
+      if (err || !token) { return callback(err); }
+      token.validate(function(err, isValid) {
+        return callback(err, isValid, token);
+      });
+    });
+  }
 
   /**
    * Save a model hierarchy; req.body contains a model and its relationship data
    */
   app.put('/model/save', function(req, res) {
-    //TODO: validate access token and ACL
-    var data = req.body;
-    relationalUpsert.upsert(data, function(error, response) {
-      if (error) {
-        res.status(500).send(error);
+    var ACL = loopbackApplication.models.ACL;
+
+    validateToken(req, function(err, isValid, token) {
+      if (err) { return res.status(500).send(err); }
+      if (!isValid) { return res.status(403).send('Forbidden'); }
+
+      var data = req.body;
+      var context = {
+        accessToken: token,
+        model: data.__model,
+        property: data.__id ? 'updateAttributes' : 'create',
+        modelId: data.__id || null
+      };
+
+      function upsertData() {
+        relationalUpsert.upsert(data, function(error, response) {
+          if (error) {
+            res.status(500).send(error);
+          } else {
+            res.send(response);
+          }
+        });
+      }
+
+      if (config.public.isUnsafeUpsert) {
+        upsertData();
       } else {
-        res.send(response);
+        ACL.checkAccessForContext(context, function(err, acl) {
+          if (err) { return res.status(500).send(err); }
+          if (acl.permission === 'DENY') { return res.status(403).send('Forbidden'); }
+          upsertData();
+        });
       }
     });
   });
@@ -331,31 +398,40 @@ function cms(loopbackApplication, options) {
    * }
    */
   app.post('/model/sort', function(req, res) {
-    //TODO: validate access token
-    var model = req.body["model"];
-    var key = req.body["key"];
-    var sortField = req.body["sortField"];
-    var sortData = req.body["sortData"];
-    customSort.sort(model, key, sortField, sortData, function(error, response) {
-      if (error) {
-        res.status(500).send(error);
-      } else {
-        res.send(response);
-      }
-    });
+    //TODO: validate ACL
+    validateToken(req, function(err, isValid) {
+      if (err) { return res.status(500).send(err); }
+      if (!isValid) { return res.status(403).send('Forbidden'); }
 
+      var model = req.body["model"];
+      var key = req.body["key"];
+      var sortField = req.body["sortField"];
+      var sortData = req.body["sortData"];
+      customSort.sort(model, key, sortField, sortData, function(error, response) {
+        if (error) {
+          res.status(500).send(error);
+        } else {
+          res.send(response);
+        }
+      });
+    });
   });
 
   /**
    * Generate AWS S3 Policy and Credentials
    */
   app.get('/aws/s3/credentials', function(req, res) {
-    //TODO: validate access token
-    aws.getS3Credentials(req.query["path"], req.query["fileType"], function(error, credentials) {
-      if (error) {
-        res.status(500).send(error);
-      }
-      res.send(credentials);
+    //TODO: validate ACL
+    validateToken(req, function(err, isValid) {
+      if (err) { return res.status(500).send(err); }
+      if (!isValid) { return res.status(403).send('Forbidden'); }
+
+      aws.getS3Credentials(req.query["path"], req.query["fileType"], function(error, credentials) {
+        if (error) {
+          res.status(500).send(error);
+        }
+        res.send(credentials);
+      });
     });
   });
 
@@ -363,10 +439,15 @@ function cms(loopbackApplication, options) {
    * API to save config.json navigation
    */
   app.post('/settings/config/nav', function(req, res) {
-    //TODO: validate access token
-    var nav = req.body;
-    settingsEditor.setNav(configPath, nav);
-    res.send(true);
+    //TODO: validate ACL
+    validateToken(req, function(err, isValid) {
+      if (err) { return res.status(500).send(err); }
+      if (!isValid) { return res.status(403).send('Forbidden'); }
+
+      var nav = req.body;
+      settingsEditor.setNav(configPath, nav);
+      res.send(true);
+    });
   });
 
   app.get('*', renderIndex);

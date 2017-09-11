@@ -1,6 +1,8 @@
 angular.module('dashboard.services.Image', [])
 
 .service('ImageService', function($q) {
+  "ngInject";
+
 	var self = this;
   
   /**

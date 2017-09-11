@@ -4,10 +4,11 @@ angular.module('dashboard.services.Settings', [
   'ngCookies'
 ])
 
-.service('SettingsService', function($cookies, $http, Config, Utils) {
+.service('SettingsService', function($cookies, Config, Utils) {
+  "ngInject";
 
   this.saveNav = function(nav) {
-    var path = Config.serverParams.cmsBaseUrl + '/settings/config/nav?access_token=' + $cookies.accessToken;
+    var path = Config.serverParams.cmsBaseUrl + '/settings/config/nav?access_token=' + $cookies.get('accessToken');
     return Utils.apiHelper('POST', path, nav);
   };
   

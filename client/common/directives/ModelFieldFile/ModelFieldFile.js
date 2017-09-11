@@ -3,6 +3,8 @@ angular.module('dashboard.directives.ModelFieldFile', [
 ])
 
 .directive('modelFieldFileView', function($compile) {
+  "ngInject";
+
   return {
     restrict: 'E',
     template: '<b>{{ field.label }}</b>: {{ data[field.name] }}',
@@ -16,13 +18,15 @@ angular.module('dashboard.directives.ModelFieldFile', [
   };
 })
 
-.directive('modelFieldFileEdit', function($compile, $document, $window, GeneralModelService, SessionService) {
+.directive('modelFieldFileEdit', function($compile, $document, $window, GeneralModelService, SessionService, $translate) {
+  "ngInject";
+
   return {
     restrict: 'E',
-    template: '<button class="btn btn-default select-file" ng-hide="disabled">Select File</button> \
+    template: '<button class="btn btn-default select-file" ng-hide="disabled">{{ selectFileButtonText }}</button> \
       <input type="file" ng-file-select="onFileSelect($files)" ng-hide="disabled"> \
       <button ng-if="filename" class="btn btn-danger fa fa-trash" ng-click="clear($event)" ng-hide="disabled"></button> \
-      <span class="file-upload-info" ng-if="filename"><i class="fa {{getFileIcon(filename)}}"></i>&nbsp;&nbsp;{{ filename }}&nbsp;&nbsp;<span ng-if="fileUrl">(<a href="{{fileUrl}}">download</a><span ng-if="previewUrl"> | <a target="_blank" href="{{previewUrl}}">preview</a></span>)</span></span> \
+      <span class="file-upload-info" ng-if="filename"><i class="fa {{getFileIcon(filename)}}"></i>&nbsp;&nbsp;{{ filename }}&nbsp;&nbsp;<span ng-if="fileUrl">(<a download href="{{fileUrl}}">download</a><span ng-if="previewUrl"> | <a target="_blank" href="{{previewUrl}}">preview</a></span>)</span></span> \
       <div ng-file-drop="onFileSelect($files)" ng-file-drag-over-class="optional-css-class-name-or-function" ng-show="dropSupported" class="file-drop">Drop File Here</div>',
     scope: {
       key: "=key",
@@ -33,7 +37,19 @@ angular.module('dashboard.directives.ModelFieldFile', [
     },
     link: function(scope, element, attrs) {
 
-        /**
+      scope.selectFileButtonText = 'Select File';
+      scope.clearButtonText = 'Clear';
+      var translationBtnKeys = ['button.select_file'];
+      $translate(translationBtnKeys)
+        .then(function (translated) {
+          // If one of the key is missing, result will be the specified key inside translationBtnKeys
+          if (translationBtnKeys.indexOf(translated['button.select_file']) === -1) {
+            scope.selectFileButtonText = translated['button.select_file'];
+          }
+        });
+
+
+      /**
          * scope.data updates async from controller so need to watch for the first change only
          */
         var unwatch = scope.$watch('data', function(data) {

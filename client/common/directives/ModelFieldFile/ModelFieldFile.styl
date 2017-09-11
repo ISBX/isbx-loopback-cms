@@ -1,0 +1,26 @@
+model-field-file-edit
+  button.select-file
+    min-width: 120px
+    cursor pointer
+  .file-upload-info
+    margin-left 5px
+  .file-drop
+    display: none
+    margin-top: 10px
+    width 300px
+    height 80px
+    line-height 70px
+    text-align center
+    font-weight 600
+    border dashed 6px #dedede
+    vertical-align top
+    &:show
+      display: block
+  input[type=file]
+    margin-left -120px
+    display inline-block
+    width 120px
+    height 34px
+    vertical-align top
+    opacity 0
+    cursor pointer
