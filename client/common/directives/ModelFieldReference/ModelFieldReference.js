@@ -68,6 +68,21 @@ angular.module('dashboard.directives.ModelFieldReference', [
         if (!scope.data) scope.selected = {};
       });
 
+      scope.$watch('selected.items', function() { // watch selected.items to ensure previously selected items are accounted for.
+        if (scope.selected.items) {
+          scope.refreshChoices();
+        }
+      });
+
+      function removeSelectedFromList(selected, list, id) {
+        var filteredList = _.reject(list, function(o) {
+          return _.find(selected, function(s) {
+            return o[id] === s[id];
+          })
+        });
+        return filteredList;
+      }
+      
       function replaceSessionVariables(string) {
         if (typeof string !== 'string') return string;
         try {
@@ -120,7 +135,7 @@ angular.module('dashboard.directives.ModelFieldReference', [
       scope.refreshChoices = function(search) {
         var model = Config.serverParams.models[scope.options.model];
         var params = { 'filter[limit]': 100 }; //limit only 100 items in drop down list
-        params['filter[where]['+scope.options.searchField+'][like]'] = "%" + search + "%";
+        if (search) params['filter[where]['+scope.options.searchField+'][like]'] = "%" + search + "%";
         if (scope.options.where) {
           //Add additional filtering on reference results
           var keys = Object.keys(scope.options.where);
@@ -140,7 +155,7 @@ angular.module('dashboard.directives.ModelFieldReference', [
         if (scope.options.api) apiPath = replaceSessionVariables(scope.options.api);
         GeneralModelService.list(apiPath, params, {preventCancel: true}).then(function(response) {
           if (!response) return; //in case http request was cancelled by newer request
-          scope.list = response;
+          scope.list = removeSelectedFromList(scope.selected.items, response, scope.options.key);
           if (scope.options.allowInsert) {
             var addNewItem = {};
             addNewItem[scope.options.searchField] = "[Add New Item]";
@@ -337,6 +352,7 @@ angular.module('dashboard.directives.ModelFieldReference', [
          //For single record reference just assign null
          scope.data = null;
        }
+      scope.refreshChoices();
      };
 
      scope.$on('ngGridEventStartCellEdit', function () {

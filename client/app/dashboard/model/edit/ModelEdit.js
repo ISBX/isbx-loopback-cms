@@ -223,7 +223,7 @@ angular.module('dashboard.Dashboard.Model.Edit', [
       displayInfo = key;
     } else {
       var property = $scope.model.properties[key];
-      displayInfo = property.display;
+      if (property) displayInfo = property.display;
     }
 
     if (!displayInfo) {
