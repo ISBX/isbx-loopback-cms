@@ -69,8 +69,7 @@ angular.module('dashboard.directives.ModelFieldReference', [
       });
 
       scope.$watch('selected.items', function() { // watch selected.items to ensure previously selected items are accounted for.
-        if (scope.selected && scope.selected.items) {
-          if (scope.options.relationship) scope.modelData[scope.options.relationship] = scope.selected.items;
+        if (scope.selected.items) {
           scope.refreshChoices();
         }
       });
