@@ -42,15 +42,15 @@ angular.module('dashboard.services.Session', [
   };
 
   this.setSession = function(userInfo) {
+    session = userInfo;
+    $cookies.username = userInfo.user.username;
+    $cookies.userId = userInfo.userId;
+    $cookies.accessToken = userInfo.id;
+    $cookies.session = JSON.stringify(session);
     return Utils.apiHelper('GET', 'Roles')
       .then(function(roles) {
         return Utils.apiHelper('GET', 'RoleMappings?filter[where][principalId]=' + userInfo.userId)
           .then(function(roleMappings) {
-            session = userInfo;
-            $cookies.username = userInfo.user.username;
-            $cookies.userId = userInfo.userId;
-            $cookies.accessToken = userInfo.id;
-            $cookies.session = JSON.stringify(session);
             //get role name and description
             for (var i in roleMappings) {
               var roleMap = roleMappings[i];
