@@ -728,10 +728,49 @@ angular.module('dashboard.Dashboard.Model.List', [
     }
   },250), true);
 
-  $scope.$watch('sortInfo', function (newVal, oldVal) {
-    //Check isFirstLoad so that this watch statement does not get called when the page loads for the first time
-    if (!isFirstLoad && newVal !== oldVal) {
-      $scope.loadItems();
+  $scope.$watch('sortInfo', function(newVal, oldVal) {
+    // assume no difference in fields or direction at first
+    let differenceInFields = false;
+    let differenceInDirections = false;
+
+    //check if fields are the same length in oldVal and newVal
+    if (oldVal.fields.length === newVal.fields.length) {
+      for (let i = 0; i < oldVal.fields.length; i++) {
+        // for every value in oldVal and newVal, compare them.
+        // if oldVal and newVal don't match, then differenceInFields = true
+        differenceInFields = !(oldVal.fields[i] === newVal.fields[i]);
+        // if differenceInFields is true, break loop and move on.
+        if (differenceInFields) {
+          break;
+        }
+      }
+    } else {
+      differenceInFields = true;
+    }
+    // check if directions are the same length in oldVal and newVal
+    if (newVal.directions.length === newVal.directions.length) {
+      for (let i = 0; i < oldVal.directions.length; i++) {
+        // for every value in oldVal and newVal, compare them.
+        // if oldVal and newVal don't match, then differenceInFields = true
+        differenceInDirections = (oldVal.directions[i] !== newVal.directions[i]);
+        // if differenceInFields is true, break loop and move on.
+        if (differenceInDirections) {
+          break;
+        }
+      }
+    } else {
+      differenceInDirections = true;
+    }
+    if (newVal.directions.length === 0) {
+      newVal.directions[0] = 'asc';
+    }
+    // if there is a differenceInFields or differenceInDirections, loadItems
+    if (differenceInFields || differenceInDirections) {
+      $scope.loadItems(newVal);
+      var sortInfo = angular.copy($scope.sortInfo);
+      delete sortInfo.columns; //cleanup sortInfo to declutter querystring
+      $location.search('sortInfo', JSON.stringify(sortInfo));
+      $location.replace(); //replaces current history state rather then create new one when chaging querystring
     }
   }, true);
 
