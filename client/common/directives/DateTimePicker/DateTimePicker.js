@@ -28,7 +28,9 @@ angular.module('dashboard.directive.DateTimePicker', [
           if (!value) return;
           var date = moment(value);
           if (scope.ngTimeZone && date.tz) date = date.tz(scope.ngTimeZone); //NOTE: requires moment-timezone
-          return date.format(scope.format);
+          var formattedValue = date.format(scope.format);
+          elem.data('DateTimePicker').date(formattedValue);
+          return formattedValue;
         });
         
         scope.defaultDate = scope.defaultDate ? scope.defaultDate.replace(/"/g, '') : scope.defaultDate; //remove quotes  
@@ -56,6 +58,9 @@ angular.module('dashboard.directive.DateTimePicker', [
             ngModel.$setViewValue(dateValue);
           } else {
             ngModel.$setViewValue(null);
+          }
+          if (!scope.$$phase) {
+            scope.$apply();
           }
         });
       }
