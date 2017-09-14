@@ -32,16 +32,25 @@ angular.module('dashboard.directive.DateTimePicker', [
         });
         
         scope.defaultDate = scope.defaultDate ? scope.defaultDate.replace(/"/g, '') : scope.defaultDate; //remove quotes  
-        
+
+        var defaultDateFormat = 'YYYY-MM-DD h:mm:ss a'
+        scope.format = scope.format ? scope.format : defaultDateFormat;
+        var defaultDate = moment(scope.defaultDate).format(scope.format);
+        var property = (scope.$parent && scope.$parent.property) ? scope.$parent.property : null;
+        if (property && property.display && property.display.options && !property.display.options.includeDate && property.display.options.includeTime) {
+          //For time only, use default format instead to avoid date parsing errors
+          defaultDate = moment(scope.defaultDate).format(defaultDateFormat);
+        }
+
         //Bind the Element
         elem.datetimepicker({
           format: scope.format,
           useCurrent: false,
-          defaultDate: scope.defaultDate ? moment(scope.defaultDate).format(scope.format) : undefined,
+          defaultDate: defaultDate,
           viewMode: scope.viewMode,
           widgetPositioning: { horizontal: scope.horizontal ? scope.horizontal : 'auto' }
         });
-
+        
         //For companion button to launch the popup
         if (!scope.control) scope.control = {};
         scope.control.show = function() {
