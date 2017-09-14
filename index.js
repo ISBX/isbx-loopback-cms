@@ -363,7 +363,7 @@ function cms(loopbackApplication, options) {
         });
       }
 
-      if (config.public.isUnsafeUpsert) {
+      if (config.allowUnsafeUpsert) {
         upsertData();
       } else {
         ACL.checkAccessForContext(context, function(err, acl) {
