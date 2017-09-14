@@ -119,7 +119,7 @@ angular.module('dashboard.directives.ModelFieldReference', [
 
       scope.refreshChoices = function(search) {
         var model = Config.serverParams.models[scope.options.model];
-        var params = { 'filter[limit]': 100 }; //limit only 100 items in drop down list
+        var params = { }; 
         params['filter[where]['+scope.options.searchField+'][like]'] = "%" + search + "%";
         if (scope.options.where) {
           //Add additional filtering on reference results
