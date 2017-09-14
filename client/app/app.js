@@ -96,8 +96,7 @@ angular.module('dashboard', [
         $state.go('public.login');
       });
   };
-
-  localStorage['lastActive'] = new Date();
+  CacheService.set('lastActive', new Date());
   var lastPersistDate = new Date();
   function persistSession() {
     $timeout.cancel($rootScope.persistId);
@@ -108,12 +107,12 @@ angular.module('dashboard', [
     //limit the amount of time localStorage is written to
     if (new Date() - lastPersistDate > 5000) {
       if (checkTimeout()) {
-        localStorage['lastActive'] = new Date();
+        CacheService.set('lastActive', new Date());
       }
     } else {
       $rootScope.persistId = $timeout(function() {
         if (checkTimeout()) {
-          localStorage['lastActive'] = new Date();
+          CacheService.set('lastActive', new Date());
         }
       }, 5000);
     }
@@ -121,12 +120,12 @@ angular.module('dashboard', [
 
   function checkTimeout() {
     $timeout.cancel($rootScope.timeoutId);
-    if (!localStorage['lastActive']) {
+    if (!CacheService.get('lastActive')) {
       console.error('Session Timedout on another window/tab');
       $state.go('public.login');
       return false;
     }
-    var lastActiveDate = new Date(localStorage['lastActive']);
+    var lastActiveDate = new Date(CacheService.get('lastActive'));
     var interval = new Date() - lastActiveDate;
     if (interval > Config.serverParams.sessionTimeout) {
       $rootScope.logOut();

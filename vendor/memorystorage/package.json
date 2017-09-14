@@ -1,0 +1,58 @@
+{
+  "name": "memorystorage",
+  "version": "0.11.0",
+  "description": "Memory-backed implementation of the Web Storage API",
+  "src": "src/memorystorage.js",
+  "main": "dist/memorystorage.umd.js",
+  "dist": {
+    "umd": "dist/memorystorage.umd.js",
+    "min": "dist/memorystorage.min.js",
+    "map": "dist/memorystorage.min.js.map"
+  },
+  "exports": [
+    "MemoryStorage"
+  ],
+  "directories": {
+    "test": "tests"
+  },
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/download/memorystorage.git"
+  },
+  "keywords": [
+    "javascript",
+    "persistence",
+    "persistent objects",
+    "localStorage",
+    "Web Storage API"
+  ],
+  "author": {
+    "name": "Stijn de Witt",
+    "email": "StijnDeWitt@hotmail.com",
+    "url": "http://StijnDeWitt.com"
+  },
+  "contributors": [
+    {
+      "name": "Matthias Seemann",
+      "url": "https://github.com/semmel"
+    }
+  ],
+  "copyright": "©2016 by Stijn de Witt and contributors. Some rights reserved.",
+  "license": "CC-BY-4.0",
+  "licenseUrl": "https://creativecommons.org/licenses/by/4.0/",
+  "bugs": {
+    "url": "https://github.com/download/memorystorage/issues"
+  },
+  "homepage": "http://download.github.io/memorystorage",
+  "devDependencies": {
+    "grunt": "^0.4.5",
+    "grunt-contrib-uglify": "~0.6.0",
+    "grunt-umd": "^2.3.3",
+    "load-grunt-tasks": "~1.0.0",
+    "node-qunit-phantomjs": "^1.4.0"
+  },
+  "dependencies": {},
+  "scripts": {
+    "test": "node ./tests/test-node.js"
+  }
+}
