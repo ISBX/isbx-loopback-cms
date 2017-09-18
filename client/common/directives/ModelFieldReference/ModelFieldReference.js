@@ -77,6 +77,8 @@ angular.module('dashboard.directives.ModelFieldReference', [
         } else if(hasClass) {
           element.removeClass('ng-invalid');
         }
+        newValue = (_.isPlainObject(newValue) && newValue[scope.options.key]) ? newValue[scope.options.key] : newValue;
+        oldValue = (_.isPlainObject(oldValue) && oldValue[scope.options.key]) ? oldValue[scope.options.key] : oldValue;
         scope.$emit('onModelFieldReferenceChange', (scope.options.relationship)? scope.options.relationship : scope.key, newValue, oldValue);
       }, true);
 

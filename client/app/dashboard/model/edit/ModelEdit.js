@@ -145,7 +145,7 @@ angular.module('dashboard.Dashboard.Model.Edit', [
     });
     $scope.$on('onModelFieldReferenceChange', function(event, key, newValue, oldValue) {
       if (!$scope.data.hasOwnProperty(key) || !_.isEqual(newValue, oldValue)) {
-        $scope.data[key] = (_.isPlainObject(newValue) && newValue[key]) ? newValue[key]:newValue;
+        $scope.data[key] = newValue;
       }
     });
   }
