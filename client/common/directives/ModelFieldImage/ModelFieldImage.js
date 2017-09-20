@@ -90,6 +90,7 @@ angular.module('dashboard.directives.ModelFieldImage', [
                 if (data.imageUrl) scope.imageUrl = data.imageUrl;
                 if (!scope.imageUrl && data.file) {
                   //Handle file objects
+                  selectedFile = data.file;
                   fileReader.readAsDataURL(data.file);
                 }
               }
