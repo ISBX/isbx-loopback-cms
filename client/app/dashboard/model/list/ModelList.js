@@ -734,7 +734,8 @@ angular.module('dashboard.Dashboard.Model.List', [
 
   $scope.$watch('sortInfo', function (newVal, oldVal) {
     //Check isFirstLoad so that this watch statement does not get called when the page loads for the first time
-    if (!isFirstLoad && newVal !== oldVal) {
+    var paramCount = _.keys($scope.action.options.params).length;
+    if (!isFirstLoad && newVal !== oldVal && paramCount == 3) {
       $scope.loadItems();
     }
   }, true);
