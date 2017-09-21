@@ -137,10 +137,16 @@ angular.module('dashboard.Dashboard.Model.Edit', [
     $scope.$on('onModelDelete', function(event, formParams) {
       $scope.clickDeleteModel($scope.data, formParams);
     });
+
     $scope.$watchCollection('data', function(newData, oldData) {
       if ($scope.isLoading) return;
       //trigger change event only after model has been loaded and actual change was detected
-      $scope.$emit('onModelChange', { newData: newData, oldData: oldData });
+      $scope.$emit('onModelChange', newData, oldData);
+    });
+    $scope.$on('onModelFieldReferenceChange', function(event, key, newValue, oldValue) {
+      if (!$scope.data.hasOwnProperty(key) || !_.isEqual(newValue, oldValue)) {
+        $scope.data[key] = newValue;
+      }
     });
   }
 
