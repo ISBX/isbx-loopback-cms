@@ -113,8 +113,9 @@ angular.module('dashboard.Dashboard', [
         }
     };
     $scope.modalInstance = $modal.open({
-      templateUrl: 'app/dashboard/profile/Profile.html',
-      controller: 'ProfileCtrl',
+      templateUrl: '/cms/modules/PatientProfileModal.html',
+      controller: 'PatientProfileModal',
+      windowClass: "form-edit-modal-window",
       size: "lg",
       scope: $scope
     });
