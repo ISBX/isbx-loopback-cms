@@ -401,6 +401,7 @@ angular.module('dashboard.Dashboard.Model.List', [
 
   $scope.loadItems = function(params) {
     $scope.$emit("ModelListLoadItemsLoading");
+    $scope.$emit("deselectSelectedItems");
     if(!params) params = setupPagination();
       //Rudimentary Caching (could use something more robust here)
       var cacheKey = CacheService.getKeyForAction($scope.action,params);
