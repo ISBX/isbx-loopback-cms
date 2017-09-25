@@ -274,7 +274,11 @@ angular.module('dashboard.Dashboard.Model.List', [
     $scope.filterDescription = filterDescription ? filterDescription : $scope.action.label; 
 
     //Check if paging and sorting exists in querystring
-    if (queryStringParams.pageSize) $scope.pagingOptions.pageSize = queryStringParams.pageSize;
+    if (queryStringParams.pageSize) {
+      $scope.pagingOptions.pageSize = queryStringParams.pageSize;
+    } else {
+      $scope.pagingOptions.pageSize = $scope.pagingOptions.pageSizes[0];
+    }
     if (queryStringParams.currentPage) $scope.pagingOptions.currentPage = parseInt(queryStringParams.currentPage);
     if (queryStringParams.sortInfo) {
       try {
