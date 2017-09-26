@@ -98,7 +98,13 @@ angular.module('dashboard.services.GeneralModel', [
    * in hierarchical format
    */
   this.save = function(model, id, params) {
-    var path = Config.serverParams.cmsBaseUrl + '/model/save';
+    var path;
+    if (params.api) {
+      path = params.api
+      delete params.api;
+    } else {
+      path = Config.serverParams.cmsBaseUrl + '/model/save';
+    }
     params.__model = model;
     params.__id = id;
     params.__accessToken = $cookies.accessToken;
