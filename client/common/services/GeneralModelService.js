@@ -98,13 +98,7 @@ angular.module('dashboard.services.GeneralModel', [
    * in hierarchical format
    */
   this.save = function(model, id, params) {
-    var path;
-    if (params.api) {
-      path = params.api
-      delete params.api;
-    } else {
-      path = Config.serverParams.cmsBaseUrl + '/model/save';
-    }
+    var path = typeof model === 'object' && model.upsertApi ? model.upsertApi : Config.serverParams.cmsBaseUrl + '/model/save';
     params.__model = model;
     params.__id = id;
     params.__accessToken = $cookies.accessToken;
@@ -121,7 +115,7 @@ angular.module('dashboard.services.GeneralModel', [
    * @returns {promise.promise|Function|deferred.promise|{then, catch, finally}|*|r.promise}
    */
   this.saveWithFiles = function(model, id, data) {
-    var modelDef = Config.serverParams.models[model];
+    var modelDef = Config.serverParams.models[typeof model === 'object' ? model.model : model];
     var deferred = $q.defer();
 
     var uploadImages = function(callback) {

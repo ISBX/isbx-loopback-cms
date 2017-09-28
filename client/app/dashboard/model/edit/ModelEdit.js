@@ -22,18 +22,6 @@ angular.module('dashboard.Dashboard.Model.Edit', [
         pageTitle: 'Edit'
       }
     })
-    .state('dashboard.model.action.add', {
-      url: '/add',
-      templateUrl: 'app/dashboard/model/edit/ModelEdit.html',
-      data: {
-        pageTitle: 'Add'
-      }, 
-      params: {
-        model: null,
-        action: null,
-        api: null
-      }
-    });
     ;
 })
 
@@ -47,8 +35,7 @@ angular.module('dashboard.Dashboard.Model.Edit', [
 
     if (!$scope.action) $scope.action = {};
     if (!$scope.action.options) $scope.action.options = { model: $stateParams.model, key: $stateParams.key };
-    if (!$scope.action.options.api && $stateParams.api) $scope.action.options.api = $stateParams.api;
-  
+
     $scope.model = Config.serverParams.models[$scope.action.options.model];
 
     //Make Key field readonly
@@ -138,8 +125,7 @@ angular.module('dashboard.Dashboard.Model.Edit', [
    */
   function save(callback) {
     var id = $scope.data[$scope.action.options.key];
-    if ($scope.action.options.api) $scope.data.api = $scope.action.options.api;
-    GeneralModelService.saveWithFiles($scope.model.name, id, $scope.data)
+    GeneralModelService.saveWithFiles($scope.action.options, id, $scope.data)
       .then(function(response) {
         if (modalInstance) modalInstance.close();
         $rootScope.$broadcast('modelEditSaved');
