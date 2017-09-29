@@ -66,6 +66,22 @@ angular.module('dashboard.directives.ModelFieldReference', [
       scope.selected.item = null; //for single select; initialize to null so placeholder is displayed
       scope.list = [];
 
+      scope.$watch('selected', function(newData, oldData) {
+        var hasClass = element.hasClass('ng-invalid');
+        var newValue = (scope.options && scope.options.multiple) ? newData.items : newData.item;
+        var oldValue = (scope.options && scope.options.multiple) ? oldData.items : oldData.item;
+        if (!newValue || newValue.length <= 0) {
+          if ((scope.property) && (scope.property.required || (scope.property.display && scope.property.display.required))) {
+            element.addClass('ng-invalid');
+          }
+        } else if(hasClass) {
+          element.removeClass('ng-invalid');
+        }
+        newValue = (_.isPlainObject(newValue) && newValue[scope.options.key]) ? newValue[scope.options.key] : newValue;
+        oldValue = (_.isPlainObject(oldValue) && oldValue[scope.options.key]) ? oldValue[scope.options.key] : oldValue;
+        scope.$emit('onModelFieldReferenceChange', (scope.options.relationship)? scope.options.relationship : scope.key, newValue, oldValue);
+      }, true);
+
       function replaceSessionVariables(string) {
         if (typeof string !== 'string') return string;
         try {
@@ -277,7 +293,7 @@ angular.module('dashboard.directives.ModelFieldReference', [
          scope.data = item[scope.options.key];
          if (scope.rowData) scope.rowData[scope.options.key] = scope.data; //work around for ui-grid not being able to set ng-model for cell edit
          //emit an event when an item is selected
-         scope.$emit('onModelFieldReferenceSelect', scope.modelData, scope.key, item);
+         scope.$emit('onModelFieldReferenceSelect', scope.modelData, scope.key, item, scope.rowData);
          var textValue = item[scope.options.searchField];
           if (item && item[scope.options.searchField] == "[Add New Item]") {
             //console.log("should add " + $select.search);
