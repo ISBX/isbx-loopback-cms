@@ -125,7 +125,7 @@ angular.module('dashboard.Dashboard.Model.Edit', [
    */
   function save(callback) {
     var id = $scope.data[$scope.action.options.key];
-    GeneralModelService.saveWithFiles($scope.action.options, id, $scope.data)
+    GeneralModelService.saveWithFiles($scope.model.name, id, $scope.data, $scope.action.options.upsertApi)
       .then(function(response) {
         if (modalInstance) modalInstance.close();
         $rootScope.$broadcast('modelEditSaved');

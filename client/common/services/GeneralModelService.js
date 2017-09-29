@@ -97,8 +97,8 @@ angular.module('dashboard.services.GeneralModel', [
    * The CMS exposes the /model/save API that can take in model data
    * in hierarchical format
    */
-  this.save = function(model, id, params) {
-    var path = typeof model === 'object' && model.upsertApi ? model.upsertApi : Config.serverParams.cmsBaseUrl + '/model/save';
+  this.save = function(model, id, params, upsertApi) {
+    var path = upsertApi ? upsertApi : Config.serverParams.cmsBaseUrl + '/model/save';
     params.__model = model;
     params.__id = id;
     params.__accessToken = $cookies.accessToken;
@@ -112,10 +112,11 @@ angular.module('dashboard.services.GeneralModel', [
    * @param model
    * @param id
    * @param data
+   * @param upsertApi
    * @returns {promise.promise|Function|deferred.promise|{then, catch, finally}|*|r.promise}
    */
-  this.saveWithFiles = function(model, id, data) {
-    var modelDef = Config.serverParams.models[typeof model === 'object' ? model.model : model];
+  this.saveWithFiles = function(model, id, data, upsertApi) {
+    var modelDef = Config.serverParams.models[model];
     var deferred = $q.defer();
 
     var uploadImages = function(callback) {
@@ -179,7 +180,7 @@ angular.module('dashboard.services.GeneralModel', [
       uploadFiles(function() {
         //Loop through fields and check for forced default fields
         self.checkDefaultValues(modelDef, data);
-        self.save(model, id, data).then(
+        self.save(model, id, data, upsertApi).then(
           function(result) {
             deferred.resolve(result);
           },
