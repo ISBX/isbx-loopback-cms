@@ -9,7 +9,7 @@ angular.module('dashboard.Dashboard.Model.Edit', [
   'ui.bootstrap',
   'ui.bootstrap.datepicker',
   'ui.bootstrap.modal',
-  'ngCookies'  
+  'ngCookies'
 ])
 
 .config(function config($stateProvider) {
@@ -69,7 +69,7 @@ angular.module('dashboard.Dashboard.Model.Edit', [
 
     //Loop through fields and check for forced default fields
     GeneralModelService.checkDefaultValues($scope.model, $scope.data);
-    
+
     //Check to see if editing model
     var id = null;
     if ($stateParams.id && $stateParams.id > 0) id = $stateParams.id;
@@ -125,7 +125,7 @@ angular.module('dashboard.Dashboard.Model.Edit', [
    */
   function save(callback) {
     var id = $scope.data[$scope.action.options.key];
-    GeneralModelService.saveWithFiles($scope.model.name, id, $scope.data)
+    GeneralModelService.saveWithFiles($scope.model.name, id, $scope.data, $scope.action.options.upsertApi)
       .then(function(response) {
         if (modalInstance) modalInstance.close();
         $rootScope.$broadcast('modelEditSaved');
@@ -181,7 +181,7 @@ angular.module('dashboard.Dashboard.Model.Edit', [
       }
     });
   };
-  
+
   $scope.clickDeleteModel = function(data, formParams) {
     $scope.deleteDialogText = (formParams && formParams.deleteDialogText) ? formParams.deleteDialogText : $scope.deleteDialogText;
     if (!confirm($scope.deleteDialogText)) return;
@@ -213,7 +213,7 @@ angular.module('dashboard.Dashboard.Model.Edit', [
       });
     }
   };
-  
+
   /**
    * Checks if the user access to edit the field for this Model
    */
@@ -247,7 +247,7 @@ angular.module('dashboard.Dashboard.Model.Edit', [
     if (!$cookies.roles) {
       return false; //user has no role access
     }
-    
+
     var userRoles = JSON.parse($cookies.roles);
     for (var i in userRoles) {
       var role = userRoles[i];
@@ -257,7 +257,7 @@ angular.module('dashboard.Dashboard.Model.Edit', [
     }
     return false;
   };
-  
+
   init();
 })
 
