@@ -98,7 +98,7 @@ angular.module('dashboard.services.GeneralModel', [
    * in hierarchical format
    */
   this.save = function(model, id, params, upsertApi) {
-    var path = upsertApi ? upsertApi : Config.serverParams.cmsBaseUrl + '/model/save';
+    var path = upsertApi || Config.serverParams.cmsBaseUrl + '/model/save';
     params.__model = model;
     params.__id = id;
     params.__accessToken = $cookies.accessToken;
