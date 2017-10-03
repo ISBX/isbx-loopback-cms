@@ -378,7 +378,16 @@ angular.module('dashboard.directives.ModelField', [
           scope.display.pattern = scope.display.pattern.slice(1, scope.display.pattern.length-2);
         }
 
+        initFieldError()
+
         $compile(element.contents())(scope);
+      }
+
+      function initFieldError() {
+        if (scope.key && !scope.data[scope.key]) {
+          scope.display.error = ''
+          if (scope.ngError) scope.ngError({error: null});
+        }
       }
 
       function onFieldError(error) {
