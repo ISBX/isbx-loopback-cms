@@ -991,6 +991,20 @@ model-field-edit .error-message {
   top: -25px;
   z-index: 2;
 }
+model-field-edit .error-message:after {
+  display: block;
+  width: 8px;
+  height: 8px;
+  border: 1px solid transparent;
+  border-bottom-color: #d63e2f;
+  border-right-color: #d63e2f;
+  position: relative;
+  content: "";
+  top: 6px;
+  left: 20px;
+  transform: rotate(45deg);
+  background-color: #fad3cf;
+}
 model-field-reference-edit {
   display: block;
   height: auto;
