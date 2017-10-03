@@ -988,22 +988,8 @@ model-field-edit .error-message {
   font-size: smaller;
   position: absolute;
   left: 1px;
-  top: -30px;
+  top: -25px;
   z-index: 2;
-}
-model-field-edit .error-message:after {
-  display: block;
-  width: 8px;
-  height: 8px;
-  border: 1px solid transparent;
-  border-bottom-color: #d63e2f;
-  border-right-color: #d63e2f;
-  position: absolute;
-  content: "";
-  top: 17px;
-  left: 20px;
-  transform: rotate(45deg);
-  background-color: #fad3cf;
 }
 model-field-reference-edit {
   display: block;
