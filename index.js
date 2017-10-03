@@ -346,11 +346,14 @@ function cms(loopbackApplication, options) {
       if (!isValid) { return res.status(403).send('Forbidden'); }
 
       var data = req.body;
+      var model = loopbackApplication.models[data.__model];
+      var pkey = model && model.getIdName();
+
       var context = {
         accessToken: token,
         model: data.__model,
-        property: data.__id ? 'updateAttributes' : 'create',
-        modelId: data.__id || null,
+        property: data[pkey] ? 'updateAttributes' : 'create',
+        modelId: data[pkey],
         remotingContext: {
           req: req
         }

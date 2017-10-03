@@ -610,7 +610,7 @@ angular.module('dashboard.Dashboard.Model.List', [
 
       var saveRecord = function(record, callback) {
         var id = record[$scope.action.options.key];
-        GeneralModelService.save($scope.action.options.model, id, record)
+        GeneralModelService.save($scope.action.options.model, record)
         .then(function(response) {
           callback();
         }, function(error) {
