@@ -231,27 +231,31 @@ angular.module('dashboard.directives.ModelFieldReference', [
           });
 
         } else if (scope.data && scope.options && scope.options.model) {
-          //Lookup default reference record
-          var model = Config.serverParams.models[scope.options.model];
-          //unwatch(); //due to late binding need to unwatch here
-          GeneralModelService.get(model.plural, scope.data)
-          .then(function(response) {
-            if (!response) return;  //in case http request was cancelled
-            //console.log("default select = " + JSON.stringify(response));
-            scope.selected.item = response;
-            scope.list = [scope.selected.item]; //make sure list contains item otherwise won't be displayed
-            if (scope.onModelChanged) scope.onModelChanged({'$item': scope.selected.item});
-          }, function(error) {
-              if (scope.options.allowInsert) {
-                //Not found so just add the item
-                var newItem = {};
-                newItem[scope.options.key] = scope.data;
-                newItem[scope.options.searchField] = scope.data;
-                scope.selected.item = newItem;
-                scope.list.push(newItem);
-              }
-
-          });
+          if (scope.isNewItemAdded) {
+            scope.isNewItemAdded = false;
+          } else {
+            //Lookup default reference record
+            var model = Config.serverParams.models[scope.options.model];
+            //unwatch(); //due to late binding need to unwatch here
+            GeneralModelService.get(model.plural, scope.data)
+              .then(function(response) {
+                if (!response) return;  //in case http request was cancelled
+                //console.log("default select = " + JSON.stringify(response));
+                scope.selected.item = response;
+                scope.list = [scope.selected.item]; //make sure list contains item otherwise won't be displayed
+                if (scope.onModelChanged) scope.onModelChanged({'$item': scope.selected.item});
+              }, function(error) {
+                if (scope.options.allowInsert) {
+                  //Not found so just add the item
+                  var newItem = {};
+                  newItem[scope.options.key] = scope.data;
+                  newItem[scope.options.searchField] = scope.data;
+                  scope.selected.item = newItem;
+                  scope.list.push(newItem);
+                }
+                
+              });
+          }
         }
      });
 
@@ -286,6 +290,7 @@ angular.module('dashboard.directives.ModelFieldReference', [
          var textValue = item[scope.options.searchField];
           if (item && item[scope.options.searchField] == "[Add New Item]") {
             //console.log("should add " + $select.search);
+            scope.isNewItemAdded = true;
             var value = element.find("input.ui-select-search").val();
             scope.data = value;
             var newItem = {};
