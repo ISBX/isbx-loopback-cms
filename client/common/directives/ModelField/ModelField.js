@@ -41,19 +41,6 @@ angular.module('dashboard.directives.ModelField', [
   };
 })
 
-.directive('mySpace', function() {
-  return function(scope, element, attrs) {
-    element.bind('keydown keypress', function (event) {
-      if (event.which === 32) {
-        scope.$apply(function () {
-          scope.$eval(attrs.mySpace);
-        });
-        event.preventDefault();
-      }
-    });
-  };
-})
-
 .directive('modelFieldEdit', function($compile, $cookies) {
   function getTemplate(type, scope) {
     var template = '';
