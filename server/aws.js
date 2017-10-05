@@ -39,13 +39,13 @@ function getS3Credentials(path, fileType, acl, callback) {
   var acceptableFileTypes = awsConfig.s3.path[path];
   if (!acceptableFileTypes) {
     var error = new Error('Invalid path value');
-    var error.status = 400;
+    error.status = 400;
     callback(error);
     return;
   }
   if (fileType == undefined || fileType == null) {
     var error = new Error('Please provide a fileType');
-    var error.status = 400;
+    error.status = 400;
     callback(error);
     return;
   }
@@ -59,7 +59,7 @@ function getS3Credentials(path, fileType, acl, callback) {
     error.status = 400;
     callback(error);
     return;
-  } 
+  }
   var expirationLength = 900; //15min
   var expirationDate = moment().add(expirationLength, 'seconds').toISOString();
   var maxFileSize = awsConfig.s3.maxFileSize ? awsConfig.s3.maxFileSize : 5242880; //default to 5MB
