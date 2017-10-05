@@ -286,13 +286,18 @@ angular.module('dashboard.directives.ModelFieldReference', [
          var textValue = item[scope.options.searchField];
           if (item && item[scope.options.searchField] == "[Add New Item]") {
             //console.log("should add " + $select.search);
-            var value = element.find("input.ui-select-search").val();
-            scope.data = value;
-            var newItem = {};
-            newItem[scope.options.key] = value;
-            newItem[scope.options.searchField] = value;
-            scope.selected.item = newItem;
-            scope.list.push(newItem);
+            var value = element.find("input.ui-select-search").val().trim();
+            if (value.length === 0) {
+              scope.data = null;
+              textValue = "";
+            } else {
+              scope.data = value;
+              var newItem = {};
+              newItem[scope.options.key] = value;
+              newItem[scope.options.searchField] = value;
+              scope.selected.item = newItem;
+              scope.list.push(newItem);
+            }
           } else if (item && item[scope.options.searchField] == "[clear]") {
             //console.log("should add " + $select.search);
             scope.data = null;
