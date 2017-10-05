@@ -38,16 +38,26 @@ var awsConfig;
 function getS3Credentials(path, fileType, acl, callback) {
   var acceptableFileTypes = awsConfig.s3.path[path];
   if (!acceptableFileTypes) {
-    callback({error: "Invalid path value"});
+    var error = new Error('Invalid path value');
+    var error.status = 400;
+    callback(error);
     return;
   }
   if (fileType == undefined || fileType == null) {
-    callback({error: "Please provide a fileType"});
+    var error = new Error('Please provide a fileType');
+    var error.status = 400;
+    callback(error);
     return;
   }
   var fileExtension = acceptableFileTypes[fileType];
   if (!fileExtension) {
-    callback({error: "Invalid fileType for path"});
+    var files = [];
+    _.each(acceptableFileTypes, function(type) {
+      files.push(type);
+    });
+    var error = new Error('The file being uploaded is not an accepted file type for this form. Allowed file types are (' + files.join(', ') + ').');
+    error.status = 400;
+    callback(error);
     return;
   } 
   var expirationLength = 900; //15min

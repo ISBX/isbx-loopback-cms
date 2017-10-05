@@ -421,7 +421,7 @@ function cms(loopbackApplication, options) {
       if (!isValid) { return res.status(403).send('Forbidden'); }
       aws.getS3Credentials(req.query.path, req.query.fileType, req.query.acl, function(error, credentials) {
         if (error) {
-          res.status(500).send(error);
+          res.status(error.status).send(error.message);
         }
         res.send(credentials);
       });
