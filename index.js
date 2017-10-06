@@ -416,7 +416,7 @@ function cms(loopbackApplication, options) {
 
       aws.getS3Credentials(req.query["path"], req.query["fileType"], function(error, credentials) {
         if (error) {
-          res.status(500).send(error);
+          res.status(error.status).send(error.message);
         }
         res.send(credentials);
       });
