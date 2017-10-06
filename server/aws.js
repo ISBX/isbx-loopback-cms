@@ -22,6 +22,7 @@
  THE SOFTWARE.
  */
 
+var _ = require('lodash');
 var uuid = require('node-uuid');
 var moment = require("moment");
 var crypto = require("crypto");
@@ -52,7 +53,7 @@ function getS3Credentials(path, fileType, callback) {
   var fileExtension = acceptableFileTypes[fileType];
   if (!fileExtension) {
     var files = [];
-    _.each(acceptableFileTypes, function(type) {
+    _.forEach(acceptableFileTypes, function(type) {
       files.push(type);
     });
     var error = new Error('The file being uploaded is not an accepted file type for this form. Allowed file types are (' + files.join(', ') + ').');
