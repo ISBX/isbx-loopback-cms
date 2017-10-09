@@ -461,6 +461,13 @@ angular.module('dashboard.directives.ModelField', [
             var value = data[key];
             if (value == undefined || value == null) return property.display.default;
             data[key] = value == '1' || value == 1; //Fixes a bug where data[key] changes from bool to string can cause checkbox to get unchecked
+            if (property.display.isRequired && !scope.data[scope.key]) {
+              scope.display.error = "This is a required field."
+              if (scope.ngError) scope.ngError({error: new Error(scope.display.error)});
+            } else {
+              delete scope.display.error;
+              if (scope.ngError) scope.ngError({error: null});
+            }
             return data[key];
           }
           //Make sure boolean (checkbox) values are numeric (below only gets called on init and not when state changes)
