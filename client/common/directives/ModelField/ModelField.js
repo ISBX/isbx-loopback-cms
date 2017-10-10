@@ -474,11 +474,11 @@ angular.module('dashboard.directives.ModelField', [
           if (typeof scope.data[scope.key] === "string") scope.data[scope.key] = parseInt(scope.data[scope.key]);
         }
 
-        if (property.display.type == "slider") {
-          if (typeof scope.data[scope.key] === 'undefined' || scope.data[scope.key] == null) {
-            scope.data[scope.key] = property.display.options.from + ";" + property.display.options.to;
-          }
-        }
+        // if (property.display.type == "slider") {
+        //   if (typeof scope.data[scope.key] === 'undefined' || scope.data[scope.key] == null) {
+        //     scope.data[scope.key] = property.display.options.from + ";" + property.display.options.to;
+        //   }
+        // }
       }
 
       init();
