@@ -32,7 +32,8 @@
     "ng-signature-pad": "*",
     "angular-libphonenumber": "^1.0.0",
     "angular-elastic": "~2.5.1",
-    "exif-js": "^2.1.1"
+    "exif-js": "^2.1.1",
+    "angular-elastic-input": "^2.4.0"
   },
   "resolutions": {
     "angular": ">=1.2.18"
