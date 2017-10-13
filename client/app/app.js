@@ -57,6 +57,7 @@ angular.module('dashboard', [
 
 .controller('AppCtrl', function AppCtrl ($scope, $location, $state, $rootScope, $timeout, $document, SessionService, CacheService, Config) {
   $rootScope.$state = $state;
+  $rootScope.config = Config;
   if (Config.serverParams.gaTrackingId) ga('create', Config.serverParams.gaTrackingId, 'auto');
 
   $rootScope.$on('$stateChangeStart', function(event, toState, toParams, fromState, fromParams) {
