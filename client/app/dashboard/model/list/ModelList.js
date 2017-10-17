@@ -29,6 +29,7 @@ angular.module('dashboard.Dashboard.Model.List', [
 
   var isFirstLoad = true;
   var modalInstance = null;
+  var selectedItems = { items: [] };
 
   function init() {
     $scope.isLoading = true;
@@ -41,6 +42,7 @@ angular.module('dashboard.Dashboard.Model.List', [
     $scope.totalServerItems = 0;
     $scope.isEditing = false;
     $scope.searchFields = $scope.action.options.searchFields;
+    $scope.checkedItems = {};
     if ($scope.action.options.sort) {
         //Custom Sort Override
         $scope.sortInfo = $scope.action.options.sort;
@@ -160,6 +162,45 @@ angular.module('dashboard.Dashboard.Model.List', [
       $scope.cancelButtonText = Config.serverParams.strings.cancelButton;
       $scope.saveButtonText = Config.serverParams.strings.saveButton;
     }
+
+    $scope.$on('RemoveSelectedItems', function () {
+      removeSelectedItems();
+    })
+  }
+
+  $scope.clickSelectAll = function () {
+    for (var i in $scope.list) {
+      if ($scope.checkedItems[$scope.list[i].id] && !$scope.action.selectAll) {
+        $scope.checkedItems[$scope.list[i].id] = false;
+        var index = selectedItems.items.indexOf($scope.list[i]);
+        selectedItems.items.splice(index, 1);
+      } else if ($scope.action.selectAll && selectedItems.items.indexOf($scope.list[i]) < 0) {
+        $scope.checkedItems[$scope.list[i].id] = true;
+        selectedItems.items.push($scope.list[i]);
+      }
+    }
+    $scope.$emit("SelectedModelList", { list: selectedItems.items });
+  };
+
+  $scope.clickItemCheckbox = function (item) {
+    var selectedItem = _.find(selectedItems.items, { id: item.id });
+    if ($scope.checkedItems[item.id] && !selectedItem) {
+      selectedItems.items.push(item);
+    } else if (selectedItem) {
+      var index = selectedItems.items.indexOf(selectedItem);
+      selectedItems.items.splice(index, 1);
+      if (selectedItems.items.length == 0) $scope.action.selectAll = false;
+    }
+    $scope.$emit("SelectedModelList", { list: selectedItems.items });
+  };
+
+  function removeSelectedItems() {
+    for (var i in selectedItems.items) {
+      $scope.checkedItems[selectedItems.items[i].id] = false;
+    }
+    selectedItems.items = [];
+    $scope.action.selectAll ? false:false;
+    $scope.$emit("SelectedModelList", { list: selectedItems.items });
   }
 
   function getColumnDefinition() {
