@@ -30,7 +30,7 @@ angular.module('dashboard.Dashboard.Model.List', [
   var isFirstLoad = true;
   var modalInstance = null;
   var selectedItems = { items: [] };
-  var objectId = '';
+  var idKey = '';
 
   function init() {
     $scope.isLoading = true;
@@ -169,18 +169,18 @@ angular.module('dashboard.Dashboard.Model.List', [
     })
 
     $scope.$on('ObjectIdKey', function (event, data) {
-      objectId = data.id;
+      idKey = data.id;
     })
   }
 
   $scope.clickSelectAll = function () {
     for (var i in $scope.list) {
-      if ($scope.checkedItems[$scope.list[i][objectId]] && !$scope.action.selectAll) {
-        $scope.checkedItems[$scope.list[i][objectId]] = false;
+      if ($scope.checkedItems[$scope.list[i][idKey]] && !$scope.action.selectAll) {
+        $scope.checkedItems[$scope.list[i][idKey]] = false;
         var index = selectedItems.items.indexOf($scope.list[i]);
         selectedItems.items.splice(index, 1);
       } else if ($scope.action.selectAll && selectedItems.items.indexOf($scope.list[i]) < 0) {
-        $scope.checkedItems[$scope.list[i][objectId]] = true;
+        $scope.checkedItems[$scope.list[i][idKey]] = true;
         selectedItems.items.push($scope.list[i]);
       }
     }
@@ -188,8 +188,8 @@ angular.module('dashboard.Dashboard.Model.List', [
   };
 
   $scope.clickItemCheckbox = function (item) {
-    var selectedItem = _.find(selectedItems.items, { id: item[objectId] });
-    if ($scope.checkedItems[item[objectId]] && !selectedItem) {
+    var selectedItem = _.find(selectedItems.items, { id: item[idKey] });
+    if ($scope.checkedItems[item[idKey]] && !selectedItem) {
       selectedItems.items.push(item);
     } else if (selectedItem) {
       var index = selectedItems.items.indexOf(selectedItem);
@@ -201,7 +201,7 @@ angular.module('dashboard.Dashboard.Model.List', [
 
   function removeSelectedItems() {
     for (var i in selectedItems.items) {
-      $scope.checkedItems[selectedItems.items[i][objectId]] = false;
+      $scope.checkedItems[selectedItems.items[i][idKey]] = false;
     }
     selectedItems.items = [];
     $scope.action.selectAll = false;
