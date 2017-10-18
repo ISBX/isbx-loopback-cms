@@ -421,6 +421,7 @@ angular.module('dashboard.Dashboard.Model.List', [
     //from the data source is refreshed
 
     $scope.isLoading = true;
+    $scope.list = [];
     GeneralModelService.list($scope.apiPath, params).then(
       function(response) {
         if (!response) return; //in case http request was cancelled
