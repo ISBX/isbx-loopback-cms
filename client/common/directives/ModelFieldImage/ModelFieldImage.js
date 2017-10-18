@@ -42,7 +42,7 @@ angular.module('dashboard.directives.ModelFieldImage', [
     },
     link: function(scope, element, attrs) {
         var selectedFile = null;
-
+        if(!scope.modelData.__ModelFieldImageChangeCount) scope.modelData.__ModelFieldImageChangeCount = 0;//used for triggering model changes
         // Set translation label
         scope.selectFileButtonText = 'Select File';
         scope.clearButtonText = 'Clear';
@@ -123,6 +123,7 @@ angular.module('dashboard.directives.ModelFieldImage', [
             //No table reference (file URL assigned directly into current model's field)
             scope.modelData.__ModelFieldImageData[scope.key] = imageData;
           }
+          scope.modelData.__ModelFieldImageChangeCount++;//force trigger onModelChange event
 
           //Set the preview image via scope.imageUrl binding
           ImageService.fixOrientationWithDataURI(event.target.result, function(error, dataURI) {
@@ -160,6 +161,7 @@ angular.module('dashboard.directives.ModelFieldImage', [
           if (scope.modelData.__ModelFieldImageData && scope.modelData.__ModelFieldImageData[scope.key]) {
             //make sure to remove any pending image uploads for this image field
             delete scope.modelData.__ModelFieldImageData[scope.key];
+            scope.modelData.__ModelFieldImageChangeCount++;//force trigger onModelChange event
           }
           delete scope.imageUrl; //remove the image
           delete scope.thumbnailUrl; //remove the image

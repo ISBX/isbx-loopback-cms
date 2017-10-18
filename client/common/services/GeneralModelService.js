@@ -250,6 +250,7 @@ angular.module('dashboard.services.GeneralModel', [
 
     //Finally delete the __ModelFieldImageData
     delete data.__ModelFieldImageData;
+    delete data.__ModelFieldImageChangeCount;
   };
 
   /**
@@ -283,13 +284,22 @@ angular.module('dashboard.services.GeneralModel', [
     return json;
   };
 
-  this.validateRequiredFields = function(model, data) {
-    var invalids = model.display.filter(function(item) {
+  this.validateRequiredFields = function(model, data, displayName) {
+    var display = (displayName) ? model[displayName] : model.display;
+    var invalids = display.filter(function(item) {
       if (typeof item === 'string') {
         var property = model.properties[item];
         return (property && property.required && !data[item]);
-      } else if(typeof item === 'object') {
-        return (item.required && item.options && item.options.relationship && _.isEmpty(data[item.options.relationship]));
+      } else if(typeof item === 'object' && item.required) {
+        if (item.options && item.options.relationship) {
+          return _.isEmpty(data[item.options.relationship]);
+        } else if (item.type === 'image') {
+          if (data.__ModelFieldImageData) {
+            return _.isEmpty(data.__ModelFieldImageData[item.property]);
+          }
+          return _.isEmpty(data[item.property]);
+        }
+        return _.isEmpty(data[item.property]);
       }
       return false;
     });
