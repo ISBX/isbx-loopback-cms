@@ -4,7 +4,7 @@ angular.module('dashboard.Dashboard.Model.Edit.SaveDialog', [
   'ui.bootstrap.modal'
 ])
 
-.controller('ModelEditSaveDialogCtrl', function ModelEditCtrl($scope, $modalInstance, $translate) {
+.controller('ModelEditSaveDialogCtrl', function ModelEditCtrl($scope, $translate) {
   "ngInject";
 
   function init() {

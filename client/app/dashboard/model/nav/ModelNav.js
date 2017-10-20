@@ -20,7 +20,7 @@ angular.module('dashboard.Dashboard.Model.Nav', [
     ;
 })
 
-.controller('ModelNavCtrl', function ModelNavCtrl($scope, $timeout, $state, $location, $modal, Config, SettingsService) {
+.controller('ModelNavCtrl', function ModelNavCtrl($scope, $timeout, $state, $location, $uibModal, Config, SettingsService) {
   "ngInject";
 
   var jsonEditor = null;
@@ -237,7 +237,7 @@ angular.module('dashboard.Dashboard.Model.Nav', [
     $scope.alertTitle = "Saving...";
     $scope.alertMessage = "Saving navigation settings";
     $scope.allowAlertClose = false;
-    modalInstance = $modal.open({
+    modalInstance = $uibModal.open({
       templateUrl: 'app/dashboard/alert/Alert.html',
       controller: 'AlertCtrl',
       size: "sm",

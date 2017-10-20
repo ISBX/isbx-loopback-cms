@@ -4,8 +4,7 @@ angular.module('dashboard.Profile', [
   'dashboard.Dashboard.Model.Edit'
 ])
 
-.controller('ProfileCtrl', function ProfileCtrl($scope, $modalInstance, $translate) {
-
+.controller('ProfileCtrl', function ProfileCtrl($scope, $translate) {
   
   function init() {
     $translate('user_profile.title').then(function(translated) {

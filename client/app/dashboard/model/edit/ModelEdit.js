@@ -41,7 +41,7 @@ angular.module('dashboard.Dashboard.Model.Edit', [
   }
 })
 
-.controller('ModelEditCtrl', function ModelEditCtrl($rootScope, $scope, $cookies, $location, $stateParams, $state, $window, $modal, $filter, Config, GeneralModelService, FileUploadService, CacheService, modelEditConstants, $translate) {
+.controller('ModelEditCtrl', function ModelEditCtrl($rootScope, $scope, $cookies, $location, $stateParams, $state, $window, $uibModal, $filter, Config, GeneralModelService, FileUploadService, CacheService, modelEditConstants, $translate) {
   "ngInject";
 
   var modalInstance = null;
@@ -220,7 +220,7 @@ angular.module('dashboard.Dashboard.Model.Edit', [
    */
   $scope.clickSaveModel = function(data) {
     displayStatus({message:"Saving", translate:"cms.status.saving", progress:0.0});
-    modalInstance = $modal.open({
+    modalInstance = $uibModal.open({
       templateUrl: 'app/dashboard/model/edit/ModelEditSaveDialog.html',
       controller: 'ModelEditSaveDialogCtrl',
       scope: $scope
