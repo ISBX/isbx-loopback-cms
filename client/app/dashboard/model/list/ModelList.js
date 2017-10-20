@@ -59,6 +59,11 @@ angular.module('dashboard.Dashboard.Model.List', [
         currentPage: 1 //1-based index
     };
 
+    if ($scope.action.options.pageSize) {
+      var pageSize = $scope.action.options.pageSize.toString();
+      var index = $scope.pagingOptions.pageSizes.indexOf(pageSize);
+      $scope.pagingOptions.pageSizes = $scope.pagingOptions.pageSizes.slice(0, index + 1);
+    }
     if (!$scope.sortInfo) $scope.sortInfo = {};
     if (!$scope.sortInfo.columns) $scope.sortInfo.columns = [];
 
@@ -275,6 +280,7 @@ angular.module('dashboard.Dashboard.Model.List', [
 
     //Check if paging and sorting exists in querystring
     if (queryStringParams.pageSize) $scope.pagingOptions.pageSize = queryStringParams.pageSize;
+    else if ($scope.action.options.pageSize) $scope.pagingOptions.pageSize = $scope.action.options.pageSize.toString();
     if (queryStringParams.currentPage) $scope.pagingOptions.currentPage = parseInt(queryStringParams.currentPage);
     if (queryStringParams.sortInfo) {
       try {
