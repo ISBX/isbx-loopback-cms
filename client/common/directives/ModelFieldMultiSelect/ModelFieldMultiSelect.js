@@ -1,6 +1,6 @@
-angular.module('dashboard.directives.ModelFieldMultiSelect', [])
+angular.module('dashboard.directives.ModelFieldMultiSelect', ["dashboard.services.GeneralModel"])
 
-.directive('modelFieldMultiSelect', function($compile) {
+.directive('modelFieldMultiSelect', function($compile, Config, GeneralModelService) {
   "ngInject";
 
   function getTemplate() {
@@ -24,9 +24,7 @@ angular.module('dashboard.directives.ModelFieldMultiSelect', [])
       disabled: '=ngDisabled'
     },
     link: function(scope, element, attrs, ngModel) {
-      
       var property = scope.property;
-      
       function init() {
         scope.multiSelectOptions = [];
         scope.selected = [];
@@ -92,6 +90,28 @@ angular.module('dashboard.directives.ModelFieldMultiSelect', [])
         }
       }
 
+      var unwatch = scope.$watchCollection('[data, options, modelData]', function(results) {
+        var params = {};
+        var sourceModel = Config.serverParams.models[scope.property.display.sourceModel];
+        var sourceModelName = sourceModel.plural;
+        var sourceId = scope.modelData[scope.property.display.sourceKey];
+
+        if (!sourceId) return;
+
+        GeneralModelService.getMany(sourceModelName, sourceId, scope.property.display.relationship, params, {preventCancel: true}).then(function(response) {
+          if (!response) return;
+          var items = response;
+          for (var i in items) {
+            var item = items[i];
+            var index = _.findIndex(scope.multiSelectOptions, {key: item[scope.property.display.key]});
+            if (index > -1) scope.selected[index] = true;
+          }
+          unwatch();
+        }).catch(function () {
+          unwatch();
+        });
+      })
+
       /**
        * Initial data load by checking desired output as comma, array, or object
        */
@@ -142,7 +162,7 @@ angular.module('dashboard.directives.ModelFieldMultiSelect', [])
                 output += '"' + option.key + '",'; //quote qualified
                 break;
               case 'array':
-                output.push(selectedOption.item || selectedOption.key); // return array
+                output.push(option.item || option.key); // return array
                 break;
             }
 
