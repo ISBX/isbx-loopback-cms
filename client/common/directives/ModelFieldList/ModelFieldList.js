@@ -96,6 +96,10 @@ angular.module('dashboard.directives.ModelFieldList', [
                 console.error('ModelFieldList failed to parse scope.data', e);
               }
             }
+
+            $timeout(function() {
+              angular.element('.ui-sortable').sortable('refresh');
+            })
           }
         });
 
