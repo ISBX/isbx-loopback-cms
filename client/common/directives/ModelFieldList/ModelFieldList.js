@@ -99,7 +99,7 @@ angular.module('dashboard.directives.ModelFieldList', [
 
             $timeout(function() {
               angular.element('.ui-sortable').sortable('refresh');
-            })
+            });
           }
         });
 
