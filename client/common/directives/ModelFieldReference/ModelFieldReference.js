@@ -236,6 +236,11 @@ angular.module('dashboard.directives.ModelFieldReference', [
           //Lookup default reference record
           var model = Config.serverParams.models[scope.options.model];
           //unwatch(); //due to late binding need to unwatch here
+          if (_.isPlainObject(scope.data)) {
+            //abort as scope.data is an object (this can occur if manipulating complex objects and utilizing
+            //the 'onModelFieldReferenceSelect' emit
+            return;
+          }
           GeneralModelService.get(model.plural, scope.data)
           .then(function(response) {
             if (!response) return;  //in case http request was cancelled

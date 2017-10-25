@@ -23,7 +23,7 @@ angular.module('dashboard.directives.ModelFieldCanvas', [
   };
 })
 
-.directive('modelFieldCanvasEdit', function($compile, $cookies, $timeout, $modal, Config, FileUploadService) {
+.directive('modelFieldCanvasEdit', function($compile, $cookies, $timeout, Config, FileUploadService) {
   "ngInject";
 
   function getTemplate() {

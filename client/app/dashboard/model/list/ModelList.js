@@ -24,7 +24,7 @@ angular.module('dashboard.Dashboard.Model.List', [
     ;
 })
 
-.controller('ModelListCtrl', function ModelListCtrl($scope, $cookies, $timeout, $state, $location, $window, $modal, Config, GeneralModelService, CacheService) {
+.controller('ModelListCtrl', function ModelListCtrl($scope, $cookies, $timeout, $state, $location, $window, $uibModal, Config, GeneralModelService, CacheService) {
   "ngInject";
 
   var isFirstLoad = true;
@@ -380,6 +380,9 @@ angular.module('dashboard.Dashboard.Model.List', [
   }
   
   $scope.getTotalServerItems = function() {
+    $scope.isLoading = true;
+    $scope.list = [];
+    $scope.totalServerItems = 0;
     var params = setupPagination();
     GeneralModelService.count($scope.apiPath, params)
     .then(function(response) {
@@ -395,15 +398,22 @@ angular.module('dashboard.Dashboard.Model.List', [
         }
         $scope.totalServerItems = response.count;
       }
-      $scope.loadItems(params);
+      if(parseInt($scope.totalServerItems) > 0)
+        $scope.loadItems(params);
+      else {
+        $scope.isLoading = false;
+      }
     },
     function(error) {
+        $scope.isLoading = false;
         $scope.errorMessage = 'There was an error while loading...';
         console.error(error);
     });
   };
 
   $scope.loadItems = function(params) {
+    $scope.isLoading = true;
+    $scope.list = [];
     $scope.$emit("ModelListLoadItemsLoading");
     if(!params) params = setupPagination();
       //Rudimentary Caching (could use something more robust here)
@@ -424,7 +434,6 @@ angular.module('dashboard.Dashboard.Model.List', [
     //Always query for the latest list even if the cache has previously cached results so that any updates
     //from the data source is refreshed
 
-    $scope.isLoading = true;
     GeneralModelService.list($scope.apiPath, params).then(
       function(response) {
         if (!response) return; //in case http request was cancelled
@@ -435,13 +444,14 @@ angular.module('dashboard.Dashboard.Model.List', [
           $scope.list = response;
         $scope.columnCount = $scope.list.length > 0 ? Object.keys($scope.list[0]).length : 0;
         if(!$scope.filterOptions.useExternalFilter) CacheService.set(cacheKey, $scope.list);
-        processWindowSize(); //on first load check window size to determine if optional columns should be displayed
         $scope.$emit("ModelListLoadItemsLoaded");
         isFirstLoad = false;
         $scope.isLoading = false;
         $scope.loadAttempted = true;
+        processWindowSize(); //on first load check window size to determine if optional columns should be displayed
       },
       function(error) {
+        $scope.isLoading = false;
         $scope.errorMessage = 'There was an error while loading...';
         console.error(error);
       })
@@ -610,7 +620,7 @@ angular.module('dashboard.Dashboard.Model.List', [
       var recordIndex = 0;
       $scope.status = "Saving...";
       $scope.progress = 0.0;
-      modalInstance = $modal.open({
+      modalInstance = $uibModal.open({
         templateUrl: 'app/dashboard/model/edit/ModelEditSaveDialog.html',
         controller: 'ModelEditSaveDialogCtrl',
         scope: $scope

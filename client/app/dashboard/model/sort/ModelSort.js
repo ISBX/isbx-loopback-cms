@@ -22,7 +22,7 @@ angular.module('dashboard.Dashboard.Model.Sort', [
     ;
 })
 
-.controller('ModelSortCtrl', function ModelListCtrl($scope, $timeout, $state, $modal, $window, Config, GeneralModelService, $location) {
+.controller('ModelSortCtrl', function ModelListCtrl($scope, $timeout, $state, $uibModal, $window, Config, GeneralModelService, $location) {
   "ngInject";
 
   $scope.list = [];
@@ -99,7 +99,7 @@ angular.module('dashboard.Dashboard.Model.Sort', [
     $scope.alertTitle = "Saving...";
     $scope.alertMessage = "Saving new sort order";
     $scope.allowAlertClose = false;
-    modalInstance = $modal.open({
+    modalInstance = $uibModal.open({
       templateUrl: 'app/dashboard/alert/Alert.html',
       controller: 'AlertCtrl',
       size: "sm",

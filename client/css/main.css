@@ -988,7 +988,7 @@ model-field-edit .error-message {
   font-size: smaller;
   position: absolute;
   left: 1px;
-  top: -30px;
+  top: -25px;
   z-index: 2;
 }
 model-field-edit .error-message:after {
@@ -998,9 +998,9 @@ model-field-edit .error-message:after {
   border: 1px solid transparent;
   border-bottom-color: #d63e2f;
   border-right-color: #d63e2f;
-  position: absolute;
+  position: relative;
   content: "";
-  top: 17px;
+  top: 6px;
   left: 20px;
   transform: rotate(45deg);
   background-color: #fad3cf;
