@@ -29,6 +29,8 @@ angular.module('dashboard.Dashboard.Model.List', [
 
   var isFirstLoad = true;
   var modalInstance = null;
+  var selectedItems = { items: [] };
+  var idKey = '';
 
   function init() {
     $scope.isLoading = true;
@@ -41,6 +43,7 @@ angular.module('dashboard.Dashboard.Model.List', [
     $scope.totalServerItems = 0;
     $scope.isEditing = false;
     $scope.searchFields = $scope.action.options.searchFields;
+    $scope.checkedItems = {};
     if ($scope.action.options.sort) {
         //Custom Sort Override
         $scope.sortInfo = $scope.action.options.sort;
@@ -160,6 +163,14 @@ angular.module('dashboard.Dashboard.Model.List', [
       $scope.cancelButtonText = Config.serverParams.strings.cancelButton;
       $scope.saveButtonText = Config.serverParams.strings.saveButton;
     }
+
+    $scope.$on('RemoveSelectedItems', function () {
+       removeSelectedItems();
+     })
+ 
+     $scope.$on('ObjectIdKey', function (event, data) {
+       idKey = data.id;
+     })
   }
 
   function getColumnDefinition() {
