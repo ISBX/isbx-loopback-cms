@@ -54,11 +54,16 @@ angular.module('dashboard.Dashboard.Model.List', [
     };
     $scope.pagingOptions = {
         //Follow ng-grid pagination model
-        pageSizes: ['25', '50', '100'],
+        pageSizes: ['25', '50', '100', '250', '500'],
         pageSize: $scope.action.options.pageSize ? $scope.action.options.pageSize : '25',
         currentPage: 1 //1-based index
     };
 
+    if ($scope.action.options.pageSize) {
+       var pageSize = $scope.action.options.pageSize.toString();
+       var index = $scope.pagingOptions.pageSizes.indexOf(pageSize);
+       $scope.pagingOptions.pageSizes = $scope.pagingOptions.pageSizes.slice(0, index + 1);
+     }
     if (!$scope.sortInfo) $scope.sortInfo = {};
     if (!$scope.sortInfo.columns) $scope.sortInfo.columns = [];
 
@@ -274,11 +279,7 @@ angular.module('dashboard.Dashboard.Model.List', [
     $scope.filterDescription = filterDescription ? filterDescription : $scope.action.label; 
 
     //Check if paging and sorting exists in querystring
-    if (queryStringParams.pageSize) {
-      $scope.pagingOptions.pageSize = queryStringParams.pageSize;
-    } else {
-      $scope.pagingOptions.pageSize = $scope.pagingOptions.pageSizes[$scope.pagingOptions.pageSizes.length - 1];
-    }
+    if (queryStringParams.pageSize) $scope.pagingOptions.pageSize = queryStringParams.pageSize;
     if (queryStringParams.currentPage) $scope.pagingOptions.currentPage = parseInt(queryStringParams.currentPage);
     if (queryStringParams.sortInfo) {
       try {
