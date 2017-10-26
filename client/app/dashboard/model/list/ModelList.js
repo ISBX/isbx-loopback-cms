@@ -42,7 +42,6 @@ angular.module('dashboard.Dashboard.Model.List', [
     $scope.totalServerItems = 0;
     $scope.isEditing = false;
     $scope.searchFields = $scope.action.options.searchFields;
-    $scope.checkedItems = {};
     if ($scope.action.options.sort) {
         //Custom Sort Override
         $scope.sortInfo = $scope.action.options.sort;
