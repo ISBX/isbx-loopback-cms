@@ -173,6 +173,41 @@ angular.module('dashboard.Dashboard.Model.List', [
      })
   }
 
+  $scope.clickSelectAll = function () {
+     for (var i in $scope.list) {
+       if ($scope.checkedItems[$scope.list[i][idKey]] && !$scope.action.selectAll) {
+         $scope.checkedItems[$scope.list[i][idKey]] = false;
+         var index = selectedItems.items.indexOf($scope.list[i]);
+         selectedItems.items.splice(index, 1);
+       } else if ($scope.action.selectAll && selectedItems.items.indexOf($scope.list[i]) < 0) {
+         $scope.checkedItems[$scope.list[i][idKey]] = true;
+         selectedItems.items.push($scope.list[i]);
+       }
+     }
+     $scope.$emit("SelectedModelList", { list: selectedItems.items });
+   };
+ 
+   $scope.clickItemCheckbox = function (item) {
+     var selectedItem = _.find(selectedItems.items, { id: item[idKey] });
+     if ($scope.checkedItems[item[idKey]] && !selectedItem) {
+       selectedItems.items.push(item);
+     } else if (selectedItem) {
+       var index = selectedItems.items.indexOf(selectedItem);
+       selectedItems.items.splice(index, 1);
+       if (selectedItems.items.length == 0) $scope.action.selectAll = false;
+     }
+     $scope.$emit("SelectedModelList", { list: selectedItems.items });
+   };
+ 
+   function removeSelectedItems() {
+     for (var i in selectedItems.items) {
+       $scope.checkedItems[selectedItems.items[i][idKey]] = false;
+     }
+     selectedItems.items = [];
+     $scope.action.selectAll = false;
+     $scope.$emit("SelectedModelList", { list: selectedItems.items });
+  };
+
   function getColumnDefinition() {
 	//Setup Columns in Grid
 	var columnRef = $scope.action.options.columnRef;
