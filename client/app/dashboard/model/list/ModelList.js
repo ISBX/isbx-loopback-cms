@@ -29,6 +29,7 @@ angular.module('dashboard.Dashboard.Model.List', [
 
   var isFirstLoad = true;
   var modalInstance = null;
+  var selectedItems = [];
 
   function init() {
     $scope.isLoading = true;
@@ -165,7 +166,46 @@ angular.module('dashboard.Dashboard.Model.List', [
       $scope.cancelButtonText = Config.serverParams.strings.cancelButton;
       $scope.saveButtonText = Config.serverParams.strings.saveButton;
     }
+
+    $scope.$on('RemoveSelectedItems', function () {
+       removeSelectedItems();
+     })
   }
+
+  $scope.clickSelectAll = function () {
+    for (var i in $scope.list) {
+      if ($scope.list[i].isChecked && !$scope.action.selectAll) {
+        $scope.list[i].isChecked = false;
+        var index = selectedItems.indexOf($scope.list[i]);
+        selectedItems.splice(index, 1);
+      } else if ($scope.action.selectAll && selectedItems.indexOf($scope.list[i]) < 0) {
+        $scope.list[i].isChecked = true;
+        selectedItems.push($scope.list[i]);
+      }
+    }
+    $scope.$emit("SelectedModelList", { list: selectedItems });
+   };
+
+  $scope.clickItemCheckbox = function (item) {
+    var selectedItem = selectedItems.indexOf(item) > -1;
+    if (item.isChecked && !selectedItem) {
+      selectedItems.push(item);
+    } else if (selectedItem) {
+      var index = selectedItems.indexOf(item);
+      selectedItems.splice(index, 1);
+      if (selectedItems.length == 0) $scope.action.selectAll = false;
+    }
+    $scope.$emit("SelectedModelList", { list: selectedItems });
+  };
+  
+  function removeSelectedItems() {
+    for (var i in selectedItems) {
+      selectedItems[i].isChecked = false;
+    }
+    selectedItems = [];
+    $scope.action.selectAll = false;
+    $scope.$emit("SelectedModelList", { list: selectedItems });
+  };
 
   function getColumnDefinition() {
 	//Setup Columns in Grid
