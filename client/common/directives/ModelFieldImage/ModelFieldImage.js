@@ -41,7 +41,7 @@ angular.module('dashboard.directives.ModelFieldImage', [
       data: '=ngModel',
       modelData: '=modelData'
     },
-    link: function(scope, element, attrs, formCtrl) {
+    link: function(scope, element, attrs, formController) {
         var selectedFile = null;
         // Set translation label
         scope.selectFileButtonText = 'Select File';
@@ -123,7 +123,7 @@ angular.module('dashboard.directives.ModelFieldImage', [
             //No table reference (file URL assigned directly into current model's field)
             scope.modelData.__ModelFieldImageData[scope.key] = imageData;
           }
-          formCtrl.$setDirty()
+          formController.$setDirty()
 
           //Set the preview image via scope.imageUrl binding
           ImageService.fixOrientationWithDataURI(event.target.result, function(error, dataURI) {
@@ -164,7 +164,7 @@ angular.module('dashboard.directives.ModelFieldImage', [
           }
           delete scope.imageUrl; //remove the image
           delete scope.thumbnailUrl; //remove the image
-          formCtrl.$setDirty()
+          formController.$setDirty()
         };
         
         scope.onFileSelect = function($files) {
