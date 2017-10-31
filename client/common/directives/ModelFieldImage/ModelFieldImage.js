@@ -24,6 +24,7 @@ angular.module('dashboard.directives.ModelFieldImage', [
 
   return {
     restrict: 'E',
+    require: '^form',
     template: '<div class="image-container" style="background: no-repeat center center url(\'{{ thumbnailUrl }}\'); background-size: contain;" ng-click="imageClick()"></div> \
       <div class="button-menu show-menu">\
       <button class="btn btn-default upload-button" ng-hide="disabled">{{ selectFileButtonText }}</button> \
@@ -40,9 +41,8 @@ angular.module('dashboard.directives.ModelFieldImage', [
       data: '=ngModel',
       modelData: '=modelData'
     },
-    link: function(scope, element, attrs) {
+    link: function(scope, element, attrs, formController) {
         var selectedFile = null;
-        if(!scope.modelData.__ModelFieldImageChangeCount) scope.modelData.__ModelFieldImageChangeCount = 0;//used for triggering model changes
         // Set translation label
         scope.selectFileButtonText = 'Select File';
         scope.clearButtonText = 'Clear';
@@ -123,7 +123,7 @@ angular.module('dashboard.directives.ModelFieldImage', [
             //No table reference (file URL assigned directly into current model's field)
             scope.modelData.__ModelFieldImageData[scope.key] = imageData;
           }
-          scope.modelData.__ModelFieldImageChangeCount++;//force trigger onModelChange event
+          formController.$setDirty()
 
           //Set the preview image via scope.imageUrl binding
           ImageService.fixOrientationWithDataURI(event.target.result, function(error, dataURI) {
@@ -133,7 +133,7 @@ angular.module('dashboard.directives.ModelFieldImage', [
             imageData.file.name = selectedFile.name;
             //Check for any export requirements and export image of various sizes specified in config
             if (scope.options && scope.options.export) {
-              scope.uploadStatus = "Creatimg Image Sizes";
+              scope.uploadStatus = "Creating Image Sizes";
               scope.exportImages(function() {
                 scope.uploadStatus = "Upload File";
                 scope.$apply();
@@ -161,17 +161,16 @@ angular.module('dashboard.directives.ModelFieldImage', [
           if (scope.modelData.__ModelFieldImageData && scope.modelData.__ModelFieldImageData[scope.key]) {
             //make sure to remove any pending image uploads for this image field
             delete scope.modelData.__ModelFieldImageData[scope.key];
-            scope.modelData.__ModelFieldImageChangeCount++;//force trigger onModelChange event
           }
           delete scope.imageUrl; //remove the image
           delete scope.thumbnailUrl; //remove the image
+          formController.$setDirty()
         };
         
         scope.onFileSelect = function($files) {
           //$files: an array of files selected, each file has name, size, and type.
           if ($files.length < 1) return;
           selectedFile = $files[0];
-
           var isAllowed = false;
           if (scope.options.extensions) {
             scope.options.extensions.forEach(function(extension) {
