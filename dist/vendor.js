@@ -1,5 +1,5 @@
 /**
- * isbx-loopback-cms - v0.1.3 - 2017-10-31
+ * isbx-loopback-cms - v0.1.3 - 2017-11-06
  * 
  *
  * Copyright (c) 2017 ISBX

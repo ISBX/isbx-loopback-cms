@@ -444,6 +444,7 @@ angular.module('dashboard.Dashboard.Model.List', [
         $scope.loadItems(params);
       else {
         $scope.isLoading = false;
+        $scope.loadAttempted = true;
       }
     },
     function(error) {
