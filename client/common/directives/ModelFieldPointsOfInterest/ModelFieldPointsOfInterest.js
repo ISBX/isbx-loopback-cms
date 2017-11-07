@@ -65,22 +65,23 @@ angular.module('dashboard.directives.ModelFieldPointsOfInterest', [
            <option value="5" label="5 Miles">5 Miles</option> \
            <option value="10" label="10 Miles">10 Miles</option> \
            <option value="20" label="20 Miles">20 Miles</option> \
-        	 <option value="30" label="30 Miles">30 Miles</option> \
-         </select> \
-        <button class="btn btn-default" ng-click="doSearch()" ng-model="request.query" ng-disabled="disabled">Search</button><span class="search-error" ng-if="searchError">{{searchError}}</span>\
+		   <option value="30" label="30 Miles">30 Miles</option> \
+		 </select> \
+		<input id="phoneNumber" class="field form-control" placeholder="Phone Number" ng-model="data.phoneNumber" ng-disabled="disabled" ng-if="options.showPhoneField">\
+		<button class="btn btn-default" ng-click="doSearch()" ng-model="request.query" ng-disabled="disabled">Search</button><span class="search-error" ng-if="searchError">{{searchError}}</span>\
         </accordion-group>\
         </accordion> \
-        <div class="map-canvas"id="map_canvas"></div> \
-        <ul class="selected-location" ng-model="displayedSearchResults" > \
-          <li ng-repeat="'+repeatExpression+'" ng-click="updateSelection($index, displayedSearchResults)"> \
-            <div class="location-title">{{ $index + 1 }}. {{ item.name }}</div> \
-              <span class="search-results">{{item.formatted_address}}</span> \
-            <div class="col-sm checkbox-container">\
-              <input type="checkbox" ng-attr-id="{{item.place_id}}" ng-model="item.checked" class="field" ng-disabled="disabled"> \
-              <label class="checkbox-label" ng-attr-for="{{item.place_id}}" ></label> \
-            </div> \
-          </li> \
-        </ul>';
+		<div class="map-canvas"id="map_canvas"></div> \
+		<ul class="selected-location" ng-model="displayedSearchResults" ng-if="options.displayCheckList"> \
+			<li ng-repeat="'+repeatExpression+'" ng-click="updateSelection($index, displayedSearchResults)"> \
+			<div class="location-title">{{ $index + 1 }}. {{ item.name }}</div> \
+				<span class="search-results">{{item.formatted_address}}</span> \
+			<div class="col-sm checkbox-container">\
+				<input type="checkbox" ng-attr-id="{{item.place_id}}" ng-model="item.checked" class="field" ng-disabled="disabled"> \
+				<label class="checkbox-label" ng-attr-for="{{item.place_id}}" ></label> \
+			</div> \
+			</li> \
+		</ul>';
 			return template;
 		}
 
@@ -96,7 +97,6 @@ angular.module('dashboard.directives.ModelFieldPointsOfInterest', [
 				disabled: '=ngDisabled'
 			},
 			link: function(scope, element, attrs) {
-
 				var map;
 				var milesToMeters = 1609.34;           // Conversion to miles to meters
 				var miles = 3;
@@ -114,6 +114,7 @@ angular.module('dashboard.directives.ModelFieldPointsOfInterest', [
 				scope.searchResults = [];              // All data recieved from query
 				scope.displayedMarkers = [];           // Markers that match query
 				scope.displayedSearchResults = [];     // Data for location list
+				scope.displayOptions = scope.property.display.options;
 				scope.isMapLoading = true;
 				scope.isLoaded = false;
 				scope.placeType = scope.property.display.options.placeType; //Default query value
@@ -407,10 +408,11 @@ angular.module('dashboard.directives.ModelFieldPointsOfInterest', [
 								}
 							}
 							scope.data.phoneNumber = place.formatted_phone_number;
+							scope.$digest();
 						} else {
 							console.log('The selection made does not exist');
 						}
-					})
+					});
 				};
 
 				scope.getSelectResultData = function (item) {
