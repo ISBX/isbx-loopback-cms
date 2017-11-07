@@ -67,21 +67,18 @@ angular.module('dashboard.directives.ModelFieldPointsOfInterest', [
            <option value="20" label="20 Miles">20 Miles</option> \
 		   <option value="30" label="30 Miles">30 Miles</option> \
 		 </select> \
-		<input id="phoneNumber" class="field form-control" placeholder="Phone Number" ng-model="data.phoneNumber" ng-disabled="disabled" ng-if="options.showPhoneField">\
 		<button class="btn btn-default" ng-click="doSearch()" ng-model="request.query" ng-disabled="disabled">Search</button><span class="search-error" ng-if="searchError">{{searchError}}</span>\
         </accordion-group>\
         </accordion> \
 		<div class="map-canvas"id="map_canvas"></div> \
-		<ul class="selected-location" ng-model="displayedSearchResults" ng-if="options.displayCheckList"> \
-			<li ng-repeat="'+repeatExpression+'" ng-click="updateSelection($index, displayedSearchResults)"> \
-			<div class="location-title">{{ $index + 1 }}. {{ item.name }}</div> \
-				<span class="search-results">{{item.formatted_address}}</span> \
-			<div class="col-sm checkbox-container">\
-				<input type="checkbox" ng-attr-id="{{item.place_id}}" ng-model="item.checked" class="field" ng-disabled="disabled"> \
-				<label class="checkbox-label" ng-attr-for="{{item.place_id}}" ></label> \
-			</div> \
-			</li> \
-		</ul>';
+		<br> \
+		<accordion close-others="oneAtATime"> \
+        <accordion-group class="accordion-group" is-open="true" heading="Location Details" > \
+		<input id="name" class="field form-control" placeholder="Name" ng-model="data.name">\
+		<input id="address" class="field form-control" placeholder="Address" ng-model="data.address">\
+		<input id="phoneNumber" class="field form-control" placeholder="Phone Number" ng-model="data.phoneNumber">\
+        </accordion-group>\
+        </accordion>';
 			return template;
 		}
 
@@ -120,6 +117,7 @@ angular.module('dashboard.directives.ModelFieldPointsOfInterest', [
 				scope.placeType = scope.property.display.options.placeType; //Default query value
 				scope.googleApiKey = scope.property.display.options.googleApiKey;
 				scope.googleType = [convertStringToGoogleTypeFormat(scope.placeType)];
+				scope.initalLoad = true;
 				if (!scope.data) scope.data = {};
 				if (scope.property.display.zipCode) scope.data.zipCode = scope.property.display.zipCode; //pass in zip code if available
 
@@ -305,6 +303,7 @@ angular.module('dashboard.directives.ModelFieldPointsOfInterest', [
 								infowindow.setContent(text);
 								infowindow.open(map, marker);
 								if(!scope.disabled) scope.getClickedMarker(markerLocation);
+								scope.initalLoad = false;
 							}
 						})(marker, text));
 						scope.markers.push(marker);
@@ -360,7 +359,7 @@ angular.module('dashboard.directives.ModelFieldPointsOfInterest', [
 							scope.displayedSearchResults.push(result);
 						}
 					}
-					if (scope.data.placeId) { // pre-select point if exist
+					if (scope.data.placeId && !scope.initalLoad) { // pre-select point if exist
 						perviouslySavedLatLng = new google.maps.LatLng(scope.data.lat, scope.data.lng);
 						scope.getClickedMarker(perviouslySavedLatLng);
 					}
@@ -400,13 +399,6 @@ angular.module('dashboard.directives.ModelFieldPointsOfInterest', [
 					service = new google.maps.places.PlacesService(map);
 					service.getDetails(placeRequest, function(place, status) {
 						if (status == google.maps.places.PlacesServiceStatus.OK) {
-							if(place.address_components) {
-								for(var i = 0; i < place.address_components.length; i++) {
-									if(place.address_components[i].types[0] == "postal_code") {
-										scope.data.zipCode = place.address_components[i].short_name;
-									}
-								}
-							}
 							scope.data.phoneNumber = place.formatted_phone_number;
 							scope.$digest();
 						} else {
