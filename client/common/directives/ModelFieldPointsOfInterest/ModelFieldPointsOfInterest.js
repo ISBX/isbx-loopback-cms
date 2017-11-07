@@ -118,9 +118,11 @@ angular.module('dashboard.directives.ModelFieldPointsOfInterest', [
 				scope.googleApiKey = scope.property.display.options.googleApiKey;
 				scope.googleType = [convertStringToGoogleTypeFormat(scope.placeType)];
 				scope.initalLoad = true;
+				scope.$watch('data.phoneNumber', function(newVal, oldVal) {
+					if (!newVal) scope.data.phoneNumber = oldVal;
+				});
 				if (!scope.data) scope.data = {};
 				if (scope.property.display.zipCode) scope.data.zipCode = scope.property.display.zipCode; //pass in zip code if available
-
 				//Check if scope.data is JSON string and try to parse it to load the data
 				if (scope.data && typeof scope.data === 'string') {
 					try {
@@ -146,7 +148,7 @@ angular.module('dashboard.directives.ModelFieldPointsOfInterest', [
 						query: requestQuery,
 						type: scope.googleType
 					};
-
+					
 					element.html(getTemplate()).show();
 					$compile(element.contents())(scope);
 					/**
@@ -399,7 +401,7 @@ angular.module('dashboard.directives.ModelFieldPointsOfInterest', [
 					service = new google.maps.places.PlacesService(map);
 					service.getDetails(placeRequest, function(place, status) {
 						if (status == google.maps.places.PlacesServiceStatus.OK) {
-							scope.data.phoneNumber = place.formatted_phone_number;
+							scope.data.phoneNumber = place.formatted_phone_number;		
 							scope.$digest();
 						} else {
 							console.log('The selection made does not exist');
