@@ -28,9 +28,9 @@ angular.module('dashboard.directives.ModelFieldCanvas', [
 
   function getTemplate() {
     var template = '\
-    <div class="disabled-div" ng-if="disabled">Disabled</div>\
-    <canvas ng-if="!disabled" ng-signature-pad="signature" width="300" height="150"></canvas>\
-    <button ng-if="!disabled" class="btn btn-default" ng-click="clearCanvas()">Clear</button>\
+    <img ng-src="{{ data.fileUrl || data }} " class="disabled-div" ng-hide="!disabled"/></img>\
+    <canvas ng-hide="disabled" ng-signature-pad="signature" width="300" height="150"></canvas>\
+    <button ng-hide="disabled" class="btn btn-default" ng-click="clearCanvas()">Clear</button>\
   ';
     return template;
   }
