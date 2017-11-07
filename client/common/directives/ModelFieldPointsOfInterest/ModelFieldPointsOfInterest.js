@@ -1,11 +1,11 @@
 angular.module('dashboard.directives.ModelFieldPointsOfInterest', [
-		'dashboard.Dashboard.Model.Edit.SaveDialog',
-		"dashboard.Config",
-		"dashboard.services.Location",
-		"ui.bootstrap",
-		"dashboard.services.GeneralModel",
-		"ui.select"
-	])
+	'dashboard.Dashboard.Model.Edit.SaveDialog',
+	"dashboard.Config",
+	"dashboard.services.Location",
+	"ui.bootstrap",
+	"dashboard.services.GeneralModel",
+	"ui.select"
+])
 
 	.directive('modelFieldPointsOfInterestView', function($compile) {
 		return {
@@ -22,18 +22,18 @@ angular.module('dashboard.directives.ModelFieldPointsOfInterest', [
 		};
 	})
 
-  .directive('modelFieldPointsOfInterestEdit', function($compile, $cookies, $timeout, $modal, $http, $q, $window, Config, GeneralModelService, LocationService) {
+	.directive('modelFieldPointsOfInterestEdit', function($compile, $cookies, $timeout, $modal, $http, $q, $window, Config, GeneralModelService, LocationService) {
 		//  load google maps javascript asynchronously
 		function loadScript(googleApiKey) {
-	    var deferred = $q.defer();
-      if (angular.element('#google_maps').length) {
+			var deferred = $q.defer();
+			if (angular.element('#google_maps').length) {
 				deferred.resolve();
 				return deferred.promise;
-      }
-		 	var googleMapsApiJS = document.createElement('script');
+			}
+			var googleMapsApiJS = document.createElement('script');
 			document.getElementsByTagName('head')[0].appendChild(googleMapsApiJS);
 			googleMapsApiJS.onload = function() {
-        deferred.resolve();
+				deferred.resolve();
 			};
 			googleMapsApiJS.id = 'google_maps';
 			googleMapsApiJS.type = 'text/javascript';
@@ -68,17 +68,17 @@ angular.module('dashboard.directives.ModelFieldPointsOfInterest', [
 		   <option value="30" label="30 Miles">30 Miles</option> \
 		 </select> \
 		<button class="btn btn-default" ng-click="doSearch()" ng-model="request.query" ng-disabled="disabled">Search</button><span class="search-error" ng-if="searchError">{{searchError}}</span>\
-        </accordion-group>\
-        </accordion> \
+			</accordion-group>\
+			</accordion> \
 		<div class="map-canvas"id="map_canvas"></div> \
 		<br> \
 		<accordion close-others="oneAtATime"> \
-        <accordion-group class="accordion-group" is-open="true" heading="Location Details" > \
+    <accordion-group class="accordion-group" is-open="true" heading="Location Details" > \
 		<input id="name" class="field form-control" placeholder="Name" ng-model="data.name">\
 		<input id="address" class="field form-control" placeholder="Address" ng-model="data.address">\
 		<input id="phoneNumber" class="field form-control" placeholder="Phone Number" ng-model="data.phoneNumber">\
-        </accordion-group>\
-        </accordion>';
+		</accordion-group>\
+		</accordion>';
 			return template;
 		}
 
@@ -401,7 +401,7 @@ angular.module('dashboard.directives.ModelFieldPointsOfInterest', [
 					service = new google.maps.places.PlacesService(map);
 					service.getDetails(placeRequest, function(place, status) {
 						if (status == google.maps.places.PlacesServiceStatus.OK) {
-							scope.data.phoneNumber = place.formatted_phone_number;		
+							scope.data.phoneNumber = place.formatted_phone_number;
 							scope.$digest();
 						} else {
 							console.log('The selection made does not exist');
@@ -450,4 +450,4 @@ angular.module('dashboard.directives.ModelFieldPointsOfInterest', [
 		};
 	})
 
-;
+	;
