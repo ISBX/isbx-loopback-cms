@@ -57,7 +57,7 @@ angular.module('dashboard.services.FileUpload', [
         file: file
       }).progress(function(event) {
         //progress
-        var progress = (event.position) / file.size;
+        var progress = (event.position || event.loaded) / file.size;
         deferred.notify(progress);
       }).success(function(data) {
         //success
@@ -222,7 +222,7 @@ angular.module('dashboard.services.FileUpload', [
         file: file
       }).progress(function(event) {
         //progress
-        var progress = (currentUploadedSize + event.position) / totalUploadSize;//event.total;
+        var progress = (currentUploadedSize + (event.position || event.loaded)) / totalUploadSize;//event.total;
         deferred.notify(progress);
       }).success(function(data) {
         //success
