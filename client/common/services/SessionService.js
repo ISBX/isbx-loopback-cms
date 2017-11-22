@@ -43,6 +43,7 @@ angular.module('dashboard.services.Session', [
 
   this.setSession = function(userInfo) {
     session = userInfo;
+    delete session.AccountDepartments;
     $cookies.username = userInfo.user.username;
     $cookies.userId = userInfo.userId;
     $cookies.accessToken = userInfo.id;
