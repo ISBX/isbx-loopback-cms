@@ -50,7 +50,6 @@ angular.module('dashboard.directives.ModelFieldPointsOfInterest', [
 		}
 
 		function getTemplate() {
-			var repeatExpression = 'item in displayedSearchResults track by item.id';
 			var template = ' \
         <div class="loading" ng-if="isMapLoading"><i class="fa fa-spin fa-spinner"></i>Search results are loading...</div> \
         <div ng-show="isLoaded"> \
@@ -118,9 +117,7 @@ angular.module('dashboard.directives.ModelFieldPointsOfInterest', [
 				scope.googleApiKey = scope.property.display.options.googleApiKey;
 				scope.googleType = [convertStringToGoogleTypeFormat(scope.placeType)];
 				scope.initalLoad = true;
-				scope.$watch('data.phoneNumber', function(newVal, oldVal) {
-					if (!newVal) scope.data.phoneNumber = oldVal;
-				});
+				
 				if (!scope.data) scope.data = {};
 				if (scope.property.display.zipCode) scope.data.zipCode = scope.property.display.zipCode; //pass in zip code if available
 				//Check if scope.data is JSON string and try to parse it to load the data
@@ -401,7 +398,7 @@ angular.module('dashboard.directives.ModelFieldPointsOfInterest', [
 					service = new google.maps.places.PlacesService(map);
 					service.getDetails(placeRequest, function(place, status) {
 						if (status == google.maps.places.PlacesServiceStatus.OK) {
-							scope.data.phoneNumber = place.formatted_phone_number;
+							if (place.formatted_phone_number) scope.data.phoneNumber = place.formatted_phone_number;
 							scope.$digest();
 						} else {
 							console.log('The selection made does not exist');
@@ -432,19 +429,6 @@ angular.module('dashboard.directives.ModelFieldPointsOfInterest', [
 					});
 					infowindow.setContent(text);
 					infowindow.open(map, marker);
-				};
-				// Prevents more than one checkbox at a time
-				scope.updateSelection = function (selectedIdx, displayedSearchResults) {
-					if(scope.disabled) return;
-					angular.forEach(displayedSearchResults, function (item, index) {
-						if (selectedIdx != index) {
-							item.checked = false;
-						} else {
-							item.checked = true;
-							scope.updateInfoWindow(item);
-							scope.getSelectResultData(item);
-						}
-					});
 				};
 			}
 		};
