@@ -234,9 +234,38 @@ angular.module('dashboard.directives.ModelFieldReference', [
           //Lookup default reference record
           var model = Config.serverParams.models[scope.options.model];
           //unwatch(); //due to late binding need to unwatch here
-          GeneralModelService.get(model.plural, scope.data)
+          var params = { 'filter[limit]': 100 }; //limit only 100 items in drop down list
+          if (scope.data) params['filter[where][' + scope.options.searchField + '][like]'] = "%" + scope.data + "%";
+          if (scope.options.where) {
+            //Add additional filtering on reference results
+            var keys = Object.keys(scope.options.where);
+            for (var i in keys) {
+              var key = keys[i];
+              params['filter[where][' + key + ']'] = replaceSessionVariables(scope.options.where[key]);
+            }
+          }
+          if (scope.options.filters) {
+            var keys = Object.keys(scope.options.filters);
+            for (var i in keys) {
+              var key = keys[i];
+              params[key] = replaceSessionVariables(scope.options.filters[key]);
+            }
+          }
+          var apiPath = model.plural;
+          GeneralModelService.list(apiPath, params, {preventCancel: true})
           .then(function(response) {
             if (!response) return;  //in case http request was cancelled
+            if (_.isArray(response) && response.length == 0) {
+              if (scope.options.allowInsert) {
+                //Not found so just add the item
+                var newItem = {};
+                newItem[scope.options.key] = scope.data;
+                newItem[scope.options.searchField] = scope.data;
+                scope.selected.item = newItem;
+                scope.list.push(newItem);
+              }
+              return;
+            }
             //console.log("default select = " + JSON.stringify(response));
             scope.selected.item = response;
             scope.list = [scope.selected.item]; //make sure list contains item otherwise won't be displayed
