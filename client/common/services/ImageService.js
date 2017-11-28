@@ -2,7 +2,7 @@ angular.module('dashboard.services.Image', [])
 
 .service('ImageService', function($q) {
 	var self = this;
-  
+
   /**
    * Resizes the image and fixes orientation if uploading from mobile device
    * @param dataURI - Image URL or Data URI
@@ -46,20 +46,25 @@ angular.module('dashboard.services.Image', [])
             canvas.height = height;
             break;
         }
-        context.save();
-        self.setOrientation(canvas, context, width, height, orientation);
-        context.drawImage(image, 0, 0, width, height);
-        context.restore();
+        var sizeChanged = (canvas.height != image.height) || (canvas.width != image.width);
 
-        try {
-          var dataUrl = canvas.toDataURL("image/jpeg", 0.8);
-          callback(null, dataUrl);
-        } catch(e) {
+        context.save();
+        var orientationChanged = self.setOrientation(canvas, context, width, height, orientation);
+        if (orientationChanged || sizeChanged) {
+          context.drawImage(image, 0, 0, width, height);
+          context.restore();
+
+          try {
+            var dataUrl = canvas.toDataURL("image/jpeg", 0.95);
+            callback(null, dataUrl);
+          } catch(e) {
+            callback(null, dataURI);
+          }
+        } else {
           callback(null, dataURI);
         }
-
       });
-    });    
+    });
   };
 
   this.fixOrientationWithDataURI = function(dataURI, callback) {
@@ -67,22 +72,26 @@ angular.module('dashboard.services.Image', [])
   };
 
   this.setOrientation = function(canvas, context, width, height, orientation) {
+    var orientationChanged = false;
     //EXIF orientation
     switch (orientation) {
       case 2:
         // horizontal flip
         context.translate(width, 0);
         context.scale(-1, 1);
+        orientationChanged = true;
         break;
       case 3:
         // 180° rotate left
         context.translate(width, height);
         context.rotate(Math.PI);
+        orientationChanged = true;
         break;
       case 4:
         // vertical flip
         context.translate(0, height);
         context.scale(1, -1);
+        orientationChanged = true;
         break;
       case 5:
         // vertical flip + 90 rotate right
@@ -90,6 +99,7 @@ angular.module('dashboard.services.Image', [])
         canvas.height = width;
         context.rotate(0.5 * Math.PI);
         context.scale(1, -1);
+        orientationChanged = true;
         break;
       case 6:
         // 90° rotate right
@@ -97,6 +107,7 @@ angular.module('dashboard.services.Image', [])
         canvas.height = width;
         context.rotate(0.5 * Math.PI);
         context.translate(0, -height);
+        orientationChanged = true;
         break;
       case 7:
         // horizontal flip + 90 rotate right
@@ -105,6 +116,7 @@ angular.module('dashboard.services.Image', [])
         context.rotate(0.5 * Math.PI);
         context.translate(width, -height);
         context.scale(-1, 1);
+        orientationChanged = true;
         break;
       case 8:
         // 90° rotate left
@@ -112,8 +124,10 @@ angular.module('dashboard.services.Image', [])
         canvas.height = width;
         context.rotate(-0.5 * Math.PI);
         context.translate(-width, 0);
+        orientationChanged = true;
         break;
     }
+    return orientationChanged;
   };
 
   this.loadImageURI = function(imageUrl, callback) {
@@ -127,7 +141,7 @@ angular.module('dashboard.services.Image', [])
 
     image.src = imageUrl;
   };
-  
+
 })
 
 ;
