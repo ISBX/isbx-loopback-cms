@@ -717,6 +717,7 @@ angular.module('dashboard.Dashboard.Model.List', [
       $scope.pagingOptions.pageSize = $scope.pagingOptions.pageSize.toString();
       var maxPageNumber = Math.ceil($scope.totalServerItems / newVal.pageSize);
       if (newVal.currentPage > maxPageNumber) newVal.currentPage = maxPageNumber;
+      if (!oldVal.currentPage || newVal.currentPage === oldVal.currentPage || oldVal.currentPage > maxPageNumber) return;
       $scope.loadItems();
     }
   }, true);
