@@ -109,7 +109,6 @@ angular.module('dashboard.directives.ModelFieldPointsOfInterest', [
 				scope.boundaries = [];                 // Stored google boundary circles
 				scope.searchResults = [];              // All data recieved from query
 				scope.displayedMarkers = [];           // Markers that match query
-				scope.displayedSearchResults = [];     // Data for location list
 				scope.displayOptions = scope.property.display.options;
 				scope.isMapLoading = true;
 				scope.isLoaded = false;
@@ -259,7 +258,13 @@ angular.module('dashboard.directives.ModelFieldPointsOfInterest', [
 							}
 							createCircle();
 							displayMarkers();
-							listSearchResults();
+
+							// Get saved Pharmacy
+							if (scope.data.placeId && !scope.initalLoad) {
+								perviouslySavedLatLng = new google.maps.LatLng(scope.data.lat, scope.data.lng);
+								scope.getClickedMarker(perviouslySavedLatLng);
+							}
+
 							scope.$digest();
 						} else {
 							console.log("search was not successful for the following reason: " + status);
@@ -348,22 +353,7 @@ angular.module('dashboard.directives.ModelFieldPointsOfInterest', [
 						scope.searchError = "Couldn't find any locations matching the search criteria!";
 					}
 				}
-
-				function listSearchResults() {
-					for (var i = 0; i < scope.searchResults.length; i++) {
-						var result = scope.searchResults[i];
-						var distance = google.maps.geometry.spherical.computeDistanceBetween(result.geometry.location, scope.circle.center);
-						if (distance < scope.request.radius) {
-							//Adds correct results to list view
-							scope.displayedSearchResults.push(result);
-						}
-					}
-					if (scope.data.placeId && !scope.initalLoad) { // pre-select point if exist
-						perviouslySavedLatLng = new google.maps.LatLng(scope.data.lat, scope.data.lng);
-						scope.getClickedMarker(perviouslySavedLatLng);
-					}
-				}
-
+				
 				function clearOverlays() {
 					for (var i = 0; i < scope.boundaries.length; i++) {
 						scope.boundaries[i].setMap(null);
@@ -372,13 +362,13 @@ angular.module('dashboard.directives.ModelFieldPointsOfInterest', [
 				}
 
 				scope.getClickedMarker = function(markerLocation) {
-					if(scope.displayedSearchResults) {
-						for(var i = 0; i < scope.displayedSearchResults.length; i++) {
-							if(google.maps.geometry.spherical.computeDistanceBetween(markerLocation, scope.displayedSearchResults[i].geometry.location) == 0) {
-								scope.displayedSearchResults[i].checked = true;
-								scope.getSelectResultData(scope.displayedSearchResults[i]);
+					if(scope.searchResults) {
+						for(var i = 0; i < scope.searchResults.length; i++) {
+							if(google.maps.geometry.spherical.computeDistanceBetween(markerLocation, scope.searchResults[i].geometry.location) == 0) {
+								scope.searchResults[i].checked = true;
+								scope.getSelectResultData(scope.searchResults[i]);
 							} else {
-								scope.displayedSearchResults[i].checked = false;
+								scope.searchResults[i].checked = false;
 							}
 						}
 						scope.$digest();
@@ -390,7 +380,6 @@ angular.module('dashboard.directives.ModelFieldPointsOfInterest', [
 					clearOverlays();
 					scope.searchResults = [];
 					scope.displayedMarkers = [];
-					scope.displayedSearchResults = [];
 					scope.markers = [];
 				};
 
