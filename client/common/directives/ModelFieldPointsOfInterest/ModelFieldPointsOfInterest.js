@@ -1,11 +1,11 @@
 angular.module('dashboard.directives.ModelFieldPointsOfInterest', [
-		'dashboard.Dashboard.Model.Edit.SaveDialog',
-		"dashboard.Config",
-		"dashboard.services.Location",
-		"ui.bootstrap",
-		"dashboard.services.GeneralModel",
-		"ui.select"
-	])
+	'dashboard.Dashboard.Model.Edit.SaveDialog',
+	"dashboard.Config",
+	"dashboard.services.Location",
+	"ui.bootstrap",
+	"dashboard.services.GeneralModel",
+	"ui.select"
+])
 
 	.directive('modelFieldPointsOfInterestView', function($compile) {
 		return {
@@ -22,18 +22,18 @@ angular.module('dashboard.directives.ModelFieldPointsOfInterest', [
 		};
 	})
 
-  .directive('modelFieldPointsOfInterestEdit', function($compile, $cookies, $timeout, $modal, $http, $q, $window, Config, GeneralModelService, LocationService) {
+	.directive('modelFieldPointsOfInterestEdit', function($compile, $cookies, $timeout, $modal, $http, $q, $window, Config, GeneralModelService, LocationService) {
 		//  load google maps javascript asynchronously
 		function loadScript(googleApiKey) {
-	    var deferred = $q.defer();
-      if (angular.element('#google_maps').length) {
+			var deferred = $q.defer();
+			if (angular.element('#google_maps').length) {
 				deferred.resolve();
 				return deferred.promise;
-      }
-		 	var googleMapsApiJS = document.createElement('script');
+			}
+			var googleMapsApiJS = document.createElement('script');
 			document.getElementsByTagName('head')[0].appendChild(googleMapsApiJS);
 			googleMapsApiJS.onload = function() {
-        deferred.resolve();
+				deferred.resolve();
 			};
 			googleMapsApiJS.id = 'google_maps';
 			googleMapsApiJS.type = 'text/javascript';
@@ -50,7 +50,6 @@ angular.module('dashboard.directives.ModelFieldPointsOfInterest', [
 		}
 
 		function getTemplate() {
-			var repeatExpression = 'item in displayedSearchResults track by item.id';
 			var template = ' \
         <div class="loading" ng-if="isMapLoading"><i class="fa fa-spin fa-spinner"></i>Search results are loading...</div> \
         <div ng-show="isLoaded"> \
@@ -65,22 +64,20 @@ angular.module('dashboard.directives.ModelFieldPointsOfInterest', [
            <option value="5" label="5 Miles">5 Miles</option> \
            <option value="10" label="10 Miles">10 Miles</option> \
            <option value="20" label="20 Miles">20 Miles</option> \
-        	 <option value="30" label="30 Miles">30 Miles</option> \
-         </select> \
-        <button class="btn btn-default" ng-click="doSearch()" ng-model="request.query" ng-disabled="disabled">Search</button><span class="search-error" ng-if="searchError">{{searchError}}</span>\
-        </accordion-group>\
-        </accordion> \
-        <div class="map-canvas"id="map_canvas"></div> \
-        <ul class="selected-location" ng-model="displayedSearchResults" > \
-          <li ng-repeat="'+repeatExpression+'" ng-click="updateSelection($index, displayedSearchResults)"> \
-            <div class="location-title">{{ $index + 1 }}. {{ item.name }}</div> \
-              <span class="search-results">{{item.formatted_address}}</span> \
-            <div class="col-sm checkbox-container">\
-              <input type="checkbox" ng-attr-id="{{item.place_id}}" ng-model="item.checked" class="field" ng-disabled="disabled"> \
-              <label class="checkbox-label" ng-attr-for="{{item.place_id}}" ></label> \
-            </div> \
-          </li> \
-        </ul>';
+		   <option value="30" label="30 Miles">30 Miles</option> \
+		 </select> \
+		<button class="btn btn-default" ng-click="doSearch()" ng-model="request.query" ng-disabled="disabled">Search</button><span class="search-error" ng-if="searchError">{{searchError}}</span>\
+			</accordion-group>\
+			</accordion> \
+		<div class="map-canvas"id="map_canvas"></div> \
+		<br> \
+		<accordion close-others="oneAtATime"> \
+    <accordion-group class="accordion-group" is-open="true" heading="Location Details" > \
+		<input id="name" class="field form-control" placeholder="Name" ng-model="data.name">\
+		<input id="address" class="field form-control" placeholder="Address" ng-model="data.address">\
+		<input id="phoneNumber" class="field form-control" placeholder="Phone Number" ng-model="data.phoneNumber">\
+		</accordion-group>\
+		</accordion>';
 			return template;
 		}
 
@@ -96,7 +93,6 @@ angular.module('dashboard.directives.ModelFieldPointsOfInterest', [
 				disabled: '=ngDisabled'
 			},
 			link: function(scope, element, attrs) {
-
 				var map;
 				var milesToMeters = 1609.34;           // Conversion to miles to meters
 				var miles = 3;
@@ -113,15 +109,15 @@ angular.module('dashboard.directives.ModelFieldPointsOfInterest', [
 				scope.boundaries = [];                 // Stored google boundary circles
 				scope.searchResults = [];              // All data recieved from query
 				scope.displayedMarkers = [];           // Markers that match query
-				scope.displayedSearchResults = [];     // Data for location list
 				scope.isMapLoading = true;
 				scope.isLoaded = false;
 				scope.placeType = scope.property.display.options.placeType; //Default query value
 				scope.googleApiKey = scope.property.display.options.googleApiKey;
 				scope.googleType = [convertStringToGoogleTypeFormat(scope.placeType)];
+				scope.initalLoad = true;
+				
 				if (!scope.data) scope.data = {};
 				if (scope.property.display.zipCode) scope.data.zipCode = scope.property.display.zipCode; //pass in zip code if available
-
 				//Check if scope.data is JSON string and try to parse it to load the data
 				if (scope.data && typeof scope.data === 'string') {
 					try {
@@ -147,7 +143,7 @@ angular.module('dashboard.directives.ModelFieldPointsOfInterest', [
 						query: requestQuery,
 						type: scope.googleType
 					};
-
+					
 					element.html(getTemplate()).show();
 					$compile(element.contents())(scope);
 					/**
@@ -261,7 +257,13 @@ angular.module('dashboard.directives.ModelFieldPointsOfInterest', [
 							}
 							createCircle();
 							displayMarkers();
-							listSearchResults();
+
+							// Get saved Pharmacy
+							if (scope.data.placeId && !scope.initalLoad) {
+								perviouslySavedLatLng = new google.maps.LatLng(scope.data.lat, scope.data.lng);
+								scope.getClickedMarker(perviouslySavedLatLng);
+							}
+
 							scope.$digest();
 						} else {
 							console.log("search was not successful for the following reason: " + status);
@@ -304,6 +306,7 @@ angular.module('dashboard.directives.ModelFieldPointsOfInterest', [
 								infowindow.setContent(text);
 								infowindow.open(map, marker);
 								if(!scope.disabled) scope.getClickedMarker(markerLocation);
+								scope.initalLoad = false;
 							}
 						})(marker, text));
 						scope.markers.push(marker);
@@ -349,22 +352,7 @@ angular.module('dashboard.directives.ModelFieldPointsOfInterest', [
 						scope.searchError = "Couldn't find any locations matching the search criteria!";
 					}
 				}
-
-				function listSearchResults() {
-					for (var i = 0; i < scope.searchResults.length; i++) {
-						var result = scope.searchResults[i];
-						var distance = google.maps.geometry.spherical.computeDistanceBetween(result.geometry.location, scope.circle.center);
-						if (distance < scope.request.radius) {
-							//Adds correct results to list view
-							scope.displayedSearchResults.push(result);
-						}
-					}
-					if (scope.data.placeId) { // pre-select point if exist
-						perviouslySavedLatLng = new google.maps.LatLng(scope.data.lat, scope.data.lng);
-						scope.getClickedMarker(perviouslySavedLatLng);
-					}
-				}
-
+				
 				function clearOverlays() {
 					for (var i = 0; i < scope.boundaries.length; i++) {
 						scope.boundaries[i].setMap(null);
@@ -373,13 +361,13 @@ angular.module('dashboard.directives.ModelFieldPointsOfInterest', [
 				}
 
 				scope.getClickedMarker = function(markerLocation) {
-					if(scope.displayedSearchResults) {
-						for(var i = 0; i < scope.displayedSearchResults.length; i++) {
-							if(google.maps.geometry.spherical.computeDistanceBetween(markerLocation, scope.displayedSearchResults[i].geometry.location) == 0) {
-								scope.displayedSearchResults[i].checked = true;
-								scope.getSelectResultData(scope.displayedSearchResults[i]);
+					if(scope.searchResults) {
+						for(var i = 0; i < scope.searchResults.length; i++) {
+							if(google.maps.geometry.spherical.computeDistanceBetween(markerLocation, scope.searchResults[i].geometry.location) == 0) {
+								scope.searchResults[i].checked = true;
+								scope.getSelectResultData(scope.searchResults[i]);
 							} else {
-								scope.displayedSearchResults[i].checked = false;
+								scope.searchResults[i].checked = false;
 							}
 						}
 						scope.$digest();
@@ -391,7 +379,6 @@ angular.module('dashboard.directives.ModelFieldPointsOfInterest', [
 					clearOverlays();
 					scope.searchResults = [];
 					scope.displayedMarkers = [];
-					scope.displayedSearchResults = [];
 					scope.markers = [];
 				};
 
@@ -399,18 +386,12 @@ angular.module('dashboard.directives.ModelFieldPointsOfInterest', [
 					service = new google.maps.places.PlacesService(map);
 					service.getDetails(placeRequest, function(place, status) {
 						if (status == google.maps.places.PlacesServiceStatus.OK) {
-							if(place.address_components) {
-								for(var i = 0; i < place.address_components.length; i++) {
-									if(place.address_components[i].types[0] == "postal_code") {
-										scope.data.zipCode = place.address_components[i].short_name;
-									}
-								}
-							}
-							scope.data.phoneNumber = place.formatted_phone_number;
+							if (place.formatted_phone_number) scope.data.phoneNumber = place.formatted_phone_number;
+							scope.$digest();
 						} else {
 							console.log('The selection made does not exist');
 						}
-					})
+					});
 				};
 
 				scope.getSelectResultData = function (item) {
@@ -437,21 +418,8 @@ angular.module('dashboard.directives.ModelFieldPointsOfInterest', [
 					infowindow.setContent(text);
 					infowindow.open(map, marker);
 				};
-				// Prevents more than one checkbox at a time
-				scope.updateSelection = function (selectedIdx, displayedSearchResults) {
-					if(scope.disabled) return;
-					angular.forEach(displayedSearchResults, function (item, index) {
-						if (selectedIdx != index) {
-							item.checked = false;
-						} else {
-							item.checked = true;
-							scope.updateInfoWindow(item);
-							scope.getSelectResultData(item);
-						}
-					});
-				};
 			}
 		};
 	})
 
-;
+	;
