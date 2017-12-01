@@ -109,7 +109,6 @@ angular.module('dashboard.directives.ModelFieldPointsOfInterest', [
 				scope.boundaries = [];                 // Stored google boundary circles
 				scope.searchResults = [];              // All data recieved from query
 				scope.displayedMarkers = [];           // Markers that match query
-				scope.displayOptions = scope.property.display.options;
 				scope.isMapLoading = true;
 				scope.isLoaded = false;
 				scope.placeType = scope.property.display.options.placeType; //Default query value
