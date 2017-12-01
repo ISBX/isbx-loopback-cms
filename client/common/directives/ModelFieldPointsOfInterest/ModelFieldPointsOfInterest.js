@@ -118,7 +118,6 @@ angular.module('dashboard.directives.ModelFieldPointsOfInterest', [
 				var zoom;
 				var markerLocation;
 				var infowindow;
-				var requestQuery;
 				var perviouslySavedLatLng;
 
 				scope.circle = {};                     // displayed cicle boundary
@@ -150,14 +149,9 @@ angular.module('dashboard.directives.ModelFieldPointsOfInterest', [
 					console.log('scope.data', scope.data);
 					geocoder = new google.maps.Geocoder();
 					infowindow = new google.maps.InfoWindow();
-					if(scope.data.query) {
-						requestQuery = scope.data.query;
-					} else {
-						requestQuery = scope.placeType;
-					}
+
 					scope.request = {
 						radius: radius,
-						query: requestQuery,
 						type: scope.googleType
 					};
 					
