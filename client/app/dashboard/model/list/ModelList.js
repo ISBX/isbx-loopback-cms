@@ -711,7 +711,7 @@ angular.module('dashboard.Dashboard.Model.List', [
     }    
   }, true);
   
-  $scope.$watch('pagingOptions', function (newVal, oldVal) {
+  $scope.$watch('pagingOptions', _.debounce(function(newVal, oldVal) {
     if (newVal.currentPage != oldVal.currentPage || newVal.pageSize != oldVal.pageSize) {
       if (!newVal.currentPage) newVal.currentPage = 1;
       $scope.pagingOptions.pageSize = $scope.pagingOptions.pageSize.toString();
@@ -720,7 +720,7 @@ angular.module('dashboard.Dashboard.Model.List', [
       if (!oldVal.currentPage || newVal.currentPage === oldVal.currentPage || oldVal.currentPage > maxPageNumber) return;
       $scope.loadItems();
     }
-  }, true);
+  }, 250), true);
 
   $scope.$watch('gridOptions.$gridScope.filterText', _.debounce(function (newVal, oldVal) {
     if(newVal != oldVal) {
