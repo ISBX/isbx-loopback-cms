@@ -56,7 +56,7 @@ function getS3Credentials(path, fileType, callback) {
   var policy = {
           expiration: expirationDate,
           conditions: [{ bucket: awsConfig.s3.bucket },
-                       { acl: "public-read" },
+                       { acl: "private" },
                        { success_action_status: "201" },
                        ["starts-with", "$key", path + "/"],
                        //["starts-with", "$Content-Type", fileType],
