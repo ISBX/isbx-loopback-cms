@@ -83,15 +83,15 @@ angular.module('dashboard.directives.ModelFieldPointsOfInterest', [
 												<accordion-group class="accordion-group" is-open="true" heading="Location Details" >
 													<div class="form-group">
 														<label class="control-label">Name</label>
-														<input id="name" class="field form-control" placeholder="Name" ng-model="data.name">
+														<input id="name" class="field form-control" placeholder="Name" ng-model="data.name" ng-disabled="disabled">
 													</div>
 													<div class="form-group">
 														<label class="control-label">Address</label>
-														<input id="address" class="field form-control" placeholder="Address" ng-model="data.address">
+														<input id="address" class="field form-control" placeholder="Address" ng-model="data.address" ng-disabled="disabled">
 													</div>
 													<div class="form-group">
 														<label class="control-label">Phone Number</label>
-														<input id="phoneNumber" phone-number countr-code="us" maxlength="14" class="field form-control" placeholder="Phone Number" ng-model="data.phoneNumber">
+														<input id="phoneNumber" phone-number countr-code="us" maxlength="14" class="field form-control" placeholder="Phone Number" ng-model="data.phoneNumber" ng-disabled="disabled">
 													</div>  
 												</accordion-group>
 											</accordion>`;
