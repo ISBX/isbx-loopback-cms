@@ -62,11 +62,26 @@ angular.module('dashboard.directives.ModelFieldReference', [
       scope.list = [];
 
       /**
-       * Watch for scope.data. If it has no data, it will clear the selected item/s. 
+       * Watch for scope.data. If it has no data, it will clear the selected item/s.
        */
       scope.$watch('data', function() {
         if (!scope.data) scope.selected = {};
       });
+
+      scope.$watch('selected.items', function() { // watch selected.items to ensure previously selected items are accounted for.
+        if (scope.selected.items) {
+          scope.refreshChoices();
+        }
+      });
+
+      function removeSelectedFromList(selected, list, id) {
+        var filteredList = _.reject(list, function(o) {
+          return _.find(selected, function(s) {
+            return o[id] === s[id];
+          });
+        });
+        return filteredList;
+      }
 
       function replaceSessionVariables(string) {
         if (typeof string !== 'string') return string;
@@ -120,7 +135,7 @@ angular.module('dashboard.directives.ModelFieldReference', [
       scope.refreshChoices = function(search) {
         var model = Config.serverParams.models[scope.options.model];
         var params = { 'filter[limit]': 100 }; //limit only 100 items in drop down list
-        params['filter[where]['+scope.options.searchField+'][like]'] = "%" + search + "%";
+        if (search) params['filter[where]['+scope.options.searchField+'][like]'] = "%" + search + "%";
         if (scope.options.where) {
           //Add additional filtering on reference results
           var keys = Object.keys(scope.options.where);
@@ -140,7 +155,7 @@ angular.module('dashboard.directives.ModelFieldReference', [
         if (scope.options.api) apiPath = replaceSessionVariables(scope.options.api);
         GeneralModelService.list(apiPath, params, {preventCancel: true}).then(function(response) {
           if (!response) return; //in case http request was cancelled by newer request
-          scope.list = response;
+          scope.list = removeSelectedFromList(scope.selected.items, response, scope.options.key);
           if (scope.options.allowInsert) {
             var addNewItem = {};
             addNewItem[scope.options.searchField] = "[Add New Item]";
@@ -271,13 +286,18 @@ angular.module('dashboard.directives.ModelFieldReference', [
          var textValue = item[scope.options.searchField];
           if (item && item[scope.options.searchField] == "[Add New Item]") {
             //console.log("should add " + $select.search);
-            var value = element.find("input.ui-select-search").val();
-            scope.data = value;
-            var newItem = {};
-            newItem[scope.options.key] = value;
-            newItem[scope.options.searchField] = value;
-            scope.selected.item = newItem;
-            scope.list.push(newItem);
+            var value = element.find("input.ui-select-search").val().trim();
+            if (value.length === 0) {
+              scope.data = null;
+              textValue = "";
+            } else {
+              scope.data = value;
+              var newItem = {};
+              newItem[scope.options.key] = value;
+              newItem[scope.options.searchField] = value;
+              scope.selected.item = newItem;
+              scope.list.push(newItem);
+            }
           } else if (item && item[scope.options.searchField] == "[clear]") {
             //console.log("should add " + $select.search);
             scope.data = null;

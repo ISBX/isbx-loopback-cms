@@ -326,7 +326,7 @@ function cms(loopbackApplication, options) {
 
   function validateToken(request, callback) {
     var AccessToken = loopbackApplication.models.AccessToken;
-    var tokenString = request.body.__accessToken || request.query.access_token;
+    var tokenString = request.header('Authorization') || request.header('X-Access-Token') || request.body.__accessToken || request.query.access_token;
     AccessToken.findById(tokenString, function(err, token) {
       if (err || !token) { return callback(err); }
       token.validate(function(err, isValid) {
@@ -346,17 +346,23 @@ function cms(loopbackApplication, options) {
       if (!isValid) { return res.status(403).send('Forbidden'); }
 
       var data = req.body;
+      var model = loopbackApplication.models[data.__model];
+      var pkey = model && model.getIdName();
+
       var context = {
         accessToken: token,
         model: data.__model,
-        property: data.__id ? 'updateAttributes' : 'create',
-        modelId: data.__id || null
+        property: data[pkey] ? 'updateAttributes' : 'create',
+        modelId: data[pkey],
+        remotingContext: {
+          req: req
+        }
       };
 
       function upsertData() {
         relationalUpsert.upsert(data, function(error, response) {
           if (error) {
-            res.status(500).send(error);
+            res.status(error.status).send(error.message);
           } else {
             res.send(response);
           }
@@ -413,10 +419,9 @@ function cms(loopbackApplication, options) {
     validateToken(req, function(err, isValid) {
       if (err) { return res.status(500).send(err); }
       if (!isValid) { return res.status(403).send('Forbidden'); }
-
-      aws.getS3Credentials(req.query["path"], req.query["fileType"], function(error, credentials) {
+      aws.getS3Credentials(req.query.path, req.query.fileType, req.query.acl, function(error, credentials) {
         if (error) {
-          res.status(500).send(error);
+          res.status(error.status).send(error.message);
         }
         res.send(credentials);
       });

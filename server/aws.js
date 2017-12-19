@@ -22,6 +22,7 @@
  THE SOFTWARE.
  */
 
+var _ = require('lodash');
 var uuid = require('node-uuid');
 var moment = require("moment");
 var crypto = require("crypto");
@@ -35,28 +36,38 @@ var awsConfig;
  * @param fileType
  *  The MIME type of the file being uploaded and must be defined in the config.json under private.asws.s3.path[path][fileType]
  */
-function getS3Credentials(path, fileType, callback) {
+function getS3Credentials(path, fileType, acl, callback) {
   var acceptableFileTypes = awsConfig.s3.path[path];
   if (!acceptableFileTypes) {
-    callback({error: "Invalid path value"});
+    var error = new Error('Invalid path value');
+    error.status = 400;
+    callback(error);
     return;
   }
   if (fileType == undefined || fileType == null) {
-    callback({error: "Please provide a fileType"});
+    var error = new Error('Please provide a fileType');
+    error.status = 400;
+    callback(error);
     return;
   }
   var fileExtension = acceptableFileTypes[fileType];
   if (!fileExtension) {
-    callback({error: "Invalid fileType for path"});
+    var files = [];
+    _.forEach(acceptableFileTypes, function(type) {
+      files.push(type);
+    });
+    var error = new Error('The file being uploaded is not an accepted file type for this form. Allowed file types are (' + files.join(', ') + ').');
+    error.status = 400;
+    callback(error);
     return;
-  } 
+  }
   var expirationLength = 900; //15min
   var expirationDate = moment().add(expirationLength, 'seconds').toISOString();
   var maxFileSize = awsConfig.s3.maxFileSize ? awsConfig.s3.maxFileSize : 5242880; //default to 5MB
   var policy = {
           expiration: expirationDate,
           conditions: [{ bucket: awsConfig.s3.bucket },
-                       { acl: "public-read" },
+                       { acl: acl },
                        { success_action_status: "201" },
                        ["starts-with", "$key", path + "/"],
                        //["starts-with", "$Content-Type", fileType],
@@ -87,7 +98,7 @@ module.exports = {
   setConfig: function(config) {
     awsConfig = config.aws;
   },
-  getS3Credentials: function(cmsKey, fileExtension, callback) {
-    getS3Credentials(cmsKey, fileExtension, callback);
+  getS3Credentials: function(cmsKey, fileExtension, acl, callback) {
+    getS3Credentials(cmsKey, fileExtension, acl, callback);
   }
 };

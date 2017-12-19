@@ -154,12 +154,15 @@ angular.module('dashboard.directives.ModelFieldReferenceSort', [
         });
 
         scope.onSelect = function(item, model) {
-          scope.$emit('onModelFieldReferenceSortSelect', scope.modelData, scope.key, item);
           if (!item[scope.options.key] && item[scope.options.searchField]) {
-            var value = element.find("input.ui-select-search").val();
+            var value = element.find("input.ui-select-search").val().trim();
+            if (value.length === 0) {
+              return;
+            }
             item[scope.options.key] = value;
             item[scope.options.searchField] = value;
           }
+          scope.$emit('onModelFieldReferenceSortSelect', scope.modelData, scope.key, item);
           var selectedItem = _.find(scope.selectedList, function(i) {
             return i[scope.options.key] === item[scope.options.key] || (i.name && item.name && i.name.toLowerCase() === item.name.toLowerCase());
           });

@@ -1,0 +1,15 @@
+{
+  "name": "memorystorage",
+  "homepage": "https://github.com/Download/memorystorage",
+  "version": "0.11.0",
+  "_release": "0.11.0",
+  "_resolution": {
+    "type": "version",
+    "tag": "0.11.0",
+    "commit": "ea943837cc35180b8c628aa551477c6c4992115f"
+  },
+  "_source": "https://github.com/Download/memorystorage.git",
+  "_target": "~0.11.0",
+  "_originalSource": "https://github.com/Download/memorystorage.git",
+  "_direct": true
+}

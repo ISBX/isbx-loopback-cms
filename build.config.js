@@ -22,7 +22,7 @@ module.exports = {
   app_files: {
     js: [ 'client/**/*.js', '!client/**/*.spec.js', '!client/assets/**/*.js' ],
     jsunit: [ 'client/**/*.spec.js' ],
-    
+
     atpl: [ 'client/app/**/*.tpl.html' ],
     ctpl: [ 'client/common/**/*.tpl.html' ],
 
@@ -100,7 +100,9 @@ module.exports = {
       'vendor/angular-libphonenumber/dist/libphonenumber.js',
       'vendor/angular-libphonenumber/dist/angular-libphonenumber.js',
       "vendor/angular-elastic/elastic.js",
-      "vendor/exif-js/exif.js"
+      "vendor/exif-js/exif.js",
+      "vendor/angular-ui-mask/dist/mask.js",
+      "vendor/memorystorage/dist/memorystorage.min.js"
     ],
     css: [
       'vendor/jquery-resizable-columns/dist/jquery.resizableColumns.css',
