@@ -91,7 +91,7 @@ angular.module('dashboard.directives.ModelFieldPointsOfInterest', [
 													</div>
 													<div class="form-group">
 														<label class="control-label">Phone Number</label>
-														<input id="phoneNumber" class="field form-control" placeholder="Phone Number" ng-model="data.phoneNumber" ng-disabled="disabled">
+														<input id="phoneNumber" phone-number country-code="us" maxlength="14" class="field form-control" placeholder="Phone Number" ng-model="data.phoneNumber" ng-disabled="disabled">
 													</div>  
 												</accordion-group>
 											</accordion>`;
