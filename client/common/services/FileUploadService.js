@@ -24,7 +24,7 @@ angular.module('dashboard.services.FileUpload', [
     return {
       key: credentials.uniqueFilePath, // the key to store the file on S3, could be file name or customized
       AWSAccessKeyId: credentials.AWSAccessKeyId, 
-      acl: "public-read", // sets the access to the uploaded file in the bucker: private or public 
+      acl: "private", // sets the access to the uploaded file in the bucker: private or public 
       policy: credentials.policy, // base64-encoded json policy (see article below)
       signature: credentials.signature, // base64-encoded signature based on policy string (see article below)
       //"Content-Type": file.type != '' ? file.type : 'application/octet-stream', // content type of the file (NotEmpty),
