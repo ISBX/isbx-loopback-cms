@@ -22,21 +22,23 @@ angular.module('dashboard.directives.ModelFieldWYSIWYG', [
 })
 
 .directive('modelFieldWysiwygEdit', function($compile, $cookies, $timeout, $modal, Config, FileUploadService) {
-  function getTemplate() {
-    var template = '\
+  function getTemplate(scope) {
+      let fontSizeArr = [7, 10, 12, 14, 16, 18, 24];
+      let minSize = scope.options.fontSizeRange != undefined ? scope.options.fontSizeRange.min : 1;
+      let maxSize = scope.options.fontSizeRange != undefined ? scope.options.fontSizeRange.max : 7;
+      let newList = '';
+      for (var i = (minSize-1); i < maxSize; i++) {
+          var list = `<li><a data-edit=\"fontSize ${i+1}\">${fontSizeArr[i]} pt</a></li>`;
+          newList = list + newList;
+      };
+
+      var template = '\
       <div class="wysiwyg-toolbar" data-role="editor-toolbar" data-target=".wysiwyg-editor" ng-hide="disabled">\
         <div class="btn-group">\
           <span class="dropdown">\
           <a class="btn btn-default" title="Font Size" ng-click="toggleDropdown($event)" ng-disabled="options.allowFontSize === false || isEditingCode"><i class="fa fa-text-height"></i>&nbsp;<b class="caret"></b></a>\
-          <ul class="menu" ng-click="toggleDropdown($event)" >\
-            <li><a data-edit="fontSize 7">24 pt</a></li>\
-            <li><a data-edit="fontSize 6">18 pt</a></li>\
-            <li><a data-edit="fontSize 5">16 pt</a></li>\
-            <li><a data-edit="fontSize 4">14 pt</a></li>\
-            <li><a data-edit="fontSize 3">12 pt</a></li>\
-            <li><a data-edit="fontSize 2">10 pt</a></li>\
-            <li><a data-edit="fontSize 1">7 pt</a></li>\
-          </ul></span>\
+          <ul class="menu" ng-click="toggleDropdown($event)" >' + newList +
+          '</ul></span>\
         </div>\
         <div class="btn-group">\
           <span class="dropdown">\
@@ -107,7 +109,7 @@ angular.module('dashboard.directives.ModelFieldWYSIWYG', [
         scope.onFileSelect = onFileSelect;
         scope.toggleCodeEdit = toggleCodeEdit;
 
-        element.html(getTemplate()).show();
+        element.html(getTemplate(scope)).show();
         $compile(element.contents())(scope);
 
         initWysiwygEditor();
