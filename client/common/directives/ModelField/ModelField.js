@@ -304,7 +304,7 @@ angular.module('dashboard.directives.ModelField', [
             else if (typeof filename === 'object' && filename.file) filename = filename.file.name;
             if (filename) {
               var extension = filename.toLowerCase().substring(filename.length-4);
-              if (extension == '.png' || extension == '.jpg' || extension == 'jpeg' || extension == '.bmp') {
+              if (extension == '.png' || extension == '.jpg' || extension == 'jpeg' || extension == '.bmp' || extension === '.gif') {
                 property = angular.copy(property); //we don't want changes the schema property to persist outside of this directive
                 property.display.type = 'image';
               }

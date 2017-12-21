@@ -52,7 +52,7 @@ angular.module('dashboard.directives.ModelFieldImage', [
               if (typeof data === "string") {
                 scope.imageUrl = data;
               } else if (typeof data === "object") {
-                if (data.fileUrl) scope.imageUrl = data.fileUrl;
+                scope.imageUrl = data.fileUrl || data.previewUrl;
                 if (data.imageUrl) scope.imageUrl = data.imageUrl;
                 if (!scope.imageUrl && data.file) {
                   //Handle file objects
