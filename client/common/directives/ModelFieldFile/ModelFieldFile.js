@@ -19,11 +19,21 @@ angular.module('dashboard.directives.ModelFieldFile', [
 .directive('modelFieldFileEdit', function($compile, $document, $window, GeneralModelService, SessionService) {
   return {
     restrict: 'E',
-    template: '<button class="btn btn-default select-file" ng-hide="disabled">Select File</button> \
-      <input type="file" ng-file-select="onFileSelect($files)" ng-hide="disabled"> \
-      <button ng-if="filename" class="btn btn-danger fa fa-trash" ng-click="clear($event)" ng-hide="disabled"></button> \
-      <span class="file-upload-info" ng-if="filename"><i class="fa {{getFileIcon(filename)}}"></i>&nbsp;&nbsp;{{ filename }}&nbsp;&nbsp;<span>(<a ng-if="fileUrl" href="{{fileUrl}}">download</a><span ng-if="previewUrl"><span ng-if="fileUrl && previewUrl"> | </span><a target="_blank" href="{{previewUrl}}">preview</a></span>)</span></span> \
-      <div ng-file-drop="onFileSelect($files)" ng-file-drag-over-class="optional-css-class-name-or-function" ng-show="dropSupported" class="file-drop">Drop File Here</div>',
+    template: `
+      <button class="btn btn-default select-file" ng-hide="disabled">Select File</button>
+      <input type="file" ng-file-select="onFileSelect($files)" ng-hide="disabled">
+      <button ng-if="filename" class="btn btn-danger fa fa-trash" ng-click="clear($event)" ng-hide="disabled"></button>
+      <span class="file-upload-info" ng-if="filename">
+        <i class="fa {{getFileIcon(filename)}}"></i>&nbsp;&nbsp;{{ filename }}&nbsp;&nbsp;
+        <span ng-if="fileUrl || previewUrl">(
+          <a ng-if="fileUrl" href="{{fileUrl}}">download</a>
+          <span ng-if="previewUrl">
+            <a target="_blank" href="{{previewUrl}}">preview</a>
+          </span>
+        )</span>
+      </span>
+      <div ng-file-drop="onFileSelect($files)" ng-file-drag-over-class="optional-css-class-name-or-function" ng-show="dropSupported" class="file-drop">Drop File Here</div>
+    `,
     scope: {
       key: "=key",
       options: '=options',
