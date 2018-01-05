@@ -28,7 +28,7 @@ angular.module('dashboard.directives.ModelFieldFile', [
         <span ng-if="fileUrl || previewUrl">(
           <a ng-if="fileUrl" href="{{fileUrl}}">download</a>
           <span ng-if="previewUrl">
-            <a target="_blank" href="{{previewUrl}}">preview</a>
+            <a target="_blank" href="{{previewUrl}}">view</a>
           </span>
         )</span>
       </span>
