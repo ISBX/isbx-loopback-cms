@@ -24,11 +24,11 @@ angular.module('dashboard.directives.ModelFieldWYSIWYG', [
 .directive('modelFieldWysiwygEdit', function($compile, $cookies, $timeout, $modal, Config, FileUploadService) {
   function getTemplate(scope) {
     let fontSizeArr = [7, 10, 12, 14, 16, 18, 24];
-    let minSize = !(scope.options.fontSizeRange.min >= fontSizeArr.length) && (scope.options.fontSizeRange != undefined)
-    && !(scope.options.fontSizeRange.min <= 1) ? scope.options.fontSizeRange.min : 1;
-    let maxSize = !(scope.options.fontSizeRange.max >= fontSizeArr.length) && (scope.options.fontSizeRange != undefined)
-    && (scope.options.fontSizeRange.min <= scope.options.fontSizeRange.max)
-    && !(scope.options.fontSizeRange.max <= 1) ? scope.options.fontSizeRange.max : 7;
+    let minSize = (scope.options.fontSizeRange.min <= fontSizeArr.length) && (scope.options.fontSizeRange != undefined)
+      && (scope.options.fontSizeRange.min >= 1) ? scope.options.fontSizeRange.min : 1;
+    let maxSize = (scope.options.fontSizeRange.max <= fontSizeArr.length) && (scope.options.fontSizeRange != undefined)
+      && (scope.options.fontSizeRange.min <= scope.options.fontSizeRange.max)
+      && (scope.options.fontSizeRange.max >= 1) ? scope.options.fontSizeRange.max : 7;
     let newList = '';
     for (var i = (minSize-1); i < maxSize; i++) {
       var list = `<li><a data-edit=\"fontSize ${i+1}\">${fontSizeArr[i]} pt</a></li>`;
