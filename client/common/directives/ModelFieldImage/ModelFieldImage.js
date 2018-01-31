@@ -124,6 +124,7 @@ angular.module('dashboard.directives.ModelFieldImage', [
           if (scope.modelData.__ModelFieldImageData && scope.modelData.__ModelFieldImageData[scope.key]) {
             //make sure to remove any pending image uploads for this image field
             delete scope.modelData.__ModelFieldImageData[scope.key];
+            if (!scope.modelData.__ModelFieldImageData.length) delete scope.modelData.__ModelFieldImageData;
           }
           delete scope.imageUrl; //remove the preview image
         };
