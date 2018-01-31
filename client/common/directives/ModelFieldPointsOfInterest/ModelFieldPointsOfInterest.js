@@ -52,7 +52,6 @@ angular.module('dashboard.directives.ModelFieldPointsOfInterest', [
 	function getTemplate() {
 		var repeatExpression = 'item in displayedSearchResults track by item.id';
 		var template = `
-			<div class="loading" ng-if="isMapLoading"><i class="fa fa-spin fa-spinner"></i>Search results are loading...</div>
 			<div ng-show="isLoaded">
 			<accordion close-others="oneAtATime">
 			<accordion-group class="accordion-group" heading="Location Search" is-open="true">
@@ -70,6 +69,7 @@ angular.module('dashboard.directives.ModelFieldPointsOfInterest', [
 			<button class="btn btn-default" ng-click="doSearch()" ng-model="request.query" ng-disabled="disabled">Search</button><span class="search-error" ng-if="searchError">{{searchError}}</span>
 			</accordion-group>
 			</accordion>
+			<div class="loading" ng-if="isMapLoading"><i class="fa fa-spin fa-spinner"></i>Search results are loading...</div>
 			<div class="map-canvas"id="map_canvas"></div>
 			<br>
 			<accordion close-others="oneAtATime">
@@ -130,13 +130,14 @@ angular.module('dashboard.directives.ModelFieldPointsOfInterest', [
 			scope.searchResults = [];              // All data recieved from query
 			scope.displayedMarkers = [];           // Markers that match query
 			scope.displayedSearchResults = [];     // Data for location list
-			scope.isMapLoading = true;
+			scope.isMapLoading = false;
 			scope.isLoaded = false;
 			scope.placeType = scope.property.display.options.placeType; //Default query value
 			scope.googleApiKey = scope.property.display.options.googleApiKey;
 			scope.googleType = [convertStringToGoogleTypeFormat(scope.placeType)];
 			scope.initialLoad = true;
-			
+			scope.supportedRaduis = [1, 2, 3, 5, 10, 20, 30];
+
 			if (!scope.data) scope.data = {};
 			if (scope.property.display.zipCode) scope.data.zipCode = scope.property.display.zipCode; //pass in zip code if available
 			//Check if scope.data is JSON string and try to parse it to load the data
@@ -198,7 +199,6 @@ angular.module('dashboard.directives.ModelFieldPointsOfInterest', [
 				// 	initMap();
 				// }
 
-				scope.isMapLoading = false;
 				scope.isLoaded = true;
 				scope.doSearch();
 
@@ -207,7 +207,6 @@ angular.module('dashboard.directives.ModelFieldPointsOfInterest', [
 			});
 
 			function initMap() {
-				scope.isMapLoading = false;
 				scope.isLoaded = true;
 				map = new google.maps.Map(document.getElementById('map_canvas'), {
 					center: scope.request.location,
@@ -252,6 +251,7 @@ angular.module('dashboard.directives.ModelFieldPointsOfInterest', [
 			};
 
 			function initQuery() {
+				scope.isMapLoading = true;
 				scope.clearSearch();
 
 				/*  DEV NOTES: Hack to ensure that most all results fall within our original radius
@@ -261,8 +261,11 @@ angular.module('dashboard.directives.ModelFieldPointsOfInterest', [
 				var request = jQuery.extend(true, {}, scope.request);
 				request.radius = 0.5*request.radius;
 
-				var service = new google.maps.places.PlacesService(map);
-				service.textSearch(request, function(results, status) {
+				var service = new google.maps.places.PlacesService(map); 
+				service.textSearch(request, function(results, status, pagination) {
+					var currentMilesInMeters = (scope.request.radius / milesToMeters);
+					var currentMileIndex = scope.supportedRaduis.indexOf(currentMilesInMeters);
+
 					if (status == google.maps.places.PlacesServiceStatus.OK) {
 						createMarkers(results);
 						if (scope.boundaries.length > 0) {
@@ -271,12 +274,45 @@ angular.module('dashboard.directives.ModelFieldPointsOfInterest', [
 						if (scope.markers.length > 0) {
 							removeMarkers();
 						}
-						createCircle();
-						displayMarkers();
-						listSearchResults();
-						scope.$digest();
+
+						// Get next page results
+						scope.getNextPage = pagination.hasNextPage && function() {
+							pagination.nextPage();
+						};
+
+						setTimeout(function() {
+							if (scope.getNextPage) {
+								console.log('Getting additional results.');
+								scope.getNextPage();
+							} else {
+								// Results are greater than threshold or exceeded 30Mile Range
+								if (results.length >= 20 || currentMileIndex >= 6) {
+									console.log('Displaying results.');
+									scope.isMapLoading = false;
+									createCircle();
+									displayMarkers();
+									listSearchResults();
+									console.log(currentMileIndex);
+									console.log('Reached treshold on: ' + currentMilesInMeters);
+									scope.data.radius = scope.supportedRaduis[currentMileIndex];
+									scope.$digest();
+								} else {
+									console.log('Increasing mile range');
+									scope.request.radius = (milesToMeters * scope.supportedRaduis[currentMileIndex+1]);
+									initQuery();
+								}
+							}
+						}, 1000);
+					
 					} else {
-						console.log("search was not successful for the following reason: " + status);
+						if (currentMileIndex <= 6) {
+							console.log('Increasing mile range');
+							scope.request.radius = (milesToMeters * scope.supportedRaduis[currentMileIndex+1]);
+							initQuery();
+						} else {
+							// Results exceeded 30Mile Range
+							console.log("search was not successful for the following reason: " + status);
+						}
 					}
 				});
 			}
