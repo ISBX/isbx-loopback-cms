@@ -300,7 +300,7 @@ angular.module('dashboard.directives.ModelFieldPointsOfInterest', [
 									initQuery();
 								}
 							}
-						}, 1000);
+						}, 500);
 					
 					} else {
 						if (currentMileIndex <= 6) {
