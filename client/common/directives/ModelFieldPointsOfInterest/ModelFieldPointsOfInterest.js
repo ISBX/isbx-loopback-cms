@@ -280,7 +280,7 @@ angular.module('dashboard.directives.ModelFieldPointsOfInterest', [
 							pagination.nextPage();
 						};
 
-						setTimeout(function() {
+						$timeout(function() {
 							if (scope.getNextPage) {
 								console.log('Getting additional results.');
 								scope.getNextPage();
@@ -292,10 +292,8 @@ angular.module('dashboard.directives.ModelFieldPointsOfInterest', [
 									createCircle();
 									displayMarkers();
 									listSearchResults();
-									console.log(currentMileIndex);
 									console.log('Reached treshold on: ' + currentMilesInMeters);
 									scope.data.radius = scope.supportedRaduis[currentMileIndex];
-									scope.$digest();
 								} else {
 									console.log('Increasing mile range');
 									scope.request.radius = (milesToMeters * scope.supportedRaduis[currentMileIndex+1]);
