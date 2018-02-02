@@ -219,6 +219,11 @@ angular.module('dashboard.Dashboard.Model.Edit', [
    * Check to see if any file upload functionality exist and upload files first then call to save the model data
    */
   $scope.clickSaveModel = function(data) {
+    if (data.hasOwnProperty('password') && !data.password) {
+      delete data.password;
+    }
+    $scope.status = "Saving...";
+    $scope.progress = 0.0;
     displayStatus({message:"Saving", translate:"cms.status.saving", progress:0.0});
     modalInstance = $uibModal.open({
       templateUrl: 'app/dashboard/model/edit/ModelEditSaveDialog.html',
