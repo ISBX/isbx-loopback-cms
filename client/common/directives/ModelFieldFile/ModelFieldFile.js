@@ -62,8 +62,15 @@ angular.module('dashboard.directives.ModelFieldFile', [
               scope.previewUrl = scope.data.previewUrl;
             } else if (typeof scope.data === 'string') {
               scope.fileUrl = scope.data.replace(/%2F/g, "/");
-              var pos = scope.fileUrl.lastIndexOf("/");
-              scope.filename = scope.fileUrl.substring(pos+1);
+              var pos = scope.fileUrl.indexOf("documents/");
+              if (pos < 0) {
+                pos = scope.fileUrl.indexOf("documents%2F") + 11
+              } else {
+                pos = pos + 9;
+              }
+              var signPos = scope.fileUrl.indexOf("?Expires");
+              if (signPos < 0) signPos = scope.fileUrl.length;
+              scope.filename = scope.fileUrl.substring(pos+1, signPos);
             } else if (typeof scope.data.file === 'object') {
               var s3Path = scope.options.path; //S3 path needed when getting S3 Credentials for validation;
               scope.data = {path: s3Path, file: scope.data.file};

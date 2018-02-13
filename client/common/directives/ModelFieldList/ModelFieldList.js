@@ -72,6 +72,7 @@ angular.module('dashboard.directives.ModelFieldList', [
       };
 
       scope.addItem = function() {
+        event.preventDefault()
         scope.list.push({});
         scope.setData();
       };
