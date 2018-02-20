@@ -186,32 +186,34 @@ angular.module('dashboard.Dashboard.Model.Edit', [
     $scope.deleteDialogText = (formParams && formParams.deleteDialogText) ? formParams.deleteDialogText : $scope.deleteDialogText;
     AlertModalService.show($scope.deleteDialogText, true, 'Delete', 'Cancel');
     $rootScope.alertModal.result.then(function(res) {
-      var id = data[$scope.action.options.key];
-      if ($scope.model.options && $scope.model.options.softDeleteProperty) {
-        //Soft Delete
-        $scope.data[$scope.model.options.softDeleteProperty] = true;
-        save(function() {
-          CacheService.clear($scope.action.options.model);
-          $window.history.back();
-        });
-      } else {
-        //Hard Delete
-        GeneralModelService.remove($scope.model.plural, id)
-        .then(function(response) {
-          $rootScope.$broadcast('modelDeleted');
-          CacheService.clear($scope.action.options.model);
-          $window.history.back();
-        }, function(error) {
-          if (typeof error === 'object' && error.message) {
-            alert(error.message);
-          } else if (typeof error === 'object' && error.error && error.error.message) {
-              alert(error.error.message);
-          } else if (typeof error === 'object') {
-            alert(JSON.stringify(error));
-          } else {
-            alert(error);
-          }
-        });
+      if (res) {
+        var id = data[$scope.action.options.key];
+        if ($scope.model.options && $scope.model.options.softDeleteProperty) {
+          //Soft Delete
+          $scope.data[$scope.model.options.softDeleteProperty] = true;
+          save(function() {
+            CacheService.clear($scope.action.options.model);
+            $window.history.back();
+          });
+        } else {
+          //Hard Delete
+          GeneralModelService.remove($scope.model.plural, id)
+          .then(function(response) {
+            $rootScope.$broadcast('modelDeleted');
+            CacheService.clear($scope.action.options.model);
+            $window.history.back();
+          }, function(error) {
+            if (typeof error === 'object' && error.message) {
+              alert(error.message);
+            } else if (typeof error === 'object' && error.error && error.error.message) {
+                alert(error.error.message);
+            } else if (typeof error === 'object') {
+              alert(JSON.stringify(error));
+            } else {
+              alert(error);
+            }
+          });
+        }
       }
     });
   };
