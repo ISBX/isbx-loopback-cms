@@ -184,7 +184,7 @@ angular.module('dashboard.Dashboard.Model.Edit', [
 
   $scope.clickDeleteModel = function(data, formParams) {
     $scope.deleteDialogText = (formParams && formParams.deleteDialogText) ? formParams.deleteDialogText : $scope.deleteDialogText;
-    AlertModalService.show($scope.deleteDialogText, true, true);
+    AlertModalService.show($scope.deleteDialogText, true, 'Delete', 'Cancel');
     $rootScope.alertModal.result.then(function(res) {
       var id = data[$scope.action.options.key];
       if ($scope.model.options && $scope.model.options.softDeleteProperty) {
