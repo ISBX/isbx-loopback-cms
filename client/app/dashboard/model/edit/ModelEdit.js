@@ -25,7 +25,7 @@ angular.module('dashboard.Dashboard.Model.Edit', [
     ;
 })
 
-.controller('ModelEditCtrl', function ModelEditCtrl($rootScope, $scope, $cookies, $location, $stateParams, $http, $state, $window, $modal, Config, GeneralModelService, FileUploadService, CacheService) {
+.controller('ModelEditCtrl', function ModelEditCtrl($rootScope, $scope, $cookies, $location, $stateParams, $http, $state, $window, $modal, Config, GeneralModelService, FileUploadService, CacheService, AlertModalService) {
 
   var modalInstance = null;
   function init() {
@@ -184,34 +184,36 @@ angular.module('dashboard.Dashboard.Model.Edit', [
 
   $scope.clickDeleteModel = function(data, formParams) {
     $scope.deleteDialogText = (formParams && formParams.deleteDialogText) ? formParams.deleteDialogText : $scope.deleteDialogText;
-    if (!confirm($scope.deleteDialogText)) return;
-    var id = data[$scope.action.options.key];
-    if ($scope.model.options && $scope.model.options.softDeleteProperty) {
-      //Soft Delete
-      $scope.data[$scope.model.options.softDeleteProperty] = true;
-      save(function() {
-        CacheService.clear($scope.action.options.model);
-        $window.history.back();
-      });
-    } else {
-      //Hard Delete
-      GeneralModelService.remove($scope.model.plural, id)
-      .then(function(response) {
-        $rootScope.$broadcast('modelDeleted');
-        CacheService.clear($scope.action.options.model);
-        $window.history.back();
-      }, function(error) {
-        if (typeof error === 'object' && error.message) {
-          alert(error.message);
-        } else if (typeof error === 'object' && error.error && error.error.message) {
-            alert(error.error.message);
-        } else if (typeof error === 'object') {
-          alert(JSON.stringify(error));
-        } else {
-          alert(error);
-        }
-      });
-    }
+    AlertModalService.show($scope.deleteDialogText, true, true);
+    $rootScope.alertModal.result.then(function(res) {
+      var id = data[$scope.action.options.key];
+      if ($scope.model.options && $scope.model.options.softDeleteProperty) {
+        //Soft Delete
+        $scope.data[$scope.model.options.softDeleteProperty] = true;
+        save(function() {
+          CacheService.clear($scope.action.options.model);
+          $window.history.back();
+        });
+      } else {
+        //Hard Delete
+        GeneralModelService.remove($scope.model.plural, id)
+        .then(function(response) {
+          $rootScope.$broadcast('modelDeleted');
+          CacheService.clear($scope.action.options.model);
+          $window.history.back();
+        }, function(error) {
+          if (typeof error === 'object' && error.message) {
+            alert(error.message);
+          } else if (typeof error === 'object' && error.error && error.error.message) {
+              alert(error.error.message);
+          } else if (typeof error === 'object') {
+            alert(JSON.stringify(error));
+          } else {
+            alert(error);
+          }
+        });
+      }
+    });
   };
 
   /**
