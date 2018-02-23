@@ -9,16 +9,19 @@ angular.module('dashboard', [
   'dashboard.services.Cache',
   'dashboard.services.Session',
 
+  'dashboard.interceptor.versionInterceptor',
+
   'templates-app',
   'templates-common',
   'ui.router',
   'oc.lazyLoad'
 ])
 
-.config(function myAppConfig($locationProvider, $stateProvider, $urlRouterProvider, $compileProvider) {
+.config(function myAppConfig($locationProvider, $stateProvider, $urlRouterProvider, $compileProvider, $httpProvider) {
   $compileProvider.aHrefSanitizationWhitelist(/^\s*(http|https|ftp|mailto|tel|file|blo‌​b|data):/);
   $urlRouterProvider.otherwise('/login');
   $locationProvider.html5Mode(true);
+  $httpProvider.interceptors.push('versionInterceptor');
 
   $stateProvider
     .state('public', {
