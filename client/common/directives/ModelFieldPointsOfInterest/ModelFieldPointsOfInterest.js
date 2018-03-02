@@ -55,22 +55,30 @@ angular.module('dashboard.directives.ModelFieldPointsOfInterest', [
 			<div ng-show="isLoaded">
 			<accordion close-others="oneAtATime">
 			<accordion-group class="accordion-group" heading="Location Search" is-open="true">
-			<input id="zipCode" class="field form-control" placeholder="Zip Code" ng-model="data.zipCode" ng-disabled="disabled">
+			<div class="row">
+				<div class="col-xs-6">
+					<input id="zipCode" class="field form-control" placeholder="Zip Code" ng-model="data.zipCode" ng-disabled="disabled">
+				</div>
+				<div class="col-xs-6">
+					<select id="radius" ng-model="data.radius" ng-required="" class="field form-control ng-pristine ng-valid ng-valid-required" ng-disabled="disabled">
+						<option value="1" label="1 Mile">1 Mile</option>
+						<option value="2" label="2 Miles">2 Miles</option>
+						<option value="3" label="3 Miles" selected>3 Miles</option>
+						<option value="5" label="5 Miles">5 Miles</option>
+						<option value="10" label="10 Miles">10 Miles</option>
+						<option value="20" label="20 Miles">20 Miles</option>
+						<option value="30" label="30 Miles">30 Miles</option>
+					</select>
+				</div>
+			</div>
 			<input id="searchInput" class="field form-control" placeholder="Search Location" ng-model="request[\'query\']" ng-disabled="disabled">
-			 <select id="radius" ng-model="data.radius" ng-required="" class="field form-control ng-pristine ng-valid ng-valid-required" ng-disabled="disabled">
-				 <option value="1" label="1 Mile">1 Mile</option>
-				 <option value="2" label="2 Miles">2 Miles</option>
-				 <option value="3" label="3 Miles" selected>3 Miles</option>
-				 <option value="5" label="5 Miles">5 Miles</option>
-				 <option value="10" label="10 Miles">10 Miles</option>
-				 <option value="20" label="20 Miles">20 Miles</option>
-				 <option value="30" label="30 Miles">30 Miles</option>
-			 </select>
 			<button class="btn btn-default" ng-click="doSearch()" ng-model="request.query" ng-disabled="disabled">Search</button><span class="search-error" ng-if="searchError">{{searchError}}</span>
 			</accordion-group>
 			</accordion>
 			<div class="loading" ng-if="isMapLoading"><i class="fa fa-spin fa-spinner"></i>Search results are loading...</div>
-			<div class="map-canvas"id="map_canvas"></div>
+			<div class="sticky">
+				<div class="map-canvas" id="map_canvas"></div>
+			</div>
 			<br>
 			<accordion close-others="oneAtATime">
 				<accordion-group class="accordion-group" is-open="true" heading="Location Details" >
