@@ -97,7 +97,7 @@ angular.module('dashboard.directives.ModelFieldPointsOfInterest', [
 				</accordion-group>
 			</accordion>
 			<ul class="selected-location" ng-model="displayedSearchResults" >
-				<li ng-repeat="`+repeatExpression+`" ng-click="updateSelection($index, displayedSearchResults)">
+				<li ng-repeat="`+repeatExpression+`" ng-click="updateSelection($index, displayedSearchResults)" ng-class="{ highlight: item.highlight }">
 					<div class="location-title">{{ $index + 1 }}. {{ item.name }}</div>
 						<span class="search-results">{{item.formatted_address}}</span>
 					<div class="col-sm checkbox-container">
@@ -428,6 +428,7 @@ angular.module('dashboard.directives.ModelFieldPointsOfInterest', [
 			}
 
 			scope.getClickedMarker = function(markerLocation) {
+				scope.highlightList(markerLocation);
 				if(scope.displayedSearchResults) {
 					for(var i = 0; i < scope.displayedSearchResults.length; i++) {
 						if(
@@ -444,6 +445,16 @@ angular.module('dashboard.directives.ModelFieldPointsOfInterest', [
 					}
 					scope.$digest();
 				}
+			};
+
+			scope.highlightList = function(markerLocation) {
+				scope.displayedSearchResults.forEach(function (result, index) {
+					if (result.geometry && result.geometry.location.lat() === markerLocation.lat() && result.geometry.location.lng() === markerLocation.lng()) {
+						result.highlight = true;
+					} else {
+						result.highlight = false;
+					}
+				});
 			};
 
 			scope.clearSearch = function () {
@@ -506,6 +517,7 @@ angular.module('dashboard.directives.ModelFieldPointsOfInterest', [
 						item.checked = false;
 					} else {
 						item.checked = true;
+						scope.highlightList(item.geometry.location);						
 						scope.updateInfoWindow(item);
 						scope.getSelectResultData(item);
 					}
