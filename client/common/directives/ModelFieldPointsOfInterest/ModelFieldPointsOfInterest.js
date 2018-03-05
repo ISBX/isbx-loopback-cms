@@ -96,6 +96,23 @@ angular.module('dashboard.directives.ModelFieldPointsOfInterest', [
 					</div>  
 				</accordion-group>
 			</accordion>
+			<accordion>
+				<div class="pharmacy-item" ng-repeat="`+repeatExpression+`">
+					<div class="checkbox">
+						<input type="checkbox" ng-attr-id="{{item.place_id}}" ng-model="item.checked" class="field" ng-disabled="disabled">
+						<label class="checkbox-label" ng-attr-for="{{item.place_id}}" ></label>
+					</div>
+					<div>
+						<accordion-group is-open="item.isOpen" ng-class="{ highlight: item.highlight }">
+							<accordion-heading>
+								<span>{{ $index + 1 }}. {{ item.name }}</span>
+								<i class="pull-right glyphicon" ng-class="{'glyphicon-chevron-down': item.isOpen, 'glyphicon-chevron-right': !item.isOpen}"></i>
+							</accordion-heading>
+							<span class="search-results">{{item.formatted_address}}</span>						
+						</accordion-group>
+					</div>
+				</div>
+			</accordion>
 			<ul class="selected-location" ng-model="displayedSearchResults" >
 				<li ng-repeat="`+repeatExpression+`" ng-click="updateSelection($index, displayedSearchResults)" ng-class="{ highlight: item.highlight }">
 					<div class="location-title">{{ $index + 1 }}. {{ item.name }}</div>

@@ -39,4 +39,23 @@ a:hover
   overflow hidden
 
 .highlight
-  background-color: rgba(0, 0, 0, 0.15);
+  .panel-heading
+    position relative
+    background #428bca !important
+    color white !important
+    cursor pointer !important
+  .panel-heading:hover
+    color white !important
+
+.pharmacy-item
+  position relative
+  display grid
+  grid-template-columns auto 1fr
+  .checkbox
+    label
+      position: relative
+      top 50%
+      transform translateY(-50%)
+      width 30px
+      height 30px
+      margin 0
