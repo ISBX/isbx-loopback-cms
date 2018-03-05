@@ -513,11 +513,11 @@ angular.module('dashboard.directives.ModelFieldPointsOfInterest', [
 			scope.updateSelection = function (selectedIdx, displayedSearchResults) {
 				if(scope.disabled) return;
 				angular.forEach(displayedSearchResults, function (item, index) {
+					item.highlight = false;
 					if (selectedIdx != index) {
 						item.checked = false;
 					} else {
 						item.checked = true;
-						scope.highlightList(item.geometry.location);						
 						scope.updateInfoWindow(item);
 						scope.getSelectResultData(item);
 					}

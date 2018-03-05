@@ -1339,3 +1339,13 @@ a:hover {
   padding: 10px;
   text-align: center;
 }
+.sticky {
+  position: -webkit-sticky;
+  position: sticky;
+  top: 0px;
+  z-index: 999;
+  overflow: hidden;
+}
+.highlight {
+  background-color: rgba(0,0,0,0.4);
+}
