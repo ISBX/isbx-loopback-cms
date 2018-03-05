@@ -1346,6 +1346,28 @@ a:hover {
   z-index: 999;
   overflow: hidden;
 }
-.highlight {
-  background-color: rgba(0,0,0,0.4);
+.highlight .panel-heading {
+  position: relative;
+  background: #428bca !important;
+  color: #fff !important;
+  cursor: pointer !important;
+}
+.highlight .panel-heading:hover {
+  color: #fff !important;
+}
+.pharmacy-item {
+  position: relative;
+  display: grid;
+  grid-template-columns: auto 1fr;
+}
+.pharmacy-item .pharmacy-checkbox {
+  width: 30px;
+  height: 30px;
+  margin-right: 10px;
+}
+.pharmacy-item .pharmacy-checkbox label {
+  position: absolute !important;
+  top: 5px !important;
+  margin-top: 0px !important;
+  margin-left: 13px !important;
 }

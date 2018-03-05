@@ -98,8 +98,8 @@ angular.module('dashboard.directives.ModelFieldPointsOfInterest', [
 			</accordion>
 			<accordion>
 				<div class="pharmacy-item" ng-repeat="`+repeatExpression+`">
-					<div class="checkbox">
-						<input type="checkbox" ng-attr-id="{{item.place_id}}" ng-model="item.checked" class="field" ng-disabled="disabled">
+					<div class="pharmacy-checkbox">
+						<input type="checkbox" ng-attr-id="{{item.place_id}}" ng-model="item.checked" ng-click="updateSelection($index, displayedSearchResults)" class="field" ng-disabled="disabled">
 						<label class="checkbox-label" ng-attr-for="{{item.place_id}}" ></label>
 					</div>
 					<div>
@@ -112,17 +112,7 @@ angular.module('dashboard.directives.ModelFieldPointsOfInterest', [
 						</accordion-group>
 					</div>
 				</div>
-			</accordion>
-			<ul class="selected-location" ng-model="displayedSearchResults" >
-				<li ng-repeat="`+repeatExpression+`" ng-click="updateSelection($index, displayedSearchResults)" ng-class="{ highlight: item.highlight }">
-					<div class="location-title">{{ $index + 1 }}. {{ item.name }}</div>
-						<span class="search-results">{{item.formatted_address}}</span>
-					<div class="col-sm checkbox-container">
-						<input type="checkbox" ng-attr-id="{{item.place_id}}" ng-model="item.checked" class="field" ng-disabled="disabled">
-						<label class="checkbox-label" ng-attr-for="{{item.place_id}}" ></label>
-					</div>
-				</li>
-			</ul>`;
+			</accordion>`;
 		return template;
 	}
 
