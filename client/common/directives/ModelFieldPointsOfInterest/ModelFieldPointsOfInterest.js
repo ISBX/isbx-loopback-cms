@@ -55,49 +55,59 @@ angular.module('dashboard.directives.ModelFieldPointsOfInterest', [
 			<div ng-show="isLoaded">
 			<accordion close-others="oneAtATime">
 			<accordion-group class="accordion-group" heading="Location Search" is-open="true">
-			<input id="zipCode" class="field form-control" placeholder="Zip Code" ng-model="data.zipCode" ng-disabled="disabled">
+			<div class="row">
+				<div class="col-xs-6">
+					<input id="zipCode" class="field form-control" placeholder="Zip Code" ng-model="data.zipCode" ng-disabled="disabled">
+				</div>
+				<div class="col-xs-6">
+					<select id="radius" ng-model="data.radius" ng-required="" class="field form-control ng-pristine ng-valid ng-valid-required" ng-disabled="disabled">
+						<option value="1" label="1 Mile">1 Mile</option>
+						<option value="2" label="2 Miles">2 Miles</option>
+						<option value="3" label="3 Miles" selected>3 Miles</option>
+						<option value="5" label="5 Miles">5 Miles</option>
+						<option value="10" label="10 Miles">10 Miles</option>
+						<option value="20" label="20 Miles">20 Miles</option>
+						<option value="30" label="30 Miles">30 Miles</option>
+					</select>
+				</div>
+			</div>
 			<input id="searchInput" class="field form-control" placeholder="Search Location" ng-model="request[\'query\']" ng-disabled="disabled">
-			 <select id="radius" ng-model="data.radius" ng-required="" class="field form-control ng-pristine ng-valid ng-valid-required" ng-disabled="disabled">
-				 <option value="1" label="1 Mile">1 Mile</option>
-				 <option value="2" label="2 Miles">2 Miles</option>
-				 <option value="3" label="3 Miles" selected>3 Miles</option>
-				 <option value="5" label="5 Miles">5 Miles</option>
-				 <option value="10" label="10 Miles">10 Miles</option>
-				 <option value="20" label="20 Miles">20 Miles</option>
-				 <option value="30" label="30 Miles">30 Miles</option>
-			 </select>
 			<button class="btn btn-default" ng-click="doSearch()" ng-model="request.query" ng-disabled="disabled">Search</button><span class="search-error" ng-if="searchError">{{searchError}}</span>
 			</accordion-group>
 			</accordion>
 			<div class="loading" ng-if="isMapLoading"><i class="fa fa-spin fa-spinner"></i>Search results are loading...</div>
-			<div class="map-canvas"id="map_canvas"></div>
+			<div class="sticky">
+				<div class="map-canvas" id="map_canvas"></div>
+			</div>
 			<br>
-			<accordion close-others="oneAtATime">
-				<accordion-group class="accordion-group" is-open="true" heading="Location Details" >
-					<div class="form-group">
-						<label class="control-label">Name</label>
-						<input id="name" class="field form-control" placeholder="Name" ng-model="data.name" ng-disabled="disabled">
-					</div>
-					<div class="form-group">
-						<label class="control-label">Address</label>
-						<input id="address" class="field form-control" placeholder="Address" ng-model="data.address" ng-disabled="disabled">
-					</div>
-					<div class="form-group">
-						<label class="control-label">Phone Number</label>
-						<input id="phoneNumber" phone-number country-code="us" maxlength="14" class="field form-control" placeholder="Phone Number" ng-model="data.phoneNumber" ng-disabled="disabled">
-					</div>  
-				</accordion-group>
-			</accordion>
-			<ul class="selected-location" ng-model="displayedSearchResults" >
-				<li ng-repeat="`+repeatExpression+`" ng-click="updateSelection($index, displayedSearchResults)">
-					<div class="location-title">{{ $index + 1 }}. {{ item.name }}</div>
-						<span class="search-results">{{item.formatted_address}}</span>
-					<div class="col-sm checkbox-container">
-						<input type="checkbox" ng-attr-id="{{item.place_id}}" ng-model="item.checked" class="field" ng-disabled="disabled">
+			<accordion class="list">
+				<div class="pharmacy-item" ng-repeat="`+repeatExpression+`">
+					<div class="pharmacy-checkbox">
+						<input type="checkbox" ng-attr-id="{{item.place_id}}" ng-model="item.checked" ng-click="updateSelection($index, displayedSearchResults)" class="field" ng-disabled="disabled">
 						<label class="checkbox-label" ng-attr-for="{{item.place_id}}" ></label>
 					</div>
-				</li>
-			</ul>`;
+					<div>
+						<accordion-group is-open="item.isOpen" ng-class="{ highlight: item.highlight }">
+							<accordion-heading>
+								<span>{{ $index + 1 }}. {{ item.name }}</span>
+								<i class="pull-right glyphicon" ng-class="{'glyphicon-chevron-down': item.isOpen, 'glyphicon-chevron-right': !item.isOpen}"></i>
+							</accordion-heading>
+							<div class="form-group">
+								<label class="control-label">Name</label>
+								<input id="name" class="field form-control" placeholder="Name" ng-model="item.name" ng-change="updateData(item)" ng-disabled="item.disabled">
+							</div>
+							<div class="form-group">
+								<label class="control-label">Address</label>
+								<input id="address" class="field form-control" placeholder="Address" ng-model="item.address" ng-change="updateData(item)" ng-disabled="item.disabled">
+							</div>
+							<div class="form-group">
+								<label class="control-label">Phone Number</label>
+								<input id="phoneNumber" phone-number country-code="us" maxlength="14" class="field form-control" placeholder="Phone Number" ng-change="updateData(item)" ng-model="item.phoneNumber" ng-disabled="item.disabled">
+							</div>  
+						</accordion-group>
+					</div>
+				</div>
+			</accordion>`;
 		return template;
 	}
 
@@ -381,7 +391,7 @@ angular.module('dashboard.directives.ModelFieldPointsOfInterest', [
 					var marker = scope.markers[i];
 					var distance = google.maps.geometry.spherical.computeDistanceBetween(marker.getPosition(), scope.circle.center);
 					if (distance < scope.request.radius) {
-						bounds.extend(marker.getPosition());
+						bounds.extend(marker.getPosition());	
 						scope.displayedMarkers.push(marker);
 						// Display markers
 						marker.setMap(map);
@@ -402,6 +412,9 @@ angular.module('dashboard.directives.ModelFieldPointsOfInterest', [
 					var result = scope.searchResults[i];
 					var distance = google.maps.geometry.spherical.computeDistanceBetween(result.geometry.location, scope.circle.center);
 					if (distance < scope.request.radius) {
+						result.highlight = false;
+						result.disabled = true;
+						result.address = result.formatted_address;				
 						//Adds correct results to list view
 						scope.displayedSearchResults.push(result);
 					}
@@ -419,7 +432,14 @@ angular.module('dashboard.directives.ModelFieldPointsOfInterest', [
 				}
 			}
 
+			 scope.updateData = function(item) {
+				scope.data.phoneNumber = item.phoneNumber;
+				scope.data.address = item.address;
+				scope.data.name = item.name;
+			}
+
 			scope.getClickedMarker = function(markerLocation) {
+				scope.highlightList(markerLocation);
 				if(scope.displayedSearchResults) {
 					for(var i = 0; i < scope.displayedSearchResults.length; i++) {
 						if(
@@ -427,6 +447,11 @@ angular.module('dashboard.directives.ModelFieldPointsOfInterest', [
 								scope.data.placeId === scope.displayedSearchResults[i].place_id
 							) {
 							scope.displayedSearchResults[i].checked = true;
+							scope.displayedSearchResults[i].disabled = false;
+							scope.displayedSearchResults[i].name = scope.data.name;							
+							scope.displayedSearchResults[i].formatted_address = scope.data.address;
+							scope.displayedSearchResults[i].address = scope.data.address;
+							scope.displayedSearchResults[i].phoneNumber = scope.data.phoneNumber;
 							if (!scope.initialLoad) {
 								scope.getSelectResultData(scope.displayedSearchResults[i]);
 							}
@@ -436,6 +461,16 @@ angular.module('dashboard.directives.ModelFieldPointsOfInterest', [
 					}
 					scope.$digest();
 				}
+			};
+
+			scope.highlightList = function(markerLocation) {
+				scope.displayedSearchResults.forEach(function (result, index) {
+					if (result.geometry && result.geometry.location.lat() === markerLocation.lat() && result.geometry.location.lng() === markerLocation.lng()) {
+						result.highlight = true;
+					} else {
+						result.highlight = false;
+					}
+				});
 			};
 
 			scope.clearSearch = function () {
@@ -494,10 +529,13 @@ angular.module('dashboard.directives.ModelFieldPointsOfInterest', [
 			scope.updateSelection = function (selectedIdx, displayedSearchResults) {
 				if(scope.disabled) return;
 				angular.forEach(displayedSearchResults, function (item, index) {
+					item.highlight = false;
 					if (selectedIdx != index) {
 						item.checked = false;
+						item.disabled = true;
 					} else {
 						item.checked = true;
+						item.disabled = false;
 						scope.updateInfoWindow(item);
 						scope.getSelectResultData(item);
 					}
