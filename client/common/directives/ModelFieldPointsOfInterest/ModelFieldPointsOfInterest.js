@@ -333,7 +333,15 @@ angular.module('dashboard.directives.ModelFieldPointsOfInterest', [
 							var resultPlaceId = {
 								placeId: results[0].place_id
 							};
-							scope.getAdditionPlaceInformation(resultPlaceId);
+							scope.getAdditionPlaceInformation(resultPlaceId, function(error, place) {
+								if (error) return;
+								for(var i = 0; i < place.address_components.length; i++) {
+									if(place.address_components[i].types[0] == "postal_code") {
+										scope.data.zipCode = place.address_components[i].short_name;
+									}
+								}
+								scope.data.phoneNumber = place.formatted_phone_number || scope.data.phoneNumber;
+							});
 						} else {
 							console.log("search was not successful for the following reason: " + status);
 						}
@@ -439,7 +447,6 @@ angular.module('dashboard.directives.ModelFieldPointsOfInterest', [
 			}
 
 			scope.getClickedMarker = function(markerLocation) {
-				scope.highlightList(markerLocation);
 				if(scope.displayedSearchResults) {
 					for(var i = 0; i < scope.displayedSearchResults.length; i++) {
 						if(
@@ -447,6 +454,7 @@ angular.module('dashboard.directives.ModelFieldPointsOfInterest', [
 								scope.data.placeId === scope.displayedSearchResults[i].place_id
 							) {
 							scope.displayedSearchResults[i].checked = true;
+							scope.displayedSearchResults[i].highlight = true;
 							scope.displayedSearchResults[i].disabled = false;
 							scope.displayedSearchResults[i].name = scope.data.name;							
 							scope.displayedSearchResults[i].formatted_address = scope.data.address;
@@ -457,21 +465,14 @@ angular.module('dashboard.directives.ModelFieldPointsOfInterest', [
 							}
 						} else {
 							scope.displayedSearchResults[i].checked = false;
+							scope.displayedSearchResults[i].highlight = false;
+							scope.displayedSearchResults[i].disabled = true;
 						}
 					}
 					scope.$digest();
 				}
 			};
 
-			scope.highlightList = function(markerLocation) {
-				scope.displayedSearchResults.forEach(function (result, index) {
-					if (result.geometry && result.geometry.location.lat() === markerLocation.lat() && result.geometry.location.lng() === markerLocation.lng()) {
-						result.highlight = true;
-					} else {
-						result.highlight = false;
-					}
-				});
-			};
 
 			scope.clearSearch = function () {
 				removeMarkers();
@@ -482,21 +483,15 @@ angular.module('dashboard.directives.ModelFieldPointsOfInterest', [
 				scope.markers = [];
 			};
 
-			scope.getAdditionPlaceInformation = function (placeRequest) {
+			scope.getAdditionPlaceInformation = function (placeRequest, callback) {
 				service = new google.maps.places.PlacesService(map);
 				service.getDetails(placeRequest, function(place, status) {
 					if (status == google.maps.places.PlacesServiceStatus.OK) {
-						if(place.address_components) {
-							for(var i = 0; i < place.address_components.length; i++) {
-								if(place.address_components[i].types[0] == "postal_code") {
-									scope.data.zipCode = place.address_components[i].short_name;
-								}
-							}
-						}
-						if (place.formatted_phone_number) scope.data.phoneNumber = place.formatted_phone_number;
-						scope.$digest();
+						callback(null, place);
+						return;
 					} else {
-						console.log('The selection made does not exist');
+						callback(new Error('The selection made does not exist'));
+						return;
 					}
 				});
 			};
@@ -512,7 +507,16 @@ angular.module('dashboard.directives.ModelFieldPointsOfInterest', [
 					scope.data.name = item.name;
 					scope.data.placeId = placeRequest.placeId;
 					//Calls getDetails to get extra information
-					scope.getAdditionPlaceInformation(placeRequest);
+					scope.getAdditionPlaceInformation(placeRequest, function(error, place) {
+						if (error) return;
+						for(var i = 0; i < place.address_components.length; i++) {
+							if(place.address_components[i].types[0] == "postal_code") {
+								scope.data.zipCode = place.address_components[i].short_name;
+							}
+						}
+						scope.data.phoneNumber = place.formatted_phone_number;
+						item.phoneNumber = place.formatted_phone_number;
+					});
 				}
 			};
 
