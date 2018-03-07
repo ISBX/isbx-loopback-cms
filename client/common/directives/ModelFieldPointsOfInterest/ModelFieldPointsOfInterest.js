@@ -80,23 +80,7 @@ angular.module('dashboard.directives.ModelFieldPointsOfInterest', [
 				<div class="map-canvas" id="map_canvas"></div>
 			</div>
 			<br>
-			<accordion close-others="oneAtATime">
-				<accordion-group class="accordion-group" is-open="true" heading="Location Details" >
-					<div class="form-group">
-						<label class="control-label">Name</label>
-						<input id="name" class="field form-control" placeholder="Name" ng-model="data.name" ng-disabled="disabled">
-					</div>
-					<div class="form-group">
-						<label class="control-label">Address</label>
-						<input id="address" class="field form-control" placeholder="Address" ng-model="data.address" ng-disabled="disabled">
-					</div>
-					<div class="form-group">
-						<label class="control-label">Phone Number</label>
-						<input id="phoneNumber" phone-number country-code="us" maxlength="14" class="field form-control" placeholder="Phone Number" ng-model="data.phoneNumber" ng-disabled="disabled">
-					</div>  
-				</accordion-group>
-			</accordion>
-			<accordion>
+			<accordion class="list">
 				<div class="pharmacy-item" ng-repeat="`+repeatExpression+`">
 					<div class="pharmacy-checkbox">
 						<input type="checkbox" ng-attr-id="{{item.place_id}}" ng-model="item.checked" ng-click="updateSelection($index, displayedSearchResults)" class="field" ng-disabled="disabled">
@@ -108,7 +92,18 @@ angular.module('dashboard.directives.ModelFieldPointsOfInterest', [
 								<span>{{ $index + 1 }}. {{ item.name }}</span>
 								<i class="pull-right glyphicon" ng-class="{'glyphicon-chevron-down': item.isOpen, 'glyphicon-chevron-right': !item.isOpen}"></i>
 							</accordion-heading>
-							<span class="search-results">{{item.formatted_address}}</span>						
+							<div class="form-group">
+								<label class="control-label">Name</label>
+								<input id="name" class="field form-control" placeholder="Name" ng-model="item.name" ng-change="updateData(item)" ng-disabled="item.disabled">
+							</div>
+							<div class="form-group">
+								<label class="control-label">Address</label>
+								<input id="address" class="field form-control" placeholder="Address" ng-model="item.address" ng-change="updateData(item)" ng-disabled="item.disabled">
+							</div>
+							<div class="form-group">
+								<label class="control-label">Phone Number</label>
+								<input id="phoneNumber" phone-number country-code="us" maxlength="14" class="field form-control" placeholder="Phone Number" ng-change="updateData(item)" ng-model="item.phoneNumber" ng-disabled="item.disabled">
+							</div>  
 						</accordion-group>
 					</div>
 				</div>
@@ -396,7 +391,7 @@ angular.module('dashboard.directives.ModelFieldPointsOfInterest', [
 					var marker = scope.markers[i];
 					var distance = google.maps.geometry.spherical.computeDistanceBetween(marker.getPosition(), scope.circle.center);
 					if (distance < scope.request.radius) {
-						bounds.extend(marker.getPosition());
+						bounds.extend(marker.getPosition());	
 						scope.displayedMarkers.push(marker);
 						// Display markers
 						marker.setMap(map);
@@ -417,6 +412,9 @@ angular.module('dashboard.directives.ModelFieldPointsOfInterest', [
 					var result = scope.searchResults[i];
 					var distance = google.maps.geometry.spherical.computeDistanceBetween(result.geometry.location, scope.circle.center);
 					if (distance < scope.request.radius) {
+						result.highlight = false;
+						result.disabled = true;
+						result.address = result.formatted_address;				
 						//Adds correct results to list view
 						scope.displayedSearchResults.push(result);
 					}
@@ -434,6 +432,12 @@ angular.module('dashboard.directives.ModelFieldPointsOfInterest', [
 				}
 			}
 
+			 scope.updateData = function(item) {
+				scope.data.phoneNumber = item.phoneNumber;
+				scope.data.address = item.address;
+				scope.data.name = item.name;
+			}
+
 			scope.getClickedMarker = function(markerLocation) {
 				scope.highlightList(markerLocation);
 				if(scope.displayedSearchResults) {
@@ -443,6 +447,11 @@ angular.module('dashboard.directives.ModelFieldPointsOfInterest', [
 								scope.data.placeId === scope.displayedSearchResults[i].place_id
 							) {
 							scope.displayedSearchResults[i].checked = true;
+							scope.displayedSearchResults[i].disabled = false;
+							scope.displayedSearchResults[i].name = scope.data.name;							
+							scope.displayedSearchResults[i].formatted_address = scope.data.address;
+							scope.displayedSearchResults[i].address = scope.data.address;
+							scope.displayedSearchResults[i].phoneNumber = scope.data.phoneNumber;
 							if (!scope.initialLoad) {
 								scope.getSelectResultData(scope.displayedSearchResults[i]);
 							}
@@ -523,8 +532,10 @@ angular.module('dashboard.directives.ModelFieldPointsOfInterest', [
 					item.highlight = false;
 					if (selectedIdx != index) {
 						item.checked = false;
+						item.disabled = true;
 					} else {
 						item.checked = true;
+						item.disabled = false;
 						scope.updateInfoWindow(item);
 						scope.getSelectResultData(item);
 					}

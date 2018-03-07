@@ -1346,13 +1346,17 @@ a:hover {
   z-index: 999;
   overflow: hidden;
 }
-.highlight .panel-heading {
+accordion.list .panel-body {
+  padding-top: 30px !important;
+  padding-bottom: 100px !important;
+}
+accordion.list .highlight .panel-heading {
   position: relative;
   background: #428bca !important;
   color: #fff !important;
   cursor: pointer !important;
 }
-.highlight .panel-heading:hover {
+accordion.list .highlight .panel-heading:hover {
   color: #fff !important;
 }
 .pharmacy-item {
