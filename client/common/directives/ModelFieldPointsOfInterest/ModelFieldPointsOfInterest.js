@@ -339,7 +339,6 @@ angular.module('dashboard.directives.ModelFieldPointsOfInterest', [
 			scope.selectItem = function() {
 				// respect data in scope.data
 				// replace the one on the item
-				if (!scope.data) return;
 				scope.list = scope.list.map(function(place) {
 					if (scope.data.placeId === place.place_id) {
 						place.highlight = true;
@@ -364,11 +363,13 @@ angular.module('dashboard.directives.ModelFieldPointsOfInterest', [
 				geocoder = new google.maps.Geocoder();
 				infowindow = new google.maps.InfoWindow();
 
+				scope.data = scope.data || {};
+
 				// set default values
-				scope.request.zipcode = scope.data ? scope.data.zipCode : '90712';
-				scope.request.radius = scope.data ? scope.data.radius : 1;
+				scope.request.zipcode = scope.data.zipCode || '90712';
+				scope.request.radius = scope.data.radius || 1;
 				scope.request.type = convertStringToGoogleTypeFormat(scope.property.display.options.placeType);
-				scope.request.query = scope.data ? scope.data.query : '';
+				scope.request.query = scope.data.query || '';
 
 				scope.isLoaded = true;
 				scope.onSearch();
