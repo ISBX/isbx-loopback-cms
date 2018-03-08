@@ -147,13 +147,13 @@ angular.module('dashboard.directives.ModelFieldPointsOfInterest', [
 					marker.addListener('click', function() {
 						map.setZoom(15);
 						map.setCenter(marker.getPosition());
-						scope.onClickItem(place); // bind onclickmarker hehehe
+						scope.onClickItem(place); // bind onclickmarker
 					})
 				});
 			};
 
 			/**
-			 * Create a cicle for specific map, please please create a comment always
+			 * Create a cicle for specific map
 			 * @param {object} map
 			 * @param {number} radius 
 			 * @return {Circle} 
@@ -363,8 +363,8 @@ angular.module('dashboard.directives.ModelFieldPointsOfInterest', [
 				infowindow = new google.maps.InfoWindow();
 
 				// set default values
-				scope.request.zipcode = scope.data.zipCode;
-				scope.request.radius = scope.data.radius;
+				scope.request.zipcode = scope.data.zipCode || '90712';
+				scope.request.radius = scope.data.radius || 1;
 				scope.request.type = convertStringToGoogleTypeFormat(scope.property.display.options.placeType);
 				scope.request.query = scope.data.query || '';
 
@@ -372,7 +372,7 @@ angular.module('dashboard.directives.ModelFieldPointsOfInterest', [
 				scope.onSearch();
 
 			}).catch(function () {
-				console.log('oops loading script, maybe google map error. so sad you cannot search for pharmacy');
+				console.log('oops loading script, maybe google map error.');
 			});
 		}
 	};
