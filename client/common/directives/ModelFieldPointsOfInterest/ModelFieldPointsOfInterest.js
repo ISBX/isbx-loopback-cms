@@ -194,6 +194,8 @@ angular.module('dashboard.directives.ModelFieldPointsOfInterest', [
 			 * @param {string} type 
 			 */
 			var getPlaces = function(request) {
+				var data = [];
+				var getNextPage = null;
 				return new Promise(function (resolve, reject) {
 					service.textSearch({
 						location: request.location,
@@ -201,10 +203,18 @@ angular.module('dashboard.directives.ModelFieldPointsOfInterest', [
 						radius: request.radius,
 						query: request.query
 					}, function(places, status, pagination){
+						data.push(...places);
+						getNextPage = pagination.hasNextPage && function() {
+							pagination.nextPage();
+						};
 						if (status !== google.maps.places.PlacesServiceStatus.OK) {
 							reject('Cannot get places');
 						}
-						resolve(places);
+						if (!pagination.hasNextPage) {
+							resolve(data);
+						} else {
+							getNextPage();
+						}
 					})
 				});
 			};
@@ -251,7 +261,6 @@ angular.module('dashboard.directives.ModelFieldPointsOfInterest', [
 				
 				getPlaceByZipcode(scope.request.zipcode).then(function (place) {
 					scope.request.location = place.geometry.location;
-					console.log(scope.request);					
 					map = new google.maps.Map(document.getElementById('map_canvas'), {
 						center: place.geometry.location,
 						zoom: 12
@@ -262,7 +271,12 @@ angular.module('dashboard.directives.ModelFieldPointsOfInterest', [
 					var circle = createCircle(map, scope.request.location, radius);				
 
 					// search for places
-					getPlaces(scope.request).then(function (places) {
+					getPlaces({
+						location: scope.request.location,
+						query: scope.request.query,
+						radius: radius,
+						type: scope.request.type
+					}).then(function (places) {
 						scope.list = []; // reset						
 						places.forEach(function (place) {
 							// just to make sure no markers are outside the radius
