@@ -72,8 +72,13 @@ angular.module('dashboard.Dashboard.Model.Edit', [
     
     //Check to see if editing model
     var id = null;
-    if ($stateParams.id && $stateParams.id > 0) id = $stateParams.id;
-    if ($scope.action.options.id && $scope.action.options.id > 0) id = $scope.action.options.id;
+    if ($stateParams.id && $scope.action.options && $scope.action.options.allowAlphaNumericSearch) {
+      // allow alpha numeric search - some endpoints findById doesn't accept id (number)
+      id = $stateParams.id;
+    } else {
+      if ($stateParams.id && $stateParams.id > 0) id = $stateParams.id;
+      if ($scope.action.options.id && $scope.action.options.id > 0) id = $scope.action.options.id;
+    }
     if (id) {
       $scope.isEdit = true;
       $scope.modelDisplay = null; //reset model display to prevent caching
