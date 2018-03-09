@@ -45,7 +45,7 @@ angular.module('dashboard.directives.ModelFieldWYSIWYG', [
         </div>\
         <div class="btn-group">\
           <span class="dropdown">\
-          <a class="btn btn-default color-picker" title="Font Color" ng-click="toggleDropdown($event)" ng-disabled="options.allowFontColor === false || isEditingCode"><i class="color-sample"></i>&nbsp;<b class="caret"></b></a>\
+          <a class="btn btn-default color-picker" data-edit="textcolor" title="Font Color" ng-click="toggleDropdown($event)" ng-disabled="options.allowFontColor === false || isEditingCode"><i class="color-sample"></i>&nbsp;<b class="caret"></b></a>\
           <div class="menu input-append">\
             <input type="color" class="font-color-picker" value="#000" />\
           </div></span>\
