@@ -51,6 +51,7 @@ angular.module('dashboard.directives.ModelFieldImage', [
               //Not a Table reference (the field contains the image URL)
               if (typeof data === "string") {
                 scope.imageUrl = data;
+                scope.imageUrl = scope.hashImageURL(scope.imageUrl);
               } else if (typeof data === "object") {
                 scope.imageUrl = data.fileUrl || data.previewUrl;
                 if (data.imageUrl) scope.imageUrl = data.imageUrl;
@@ -58,6 +59,7 @@ angular.module('dashboard.directives.ModelFieldImage', [
                   //Handle file objects
                   selectedFile = data.file;
                   fileReader.readAsDataURL(data.file);
+                  scope.imageUrl = scope.hashImageURL(scope.imageUrl);
                 }
               }
             } else {
@@ -67,6 +69,7 @@ angular.module('dashboard.directives.ModelFieldImage', [
                 if (!response) return;  //in case http request was cancelled
                 //scope.options.urlKey defines the column field name for where the URL of the image is stored
                 scope.imageUrl = response[scope.options.urlKey];
+                scope.imageUrl = scope.hashImageURL(scope.imageUrl);
                 if (!scope.imageUrl) scope.imageUrl = response["mediumUrl"]; //HACK FOR SMS PROJECT (PROB SHOULD REMOVE)
               });
             }
@@ -111,6 +114,21 @@ angular.module('dashboard.directives.ModelFieldImage', [
         };
         fileReader.onerror = function(error) {
           console.log(error);
+        };
+
+        /**
+         * Remove current image hash
+         * and append new using date.now.
+         * @param {string} imageUrl
+         * @return {string}
+         */
+        scope.hashImageURL = function(imageUrl) {
+          var hashIndex = imageUrl.indexOf('#');
+          if (hashIndex !== -1) {
+            // image#date
+            imageUrl = imageUrl.slice(0, hashIndex);
+          }
+          return imageUrl + '#' + Date.now();
         };
 
         scope.clear = function() {
