@@ -19,7 +19,7 @@ angular.module('dashboard.directives.ModelFieldReference', [
   };
 })
 
-.directive('modelFieldReferenceEdit', function($compile, $cookies, Config, GeneralModelService) {
+.directive('modelFieldReferenceEdit', function($compile, $cookies, Config, GeneralModelService, AlertModalService) {
   function getTemplate(multiple, matchTemplate, choiceTemplate) {
     var template = '';
     if (multiple) {
@@ -286,10 +286,15 @@ angular.module('dashboard.directives.ModelFieldReference', [
          var textValue = item[scope.options.searchField];
           if (item && item[scope.options.searchField] == "[Add New Item]") {
             //console.log("should add " + $select.search);
+            var numRegex = new RegExp('^[0-9]+$');
             var value = element.find("input.ui-select-search").val().trim();
-            if (value.length === 0) {
+            var isNewItemInvalid = typeof scope.options.allowNumericName !== 'undefined' && !scope.options.allowNumericName && numRegex.test(value) ? true : false;
+            if (value.length === 0 || isNewItemInvalid) {
               scope.data = null;
               textValue = "";
+              if (isNewItemInvalid) {
+                AlertModalService.show('Please enter a valid ' + (scope.property.display.label || 'name') + '.');
+              }
             } else {
               scope.data = value;
               var newItem = {};
