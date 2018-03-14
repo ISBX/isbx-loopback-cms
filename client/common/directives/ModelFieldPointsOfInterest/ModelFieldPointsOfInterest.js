@@ -50,7 +50,6 @@ angular.module('dashboard.directives.ModelFieldPointsOfInterest', [
 	}
 
 	function getTemplate() {
-		var repeatExpression = 'item in displayedSearchResults track by item.id';
 		var template = `
 			<div ng-show="isLoaded">
 			<accordion close-others="oneAtATime">
@@ -81,16 +80,16 @@ angular.module('dashboard.directives.ModelFieldPointsOfInterest', [
 				<div class="map-canvas" id="map_canvas"></div>
 			</div>
 			<br>
-			<accordion class="list">
+			<accordion id="locationList" class="list">
 				<div class="pharmacy-item" ng-repeat="item in list">
 					<div class="pharmacy-checkbox">
-						<input type="checkbox" ng-attr-id="{{ item.place_id }}" ng-model="item.checked" ng-click="onClickItem(item)" class="field" ng-disabled="disabled">
-						<label class="checkbox-label" ng-attr-for="{{ item.place_id }}" ></label>
+						<input type="checkbox" ng-attr-id="{{ item }}" ng-model="item.checked" ng-click="onClickItem(item)" class="field" ng-disabled="disabled">
+						<label class="checkbox-label" ng-attr-for="{{ item }}" ></label>
 					</div>
 					<div>
 						<accordion-group is-open="item.isOpen" ng-class="{ highlight: item.highlight }">
 							<accordion-heading>
-								<span>{{ $index + 1 }}. {{ item.name }}</span>
+								<span>{{ $index + 1 }}. {{ item.newPharmacy ? 'Add new pharmacy' : item.name }}</span>
 								<i class="pull-right glyphicon" ng-class="{'glyphicon-chevron-down': item.isOpen, 'glyphicon-chevron-right': !item.isOpen}"></i>
 							</accordion-heading>
 							<div class="form-group">
@@ -250,6 +249,19 @@ angular.module('dashboard.directives.ModelFieldPointsOfInterest', [
 				return number;
 			}
 
+			/**
+			 * Generate unique id for place that don't have place_id
+			 * more like new place of added place
+			 */
+			var uuidv4 = function() {
+				return 'xxxxxxxx-xxxx-4xxx-yxxx-xxxxxxxxxxxx'.replace(/[xy]/g, function(c) {
+					var r = Math.random() * 16 | 0, v = c == 'x' ? r : (r & 0x3 | 0x8);
+					return v.toString(16);
+				});
+			}
+			
+			console.log(uuidv4())
+
 			// render variables
 			scope.isLoaded = false;
 			scope.isMapLoading = false;
@@ -258,7 +270,7 @@ angular.module('dashboard.directives.ModelFieldPointsOfInterest', [
 			scope.request = {};
 
 			scope.onSearch = function() {
-				
+				scope.isMapLoading = true;
 				getPlaceByZipcode(scope.request.zipcode).then(function (place) {
 					scope.request.location = place.geometry.location;
 					map = new google.maps.Map(document.getElementById('map_canvas'), {
@@ -289,14 +301,16 @@ angular.module('dashboard.directives.ModelFieldPointsOfInterest', [
 								scope.list.push(place);
 							}
 						});
-						scope.selectItem();
+						scope.isMapLoading = false;
 						createMarkers(map, scope.list);
+						scope.selectItem();						
 						scope.list.push({
-							name: 'Add new pharmacy',
+							name: '',
 							highlight: false,
 							disabled: true,
 							checked: false,
-							place_id: 0
+							place_id: uuidv4(),
+							newPharmacy: true
 						});
 						scope.$digest();
 					}).catch(function (error) {
@@ -307,9 +321,9 @@ angular.module('dashboard.directives.ModelFieldPointsOfInterest', [
 			};
 
 			scope.onClickItem = function(item) {
-				if (!item.place_id) {
+				if (item.newPharmacy) {
 					scope.list = scope.list.map(function (place) {
-						if (!place.place_id) {
+						if (place.place_id === item.place_id) {
 							place.highlight = true;
 							place.checked = true;
 							place.disabled = false;
@@ -344,7 +358,7 @@ angular.module('dashboard.directives.ModelFieldPointsOfInterest', [
 			scope.updateData = function(place) {
 				scope.data.address = place.formatted_address;
 				scope.data.name = place.name;
-				scope.data.placeId = place.place_id;
+				scope.data.placeId = place.newPharmacy ? null : place.place_id; // if new pharmacy remove place id
 				scope.data.lat = place.geometry ? place.geometry.location.lat() : scope.data.lat;
 				scope.data.lng = place.geometry ? place.geometry.location.lng(): scope.data.lng;
 				scope.data.phoneNumber = place.formatted_phone_number;
@@ -353,6 +367,7 @@ angular.module('dashboard.directives.ModelFieldPointsOfInterest', [
 			scope.selectItem = function() {
 				// respect data in scope.data
 				// replace the one on the item
+				var dataIsOnList = false;
 				scope.list = scope.list.map(function(place) {
 					if (scope.data.placeId === place.place_id) {
 						place.highlight = true;
@@ -361,10 +376,22 @@ angular.module('dashboard.directives.ModelFieldPointsOfInterest', [
 						place.formatted_phone_number = scope.data.phoneNumber || place.formatted_phone_number;
 						place.formatted_address = scope.data.address || place.formatted_address;
 						place.name = scope.data.name || place.name;
+						dataIsOnList = true;
 					}
 					return place;
 				});
-				scope.$digest();
+				if (!dataIsOnList && scope.data.name) {
+					scope.list.push({
+						name: scope.data.name,
+						formatted_address: scope.data.address,
+						formatted_phone_number: scope.data.phoneNumber,
+						place_id: uuidv4(),
+						highlight: true,
+						disabled: false,
+						checked: true
+					});
+				}
+ 				scope.$digest();
 			}
 
 			// main
