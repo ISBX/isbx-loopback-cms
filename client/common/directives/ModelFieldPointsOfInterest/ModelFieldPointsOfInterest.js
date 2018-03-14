@@ -177,7 +177,6 @@ angular.module('dashboard.directives.ModelFieldPointsOfInterest', [
 			var getAdditionalPlaceInformation = function(placeId) {
 				return new Promise(function (resolve, reject) {
 					service.getDetails({ placeId: placeId }, function(place, status) {
-						console.log(status);
 						if (status !== google.maps.places.PlacesServiceStatus.OK) {
 							reject('Cannot get details for place ID.');
 						}
@@ -227,7 +226,6 @@ angular.module('dashboard.directives.ModelFieldPointsOfInterest', [
 					geocoder.geocode({
 						address: zipcode
 					}, function(places, status) {
-						console.log(status)
 						if (status !== google.maps.GeocoderStatus.OK) {
 							reject('Cannot get location');
 						}
@@ -260,8 +258,6 @@ angular.module('dashboard.directives.ModelFieldPointsOfInterest', [
 				});
 			}
 			
-			console.log(uuidv4())
-
 			// render variables
 			scope.isLoaded = false;
 			scope.isMapLoading = false;
@@ -396,7 +392,6 @@ angular.module('dashboard.directives.ModelFieldPointsOfInterest', [
 
 			// main
 			loadScript(googleApiKey).then(function () {
-				console.log('scope.data', scope.data);
 				element.html(getTemplate()).show();
 				$compile(element.contents())(scope);
 
