@@ -291,7 +291,7 @@ angular.module('dashboard.directives.ModelFieldReference', [
             var isNewItemInvalid = typeof scope.options.allowNumericName !== 'undefined' && !scope.options.allowNumericName && numRegex.test(value) ? true : false;
             if (!value.length || isNewItemInvalid) {
               scope.data = null;
-              textValue = "";
+              textValue = '';
               if (isNewItemInvalid) {
                 scope.selected.item = {};
                 scope.modelData = {};
