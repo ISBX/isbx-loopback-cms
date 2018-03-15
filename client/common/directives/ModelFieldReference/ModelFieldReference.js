@@ -284,7 +284,7 @@ angular.module('dashboard.directives.ModelFieldReference', [
          //emit an event when an item is selected
          scope.$emit('onModelFieldReferenceSelect', scope.modelData, scope.key, item);
          var textValue = item[scope.options.searchField];
-          if (item && item[scope.options.searchField] == '[Add New Item]') {
+          if (item && item[scope.options.searchField] === '[Add New Item]') {
             //console.log("should add " + $select.search);
             var numRegex = new RegExp('^[0-9]+$');
             var value = element.find('input.ui-select-search').val().trim();
