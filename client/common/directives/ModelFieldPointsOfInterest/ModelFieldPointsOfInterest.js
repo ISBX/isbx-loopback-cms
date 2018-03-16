@@ -310,6 +310,7 @@ angular.module('dashboard.directives.ModelFieldPointsOfInterest', [
 						});
 						scope.$digest();
 					}).catch(function (error) {
+						scope.isMapLoading = false;
 						alert(error);
 					});
 					
@@ -401,7 +402,7 @@ angular.module('dashboard.directives.ModelFieldPointsOfInterest', [
 				infowindow = new google.maps.InfoWindow();
 
 				scope.data = scope.data || {};
-				
+
 				// set default values
 				scope.request.zipcode = scope.data.zipCode || '90712';
 				scope.request.radius = scope.data.radius || 1;
