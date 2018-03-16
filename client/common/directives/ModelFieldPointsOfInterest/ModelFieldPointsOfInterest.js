@@ -323,6 +323,7 @@ angular.module('dashboard.directives.ModelFieldPointsOfInterest', [
 							place.highlight = true;
 							place.checked = true;
 							place.disabled = false;
+							scope.updateData(place);
 						} else {
 							place.disabled = true;
 							place.checked = false;
@@ -400,7 +401,7 @@ angular.module('dashboard.directives.ModelFieldPointsOfInterest', [
 				infowindow = new google.maps.InfoWindow();
 
 				scope.data = scope.data || {};
-
+				
 				// set default values
 				scope.request.zipcode = scope.data.zipCode || '90712';
 				scope.request.radius = scope.data.radius || 1;
