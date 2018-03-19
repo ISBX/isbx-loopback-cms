@@ -178,7 +178,7 @@ angular.module('dashboard.directives.ModelFieldPointsOfInterest', [
 				return new Promise(function (resolve, reject) {
 					service.getDetails({ placeId: placeId }, function(place, status) {
 						if (status !== google.maps.places.PlacesServiceStatus.OK) {
-							reject('Cannot get details for place ID.');
+							return reject('Cannot get details for place ID.');
 						}
 						resolve(place);
 					});
@@ -206,7 +206,7 @@ angular.module('dashboard.directives.ModelFieldPointsOfInterest', [
 							pagination.nextPage();
 						};
 						if (status !== google.maps.places.PlacesServiceStatus.OK) {
-							reject('Cannot get places');
+							return reject('Cannot get places');
 						}
 						if (!pagination.hasNextPage) {
 							resolve(data);
@@ -227,7 +227,7 @@ angular.module('dashboard.directives.ModelFieldPointsOfInterest', [
 						address: zipcode
 					}, function(places, status) {
 						if (status !== google.maps.GeocoderStatus.OK) {
-							reject('Cannot get location');
+							return reject('Cannot get location');
 						}
 						resolve(places[0]);
 					})
