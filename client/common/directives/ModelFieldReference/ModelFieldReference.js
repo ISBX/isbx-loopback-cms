@@ -168,9 +168,10 @@ angular.module('dashboard.directives.ModelFieldReference', [
             scope.list.unshift(addNewItem);
 
           }
-          if (typeof scope.options.defaultIndex === 'number') {
+          if (typeof scope.options.defaultIndex === 'number' && !scope.isDefaultSet) {
             if (response[scope.options.defaultIndex]) {
               //scope.selected.items = [response[scope.options.defaultIndex]];
+              scope.isDefaultSet = true;
               scope.onSelect(response[scope.options.defaultIndex]);
             }
           }
