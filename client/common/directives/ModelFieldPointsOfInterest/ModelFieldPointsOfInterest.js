@@ -51,53 +51,53 @@ angular.module('dashboard.directives.ModelFieldPointsOfInterest', [
 
 	function getTemplate() {
 		var repeatExpression = 'item in displayedSearchResults track by item.id';
-		var template = `
-			<div ng-show="isLoaded">
-			<accordion close-others="oneAtATime">
-			<accordion-group class="accordion-group" heading="Location Search" is-open="true">
-			<input id="zipCode" class="field form-control" placeholder="Zip Code" ng-model="data.zipCode" ng-disabled="disabled">
-			<input id="searchInput" class="field form-control" placeholder="Search Location" ng-model="request[\'query\']" ng-disabled="disabled">
-			 <select id="radius" ng-model="data.radius" ng-required="" class="field form-control ng-pristine ng-valid ng-valid-required" ng-disabled="disabled">
-				 <option value="1" label="1 Mile">1 Mile</option>
-				 <option value="2" label="2 Miles">2 Miles</option>
-				 <option value="3" label="3 Miles" selected>3 Miles</option>
-				 <option value="5" label="5 Miles">5 Miles</option>
-				 <option value="10" label="10 Miles">10 Miles</option>
-				 <option value="20" label="20 Miles">20 Miles</option>
-				 <option value="30" label="30 Miles">30 Miles</option>
-			 </select>
-			<button class="btn btn-default" ng-click="doSearch()" ng-model="request.query" ng-disabled="disabled">Search</button><span class="search-error" ng-if="searchError">{{searchError}}</span>
-			</accordion-group>
-			</accordion>
-			<div class="loading" ng-if="isMapLoading"><i class="fa fa-spin fa-spinner"></i>Search results are loading...</div>
-			<div class="map-canvas"id="map_canvas"></div>
-			<br>
-			<accordion close-others="oneAtATime">
-				<accordion-group class="accordion-group" is-open="true" heading="Location Details" >
-					<div class="form-group">
-						<label class="control-label">Name</label>
-						<input id="name" class="field form-control" placeholder="Name" ng-model="data.name" ng-disabled="disabled">
-					</div>
-					<div class="form-group">
-						<label class="control-label">Address</label>
-						<input id="address" class="field form-control" placeholder="Address" ng-model="data.address" ng-disabled="disabled">
-					</div>
-					<div class="form-group">
-						<label class="control-label">Phone Number</label>
-						<input id="phoneNumber" phone-number country-code="us" maxlength="14" class="field form-control" placeholder="Phone Number" ng-model="data.phoneNumber" ng-disabled="disabled">
-					</div>  
-				</accordion-group>
-			</accordion>
-			<ul class="selected-location" ng-model="displayedSearchResults" >
-				<li ng-repeat="`+repeatExpression+`" ng-click="updateSelection($index, displayedSearchResults)">
-					<div class="location-title">{{ $index + 1 }}. {{ item.name }}</div>
-						<span class="search-results">{{item.formatted_address}}</span>
-					<div class="col-sm checkbox-container">
-						<input type="checkbox" ng-attr-id="{{item.place_id}}" ng-model="item.checked" class="field" ng-disabled="disabled">
-						<label class="checkbox-label" ng-attr-for="{{item.place_id}}" ></label>
-					</div>
-				</li>
-			</ul>`;
+		var template = ' \
+			<div ng-show="isLoaded"> \
+			<accordion close-others="oneAtATime"> \
+			<accordion-group class="accordion-group" heading="Location Search" is-open="true"> \
+			<input id="zipCode" class="field form-control" placeholder="Zip Code" ng-model="data.zipCode" ng-disabled="disabled"> \
+			<input id="searchInput" class="field form-control" placeholder="Search Location" ng-model="request[\'query\']" ng-disabled="disabled"> \
+			 <select id="radius" ng-model="data.radius" ng-required="" class="field form-control ng-pristine ng-valid ng-valid-required" ng-disabled="disabled"> \
+				 <option value="1" label="1 Mile">1 Mile</option> \
+				 <option value="2" label="2 Miles">2 Miles</option> \
+				 <option value="3" label="3 Miles" selected>3 Miles</option> \
+				 <option value="5" label="5 Miles">5 Miles</option> \
+				 <option value="10" label="10 Miles">10 Miles</option> \
+				 <option value="20" label="20 Miles">20 Miles</option> \
+				 <option value="30" label="30 Miles">30 Miles</option> \
+			 </select> \
+			<button class="btn btn-default" ng-click="doSearch()" ng-model="request.query" ng-disabled="disabled">Search</button><span class="search-error" ng-if="searchError">{{searchError}}</span> \
+			</accordion-group> \
+			</accordion> \
+			<div class="loading" ng-if="isMapLoading"><i class="fa fa-spin fa-spinner"></i>Search results are loading...</div> \
+			<div class="map-canvas"id="map_canvas"></div> \
+			<br> \
+			<accordion close-others="oneAtATime"> \
+				<accordion-group class="accordion-group" is-open="true" heading="Location Details" > \
+					<div class="form-group"> \
+						<label class="control-label">Name</label> \
+						<input id="name" class="field form-control" placeholder="Name" ng-model="data.name" ng-disabled="disabled"> \
+					</div> \
+					<div class="form-group"> \
+						<label class="control-label">Address</label> \
+            <input id="address" class="field form-control" placeholder="Address" ng-model="data.address" ng-disabled="disabled"> \
+					</div> \
+					<div class="form-group"> \
+						<label class="control-label">Phone Number</label> \
+						<input id="phoneNumber" phone-number country-code="us" maxlength="14" class="field form-control" placeholder="Phone Number" ng-model="data.phoneNumber" ng-disabled="disabled"> \
+					</div> \
+				</accordion-group> \
+			</accordion> \
+			<ul class="selected-location" ng-model="displayedSearchResults" > \
+				<li ng-repeat="`+repeatExpression+`" ng-click="updateSelection($index, displayedSearchResults)"> \
+					<div class="location-title">{{ $index + 1 }}. {{ item.name }}</div> \
+						<span class="search-results">{{item.formatted_address}}</span> \
+					<div class="col-sm checkbox-container"> \
+						<input type="checkbox" ng-attr-id="{{item.place_id}}" ng-model="item.checked" class="field" ng-disabled="disabled"> \
+						<label class="checkbox-label" ng-attr-for="{{item.place_id}}" ></label> \
+					</div> \
+				</li> \
+			</ul>';
 		return template;
 	}
 
@@ -155,7 +155,7 @@ angular.module('dashboard.directives.ModelFieldPointsOfInterest', [
 				console.log('scope.data', scope.data);
 				geocoder = new google.maps.Geocoder();
 				infowindow = new google.maps.InfoWindow();
-			
+
 				scope.request = {
 					radius: radius,
 					type: scope.googleType
@@ -261,7 +261,7 @@ angular.module('dashboard.directives.ModelFieldPointsOfInterest', [
 				var request = jQuery.extend(true, {}, scope.request);
 				request.radius = 0.5*request.radius;
 
-				var service = new google.maps.places.PlacesService(map); 
+				var service = new google.maps.places.PlacesService(map);
 				service.textSearch(request, function(results, status, pagination) {
 					var currentMilesInMeters = (scope.request.radius / milesToMeters);
 					var currentMileIndex = scope.supportedRaduis.indexOf(currentMilesInMeters);
@@ -301,7 +301,7 @@ angular.module('dashboard.directives.ModelFieldPointsOfInterest', [
 								}
 							}
 						}, 500);
-					
+
 					} else {
 						if (currentMileIndex <= 6) {
 							console.log('Increasing mile range');
