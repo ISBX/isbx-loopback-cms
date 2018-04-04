@@ -89,7 +89,7 @@ angular.module('dashboard.directives.ModelFieldPointsOfInterest', [
 				</accordion-group> \
 			</accordion> \
 			<ul class="selected-location" ng-model="displayedSearchResults" > \
-				<li ng-repeat="`+repeatExpression+`" ng-click="updateSelection($index, displayedSearchResults)"> \
+				<li ng-repeat="'+repeatExpression+'" ng-click="updateSelection($index, displayedSearchResults)"> \
 					<div class="location-title">{{ $index + 1 }}. {{ item.name }}</div> \
 						<span class="search-results">{{item.formatted_address}}</span> \
 					<div class="col-sm checkbox-container"> \
