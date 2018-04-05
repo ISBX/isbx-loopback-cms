@@ -173,7 +173,7 @@ angular.module('dashboard.directives.ModelFieldReference', [
               scope.onSelect(response[scope.options.defaultIndex]);
             }
           }
-          if (typeof scope.options.defaultIndex === 'boolean' && scope.options.autofill) {
+          if (typeof scope.options.autofill === 'boolean' && scope.options.autofill) {
             if (response.length > 0) {
               _.forEach(response, function(item) {
                 scope.onSelect(item);
