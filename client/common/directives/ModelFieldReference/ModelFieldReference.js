@@ -174,11 +174,9 @@ angular.module('dashboard.directives.ModelFieldReference', [
             }
           }
           if (typeof scope.options.autofill === 'boolean' && scope.options.autofill) {
-            if (response.length > 0) {
-              _.forEach(response, function(item) {
-                scope.onSelect(item);
-              });
-            }
+            _.forEach(response, function(item) {
+              scope.onSelect(item);
+            });
           }
         });
       };
