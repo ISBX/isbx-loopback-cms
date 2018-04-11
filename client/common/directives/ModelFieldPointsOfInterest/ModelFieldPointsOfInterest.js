@@ -50,65 +50,65 @@ angular.module('dashboard.directives.ModelFieldPointsOfInterest', [
 	}
 
 	function getTemplate() {
-		var template = `
-			<div ng-show="isLoaded">
-			<accordion close-others="oneAtATime">
-			<accordion-group class="accordion-group" heading="Location Search" is-open="true">
-			<div class="row">
-				<div class="col-xs-6">
-					<input id="zipCode" class="field form-control" placeholder="Zip Code" ng-model="request.zipcode" ng-disabled="disabled">
-				</div>
-				<div class="col-xs-6">
-					<select id="radius" ng-model="request.radius" ng-required="" class="field form-control ng-pristine ng-valid ng-valid-required" ng-disabled="disabled">
-						<option value="1" label="1 Mile">1 Mile</option>
-						<option value="2" label="2 Miles">2 Miles</option>
-						<option value="3" label="3 Miles" selected>3 Miles</option>
-						<option value="5" label="5 Miles">5 Miles</option>
-						<option value="10" label="10 Miles">10 Miles</option>
-						<option value="20" label="20 Miles">20 Miles</option>
-						<option value="30" label="30 Miles">30 Miles</option>
-					</select>
-				</div>
-			</div>
-			<input class="field form-control" placeholder="Search Location" ng-model="request.query" ng-disabled="disabled">
-			<button class="btn btn-default" ng-click="onSearch()" ng-disabled="disabled">Search</button>
-			<span class="search-error" ng-if="searchError">{{ searchError }}</span>
-			</accordion-group>
-			</accordion>
-			<div class="loading" ng-if="isMapLoading"><i class="fa fa-spin fa-spinner"></i>Search results are loading...</div>
-			<div class="sticky">
-				<div class="map-canvas" id="map_canvas"></div>
-			</div>
-			<br>
-			<accordion id="locationList" class="list">
-				<div class="pharmacy-item" ng-repeat="item in list">
-					<div class="pharmacy-checkbox">
-						<input type="checkbox" ng-attr-id="{{ item }}" ng-model="item.checked" ng-click="onClickItem(item)" class="field" ng-disabled="disabled">
-						<label class="checkbox-label" ng-attr-for="{{ item }}" ></label>
-					</div>
-					<div>
-						<accordion-group is-open="item.isOpen" ng-class="{ highlight: item.highlight }">
-							<accordion-heading>
-								<span>{{ $index + 1 }}. {{ item.newPharmacy ? 'Add new pharmacy' : item.name }}</span>
-								<i class="pull-right glyphicon" ng-class="{'glyphicon-chevron-down': item.isOpen, 'glyphicon-chevron-right': !item.isOpen}"></i>
-							</accordion-heading>
-							<div class="form-group">
-								<label class="control-label">Name</label>
-								<input id="name" class="field form-control" placeholder="Name" ng-model="item.name" ng-change="updateData(item)" ng-disabled="item.disabled">
-							</div>
-							<div class="form-group">
-								<label class="control-label">Address</label>
-								<input id="address" class="field form-control" placeholder="Address" ng-model="item.formatted_address" ng-change="updateData(item)" ng-disabled="item.disabled">
-							</div>
-							<div class="form-group">
-								<label class="control-label">Phone Number</label>
-								<input id="phoneNumber"phone-number country-code="us"
-											maxlength="14" class="field form-control" placeholder="Phone Number" ng-model="item.formatted_phone_number" ng-change="updateData(item)" ng-disabled="item.disabled">
-							</div>  
-						</accordion-group>
-					</div>
-				</div>
-			</accordion>`;
+		var template = '\
+			<div ng-show="isLoaded">\
+			<accordion close-others="oneAtATime">\
+			<accordion-group class="accordion-group" heading="Location Search" is-open="true">\
+			<div class="row">\
+				<div class="col-xs-6">\
+					<input id="zipCode" class="field form-control" placeholder="Zip Code" ng-model="request.zipcode" ng-disabled="disabled">\
+				</div>\
+				<div class="col-xs-6">\
+					<select id="radius" ng-model="request.radius" ng-required="" class="field form-control ng-pristine ng-valid ng-valid-required" ng-disabled="disabled">\
+						<option value="1" label="1 Mile">1 Mile</option>\
+						<option value="2" label="2 Miles">2 Miles</option>\
+						<option value="3" label="3 Miles" selected>3 Miles</option>\
+						<option value="5" label="5 Miles">5 Miles</option>\
+						<option value="10" label="10 Miles">10 Miles</option>\
+						<option value="20" label="20 Miles">20 Miles</option>\
+						<option value="30" label="30 Miles">30 Miles</option>\
+					</select>\
+				</div>\
+			</div>\
+			<input class="field form-control" placeholder="Search Location" ng-model="request.query" ng-disabled="disabled">\
+			<button class="btn btn-default" ng-click="onSearch()" ng-disabled="disabled">Search</button>\
+			<span class="search-error" ng-if="searchError">{{ searchError }}</span>\
+			</accordion-group>\
+			</accordion>\
+			<div class="loading" ng-if="isMapLoading"><i class="fa fa-spin fa-spinner"></i>Search results are loading...</div>\
+			<div class="sticky">\
+				<div class="map-canvas" id="map_canvas"></div>\
+			</div>\
+			<br>\
+			<accordion id="locationList" class="list">\
+				<div class="pharmacy-item" ng-repeat="item in list">\
+					<div class="pharmacy-checkbox">\
+						<input type="checkbox" ng-attr-id="{{ item }}" ng-model="item.checked" ng-click="onClickItem(item)" class="field" ng-disabled="disabled">\
+						<label class="checkbox-label" ng-attr-for="{{ item }}" ></label>\
+					</div>\
+					<div>\
+						<accordion-group is-open="item.isOpen" ng-class="{ highlight: item.highlight }">\
+							<accordion-heading>\
+								<span>{{ $index + 1 }}. {{ item.newPharmacy ? "Add new pharmacy" : item.name }}</span>\
+								<i class="pull-right glyphicon" ng-class="{"glyphicon-chevron-down": item.isOpen, "glyphicon-chevron-right": !item.isOpen}"></i>\
+							</accordion-heading>\
+							<div class="form-group">\
+								<label class="control-label">Name</label>\
+								<input id="name" class="field form-control" placeholder="Name" ng-model="item.name" ng-change="updateData(item)" ng-disabled="item.disabled">\
+							</div>\
+							<div class="form-group">\
+								<label class="control-label">Address</label>\
+								<input id="address" class="field form-control" placeholder="Address" ng-model="item.formatted_address" ng-change="updateData(item)" ng-disabled="item.disabled">\
+							</div>\
+							<div class="form-group">\
+								<label class="control-label">Phone Number</label>\
+								<input id="phoneNumber"phone-number country-code="us"\
+											maxlength="14" class="field form-control" placeholder="Phone Number" ng-model="item.formatted_phone_number" ng-change="updateData(item)" ng-disabled="item.disabled">\
+							</div>\
+						</accordion-group>\
+					</div>\
+				</div>\
+			</accordion>';
 		return template;
 	}
 
@@ -175,14 +175,14 @@ angular.module('dashboard.directives.ModelFieldPointsOfInterest', [
 			 * @param {*} placeId 
 			 */
 			var getAdditionalPlaceInformation = function(placeId) {
-				return new Promise(function (resolve, reject) {
-					service.getDetails({ placeId: placeId }, function(place, status) {
-						if (status !== google.maps.places.PlacesServiceStatus.OK) {
-							return reject('Cannot get details for place ID.');
-						}
-						resolve(place);
-					});
+				var defer = $q.defer();
+				service.getDetails({ placeId: placeId }, function(place, status) {
+					if (status !== google.maps.places.PlacesServiceStatus.OK) {
+						return defer.reject('Cannot get details for place ID.');
+					}
+					defer.resolve(place);
 				});
+				return defer.promise;
 			};
 
 			/**
@@ -194,27 +194,27 @@ angular.module('dashboard.directives.ModelFieldPointsOfInterest', [
 			var getPlaces = function(request) {
 				var data = [];
 				var getNextPage = null;
-				return new Promise(function (resolve, reject) {
-					service.textSearch({
-						location: request.location,
-						type: request.type,
-						radius: request.radius,
-						query: request.query
-					}, function(places, status, pagination){
-						data.push(...places);
-						getNextPage = pagination.hasNextPage && function() {
-							pagination.nextPage();
-						};
-						if (status !== google.maps.places.PlacesServiceStatus.OK) {
-							return reject('Cannot get places');
-						}
-						if (!pagination.hasNextPage) {
-							resolve(data);
-						} else {
-							getNextPage();
-						}
-					})
+				var defer = $q.defer();
+				service.textSearch({
+					location: request.location,
+					type: request.type,
+					radius: request.radius,
+					query: request.query
+				}, function(places, status, pagination){
+					data.push(...places);
+					getNextPage = pagination.hasNextPage && function() {
+						pagination.nextPage();
+					};
+					if (status !== google.maps.places.PlacesServiceStatus.OK) {
+						return defer.reject('Cannot get places');
+					}
+					if (!pagination.hasNextPage) {
+						defer.resolve(data);
+					} else {
+						getNextPage();
+					}
 				});
+				return defer.promise;
 			};
 
 			/**
@@ -222,16 +222,16 @@ angular.module('dashboard.directives.ModelFieldPointsOfInterest', [
 			 * @param {string} zipcode 
 			 */
 			var getPlaceByZipcode = function(zipcode) {
-				return new Promise(function (resolve, reject) {
-					geocoder.geocode({
-						address: zipcode
-					}, function(places, status) {
-						if (status !== google.maps.GeocoderStatus.OK) {
-							return reject('Cannot get location');
-						}
-						resolve(places[0]);
-					})
+				var defer = $q.defer();
+				geocoder.geocode({
+					address: zipcode
+				}, function(places, status) {
+					if (status !== google.maps.GeocoderStatus.OK) {
+						return defer.reject('Cannot get location');
+					}
+					defer.resolve(places[0]);
 				});
+				return defer.promise;
 			};
 
 			/**
