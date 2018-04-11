@@ -60,6 +60,7 @@ angular.module('dashboard.directives.ModelFieldReference', [
       scope.selected.items = []; //for multi-select
       scope.selected.item = null; //for single select; initialize to null so placeholder is displayed
       scope.list = [];
+      scope.isDefaultSet = false;
 
       /**
        * Watch for scope.data. If it has no data, it will clear the selected item/s.
@@ -167,9 +168,10 @@ angular.module('dashboard.directives.ModelFieldReference', [
             scope.list.unshift(addNewItem);
 
           }
-          if (typeof scope.options.defaultIndex === 'number') {
+          if (typeof scope.options.defaultIndex === 'number' && !scope.isDefaultSet) {
             if (response[scope.options.defaultIndex]) {
               //scope.selected.items = [response[scope.options.defaultIndex]];
+              scope.isDefaultSet = true;
               scope.onSelect(response[scope.options.defaultIndex]);
             }
           }
