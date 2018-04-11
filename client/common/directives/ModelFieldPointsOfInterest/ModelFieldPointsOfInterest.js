@@ -90,7 +90,7 @@ angular.module('dashboard.directives.ModelFieldPointsOfInterest', [
 						<accordion-group is-open="item.isOpen" ng-class="{ highlight: item.highlight }">\
 							<accordion-heading>\
 								<span>{{ $index + 1 }}. {{ item.newPharmacy ? "Add new pharmacy" : item.name }}</span>\
-								<i class="pull-right glyphicon" ng-class="{"glyphicon-chevron-down": item.isOpen, "glyphicon-chevron-right": !item.isOpen}"></i>\
+								<i class="pull-right glyphicon" ng-class="{ \'glyphicon-chevron-down\': item.isOpen, \'glyphicon-chevron-right\': !item.isOpen}"></i>\
 							</accordion-heading>\
 							<div class="form-group">\
 								<label class="control-label">Name</label>\
@@ -129,7 +129,7 @@ angular.module('dashboard.directives.ModelFieldPointsOfInterest', [
 			var infowindow;
 			var service;
 			var googleApiKey = scope.property.display.options.googleApiKey;
-			
+
 			/**
 			 * Create markers for specific map
 			 * Bind scope onClickMarker
@@ -147,15 +147,15 @@ angular.module('dashboard.directives.ModelFieldPointsOfInterest', [
 						map.setZoom(15);
 						map.setCenter(marker.getPosition());
 						scope.onClickItem(place); // bind onclickmarker
-					})
+					});
 				});
 			};
 
 			/**
 			 * Create a cicle for specific map
 			 * @param {object} map
-			 * @param {number} radius 
-			 * @return {Circle} 
+			 * @param {number} radius
+			 * @return {Circle}
 			 */
 			var createCircle = function(map, center, radius) {
 				return new google.maps.Circle({
@@ -164,15 +164,15 @@ angular.module('dashboard.directives.ModelFieldPointsOfInterest', [
 					radius: radius,
 					fillOpacity: 0.15,
 					fillColor: "#FF0000",
-					strokeOpacity: 0.5,					
+					strokeOpacity: 0.5,
 					strokeColor: '#000000',
 					strokeWeight: 2,
-				})
+				});
 			};
 
 			/**
 			 * Get additional information about the place
-			 * @param {*} placeId 
+			 * @param {*} placeId
 			 */
 			var getAdditionalPlaceInformation = function(placeId) {
 				var defer = $q.defer();
@@ -187,9 +187,9 @@ angular.module('dashboard.directives.ModelFieldPointsOfInterest', [
 
 			/**
 			 * Get places for specific radius, location and type
-			 * @param {object} location 
-			 * @param {number} radius 
-			 * @param {string} type 
+			 * @param {object} location
+			 * @param {number} radius
+			 * @param {string} type
 			 */
 			var getPlaces = function(request) {
 				var data = [];
@@ -201,7 +201,7 @@ angular.module('dashboard.directives.ModelFieldPointsOfInterest', [
 					radius: request.radius,
 					query: request.query
 				}, function(places, status, pagination){
-					data.push(...places);
+          data = data.concat(places);
 					getNextPage = pagination.hasNextPage && function() {
 						pagination.nextPage();
 					};
@@ -219,7 +219,7 @@ angular.module('dashboard.directives.ModelFieldPointsOfInterest', [
 
 			/**
 			 * Get place using zip code
-			 * @param {string} zipcode 
+			 * @param {string} zipcode
 			 */
 			var getPlaceByZipcode = function(zipcode) {
 				var defer = $q.defer();
@@ -236,16 +236,16 @@ angular.module('dashboard.directives.ModelFieldPointsOfInterest', [
 
 			/**
 			 * Convert units from and to
-			 * @param {string} from 
-			 * @param {string} to 
-			 * @param {number} number 
+			 * @param {string} from
+			 * @param {string} to
+			 * @param {number} number
 			 */
 			var convert = function(from, to, number) {
 				if (from === 'miles' && to === 'meters') {
-					return number * 1609.34;   
+					return number * 1609.34;
 				}
 				return number;
-			}
+			};
 
 			/**
 			 * Generate unique id for place that don't have place_id
@@ -256,8 +256,8 @@ angular.module('dashboard.directives.ModelFieldPointsOfInterest', [
 					var r = Math.random() * 16 | 0, v = c == 'x' ? r : (r & 0x3 | 0x8);
 					return v.toString(16);
 				});
-			}
-			
+			};
+
 			// render variables
 			scope.isLoaded = false;
 			scope.isMapLoading = false;
@@ -276,7 +276,7 @@ angular.module('dashboard.directives.ModelFieldPointsOfInterest', [
 					service = new google.maps.places.PlacesService(map);
 
 					var radius = convert('miles', 'meters', scope.request.radius);
-					var circle = createCircle(map, scope.request.location, radius);				
+					var circle = createCircle(map, scope.request.location, radius);
 
 					// search for places
 					getPlaces({
@@ -285,7 +285,7 @@ angular.module('dashboard.directives.ModelFieldPointsOfInterest', [
 						radius: radius,
 						type: scope.request.type
 					}).then(function (places) {
-						scope.list = []; // reset						
+						scope.list = []; // reset
 						places.forEach(function (place) {
 							// just to make sure no markers are outside the radius
 							// but it also handles by getPlaces function
@@ -299,7 +299,7 @@ angular.module('dashboard.directives.ModelFieldPointsOfInterest', [
 						});
 						scope.isMapLoading = false;
 						createMarkers(map, scope.list);
-						scope.selectItem();						
+						scope.selectItem();
 						scope.list.push({
 							name: '',
 							highlight: false,
@@ -308,12 +308,11 @@ angular.module('dashboard.directives.ModelFieldPointsOfInterest', [
 							place_id: uuidv4(),
 							newPharmacy: true
 						});
-						scope.$digest();
 					}).catch(function (error) {
 						scope.isMapLoading = false;
 						alert(error);
 					});
-					
+
 				});
 			};
 
@@ -339,7 +338,8 @@ angular.module('dashboard.directives.ModelFieldPointsOfInterest', [
 								place = placeInformation;
 								place.highlight = true;
 								place.checked = true;
-								place.disabled = false;
+                place.disabled = false;
+                place.isOpen = true;
 								scope.updateData(place);
 							} else {
 								place.disabled = true;
@@ -348,7 +348,6 @@ angular.module('dashboard.directives.ModelFieldPointsOfInterest', [
 							}
 							return place;
 						});
-						scope.$digest();
 					});
 				}
 			};
@@ -389,8 +388,7 @@ angular.module('dashboard.directives.ModelFieldPointsOfInterest', [
 						checked: true
 					});
 				}
- 				scope.$digest();
-			}
+		  };
 
 			// main
 			loadScript(googleApiKey).then(function () {
