@@ -19,7 +19,7 @@ angular.module('dashboard.directives.ModelFieldReference', [
   };
 })
 
-.directive('modelFieldReferenceEdit', function($compile, $cookies, Config, GeneralModelService) {
+.directive('modelFieldReferenceEdit', function($compile, $cookies, Config, GeneralModelService, AlertModalService) {
   function getTemplate(multiple, matchTemplate, choiceTemplate) {
     var template = '';
     if (multiple) {
@@ -284,12 +284,19 @@ angular.module('dashboard.directives.ModelFieldReference', [
          //emit an event when an item is selected
          scope.$emit('onModelFieldReferenceSelect', scope.modelData, scope.key, item);
          var textValue = item[scope.options.searchField];
-          if (item && item[scope.options.searchField] == "[Add New Item]") {
+          if (item && item[scope.options.searchField] === '[Add New Item]') {
             //console.log("should add " + $select.search);
-            var value = element.find("input.ui-select-search").val().trim();
-            if (value.length === 0) {
+            var numRegex = new RegExp('^[0-9]+$');
+            var value = element.find('input.ui-select-search').val().trim();
+            var isNewItemInvalid = typeof scope.options.allowNumericName !== 'undefined' && !scope.options.allowNumericName && numRegex.test(value) ? true : false;
+            if (!value.length || isNewItemInvalid) {
               scope.data = null;
-              textValue = "";
+              textValue = '';
+              if (isNewItemInvalid) {
+                scope.selected.item = {};
+                scope.modelData = {};
+                AlertModalService.show('Please enter a valid ' + (scope.property.display.label || 'name') + '.');
+              }
             } else {
               scope.data = value;
               var newItem = {};
