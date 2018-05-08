@@ -161,10 +161,12 @@ angular.module('dashboard.directives.ModelField', [
           ngOptions = 'text in display.options';
         }
         template = '<label class="col-sm-2 control-label">{{ display.label || key }}:</label>\
-          <div class="col-sm-10">\
-            <label ng-repeat="'+ngOptions+'" class="radio"><input type="radio" ng-model="data[key]" ng-value="value || text" ng-disabled="display.readonly" name="{{key}}"> {{text}}</label>\
+        <div class="col-sm-10">\
+          <div class="radio" ng-repeat="'+ngOptions+'"> \
+            <label><input type="radio" ng-model="data[key]" ng-value="value || text" ng-disabled="display.readonly" name="{{key}}"> {{text}}</label>\
             <div class="model-field-description" ng-if="display.description !== false">{{ display.description }}</div>\
-          </div>';
+          </div>\
+        </div>';
         break;
       case 'slider':
         template = '<label class="col-sm-2 control-label">{{ display.label || key }}:</label>\
