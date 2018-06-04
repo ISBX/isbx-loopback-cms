@@ -431,6 +431,12 @@ angular.module('dashboard.Dashboard.Model.List', [
         if(!$scope.filterOptions.useExternalFilter) CacheService.set(cacheKey, $scope.list);
         processWindowSize(); //on first load check window size to determine if optional columns should be displayed
         $scope.$emit("ModelListLoadItemsLoaded");
+        if ($scope.action.options.hasCheckbox && $scope.action.options.hasCheckbox.field) {
+          var field = $scope.action.options.hasCheckbox.field;
+          var expectedVal = $scope.action.options.hasCheckbox.answer;
+          var hasUnread = _.find($scope.list, { field: expectedVal });
+          $scope.$emit("ModelListReloadCheckbox", hasUnread);
+        }
         isFirstLoad = false;
       })
       .finally(function() {
