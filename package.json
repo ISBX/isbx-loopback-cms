@@ -19,7 +19,7 @@
     "optimist": "~0.6.1",
     "stylus": "^0.49.1",
     "inflection": "~1.4.2",
-    "moment": "~2.9.0",
+    "moment": "~2.24.0",
     "node-uuid": "~1.4.2"
   },
   "devDependencies": {
